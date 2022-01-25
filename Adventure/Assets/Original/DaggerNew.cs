@@ -16,12 +16,12 @@ namespace SceneTest.Assets.Original
         {
             return new SpriteMaterialDescription
                 (
-                    colorMap: "original/dagger_new.png",
+                    colorMap: "Graphics/Sprites/Crawl/Weapons/dagger_new.png",
                     materials: new HashSet<SpriteMaterialTextureItem>
                     {
-                        new SpriteMaterialTextureItem(0xff692c0c, "cc0Textures/Leather001_1K", "jpg"), //Hilt (brown)
-                        new SpriteMaterialTextureItem(0xffa3a3a3, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Blade (grey)
-                        new SpriteMaterialTextureItem(0xff535353, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Other Metal (grey)
+                        new SpriteMaterialTextureItem(0xff692c0c, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"), //Hilt (brown)
+                        new SpriteMaterialTextureItem(0xffa3a3a3, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
+                        new SpriteMaterialTextureItem(0xff535353, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Other Metal (grey)
                     }
                 );
         }

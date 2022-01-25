@@ -42,7 +42,7 @@ namespace SceneTest
         {
             objectResolver = objectResolverFactory.Create();
 
-            backgroundMusicManager.SetBackgroundSong("freepd/Rafael Krux - Black Knight.ogg");
+            backgroundMusicManager.SetBackgroundSong("Music/freepd/Rafael Krux - Black Knight.ogg");
             this.party = party;
             this.worldManager = worldManager;
             this.persistence = persistence;

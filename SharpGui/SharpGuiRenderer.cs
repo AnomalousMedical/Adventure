@@ -239,7 +239,7 @@ namespace SharpGui
         private void LoadFontTexture(GraphicsEngine graphicsEngine, IScaleHelper scaleHelper)
         {
             //Load Font Texture
-            using var fontStream = resourceProvider.openFile("fonts/Roboto-Regular.ttf");
+            using var fontStream = resourceProvider.openFile("Fonts/Roboto-Regular.ttf");
             var bytes = new byte[fontStream.Length];
             var span = new Span<byte>(bytes);
             while (fontStream.Read(span) != 0) { }

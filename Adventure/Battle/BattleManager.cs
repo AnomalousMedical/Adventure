@@ -118,7 +118,7 @@ namespace SceneTest.Battle
                     cursor.BattleStarted();
                     numbers.Clear();
 
-                    backgroundMusicManager.SetBattleTrack("freepd/Rafael Krux - Hit n Smash.ogg");
+                    backgroundMusicManager.SetBattleTrack("Music/freepd/Rafael Krux - Hit n Smash.ogg");
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
                     var baseDexTotal = 0;
                     foreach(var player in players)
@@ -405,7 +405,7 @@ namespace SceneTest.Battle
                     if (enemies.Count == 0)
                     {
                         BattleEnded();
-                        backgroundMusicManager.SetBattleTrack("freepd/Alexander Nakarada - Fanfare X.ogg");
+                        backgroundMusicManager.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                     }
                 }
             }

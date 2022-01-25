@@ -12,14 +12,14 @@ namespace SceneTest.Assets.Original
     {
         //Threax drew this one
 
-        public string SkinMaterial { get; set; } = "cc0Textures/Leather008_1K";
-        public string SpineMaterial { get; set; } = "cc0Textures/Leather008_1K";
+        public string SkinMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
+        public string SpineMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
 
         public SpriteMaterialDescription CreateMaterial()
         {
             return new SpriteMaterialDescription
             (
-                colorMap: "original/TinyDino_Color.png",
+                colorMap: "Graphics/Sprites/Anomalous/Enemies/TinyDino.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
                     new SpriteMaterialTextureItem(0xff168516, SkinMaterial, "jpg"),//Skin (green)

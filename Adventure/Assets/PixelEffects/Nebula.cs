@@ -11,7 +11,7 @@ namespace SceneTest.Assets.PixelEffects
         {
             return new SpriteMaterialDescription
             (
-                colorMap: "FreePixelEffectsPack/12_nebula_spritesheet.png",
+                colorMap: "Graphics/Sprites/FreePixelEffectsPack/12_nebula_spritesheet.png",
                 materials: new HashSet<SpriteMaterialTextureItem>()
             );
         }

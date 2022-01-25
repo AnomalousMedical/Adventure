@@ -105,7 +105,7 @@ namespace SceneTest.Battle
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
                 var matDesc = new SpriteMaterialDescription(
-                    colorMap: "original/pointingfinger.png",
+                    colorMap: "Graphics/Sprites/Crawl/UI/pointingfinger.png",
                     materials: new HashSet<SpriteMaterialTextureItem>());
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(matDesc);

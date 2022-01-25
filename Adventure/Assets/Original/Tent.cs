@@ -12,13 +12,13 @@ namespace SceneTest.Assets.Original
     {
         //Threax drew this one
 
-        public string TentMaterial { get; set; } = "cc0Textures/Fabric045_1K";
+        public string TentMaterial { get; set; } = "Graphics/Textures/AmbientCG/Fabric045_1K";
 
         public SpriteMaterialDescription CreateMaterial()
         {
             return new SpriteMaterialDescription
             (
-                colorMap: "original/Tent.png",
+                colorMap: "Graphics/Sprites/Anomalous/Tent.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
                     new SpriteMaterialTextureItem(0xff2476cf, TentMaterial, "jpg"),//blue

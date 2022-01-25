@@ -15,7 +15,7 @@ namespace SceneTest.Assets.PixelEffects
         {
             return new SpriteMaterialDescription
             (
-                colorMap: "FreePixelEffectsPack/7_firespin_spritesheet.png",
+                colorMap: "Graphics/Sprites/FreePixelEffectsPack/7_firespin_spritesheet.png",
                 materials: new HashSet<SpriteMaterialTextureItem>()
             );
         }

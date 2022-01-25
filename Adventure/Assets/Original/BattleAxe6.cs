@@ -16,12 +16,12 @@ namespace SceneTest.Assets.Original
         {
             return new SpriteMaterialDescription
                 (
-                    colorMap: "original/battle_axe_6.png",
+                    colorMap: "Graphics/Sprites/Crawl/Weapons/battle_axe_6.png",
                     materials: new HashSet<SpriteMaterialTextureItem>
                     {
-                        new SpriteMaterialTextureItem(0xff865f41, "cc0Textures/Leather001_1K", "jpg"), //Hilt (brown)
-                        new SpriteMaterialTextureItem(0xff949494, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Blade (grey)
-                        new SpriteMaterialTextureItem(0xff545454, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Other Metal (grey)
+                        new SpriteMaterialTextureItem(0xff865f41, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"), //Hilt (brown)
+                        new SpriteMaterialTextureItem(0xff949494, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
+                        new SpriteMaterialTextureItem(0xff545454, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Other Metal (grey)
                     }
                 );
         }

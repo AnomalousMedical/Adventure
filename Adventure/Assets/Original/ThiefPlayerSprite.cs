@@ -13,12 +13,12 @@ namespace SceneTest.Assets.Original
         {
             SpriteMaterialDescription = new SpriteMaterialDescription
             (
-                colorMap: "original/bmg3_full.png",
+                colorMap: "Graphics/Sprites/LastGuardian/Players/bmg3_full.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
-                    new SpriteMaterialTextureItem(0xff1c8cff, "cc0Textures/Leather001_1K", "jpg"), //Blue (armor)
-                    new SpriteMaterialTextureItem(0xffb470ff, "cc0Textures/Fabric012_1K", "jpg"), //Purple (cape)
-                    new SpriteMaterialTextureItem(0xffa85400, "cc0Textures/Carpet008_1K", "jpg"), //Brown (hair)
+                    new SpriteMaterialTextureItem(0xff1c8cff, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"), //Blue (armor)
+                    new SpriteMaterialTextureItem(0xffb470ff, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"), //Purple (cape)
+                    new SpriteMaterialTextureItem(0xffa85400, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"), //Brown (hair)
                 }
             );
         }

@@ -19,7 +19,7 @@ namespace SceneTest.Battle
     {
         public class Description : SceneObjectDesc
         {
-            public String Texture { get; set; } = "cc0Textures/Bricks045_1K";
+            public String Texture { get; set; } = "Graphics/Textures/AmbientCG/Bricks045_1K";
         }
 
         private TLASBuildInstanceData floorInstanceData;

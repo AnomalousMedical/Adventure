@@ -13,12 +13,12 @@ namespace SceneTest.Assets.Original
         {
             SpriteMaterialDescription = new SpriteMaterialDescription
             (
-                colorMap: "original/avt3_full.png",
+                colorMap: "Graphics/Sprites/LastGuardian/Players/avt3_full.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
-                    new SpriteMaterialTextureItem(0xff0054a8, "cc0Textures/Fabric012_1K", "jpg"), //Helmet (blue)
-                    new SpriteMaterialTextureItem(0xffffff00, "cc0Textures/Fabric027_1K", "jpg"), //Coat (yellow)
-                    new SpriteMaterialTextureItem(0xffff8000, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Armor (orange)
+                    new SpriteMaterialTextureItem(0xff0054a8, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"), //Helmet (blue)
+                    new SpriteMaterialTextureItem(0xffffff00, "Graphics/Textures/AmbientCG/Fabric027_1K", "jpg"), //Coat (yellow)
+                    new SpriteMaterialTextureItem(0xffff8000, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Armor (orange)
                 }
             );
         }

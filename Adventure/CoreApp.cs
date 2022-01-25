@@ -139,11 +139,11 @@ namespace SceneTest
             var vfs = serviceProvider.GetRequiredService<VirtualFileSystem>();
 
             //This needs to be less hardcoded.
-            var assetPath = Path.GetFullPath(Path.Combine(FolderFinder.ExecutableFolder, "Engine-Next-Assets"));
+            var assetPath = Path.GetFullPath(Path.Combine(FolderFinder.ExecutableFolder, "AdventureAssets"));
             if (!Directory.Exists(assetPath))
             {
                 //If no local assets, load from dev location
-                assetPath = Path.GetFullPath("../../../../../../Engine-Next-Assets");
+                assetPath = Path.GetFullPath("../../../../../../AdventureAssets");
             }
             vfs.addArchive(assetPath);
 

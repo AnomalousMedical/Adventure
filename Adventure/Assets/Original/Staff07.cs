@@ -16,11 +16,11 @@ namespace SceneTest.Assets.Original
         {
             return new SpriteMaterialDescription
                 (
-                    colorMap: "original/staff_7.png",
+                    colorMap: "Graphics/Sprites/Crawl/Weapons/staff_7.png",
                     materials: new HashSet<SpriteMaterialTextureItem>
                     {
-                        new SpriteMaterialTextureItem(0xff9f7f66, "cc0Textures/Leather001_1K", "jpg"),
-                        new SpriteMaterialTextureItem(0xff6a5db6, "cc0Textures/Metal032_1K", "jpg"),
+                        new SpriteMaterialTextureItem(0xff9f7f66, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
+                        new SpriteMaterialTextureItem(0xff6a5db6, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
                     }
                 );
         }

@@ -83,8 +83,8 @@ namespace SceneTest
             //Countryside
             new Biome
             {
-                FloorTexture = "cc0Textures/Rocks023_1K",
-                WallTexture = "cc0Textures/Ground037_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
                 RegularEnemy = new BiomeEnemy()
                 {
                     Asset = new Assets.Original.TinyDino(),
@@ -108,8 +108,8 @@ namespace SceneTest
             //Desert
             new Biome
             {
-                FloorTexture = "cc0Textures/Ground025_1K",
-                WallTexture = "cc0Textures/Rock029_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Rock029_1K",
                 RegularEnemy = new BiomeEnemy()
                 {
                     Asset = new Assets.Original.Skeleton(),
@@ -128,8 +128,8 @@ namespace SceneTest
             //Snowy
             new Biome
             {
-                FloorTexture = "cc0Textures/Snow006_1K",
-                WallTexture = "cc0Textures/Rock022_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Snow006_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Rock022_1K",
                 ReflectFloor = false,
                 RegularEnemy = new BiomeEnemy()
                 {

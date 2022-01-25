@@ -11,11 +11,11 @@ namespace SceneTest.Assets.Original
         {
             return new SpriteMaterialDescription
                 (
-                    colorMap: "original/shield_of_reflection.png",
+                    colorMap: "Graphics/Sprites/Crawl/Shields/shield_of_reflection.png",
                     //colorMap: "opengameart/Dungeon Crawl Stone Soup Full/misc/cursor_red.png",
                     materials: new HashSet<SpriteMaterialTextureItem>
                     {
-                        new SpriteMaterialTextureItem(0xffa0a0a0, "cc0Textures/Metal032_1K", "jpg", reflective: true), //Blade (grey)
+                        new SpriteMaterialTextureItem(0xffa0a0a0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
                     }
                 );
         }
