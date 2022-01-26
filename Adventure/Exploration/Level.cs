@@ -473,7 +473,10 @@ namespace Adventure
                 var testCorridor = mapMesh.MapBuilder.map[corridorPoint.x, corridorPoint.y];
                 if (currentCorridor != testCorridor)
                 {
-                    PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex);
+                    if (currentCorridor >= csMapbuilder.CorridorCell)
+                    {
+                        PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex);
+                    }
                     corridorStartIndex = currentIndex;
                     currentCorridor = testCorridor;
                 }
@@ -482,12 +485,10 @@ namespace Adventure
 
         private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex)
         {
-            var numFightableSquares = Math.Min(currentIndex - corridorStartIndex, 30);
-            var numEnemies = enemyRandom.Next(numFightableSquares) / 3;
-            if(numEnemies < 1)
-            {
-                numEnemies = 1;
-            }
+            var numSquares = currentIndex - corridorStartIndex;
+            var maxFights = Math.Max(numSquares / 10, 2);
+            var minFights = Math.Max(numSquares / 20, 1);
+            var numEnemies = enemyRandom.Next(minFights, maxFights);
             for(int i = 0; i < numEnemies; ++i)
             {
                 var corridorTry = 0;
