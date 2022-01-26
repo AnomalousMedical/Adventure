@@ -1,13 +1,13 @@
 ﻿using DiligentEngine.RT;
 using Engine.Platform;
-using SceneTest.GameOver;
+using Adventure.GameOver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     class BattleGameState : IBattleGameState
     {

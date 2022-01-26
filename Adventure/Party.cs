@@ -1,13 +1,13 @@
 ﻿using RpgMath;
-using SceneTest.Assets;
-using SceneTest.Battle;
-using SceneTest.Services;
+using Adventure.Assets;
+using Adventure.Battle;
+using Adventure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SceneTest
+namespace Adventure
 {
     class Party
     {
@@ -25,10 +25,10 @@ namespace SceneTest
             var character = new Character()
             {
                 CharacterSheet = i.CharacterSheet,
-                PlayerSprite = CreateInstance<IPlayerSprite>($"SceneTest.Assets.Original.{i.PlayerSprite}"),
-                PrimaryHandAsset = i.PrimaryHandAsset != null ? CreateInstance<ISpriteAsset>($"SceneTest.Assets.Original.{i.PrimaryHandAsset}") : null,
-                SecondaryHandAsset = i.SecondaryHandAsset != null ? CreateInstance<ISpriteAsset>($"SceneTest.Assets.Original.{i.SecondaryHandAsset}") : null,
-                Spells = i.Spells?.Select(s => CreateInstance<ISpell>($"SceneTest.Battle.Spells.{s}"))
+                PlayerSprite = CreateInstance<IPlayerSprite>($"Adventure.Assets.Original.{i.PlayerSprite}"),
+                PrimaryHandAsset = i.PrimaryHandAsset != null ? CreateInstance<ISpriteAsset>($"Adventure.Assets.Original.{i.PrimaryHandAsset}") : null,
+                SecondaryHandAsset = i.SecondaryHandAsset != null ? CreateInstance<ISpriteAsset>($"Adventure.Assets.Original.{i.SecondaryHandAsset}") : null,
+                Spells = i.Spells?.Select(s => CreateInstance<ISpell>($"Adventure.Battle.Spells.{s}"))
             };
 
             return character;

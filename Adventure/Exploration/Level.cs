@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using DiligentEngine.RT.HLSL;
 
-namespace SceneTest
+namespace Adventure
 {
     class Level : IDisposable
     {

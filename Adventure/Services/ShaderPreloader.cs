@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Services
+namespace Adventure.Services
 {
     internal class ShaderPreloader : IDisposable
     {

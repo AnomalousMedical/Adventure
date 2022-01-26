@@ -1,6 +1,6 @@
 ﻿using Engine.Platform;
 
-namespace SceneTest
+namespace Adventure
 {
     interface ITimeClock
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     interface ILevelManager
     {

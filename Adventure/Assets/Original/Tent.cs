@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Assets.Original
+namespace Adventure.Assets.Original
 {
     class Tent : ISpriteAsset
     {

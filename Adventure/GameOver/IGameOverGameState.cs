@@ -1,7 +1,7 @@
 ﻿using Engine.Platform;
 using System.Collections.Generic;
 
-namespace SceneTest.GameOver
+namespace Adventure.GameOver
 {
     interface IGameOverGameState : IGameState
     {

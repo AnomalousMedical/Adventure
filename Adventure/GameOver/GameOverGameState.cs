@@ -1,8 +1,8 @@
 ﻿using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
-using SceneTest.Battle;
-using SceneTest.Services;
+using Adventure.Battle;
+using Adventure.Services;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.GameOver
+namespace Adventure.GameOver
 {
     class GameOverGameState : IGameOverGameState
     {

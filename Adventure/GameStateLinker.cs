@@ -1,12 +1,12 @@
-﻿using SceneTest.Battle;
-using SceneTest.GameOver;
+﻿using Adventure.Battle;
+using Adventure.GameOver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class GameStateLinker : IGameStateLinker
     {

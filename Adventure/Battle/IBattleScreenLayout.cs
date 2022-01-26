@@ -1,7 +1,7 @@
 ﻿using SharpGui;
 using System.Collections.Generic;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     interface IBattleScreenLayout
     {

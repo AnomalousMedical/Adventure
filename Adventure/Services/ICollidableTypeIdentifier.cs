@@ -1,6 +1,6 @@
 ﻿using BepuPhysics.Collidables;
 
-namespace SceneTest
+namespace Adventure
 {
     interface ICollidableTypeIdentifier
     {

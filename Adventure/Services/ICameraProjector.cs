@@ -1,6 +1,6 @@
 ﻿using Engine;
 
-namespace SceneTest
+namespace Adventure
 {
     interface ICameraProjector
     {

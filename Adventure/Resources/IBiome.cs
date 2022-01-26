@@ -1,7 +1,7 @@
 ﻿using RpgMath;
-using SceneTest.Assets;
+using Adventure.Assets;
 
-namespace SceneTest
+namespace Adventure
 {
     interface IBiome
     {

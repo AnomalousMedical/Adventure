@@ -5,8 +5,8 @@ using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
-using SceneTest.Exploration.Menu;
-using SceneTest.Services;
+using Adventure.Exploration.Menu;
+using Adventure.Services;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class TreasureTrigger : IDisposable
     {

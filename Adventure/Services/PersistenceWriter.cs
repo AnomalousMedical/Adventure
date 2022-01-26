@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RpgMath;
-using SceneTest.Battle.Spells;
+using Adventure.Battle.Spells;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Services
+namespace Adventure.Services
 {
     interface IPersistenceWriter
     {

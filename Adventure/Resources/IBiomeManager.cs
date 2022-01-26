@@ -1,4 +1,4 @@
-﻿namespace SceneTest
+﻿namespace Adventure
 {
     interface IBiomeManager
     {

@@ -1,4 +1,4 @@
-﻿namespace SceneTest.Exploration.Menu
+﻿namespace Adventure.Exploration.Menu
 {
     interface IExplorationMenu
     {

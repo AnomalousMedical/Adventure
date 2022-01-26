@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Exploration.Menu
+namespace Adventure.Exploration.Menu
 {
     class ExplorationMenu : IExplorationMenu
     {

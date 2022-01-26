@@ -1,7 +1,7 @@
 ﻿using DiligentEngine.RT.Sprites;
 using System.Collections.Generic;
 
-namespace SceneTest.Assets
+namespace Adventure.Assets
 {
     public interface IPlayerSprite
     {

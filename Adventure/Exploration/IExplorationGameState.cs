@@ -1,8 +1,8 @@
 ﻿using Engine.Platform;
-using SceneTest.Battle;
+using Adventure.Battle;
 using System;
 
-namespace SceneTest
+namespace Adventure
 {
     interface IExplorationGameState : IGameState
     {

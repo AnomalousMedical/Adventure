@@ -7,8 +7,8 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
-using SceneTest.Assets;
-using SceneTest.Services;
+using Adventure.Assets;
+using Adventure.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class Player : IDisposable
     {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Exploration.Menu
+namespace Adventure.Exploration.Menu
 {
     internal class RTGui
     {

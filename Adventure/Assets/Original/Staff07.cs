@@ -3,7 +3,7 @@ using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
 
-namespace SceneTest.Assets.Original
+namespace Adventure.Assets.Original
 {
     class Staff07 : ISpriteAsset
     {

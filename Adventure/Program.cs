@@ -2,7 +2,7 @@
 using Anomalous.OSPlatform.Win32;
 using System;
 
-namespace SceneTest
+namespace Adventure
 {
     class Program
     {

@@ -1,13 +1,13 @@
 ﻿using RpgMath;
-using SceneTest.Assets;
-using SceneTest.Battle;
+using Adventure.Assets;
+using Adventure.Battle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class Character
     {

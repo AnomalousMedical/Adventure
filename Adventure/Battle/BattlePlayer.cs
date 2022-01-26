@@ -4,7 +4,7 @@ using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using RpgMath;
-using SceneTest.Assets;
+using Adventure.Assets;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     class BattlePlayer : IDisposable, IBattleTarget
     {

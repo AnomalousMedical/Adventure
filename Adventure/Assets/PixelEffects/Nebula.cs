@@ -3,7 +3,7 @@ using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
 
-namespace SceneTest.Assets.PixelEffects
+namespace Adventure.Assets.PixelEffects
 {
     class Nebula : ISpriteAsset
     {

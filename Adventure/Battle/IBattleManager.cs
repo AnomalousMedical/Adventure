@@ -4,7 +4,7 @@ using RpgMath;
 using System;
 using System.Threading.Tasks;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     interface IBattleManager
     {

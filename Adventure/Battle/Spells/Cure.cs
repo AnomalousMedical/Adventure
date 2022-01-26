@@ -1,12 +1,12 @@
 ﻿using Engine;
-using SceneTest.Assets;
+using Adventure.Assets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Battle.Spells
+namespace Adventure.Battle.Spells
 {
     class Cure : ISpell
     {

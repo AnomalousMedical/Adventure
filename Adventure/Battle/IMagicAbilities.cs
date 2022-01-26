@@ -3,7 +3,7 @@ using SharpGui;
 using System;
 using System.Collections.Generic;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     interface IMagicAbilities
     {

@@ -4,15 +4,15 @@ using DiligentEngine.RT;
 using Engine;
 using Engine.CameraMovement;
 using Engine.Platform;
-using SceneTest.Exploration.Menu;
-using SceneTest.Services;
+using Adventure.Exploration.Menu;
+using Adventure.Services;
 using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class SceneTestUpdateListener : UpdateListener
     {

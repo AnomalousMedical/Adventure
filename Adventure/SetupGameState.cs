@@ -2,8 +2,8 @@
 using Engine;
 using Engine.Platform;
 using RpgMath;
-using SceneTest.Battle;
-using SceneTest.Battle.Spells;
+using Adventure.Battle;
+using Adventure.Battle.Spells;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class SetupGameState : ISetupGameState
     {

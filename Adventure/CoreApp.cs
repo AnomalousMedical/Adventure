@@ -6,16 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using RpgMath;
-using SceneTest.Battle;
-using SceneTest.Exploration;
-using SceneTest.Exploration.Menu;
-using SceneTest.GameOver;
-using SceneTest.Services;
+using Adventure.Battle;
+using Adventure.Exploration;
+using Adventure.Exploration.Menu;
+using Adventure.GameOver;
+using Adventure.Services;
 using System;
 using System.Globalization;
 using System.IO;
 
-namespace SceneTest
+namespace Adventure
 {
     public class CoreApp : App
     {

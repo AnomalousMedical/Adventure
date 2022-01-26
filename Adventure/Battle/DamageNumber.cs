@@ -1,7 +1,7 @@
 ﻿using Engine;
 using SharpGui;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     class DamageNumber
     {

@@ -4,7 +4,7 @@ using DiligentEngine.RT.Sprites;
 using Engine;
 using System;
 
-namespace SceneTest
+namespace Adventure
 {
     class Attachment<T> : IDisposable
     {

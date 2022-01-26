@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Battle
+namespace Adventure.Battle
 {
     class BattleManager : IDisposable, IBattleManager
     {

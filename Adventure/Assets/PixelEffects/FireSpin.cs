@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest.Assets.PixelEffects
+namespace Adventure.Assets.PixelEffects
 {
     class FireSpin : ISpriteAsset
     {

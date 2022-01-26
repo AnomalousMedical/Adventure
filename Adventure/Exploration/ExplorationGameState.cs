@@ -2,15 +2,15 @@
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
-using SceneTest.Battle;
-using SceneTest.Exploration.Menu;
+using Adventure.Battle;
+using Adventure.Exploration.Menu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SceneTest
+namespace Adventure
 {
     class ExplorationGameState : IExplorationGameState
     {
