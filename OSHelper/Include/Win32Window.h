@@ -91,8 +91,8 @@ private:
 	UsageMode usageMode;
 	long int style;
 	long int ex_style;
-	int width;
-	int height;
+	RECT windowedRect;
+	bool windowedMaximized;
 
 	void showKeyboard();
 

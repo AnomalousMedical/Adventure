@@ -51,8 +51,6 @@ void Win32Window::setTitle(String title)
 
 void Win32Window::setSize(int width, int height)
 {
-	this->width = width;
-	this->height = height;
 	SetWindowPos(window, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
@@ -119,6 +117,13 @@ void Win32Window::changeWindowMode(bool fullscreen)
 	this->exclusiveFullscreen = fullscreen;
 	if (exclusiveFullscreen)
 	{
+		this->windowedMaximized = this->getMaximized();
+		GetWindowRect(window, &this->windowedRect);
+
+		if (this->windowedMaximized) {
+			this->setMaximized(false);
+		}
+
 		SetWindowLong(window, GWL_STYLE, this->style & ~(WS_CAPTION | WS_THICKFRAME));
 		SetWindowLong(window, GWL_EXSTYLE, this->ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
 
@@ -138,10 +143,13 @@ void Win32Window::changeWindowMode(bool fullscreen)
 		SetWindowLong(window, GWL_EXSTYLE, this->ex_style);
 
 		SetWindowPos(window, NULL,
-			0, 0, this->width, this->height,
+			windowedRect.left, 
+			windowedRect.top,
+			windowedRect.right - windowedRect.left,
+			windowedRect.bottom - windowedRect.top,
 			SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 		
-		this->setMaximized(true);
+		this->setMaximized(this->windowedMaximized);
 	}
 }
 
@@ -514,6 +522,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			case VK_SHIFT:
 				win->fireKeyDown(KC_LSHIFT, 0);
+				break;
+			case VK_F4: //Kind of sucks, do this without stealing f4.
+				win->toggleFullscreen();
 				break;
 			default:
 				win->fireKeyDown(virtualKeyToKeyboardButtonCode(wParam), getUtf32WithSpecial(wParam, (lParam & 0x01FF0000) >> 16));
