@@ -41,6 +41,9 @@ namespace Adventure
             mainWindow = EasyNativeWindow.Create(services, this, o =>
             {
                 o.Title = "Anomalous Adventure";
+#if !DEBUG
+                o.Fullscreen = true;
+#endif
             });
 
             services.AddLogging(o =>
@@ -58,7 +61,10 @@ namespace Adventure
             {
                 o.EventLayersType = typeof(EventLayers);
             });
-            services.AddSoundPlugin(pluginManager);
+            services.AddSoundPlugin(pluginManager, o =>
+            {
+                o.MasterVolume = 0.25f;
+            });
             services.AddSharpGui();
             services.AddFirstPersonFlyCamera(o =>
             {

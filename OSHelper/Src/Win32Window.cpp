@@ -93,17 +93,28 @@ void* Win32Window::getHandle()
 
 void Win32Window::show()
 {
+	WINDOWPLACEMENT placement;
+	GetWindowPlacement(window, &placement);
+	ShowWindow(window, placement.showCmd);
+	UpdateWindow(window);
+
 	if (exclusiveFullscreen)
 	{
-		SetWindowLongPtr(window, GWL_STYLE, WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP);
-		SetWindowPos(window, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-	}
-	else
-	{
-		WINDOWPLACEMENT placement;
-		GetWindowPlacement(window, &placement);
-		ShowWindow(window, placement.showCmd);
-		UpdateWindow(window);
+		long int style = GetWindowLong(window, GWL_STYLE);
+		long int ex_style = GetWindowLong(window, GWL_EXSTYLE);
+
+ 	    SetWindowLong(window, GWL_STYLE, style & ~(WS_CAPTION | WS_THICKFRAME));
+ 	    SetWindowLong(window, GWL_EXSTYLE, ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
+ 	
+		MONITORINFO monitor_info;
+		monitor_info.cbSize = sizeof(monitor_info);
+		GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST), &monitor_info);
+		SetWindowPos(window, NULL, 
+			monitor_info.rcMonitor.left,
+			monitor_info.rcMonitor.top,
+			monitor_info.rcMonitor.right - monitor_info.rcMonitor.left,
+			monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top,
+ 			SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
 
