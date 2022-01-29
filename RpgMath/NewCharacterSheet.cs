@@ -11,6 +11,10 @@ namespace RpgMath
 
         public String Name { get; set; }
 
+        public long Hp { get; internal set; } = 300;
+
+        public long Mp { get; internal set; } = 30;
+
         public long FighterHp { get; set; } = 200;
 
         public long MageHp { get; set; } = 100;
@@ -112,10 +116,6 @@ namespace RpgMath
                 yield return Accessory;
             }
         }
-
-        public long Hp { get; internal set; }
-
-        public long Mp { get; internal set; }
 
         public long CurrentHp { get; set; }
 
