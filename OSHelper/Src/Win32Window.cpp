@@ -51,6 +51,8 @@ void Win32Window::setTitle(String title)
 
 void Win32Window::setSize(int width, int height)
 {
+	this->width = width;
+	this->height = height;
 	SetWindowPos(window, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
@@ -98,46 +100,48 @@ void Win32Window::show()
 	ShowWindow(window, placement.showCmd);
 	UpdateWindow(window);
 
-	if (exclusiveFullscreen)
-	{
-		long int style = GetWindowLong(window, GWL_STYLE);
-		long int ex_style = GetWindowLong(window, GWL_EXSTYLE);
+	this->style = GetWindowLong(window, GWL_STYLE);
+	this->ex_style = GetWindowLong(window, GWL_EXSTYLE);
 
- 	    SetWindowLong(window, GWL_STYLE, style & ~(WS_CAPTION | WS_THICKFRAME));
- 	    SetWindowLong(window, GWL_EXSTYLE, ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
- 	
-		MONITORINFO monitor_info;
-		monitor_info.cbSize = sizeof(monitor_info);
-		GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST), &monitor_info);
-		SetWindowPos(window, NULL, 
-			monitor_info.rcMonitor.left,
-			monitor_info.rcMonitor.top,
-			monitor_info.rcMonitor.right - monitor_info.rcMonitor.left,
-			monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top,
- 			SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	if (exclusiveFullscreen) {
+		changeWindowMode(exclusiveFullscreen);
 	}
 }
 
 void Win32Window::toggleFullscreen()
 {
-	if (!exclusiveFullscreen)
+	this->exclusiveFullscreen = !this->exclusiveFullscreen;
+	this->changeWindowMode(this->exclusiveFullscreen);
+}
+
+void Win32Window::changeWindowMode(bool fullscreen)
+{
+	this->exclusiveFullscreen = fullscreen;
+	if (exclusiveFullscreen)
 	{
-		DWORD dwStyle = GetWindowLongPtr(window, GWL_STYLE);
-		if (dwStyle & WS_OVERLAPPEDWINDOW)
-		{
-			MONITORINFO mi = { sizeof(mi) };
-			if (GetWindowPlacement(window, &previousWindowPlacement) && GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY), &mi))
-			{
-				SetWindowLongPtr(window, GWL_STYLE, dwStyle & ~WS_OVERLAPPEDWINDOW | WS_POPUP);
-				SetWindowPos(window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-			}
-		}
-		else
-		{
-			SetWindowLongPtr(window, GWL_STYLE, dwStyle & ~WS_POPUP | WS_OVERLAPPEDWINDOW);
-			SetWindowPlacement(window, &previousWindowPlacement);
-			SetWindowPos(window, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-		}
+		SetWindowLong(window, GWL_STYLE, this->style & ~(WS_CAPTION | WS_THICKFRAME));
+		SetWindowLong(window, GWL_EXSTYLE, this->ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
+
+		MONITORINFO monitor_info;
+		monitor_info.cbSize = sizeof(monitor_info);
+		GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST), &monitor_info);
+		SetWindowPos(window, NULL,
+			monitor_info.rcMonitor.left,
+			monitor_info.rcMonitor.top,
+			monitor_info.rcMonitor.right - monitor_info.rcMonitor.left,
+			monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top,
+			SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
+	else
+	{
+		SetWindowLong(window, GWL_STYLE, this->style);
+		SetWindowLong(window, GWL_EXSTYLE, this->ex_style);
+
+		SetWindowPos(window, NULL,
+			0, 0, this->width, this->height,
+			SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+		
+		this->setMaximized(true);
 	}
 }
 

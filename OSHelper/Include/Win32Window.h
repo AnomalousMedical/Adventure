@@ -89,8 +89,14 @@ private:
 	OnscreenKeyboardMode keyboardMode;
 	bool allowShowKeyboard;
 	UsageMode usageMode;
+	long int style;
+	long int ex_style;
+	int width;
+	int height;
 
 	void showKeyboard();
 
 	void closeKeyboard();
+
+	void changeWindowMode(bool fullscreen);
 };
