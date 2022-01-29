@@ -213,8 +213,8 @@ namespace RpgMath
                 Level = MaxLevel;
             }
 
-            MageHp += levelCalculator.ComputeHpGain(Level, 1, FighterHp);
-            MageMp += levelCalculator.ComputeMpGain(Level, 1, FighterMp);
+            MageHp += levelCalculator.ComputeHpGain(Level, 3, MageHp);
+            MageMp += levelCalculator.ComputeMpGain(Level, 3, MageMp);
             MageStrength += levelCalculator.ComputePrimaryStatGain(Level, 23, MageStrength);
             MageVitality += levelCalculator.ComputePrimaryStatGain(Level, 20, MageVitality);
             MageMagic += levelCalculator.ComputePrimaryStatGain(Level, 0, MageMagic);
