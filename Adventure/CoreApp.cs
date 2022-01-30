@@ -41,9 +41,6 @@ namespace Adventure
             mainWindow = EasyNativeWindow.Create(services, this, o =>
             {
                 o.Title = "Anomalous Adventure";
-#if !DEBUG
-                o.Fullscreen = true;
-#endif
             });
 
             services.AddLogging(o =>
@@ -107,6 +104,8 @@ namespace Adventure
             services.AddScoped<Sky>();
             services.AddScoped<RTGui>();
             services.AddScoped<TargetCursor>();
+            services.AddScoped<Asimov>();
+            services.AddScoped<Asimov.Description>();
             services.AddScoped<IMagicAbilities, MagicAbilities>();
             services.AddSingleton<ILevelManager, LevelManager>();
             services.AddSingleton<IWorldManager, WorldManager>();

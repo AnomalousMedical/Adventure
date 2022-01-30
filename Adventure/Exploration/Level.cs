@@ -534,7 +534,18 @@ namespace Adventure
             var mapLoc = mapMesh.PointToVector(point.x, point.y);
             if (goPrevious || mapLoc != startPointLocal)
             {
-                if (placeRestArea)
+                if (placeAsimov)
+                {
+                    placeAsimov = false;
+                    var asimov = objectResolver.Resolve<Asimov, Asimov.Description>(o =>
+                    {
+                        o.LevelIndex = index;
+                        o.MapOffset = mapLoc;
+                        o.Translation = currentPosition + o.MapOffset;
+                    });
+                    this.placeables.Add(asimov);
+                }
+                else if (placeRestArea)
                 {
                     placeRestArea = false;
                     var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
@@ -548,10 +559,6 @@ namespace Adventure
                         o.SpriteMaterial = asset.CreateMaterial();
                     });
                     this.placeables.Add(restArea);
-                }
-                else if (placeAsimov)
-                {
-                    placeAsimov = false;
                 }
                 else
                 {
