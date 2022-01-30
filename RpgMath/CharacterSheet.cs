@@ -11,7 +11,53 @@ namespace RpgMath
 
         public String Name { get; set; }
 
-        public Archetype Archetype { get; set; }
+        public long Hp { get; set; } = 300;
+
+        public long Mp { get; set; } = 30;
+
+        public long FighterHp { get; set; } = 200;
+
+        public long MageHp { get; set; } = 100;
+
+        public long FighterMp { get; set; } = 10;
+
+        public long MageMp { get; set; } = 20;
+
+        public long BaseStrength { get; set; }
+
+        public long FighterStrength { get; set; }
+
+        public long MageStrength { get; set; }
+
+        public long BaseVitality { get; set; }
+
+        public long FighterVitality { get; set; }
+
+        public long MageVitality { get; set; }
+
+        public long BaseMagic { get; set; }
+
+        public long FighterMagic { get; set; }
+
+        public long MageMagic { get; set; }
+
+        public long BaseSpirit { get; set; }
+
+        public long FighterSpirit { get; set; }
+
+        public long MageSpirit { get; set; }
+
+        /// <summary>
+        /// This is used to determine base battle timing. Raise it with the dex equation but don't ever modify it by anything.
+        /// </summary>
+        public long BaseDexterity { get; set; }
+
+        public long BonusDexterity { get; set; }
+
+        public long BaseLuck { get; set; }
+
+        public long BonusLuck { get; set; }
+
 
         private Equipment mainHand;
         public Equipment MainHand
@@ -71,35 +117,29 @@ namespace RpgMath
             }
         }
 
-        public long Hp => Archetype.BaseHp + Archetype.BonusHp;
-
-        public long Mp => Archetype.BaseMp + Archetype.BonusMp;
-
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }
 
-        public long Attack => Archetype.BaseStrength + Archetype.BonusStrength + EquippedItems().Sum(i => i.Strength + i.Attack);
+        public long Attack => BaseStrength + EquippedItems().Sum(i => i.Strength + i.Attack);
 
         public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent);
 
-        public long Defense => Archetype.BaseVitality + Archetype.BonusVitality + EquippedItems().Sum(i => i.Vitality + i.Defense);
+        public long Defense => BaseVitality + EquippedItems().Sum(i => i.Vitality + i.Defense);
 
         public long DefensePercent => EquippedItems().Sum(i => i.DefensePercent);
 
-        public long MagicAttack => Archetype.BaseMagic + Archetype.BonusMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack);
+        public long MagicAttack => BaseMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack);
 
         public long MagicAttackPercent => EquippedItems().Sum(i => i.MagicAttackPercent);
 
-        public long MagicDefense => Archetype.BaseSpirit + Archetype.BonusSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense);
+        public long MagicDefense => BaseSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense);
 
         public long MagicDefensePercent => EquippedItems().Sum(i => i.MagicDefensePercent);
 
-        public long BaseDexterity => Archetype.BaseDexterity;
+        public long Dexterity => BaseDexterity + BonusDexterity + EquippedItems().Sum(i => i.Dexterity);
 
-        public long Dexterity => Archetype.BaseDexterity + Archetype.BonusDexterity + EquippedItems().Sum(i => i.Dexterity);
-
-        public long Luck => Archetype.BaseLuck + Archetype.BonusLuck + EquippedItems().Sum(i => i.Luck);
+        public long Luck => BaseLuck + BonusLuck + EquippedItems().Sum(i => i.Luck);
 
         public bool AllowLuckyEvade => true;
 
@@ -109,25 +149,86 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
-        public void LevelUp(ILevelCalculator levelCalculator)
+        public void LevelUpMage(ILevelCalculator levelCalculator)
+        {
+            var hp = MageHp;
+            var mp = MageMp;
+            var strength = MageStrength;
+            var magic = MageMagic;
+            var vitality = MageVitality;
+            var spirit = MageSpirit;
+
+            LevelStats(levelCalculator);
+
+            hp = MageHp - hp;
+            mp = MageMp - mp;
+            strength = MageStrength - strength;
+            magic = MageMagic - magic;
+            vitality = MageVitality - vitality;
+            spirit = MageSpirit - spirit;
+
+            Hp += hp;
+            Mp += mp;
+            CurrentHp += hp;
+            CurrentMp += mp;
+            BaseStrength += strength;
+            BaseMagic += magic;
+            BaseVitality += vitality;
+            BaseSpirit += spirit;
+        }
+
+        public void LevelUpFighter(ILevelCalculator levelCalculator)
+        {
+            var hp = FighterHp;
+            var mp = FighterMp;
+            var strength = FighterStrength;
+            var magic = FighterMagic;
+            var vitality = FighterVitality;
+            var spirit = FighterSpirit;
+
+            LevelStats(levelCalculator);
+
+            hp = FighterHp - hp;
+            mp = FighterMp - mp;
+            strength = FighterStrength - strength;
+            magic = FighterMagic - magic;
+            vitality = FighterVitality - vitality;
+            spirit = FighterSpirit - spirit;
+
+            Hp += hp;
+            Mp += mp;
+            CurrentHp += hp;
+            CurrentMp += mp;
+            BaseStrength += strength;
+            BaseMagic += magic;
+            BaseVitality += vitality;
+            BaseSpirit += spirit;
+        }
+
+        private void LevelStats(ILevelCalculator levelCalculator)
         {
             ++Level;
-            if(Level > MaxLevel)
+            if (Level > MaxLevel)
             {
                 Level = MaxLevel;
             }
-            var hpGain = levelCalculator.ComputeHpGain(Level, Archetype.HpGrade, Archetype.BaseHp);
-            var mpGain = levelCalculator.ComputeMpGain(Level, Archetype.MpGrade, Archetype.BaseMp); ;
-            Archetype.BaseHp += hpGain;
-            CurrentHp += hpGain;
-            Archetype.BaseMp += mpGain;
-            CurrentMp += mpGain;
-            Archetype.BaseStrength  += levelCalculator.ComputePrimaryStatGain(Level, Archetype.StrengthGrade, Archetype.BaseStrength);
-            Archetype.BaseVitality  += levelCalculator.ComputePrimaryStatGain(Level, Archetype.VitalityGrade, Archetype.BaseVitality);
-            Archetype.BaseMagic     += levelCalculator.ComputePrimaryStatGain(Level, Archetype.MagicGrade, Archetype.BaseMagic);
-            Archetype.BaseSpirit    += levelCalculator.ComputePrimaryStatGain(Level, Archetype.SpiritGrade, Archetype.BaseSpirit);
-            Archetype.BaseDexterity += levelCalculator.ComputePrimaryStatGain(Level, Archetype.DexterityGrade, Archetype.BaseDexterity);
-            Archetype.BaseLuck      += levelCalculator.ComputeLuckGain(Level, Archetype.LuckGrade, Archetype.BaseLuck);
+
+            MageHp += levelCalculator.ComputeHpGain(Level, 3, MageHp);
+            MageMp += levelCalculator.ComputeMpGain(Level, 3, MageMp);
+            MageStrength += levelCalculator.ComputePrimaryStatGain(Level, 23, MageStrength);
+            MageVitality += levelCalculator.ComputePrimaryStatGain(Level, 20, MageVitality);
+            MageMagic += levelCalculator.ComputePrimaryStatGain(Level, 0, MageMagic);
+            MageSpirit += levelCalculator.ComputePrimaryStatGain(Level, 1, MageSpirit);
+
+            FighterHp += levelCalculator.ComputeHpGain(Level, 1, FighterHp);
+            FighterMp += levelCalculator.ComputeMpGain(Level, 1, FighterMp);
+            FighterStrength += levelCalculator.ComputePrimaryStatGain(Level, 0, FighterStrength);
+            FighterVitality += levelCalculator.ComputePrimaryStatGain(Level, 2, FighterVitality);
+            FighterMagic += levelCalculator.ComputePrimaryStatGain(Level, 23, FighterMagic);
+            FighterSpirit += levelCalculator.ComputePrimaryStatGain(Level, 14, FighterSpirit);
+
+            BaseDexterity += levelCalculator.ComputePrimaryStatGain(Level, 26, BaseDexterity);
+            BaseLuck += levelCalculator.ComputeLuckGain(Level, 0, BaseLuck);
         }
 
         public Resistance GetResistance(Element element)

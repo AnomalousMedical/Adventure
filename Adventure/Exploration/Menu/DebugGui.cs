@@ -82,10 +82,10 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(levelUp, navUp: battle.Id, navDown: goStart.Id))
             {
-                foreach(var c in party.ActiveCharacterSheets)
-                {
-                    c.LevelUp(levelCalculator);
-                }
+                //foreach(var c in party.ActiveCharacterSheets)
+                //{
+                //    c.LevelUp(levelCalculator);
+                //}
             }
 
             if(sharpGui.Button(goStart, navUp: levelUp.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))

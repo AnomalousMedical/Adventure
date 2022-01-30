@@ -57,14 +57,12 @@ namespace Adventure.Services
                 persistence = new Persistence();
 
                 {
-                    var arch = Archetype.CreateHero();
                     var hero = new Persistence.CharacterData()
                     {
                         PlayerSprite = nameof(Assets.Original.FighterPlayerSprite),
                         CharacterSheet = new CharacterSheet()
                         {
                             Name = "Bob",
-                            Archetype = arch,
                             Level = 1,
                             MainHand = new Equipment()
                             {
@@ -80,14 +78,12 @@ namespace Adventure.Services
                 }
 
                 {
-                    var arch = Archetype.CreateSage();
                     var hero = new Persistence.CharacterData()
                     {
                         PlayerSprite = nameof(Assets.Original.MagePlayerSprite),
                         CharacterSheet = new CharacterSheet()
                         {
                             Name = "Magic Joe",
-                            Archetype = arch,
                             Level = 1,
                             MainHand = new Equipment()
                             {
@@ -104,14 +100,12 @@ namespace Adventure.Services
                 }
 
                 {
-                    var arch = Archetype.CreateTank();
                     var hero = new Persistence.CharacterData()
                     {
                         PlayerSprite = nameof(Assets.Original.ThiefPlayerSprite),
                         CharacterSheet = new CharacterSheet()
                         {
                             Name = "Stabby McStabface",
-                            Archetype = arch,
                             Level = 1,
                             MainHand = new Equipment()
                             {
@@ -127,14 +121,12 @@ namespace Adventure.Services
                 }
 
                 {
-                    var arch = Archetype.CreateGuardian();
                     var hero = new Persistence.CharacterData()
                     {
                         PlayerSprite = nameof(Assets.Original.ClericPlayerSprite),
                         CharacterSheet = new CharacterSheet()
                         {
                             Name = "Wendy",
-                            Archetype = arch,
                             Level = 1,
                             MainHand = new Equipment()
                             {

@@ -21,6 +21,7 @@ namespace Adventure.Exploration.Menu.Asimov
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
+        SharpText info = new SharpText() { Rect = new IntRect(10, 10, 500, 500) };
         private int currentSheet;
 
         public LevelUpMenu(
@@ -54,6 +55,12 @@ namespace Adventure.Exploration.Menu.Asimov
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
+            info.Text = $@"{sheet.CharacterSheet.Name}
+{sheet.CharacterSheet.Hp}
+{sheet.CharacterSheet.Mp}
+{sheet.CharacterSheet.BaseDexterity}";
+            sharpGui.Text(info);
+
             if (sharpGui.Button(levelFighter))
             {
                 
@@ -64,11 +71,19 @@ namespace Adventure.Exploration.Menu.Asimov
             }
             if (sharpGui.Button(previous))
             {
-
+                --currentSheet;
+                if(currentSheet < 0)
+                {
+                    currentSheet = persistence.Party.Members.Count - 1;
+                }
             }
             if (sharpGui.Button(next))
             {
-
+                ++currentSheet;
+                if(currentSheet >= persistence.Party.Members.Count)
+                {
+                    currentSheet = 0;
+                }
             }
             if (sharpGui.Button(back))
             {

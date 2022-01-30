@@ -26,7 +26,7 @@ namespace RpgMath.Tests
         public void LevelUp(int fighterLevels, int magicLevels)
         {
             var levelCalculator = new LevelCalculator();
-            var character = new NewCharacterSheet();
+            var character = new CharacterSheet();
 
             for (int i = 0; i < fighterLevels; i++)
             {
