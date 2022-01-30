@@ -42,15 +42,18 @@ namespace DiligentEngine.RT.Sprites
 
     public class SpriteMaterialDescription
     {
-        public SpriteMaterialDescription(string colorMap, HashSet<SpriteMaterialTextureItem> materials)
+        public SpriteMaterialDescription(string colorMap, HashSet<SpriteMaterialTextureItem> materials, Dictionary<uint, uint> palletSwap = null)
         {
-            ColorMap = colorMap;
-            Materials = materials;
+            this.ColorMap = colorMap;
+            this.Materials = materials;
+            this.PalletSwap = palletSwap;
         }
 
-        public String ColorMap { get; }
+        public String ColorMap { get; set; }
 
-        public HashSet<SpriteMaterialTextureItem> Materials { get; }
+        public HashSet<SpriteMaterialTextureItem> Materials { get; set; }
+
+        public Dictionary<uint, uint> PalletSwap { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -59,6 +62,11 @@ namespace DiligentEngine.RT.Sprites
                    (
                        (Materials == null && description.Materials == null) ||
                        (Materials?.SetEquals(description.Materials) == true)
+                   )
+                   &&
+                   (
+                       (PalletSwap == null && description.PalletSwap == null) ||
+                       (description.PalletSwap != null && PalletSwap?.OrderBy(i => i.Key).SequenceEqual(description.PalletSwap.OrderBy(i => i.Key)) == true)
                    );
         }
 
@@ -71,6 +79,17 @@ namespace DiligentEngine.RT.Sprites
                 foreach (var mat in Materials.OrderBy(i => i.Color))
                 {
                     hashCode.Add(mat);
+                }
+            }
+            else
+            {
+                hashCode.Add<Object>(null);
+            }
+            if(PalletSwap != null && PalletSwap.Count > 0)
+            {
+                foreach(var swap in PalletSwap.OrderBy(i => i.Key))
+                {
+                    hashCode.Add(swap);
                 }
             }
             else
@@ -120,9 +139,31 @@ namespace DiligentEngine.RT.Sprites
 
                 return await Task.Run(() =>
                 {
+                    var swaps = desc.PalletSwap;
+                    var width = image.Width;
+                    var height = image.Height;
+                    if (swaps != null)
+                    {
+                        unsafe
+                        {
+                            var indexScan0 = (UInt32*)image.Scan0.ToPointer();
+                            for (var y = 0; y < height; ++y)
+                            {
+                                var scanline = indexScan0 - y * width;
+                                for (var x = 0; x < width; ++x)
+                                {
+                                    if (swaps.TryGetValue(scanline[x], out var remap))
+                                    {
+                                        scanline[x] = remap;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     using var colorTexture = textureLoader.CreateTextureFromImage(image, 1, "colorTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
 
-                    var result = new SpriteMaterial(image.Width, image.Height, spriteMaterialTextureManager, spriteMatTextures, colorTexture.Obj);
+                    var result = new SpriteMaterial(width, height, spriteMaterialTextureManager, spriteMatTextures, colorTexture.Obj);
                     return pooledResources.CreateResult(result);
                 });
             });
