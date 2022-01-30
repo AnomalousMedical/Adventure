@@ -6,6 +6,7 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Adventure.Exploration.Menu;
+using Adventure.Exploration.Menu.Asimov;
 using Adventure.Services;
 using SharpGui;
 using System;
@@ -37,6 +38,8 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
+        private readonly IExplorationMenu explorationMenu;
+        private readonly AsimovRootMenu rootMenu;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
@@ -61,7 +64,9 @@ namespace Adventure
             ICollidableTypeIdentifier collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            Persistence persistence)
+            Persistence persistence,
+            IExplorationMenu explorationMenu,
+            AsimovRootMenu rootMenu)
         {
             this.sprite = description.Sprite;
             this.levelIndex = description.LevelIndex;
@@ -73,6 +78,8 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
+            this.explorationMenu = explorationMenu;
+            this.rootMenu = rootMenu;
             this.mapOffset = description.MapOffset;
             var shape = new Box(description.Scale.x, 1000, description.Scale.z); //TODO: Each one creates its own, try to load from resources
             shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
@@ -178,6 +185,7 @@ namespace Adventure
         private void Speak()
         {
             contextMenu.ClearContext(Speak);
+            explorationMenu.RequestSubMenu(rootMenu);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

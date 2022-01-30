@@ -14,6 +14,7 @@ using Adventure.Services;
 using System;
 using System.Globalization;
 using System.IO;
+using Adventure.Exploration.Menu.Asimov;
 
 namespace Adventure
 {
@@ -126,6 +127,7 @@ namespace Adventure
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
+            services.AddSingleton<AsimovRootMenu>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();
