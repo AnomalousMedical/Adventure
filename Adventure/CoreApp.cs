@@ -129,10 +129,16 @@ namespace Adventure
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
             services.AddSingleton<AsimovRootMenu>();
             services.AddSingleton<LevelUpMenu>();
+            services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();
-                return writer.Load();
+                return writer.Load(() =>
+                {
+                    var genesysModule = s.GetRequiredService<IGenesysModule>();
+                    genesysModule.Seed = 0; //Set to 0 for debugging, but by default is a random number
+                    return genesysModule.SeedWorld(genesysModule.Seed);
+                });
             });
 
             return true;
