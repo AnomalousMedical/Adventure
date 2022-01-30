@@ -617,27 +617,6 @@ namespace Adventure.Battle
             currentMp.UpdateText(GetCurrentMpText());
         }
 
-        public void AddXp(long xp)
-        {
-            //if (characterSheet.Level < CharacterSheet.MaxLevel)
-            //{
-            //    characterSheet.CurrentXp += xp;
-            //    var xpNeeded = xpCalculator.GetXpNeeded(characterSheet.Archetype, characterSheet.Level + 1);
-            //    while (characterSheet.CurrentXp > xpNeeded)
-            //    {
-            //        characterSheet.LevelUp(levelCalculator);
-            //        if(characterSheet.Level >= CharacterSheet.MaxLevel)
-            //        {
-            //            break;
-            //        }
-
-            //        characterSheet.CurrentXp -= xpNeeded;
-
-            //        xpNeeded = xpCalculator.GetXpNeeded(characterSheet.Archetype, characterSheet.Level + 1);
-            //    }
-            //}
-        }
-
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());

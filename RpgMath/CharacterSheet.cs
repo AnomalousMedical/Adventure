@@ -175,8 +175,6 @@ namespace RpgMath
 
         public bool AllowLuckyEvade => true;
 
-        public long CurrentXp { get; set; }
-
         public long Level { get; set; } = 1;
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);

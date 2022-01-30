@@ -32,7 +32,6 @@ namespace Adventure.Battle
         private BattleArena battleArena;
 
         private SharpButton endBattle = new SharpButton() { Text = "End Battle" };
-        private SharpText xpRewardText = new SharpText() { Color = Color.White };
         private SharpText goldRewardText = new SharpText() { Color = Color.White };
 
         private List<Enemy> enemies = new List<Enemy>(20);
@@ -203,15 +202,12 @@ namespace Adventure.Battle
             //But all players wil have 0 hp. This is probably not what we want.
             if (enemies.Count == 0)
             {
-                var xpReward = 0L;
                 var goldReward = 0L;
                 foreach (var killed in killedEnemies)
                 {
-                    xpReward += killed.XpReward;
                     goldReward += killed.GoldReward;
                 }
 
-                xpRewardText.Text = $"Xp: {xpReward}";
                 goldRewardText.Text = $"Gold: {goldReward}";
 
                 cursor.Visible = false;
@@ -219,24 +215,16 @@ namespace Adventure.Battle
                 var layout =
                     new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                     new MaxWidthLayout(scaleHelper.Scaled(300),
-                    new ColumnLayout(xpRewardText, goldRewardText, endBattle) { Margin = new IntPad(10) }
+                    new ColumnLayout(goldRewardText, endBattle) { Margin = new IntPad(10) }
                     ));
                 var desiredSize = layout.GetDesiredSize(sharpGui);
 
                 layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-                sharpGui.Text(xpRewardText);
                 sharpGui.Text(goldRewardText);
 
                 if (sharpGui.Button(endBattle))
                 {
-                    foreach(var player in players)
-                    {
-                        if (!player.IsDead)
-                        {
-                            player.AddXp(xpReward);
-                        }
-                    }
                     party.Gold += goldReward;
 
                     result = IBattleManager.Result.ReturnToExploration;

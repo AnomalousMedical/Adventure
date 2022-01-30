@@ -23,8 +23,6 @@ namespace Adventure.Battle
 
             public BattleStats BattleStats { get; set; }
 
-            public long XpReward { get; set; }
-
             public long GoldReward { get; set; }
         }
 
@@ -73,7 +71,6 @@ namespace Adventure.Battle
             this.Stats = description.BattleStats ?? throw new InvalidOperationException("You must include battle stats in an enemy description.");
             this.currentHp = Stats.Hp;
             this.currentMp = Stats.Mp;
-            this.XpReward = description.XpReward;
             this.GoldReward = description.GoldReward;
 
             turnTimer.AddTimer(characterTimer);
@@ -232,8 +229,6 @@ namespace Adventure.Battle
         public bool IsDead => this.currentHp == 0;
 
         public BattleTargetType BattleTargetType => BattleTargetType.Enemy;
-
-        public long XpReward { get; private set; }
 
         public long GoldReward { get; private set; }
 

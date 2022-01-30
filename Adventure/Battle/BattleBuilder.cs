@@ -62,7 +62,6 @@ namespace Adventure.Battle
                     };
                     c.Scale = curve.GetScale(level, enemyType);
                     c.Translation = new Vector3(location.x, c.Sprite.BaseScale.y * c.Scale.y / 2.0f, location.z);
-                    c.XpReward = curve.GetXp(level, enemyType);
                     c.GoldReward = curve.GetGold(level, enemyType);
                 });
                 ++index;

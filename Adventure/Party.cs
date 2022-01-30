@@ -43,6 +43,16 @@ namespace Adventure
 
         public IEnumerable<CharacterSheet> ActiveCharacterSheets => persistence.Party.Members.Select(i => i.CharacterSheet);
 
-        public long Gold { get; set; }
+        public long Gold
+        {
+            get
+            {
+                return persistence.Party.Gold;
+            }
+            set
+            {
+                persistence.Party.Gold = value;
+            }
+        }
     }
 }

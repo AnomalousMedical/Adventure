@@ -104,6 +104,7 @@ namespace Adventure.Services
         public class PartyData
         {
             public List<CharacterData> Members { get; set; } = new List<CharacterData>();
+            public long Gold { get; set; }
         }
     }
 }
