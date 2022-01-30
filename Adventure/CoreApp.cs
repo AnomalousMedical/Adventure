@@ -136,7 +136,9 @@ namespace Adventure
                 return writer.Load(() =>
                 {
                     var genesysModule = s.GetRequiredService<IGenesysModule>();
+#if !RELEASE
                     genesysModule.Seed = 0; //Set to 0 for debugging, but by default is a random number
+#endif
                     return genesysModule.SeedWorld(genesysModule.Seed);
                 });
             });
