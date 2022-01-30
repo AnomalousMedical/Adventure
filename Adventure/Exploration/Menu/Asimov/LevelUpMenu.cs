@@ -16,6 +16,7 @@ namespace Adventure.Exploration.Menu.Asimov
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly Persistence persistence;
+        private readonly ILevelCalculator levelCalculator;
         SharpButton levelFighter = new SharpButton() { Text = "Level Up Fighter" };
         SharpButton levelMage = new SharpButton() { Text = "Level Up Mage" };
         SharpButton next = new SharpButton() { Text = "Next" };
@@ -28,12 +29,14 @@ namespace Adventure.Exploration.Menu.Asimov
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            Persistence persistence)
+            Persistence persistence,
+            ILevelCalculator levelCalculator)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.persistence = persistence;
+            this.levelCalculator = levelCalculator;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -56,18 +59,24 @@ namespace Adventure.Exploration.Menu.Asimov
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
             info.Text = $@"{sheet.CharacterSheet.Name}
-{sheet.CharacterSheet.Hp}
-{sheet.CharacterSheet.Mp}
-{sheet.CharacterSheet.BaseDexterity}";
+Lvl: {sheet.CharacterSheet.Level}
+HP:  {sheet.CharacterSheet.Hp}
+MP:  {sheet.CharacterSheet.Mp}
+Str: {sheet.CharacterSheet.BaseStrength}
+Mag: {sheet.CharacterSheet.BaseMagic}
+Vit: {sheet.CharacterSheet.BaseVitality}
+Spr: {sheet.CharacterSheet.BaseSpirit}
+Dex: {sheet.CharacterSheet.BaseDexterity}
+Lck: {sheet.CharacterSheet.Luck}";
             sharpGui.Text(info);
 
             if (sharpGui.Button(levelFighter))
             {
-                
+                sheet.CharacterSheet.LevelUpFighter(levelCalculator);
             }
             if (sharpGui.Button(levelMage))
             {
-
+                sheet.CharacterSheet.LevelUpMage(levelCalculator);
             }
             if (sharpGui.Button(previous))
             {
