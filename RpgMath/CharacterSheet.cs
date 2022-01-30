@@ -7,45 +7,77 @@ namespace RpgMath
 {
     public class CharacterSheet : IBattleStats
     {
+        public static CharacterSheet CreateStartingFighter(Random random)
+        {
+            var s = new CharacterSheet();
+            s.Hp = random.Next((int)s.FighterHp - 30, (int)s.FighterHp + 50);
+            s.Mp = random.Next((int)s.FighterMp - 1, (int)s.FighterMp + 3);
+            s.BaseStrength = random.Next((int)s.FighterStrength - 1, (int)s.FighterStrength + 2);
+            s.BaseMagic = random.Next((int)s.FighterMagic - 2, (int)s.FighterMagic + 1);
+            s.BaseVitality = random.Next((int)s.FighterVitality - 1, (int)s.FighterVitality + 2);
+            s.BaseSpirit = random.Next((int)s.FighterSpirit - 1, (int)s.FighterSpirit + 2);
+            s.BaseDexterity = random.Next(5, 9);
+            s.BaseLuck = random.Next(12, 15);
+            s.CurrentHp = s.Hp;
+            s.CurrentMp = s.Mp;
+            return s;
+        }
+
+        public static CharacterSheet CreateStartingMage(Random random)
+        {
+            var s = new CharacterSheet();
+            s.Hp = random.Next((int)s.MageHp - 10, (int)s.MageHp + 30);
+            s.Mp = random.Next((int)s.MageMp - 1, (int)s.MageMp + 7);
+            s.BaseStrength = random.Next((int)s.MageStrength - 2, (int)s.MageStrength + 1);
+            s.BaseMagic = random.Next((int)s.MageMagic - 1, (int)s.MageMagic + 3);
+            s.BaseVitality = random.Next((int)s.MageVitality - 1, (int)s.MageVitality + 2);
+            s.BaseSpirit = random.Next((int)s.MageSpirit - 1, (int)s.MageSpirit + 2);
+            s.BaseDexterity = random.Next(5, 9);
+            s.BaseLuck = random.Next(12, 15);
+            s.CurrentHp = s.Hp;
+            s.CurrentMp = s.Mp;
+            return s;
+        }
+
         public const int MaxLevel = 99;
 
         public String Name { get; set; }
 
-        public long Hp { get; set; } = 300;
+        public long Hp { get; set; }
 
-        public long Mp { get; set; } = 30;
+        public long FighterHp { get; set; } = 300;
 
-        public long FighterHp { get; set; } = 200;
+        public long MageHp { get; set; } = 180;
 
-        public long MageHp { get; set; } = 100;
+        public long Mp { get; set; }
 
-        public long FighterMp { get; set; } = 10;
+        public long FighterMp { get; set; } = 15;
 
-        public long MageMp { get; set; } = 20;
+        public long MageMp { get; set; } = 25;
 
         public long BaseStrength { get; set; }
 
-        public long FighterStrength { get; set; }
+        public long FighterStrength { get; set; } = 18;
 
-        public long MageStrength { get; set; }
+        public long MageStrength { get; set; } = 9;
 
         public long BaseVitality { get; set; }
 
-        public long FighterVitality { get; set; }
+        public long FighterVitality { get; set; } = 14;
 
-        public long MageVitality { get; set; }
+        public long MageVitality { get; set; } = 11;
 
         public long BaseMagic { get; set; }
 
-        public long FighterMagic { get; set; }
+        public long FighterMagic { get; set; } = 9;
 
-        public long MageMagic { get; set; }
+        public long MageMagic { get; set; } = 18;
 
         public long BaseSpirit { get; set; }
 
-        public long FighterSpirit { get; set; }
+        public long FighterSpirit { get; set; } = 9;
 
-        public long MageSpirit { get; set; }
+        public long MageSpirit { get; set; } = 14;
 
         /// <summary>
         /// This is used to determine base battle timing. Raise it with the dex equation but don't ever modify it by anything.
