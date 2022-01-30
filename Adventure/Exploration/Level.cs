@@ -129,9 +129,7 @@ namespace Adventure
         private IObjectResolver objectResolver;
         private LevelConnector nextLevelConnector;
         private LevelConnector previousLevelConnector;
-        private List<BattleTrigger> battleTriggers = new List<BattleTrigger>();
-        private List<TreasureTrigger> treasureTriggers = new List<TreasureTrigger>();
-        private List<RestArea> restAreas = new List<RestArea>();
+        private List<ILevelPlaceable> placeables = new List<ILevelPlaceable>();
         private IBiome biome;
         private bool goPrevious;
         private BlasInstanceData floorBlasInstanceData;
@@ -360,17 +358,9 @@ namespace Adventure
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             this.previousLevelConnector?.SetPosition(StartPoint + new Vector3(-(mapUnits.x / 2f + 0.5f), 0f, 0f));
             this.nextLevelConnector?.SetPosition(EndPoint + new Vector3((mapUnits.x / 2f + 0.5f), 0f, 0f));
-            foreach(var trigger in battleTriggers)
+            foreach(var placeable in placeables)
             {
-                trigger.SetLevelPosition(position);
-            }
-            foreach (var trigger in treasureTriggers)
-            {
-                trigger.SetLevelPosition(position);
-            }
-            foreach (var restArea in restAreas)
-            {
-                restArea.SetLevelPosition(position);
+                placeable.SetLevelPosition(position);
             }
         }
 
@@ -450,12 +440,14 @@ namespace Adventure
         private int treasureIndex;
         private int enemyIndex;
         private bool placeRestArea;
+        private bool placeAsimov;
         private void ResetPlacementData()
         {
             restIndex = 0;
             treasureIndex = 0;
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
+            placeAsimov = true;
         }
 
         private void SetupCorridors()
@@ -522,7 +514,7 @@ namespace Adventure
                     o.Level = index;
                     o.Index = enemyIndex++;
                 });
-                battleTriggers.Add(battleTrigger);
+                placeables.Add(battleTrigger);
             }
         }
 
@@ -555,7 +547,11 @@ namespace Adventure
                         o.Sprite = asset.CreateSprite();
                         o.SpriteMaterial = asset.CreateMaterial();
                     });
-                    this.restAreas.Add(restArea);
+                    this.placeables.Add(restArea);
+                }
+                else if (placeAsimov)
+                {
+                    placeAsimov = false;
                 }
                 else
                 {
@@ -569,7 +565,7 @@ namespace Adventure
                         o.Sprite = treasure.Asset.CreateSprite();
                         o.SpriteMaterial = treasure.Asset.CreateMaterial();
                     });
-                    this.treasureTriggers.Add(treasureTrigger);
+                    this.placeables.Add(treasureTrigger);
                 }
             }
         }
@@ -586,23 +582,11 @@ namespace Adventure
             }
             physicsActive = false;
 
-            foreach (var restArea in restAreas)
+            foreach (var placeable in placeables)
             {
-                restArea.RequestDestruction();
+                placeable.RequestDestruction();
             }
-            restAreas.Clear();
-
-            foreach (var battleTrigger in battleTriggers)
-            {
-                battleTrigger.RequestDestruction();
-            }
-            battleTriggers.Clear();
-
-            foreach (var treasureTrigger in treasureTriggers)
-            {
-                treasureTrigger.RequestDestruction();
-            }
-            treasureTriggers.Clear();
+            placeables.Clear();
 
             this.previousLevelConnector?.RequestDestruction();
             this.nextLevelConnector?.RequestDestruction();

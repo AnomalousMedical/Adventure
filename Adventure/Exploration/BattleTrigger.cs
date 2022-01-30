@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class BattleTrigger : IDisposable
+    class BattleTrigger : IDisposable, ILevelPlaceable
     {
         public class Description : SceneObjectDesc
         {

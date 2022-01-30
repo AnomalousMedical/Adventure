@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class RestArea : IDisposable
+    class RestArea : IDisposable, ILevelPlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -153,7 +153,7 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        internal void SetLevelPosition(in Vector3 levelPosition)
+        public void SetLevelPosition(in Vector3 levelPosition)
         {
             bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
             bepuScene.Simulation.Statics.Remove(this.staticHandle);
