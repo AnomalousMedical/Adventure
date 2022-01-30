@@ -128,6 +128,7 @@ namespace Adventure
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
             services.AddSingleton<AsimovRootMenu>();
+            services.AddSingleton<LevelUpMenu>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();

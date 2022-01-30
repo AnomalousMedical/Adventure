@@ -14,16 +14,20 @@ namespace Adventure.Exploration.Menu.Asimov
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        private readonly LevelUpMenu levelUpMenu;
         SharpButton levelUp = new SharpButton() { Text = "Level Up" };
 
         public AsimovRootMenu(
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner)
+            IScreenPositioner screenPositioner,
+            LevelUpMenu levelUpMenu)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
+            this.levelUpMenu = levelUpMenu;
+            levelUpMenu.PreviousMenu = this;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
@@ -39,7 +43,7 @@ namespace Adventure.Exploration.Menu.Asimov
 
             if (sharpGui.Button(levelUp))
             {
-                explorationMenu.RequestSubMenu(explorationMenu.DebugGui);
+                explorationMenu.RequestSubMenu(levelUpMenu);
             }
             else if (sharpGui.GamepadButtonEntered == Engine.Platform.GamepadButtonCode.XInput_B || sharpGui.KeyEntered == Engine.Platform.KeyboardButtonCode.KC_ESCAPE)
             {
