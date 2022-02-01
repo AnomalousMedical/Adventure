@@ -10,10 +10,14 @@ namespace Adventure.Assets.Original
 {
     class TinyDino : ISpriteAsset
     {
+        public const uint Skin = 0xff168516;//Skin (green)
+        public const uint Spine = 0xffff0000;//Spines (red)
+
         //Threax drew this one
 
         public string SkinMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
         public string SpineMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
+        public Dictionary<uint, uint> PalletSwap { get; set; }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -22,9 +26,10 @@ namespace Adventure.Assets.Original
                 colorMap: "Graphics/Sprites/Anomalous/Enemies/TinyDino.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
-                    new SpriteMaterialTextureItem(0xff168516, SkinMaterial, "jpg"),//Skin (green)
-                    new SpriteMaterialTextureItem(0xffff0000, SpineMaterial, "jpg"),//Spines (red)
-                }
+                    new SpriteMaterialTextureItem(Skin, SkinMaterial, "jpg"),
+                    new SpriteMaterialTextureItem(Spine, SpineMaterial, "jpg"),
+                },
+                palletSwap: PalletSwap
             );
         }
 

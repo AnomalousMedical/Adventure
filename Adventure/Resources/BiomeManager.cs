@@ -120,6 +120,38 @@ namespace Adventure
                         { Element.Fire, Resistance.Weak }
                     }
                 },
+                BadassEnemy = new BiomeEnemy()
+                {
+                    Asset = new Assets.Original.Skeleton()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.Skeleton.Bone, 0xff404040 }
+                        }
+                    },
+                    EnemyCurve = new StandardEnemyCurve(),
+                    Resistances = new Dictionary<Element, Resistance>
+                    {
+                        { Element.Healing, Resistance.Absorb },
+                        { Element.Fire, Resistance.Weak }
+                    }
+                },
+                PeonEnemy = new BiomeEnemy()
+                {
+                    Asset = new Assets.Original.Skeleton()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.Skeleton.Bone, 0xffd1cbb6 }
+                        }
+                    },
+                    EnemyCurve = new StandardEnemyCurve(),
+                    Resistances = new Dictionary<Element, Resistance>
+                    {
+                        { Element.Healing, Resistance.Absorb },
+                        { Element.Fire, Resistance.Weak }
+                    }
+                },
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.Original.TreasureChest(),
@@ -133,17 +165,35 @@ namespace Adventure
                 ReflectFloor = false,
                 RegularEnemy = new BiomeEnemy()
                 {
-                    Asset = new Assets.Original.TinyDino(),
+                    Asset = new Assets.Original.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        { 
+                            { Assets.Original.TinyDino.Skin, 0xff317a89 }
+                        }
+                    },
                     EnemyCurve = new StandardEnemyCurve()
                 },
                 BadassEnemy = new BiomeEnemy()
                 {
-                    Asset = new Assets.Original.TinyDino(),
+                    Asset = new Assets.Original.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.TinyDino.Skin, 0xff024f59 }
+                        }
+                    },
                     EnemyCurve = new StandardEnemyCurve()
                 },
                 PeonEnemy = new BiomeEnemy()
                 {
-                    Asset =  new Assets.Original.TinyDino(),
+                    Asset =  new Assets.Original.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.TinyDino.Skin, 0xff7babaf }
+                        }
+                    },
                     EnemyCurve = new StandardEnemyCurve()
                 },
                 Treasure = new BiomeTreasure()

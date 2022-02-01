@@ -10,6 +10,11 @@ namespace Adventure.Assets.Original
 {
     class Skeleton : ISpriteAsset
     {
+        public const uint ArmorHighlight = 0xffd0873a;//Armor Highlight (copper)
+        public const uint Armor = 0xff453c31;//Armor (brown)
+        public const uint Bone = 0xffefefef;//Bone (almost white)
+
+        public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
             return new SpriteMaterialDescription
@@ -17,10 +22,11 @@ namespace Adventure.Assets.Original
                 colorMap: "Graphics/Sprites/Crawl/Enemies/skeletal_warrior_new.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
-                    new SpriteMaterialTextureItem(0xffd0873a, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),//Armor Highlight (copper)
-                    new SpriteMaterialTextureItem(0xff453c31, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),//Armor (brown)
-                    new SpriteMaterialTextureItem(0xffefefef, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"),//Bone (almost white)
-                }
+                    new SpriteMaterialTextureItem(ArmorHighlight, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
+                    new SpriteMaterialTextureItem(Armor, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
+                    new SpriteMaterialTextureItem(Bone, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"),
+                },
+                palletSwap: PalletSwap
             );
         }
 
