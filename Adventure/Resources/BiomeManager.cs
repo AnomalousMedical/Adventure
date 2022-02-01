@@ -92,12 +92,24 @@ namespace Adventure
                 },
                 BadassEnemy = new BiomeEnemy()
                 {
-                    Asset = new Assets.Original.TinyDino(),
+                    Asset = new Assets.Original.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.TinyDino.Skin, 0xff166416 }
+                        }
+                    },
                     EnemyCurve = new StandardEnemyCurve()
                 },
                 PeonEnemy = new BiomeEnemy()
                 {
-                    Asset =  new Assets.Original.TinyDino(),
+                    Asset =  new Assets.Original.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Original.TinyDino.Skin, 0xff168543 }
+                        }
+                    },
                     EnemyCurve = new StandardEnemyCurve()
                 },
                 Treasure = new BiomeTreasure()
