@@ -153,6 +153,7 @@ namespace Adventure
             await nextLevel.WaitForLevelGeneration(); //Also unlikely, but next level might not be loaded yet
 
             //Shuffle levels
+            previousLevel?.SetPosition(new Vector3(-150 * 2, 0, 0)); //TODO: Hack, move the level to an out of the way position, the flickering levels are the level being removed
             previousLevel?.RequestDestruction();
             previousLevel = currentLevel;
             currentLevel = nextLevel;
@@ -210,6 +211,7 @@ namespace Adventure
             await nextLevel.WaitForLevelGeneration(); //Also unlikely, but next level might not be loaded yet
 
             //Shuffle levels
+            nextLevel?.SetPosition(new Vector3(150 * 2, 0, 0)); //TODO: Hack, move the level to an out of the way position, the flickering levels are the level being removed
             nextLevel?.RequestDestruction();
             nextLevel = currentLevel;
             currentLevel = previousLevel;
