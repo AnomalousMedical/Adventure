@@ -153,7 +153,7 @@ namespace Adventure.Battle
             }
 
             var rand = new Random(battleSeed);
-            enemies.AddRange(battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.CurrentZone.Biome, rand, level));
+            enemies.AddRange(battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level));
         }
 
         public void SetActive(bool active)
@@ -385,7 +385,7 @@ namespace Adventure.Battle
             {
                 o.Scale = new Vector3(20, 0.1f, 20);
                 o.Translation = new Vector3(0f, o.Scale.y / -2f, 0f);
-                o.Texture = levelManager.CurrentZone.Biome.FloorTexture;
+                o.Texture = levelManager.Current.Biome.FloorTexture;
             });
         }
 

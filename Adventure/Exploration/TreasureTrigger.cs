@@ -20,7 +20,7 @@ namespace Adventure
     {
         public class Description : SceneObjectDesc
         {
-            public int LevelIndex { get; set; }
+            public int ZoneIndex { get; set; }
 
             public int InstanceId { get; set; }
 
@@ -47,7 +47,7 @@ namespace Adventure
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool disposed = false;
-        private int levelIndex;
+        private int zoneIndex;
         private int instanceId;
         private PersistenceData state;
 
@@ -67,9 +67,9 @@ namespace Adventure
             Persistence persistence)
         {
             this.sprite = description.Sprite;
-            this.levelIndex = description.LevelIndex;
+            this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
-            this.state = persistence.TreasureTriggers.GetData(levelIndex, instanceId);
+            this.state = persistence.TreasureTriggers.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
@@ -152,11 +152,11 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        public void SetLevelPosition(in Vector3 levelPosition)
+        public void SetZonePosition(in Vector3 zonePosition)
         {
             bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
             bepuScene.Simulation.Statics.Remove(this.staticHandle);
-            currentPosition = levelPosition + mapOffset;
+            currentPosition = zonePosition + mapOffset;
 
             staticHandle = bepuScene.Simulation.Statics.Add(
             new StaticDescription(
@@ -192,7 +192,7 @@ namespace Adventure
             contextMenu.ClearContext(Open);
             sprite.SetAnimation("open");
             state.Open = true;
-            persistence.TreasureTriggers.SetData(levelIndex, instanceId, state);
+            persistence.TreasureTriggers.SetData(zoneIndex, instanceId, state);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

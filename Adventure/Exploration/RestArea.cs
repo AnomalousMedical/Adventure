@@ -21,7 +21,7 @@ namespace Adventure
     {
         public class Description : SceneObjectDesc
         {
-            public int LevelIndex { get; set; }
+            public int ZoneIndex { get; set; }
 
             public int InstanceId { get; set; }
 
@@ -71,7 +71,7 @@ namespace Adventure
             ITimeClock timeClock)
         {
             this.sprite = description.Sprite;
-            this.levelIndex = description.LevelIndex;
+            this.levelIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -153,11 +153,11 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        public void SetLevelPosition(in Vector3 levelPosition)
+        public void SetZonePosition(in Vector3 zonePosition)
         {
             bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
             bepuScene.Simulation.Statics.Remove(this.staticHandle);
-            currentPosition = levelPosition + mapOffset;
+            currentPosition = zonePosition + mapOffset;
 
             staticHandle = bepuScene.Simulation.Statics.Add(
             new StaticDescription(

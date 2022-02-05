@@ -24,7 +24,7 @@ namespace Adventure
         {
             private static Gargoyle Gargoyle = new Gargoyle();
 
-            public int LevelIndex { get; set; }
+            public int ZoneIndex { get; set; }
 
             public Vector3 MapOffset { get; set; }
 
@@ -49,7 +49,7 @@ namespace Adventure
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool disposed = false;
-        private int levelIndex;
+        private int zoneIndex;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -69,8 +69,7 @@ namespace Adventure
             AsimovRootMenu rootMenu)
         {
             this.sprite = description.Sprite;
-            this.levelIndex = description.LevelIndex;
-            //this.state = persistence.TreasureTriggers.GetData(levelIndex, instanceId);
+            this.zoneIndex = description.ZoneIndex;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
@@ -150,11 +149,11 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        public void SetLevelPosition(in Vector3 levelPosition)
+        public void SetZonePosition(in Vector3 zonePosition)
         {
             bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
             bepuScene.Simulation.Statics.Remove(this.staticHandle);
-            currentPosition = levelPosition + mapOffset;
+            currentPosition = zonePosition + mapOffset;
 
             staticHandle = bepuScene.Simulation.Statics.Add(
             new StaticDescription(

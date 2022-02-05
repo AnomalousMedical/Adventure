@@ -96,11 +96,11 @@ namespace Adventure
                 {
                     if (this.goPrevious)
                     {
-                        await zoneManager.GoPreviousLevel();
+                        await zoneManager.GoPrevious();
                     }
                     else
                     {
-                        await zoneManager.GoNextLevel();
+                        await zoneManager.GoNext();
                     }
                 });
             }            

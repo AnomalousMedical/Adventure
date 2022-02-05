@@ -96,7 +96,7 @@ namespace Adventure
             public int BreakOut { get; set; } = 250;
 
             /// <summary>
-            /// True if this level has a go previous level connector. Default: true
+            /// True if this zone has a go previous zone connector. Default: true
             /// </summary>
             public bool GoPrevious { get; set; } = true;
 
@@ -132,8 +132,8 @@ namespace Adventure
         private MapMesh mapMesh;
         private bool physicsActive = false;
         private IObjectResolver objectResolver;
-        private ZoneConnector nextLevelConnector;
-        private ZoneConnector previousLevelConnector;
+        private ZoneConnector nextZoneConnector;
+        private ZoneConnector previousZoneConnector;
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
         private IBiome biome;
         private bool goPrevious;
@@ -144,7 +144,7 @@ namespace Adventure
         private bool makeRestArea;
         private int enemyLevel;
 
-        private Task levelGenerationTask;
+        private Task zoneGenerationTask;
         private Vector3 mapUnits;
 
         private Vector3 endPointLocal;
@@ -196,13 +196,13 @@ namespace Adventure
 
             this.floorInstanceData = new TLASBuildInstanceData()
             {
-                InstanceName = RTId.CreateId("LevelFloor"),
+                InstanceName = RTId.CreateId("ZoneFloor"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
             };
             this.wallInstanceData = new TLASBuildInstanceData()
             {
-                InstanceName = RTId.CreateId("LevelWall"),
+                InstanceName = RTId.CreateId("ZoneWall"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
             };
@@ -220,7 +220,7 @@ namespace Adventure
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                this.levelGenerationTask = Task.Run(() =>
+                this.zoneGenerationTask = Task.Run(() =>
                 {
                     var sw = new Stopwatch();
                     sw.Start();
@@ -271,18 +271,18 @@ namespace Adventure
                     endPointLocal = mapMesh.PointToVector(endConnector.x, endConnector.y);
 
                     sw.Stop();
-                    logger.LogInformation($"Generated level {description.Index} seed {description.RandomSeed} in {sw.ElapsedMilliseconds} ms.");
+                    logger.LogInformation($"Generated zone {description.Index} seed {description.RandomSeed} in {sw.ElapsedMilliseconds} ms.");
                 });
 
-                await levelGenerationTask; //Need the level before kicking off the calls to End() below.
+                await zoneGenerationTask; //Need the zone before kicking off the calls to End() below.
 
                 await Task.WhenAll
                 (
-                    floorMesh.End("LevelFloor"),
-                    wallMesh.End("LevelWall")
+                    floorMesh.End("ZoneFloor"),
+                    wallMesh.End("ZoneWall")
                 );
 
-                //TODO: The level BLASes must be loaded before the shaders, see todo in PrimaryHitShader
+                //TODO: The zone BLASes must be loaded before the shaders, see todo in PrimaryHitShader
                 var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc
                 {
                     ShaderType = PrimaryHitShaderType.Mesh,
@@ -346,15 +346,15 @@ namespace Adventure
         }
 
         /// <summary>
-        /// Levels are created in the background. Await this function to wait until it has finished
-        /// being created. This only means the level is defined, not that its mesh is created or textures loaded.
+        /// Zones are created in the background. Await this function to wait until it has finished
+        /// being created. This only means the zone is defined, not that its mesh is created or textures loaded.
         /// </summary>
         /// <returns></returns>
-        public async Task WaitForLevelGeneration()
+        public async Task WaitForGeneration()
         {
-            if(levelGenerationTask != null)
+            if(zoneGenerationTask != null)
             {
-                await levelGenerationTask;
+                await zoneGenerationTask;
             }
         }
 
@@ -363,18 +363,18 @@ namespace Adventure
             this.currentPosition = position;
             this.wallInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
-            this.previousLevelConnector?.SetPosition(StartPoint + new Vector3(-(mapUnits.x / 2f + 0.5f), 0f, 0f));
-            this.nextLevelConnector?.SetPosition(EndPoint + new Vector3((mapUnits.x / 2f + 0.5f), 0f, 0f));
+            this.previousZoneConnector?.SetPosition(StartPoint + new Vector3(-(mapUnits.x / 2f + 0.5f), 0f, 0f));
+            this.nextZoneConnector?.SetPosition(EndPoint + new Vector3((mapUnits.x / 2f + 0.5f), 0f, 0f));
             foreach(var placeable in placeables)
             {
-                placeable.SetLevelPosition(position);
+                placeable.SetZonePosition(position);
             }
         }
 
         public IBiome Biome => biome;
 
         /// <summary>
-        /// Add physics shapes to scene. Should wait until the level generation is complete first.
+        /// Add physics shapes to scene. Should wait until the zone generation is complete first.
         /// </summary>
         public void SetupPhysics()
         {
@@ -423,7 +423,7 @@ namespace Adventure
 
             if (goPrevious)
             {
-                this.previousLevelConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+                this.previousZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
                 {
                     o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                     o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
@@ -431,7 +431,7 @@ namespace Adventure
                 });
             }
 
-            this.nextLevelConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+            this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
             {
                 o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                 o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
@@ -548,7 +548,7 @@ namespace Adventure
                     placeAsimov = false;
                     var asimov = objectResolver.Resolve<Asimov, Asimov.Description>(o =>
                     {
-                        o.LevelIndex = index;
+                        o.ZoneIndex = index;
                         o.MapOffset = mapLoc;
                         o.Translation = currentPosition + o.MapOffset;
                     });
@@ -560,7 +560,7 @@ namespace Adventure
                     var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
                     {
                         o.InstanceId = restIndex++;
-                        o.LevelIndex = index;
+                        o.ZoneIndex = index;
                         o.MapOffset = mapLoc;
                         o.Translation = currentPosition + o.MapOffset;
                         var asset = biome.RestAsset;
@@ -574,7 +574,7 @@ namespace Adventure
                     var treasureTrigger = objectResolver.Resolve<TreasureTrigger, TreasureTrigger.Description>(o =>
                     {
                         o.InstanceId = treasureIndex++;
-                        o.LevelIndex = index;
+                        o.ZoneIndex = index;
                         o.MapOffset = mapLoc;
                         o.Translation = currentPosition + o.MapOffset;
                         var treasure = biome.Treasure;
@@ -587,7 +587,7 @@ namespace Adventure
         }
 
         /// <summary>
-        /// Remove physics shapes from scene. Should wait until the level generation is complete first.
+        /// Remove physics shapes from scene. Should wait until the zone generation is complete first.
         /// </summary>
         public void DestroyPhysics()
         {
@@ -604,11 +604,11 @@ namespace Adventure
             }
             placeables.Clear();
 
-            this.previousLevelConnector?.RequestDestruction();
-            this.nextLevelConnector?.RequestDestruction();
+            this.previousZoneConnector?.RequestDestruction();
+            this.nextZoneConnector?.RequestDestruction();
 
-            this.previousLevelConnector = null;
-            this.nextLevelConnector = null;
+            this.previousZoneConnector = null;
+            this.nextZoneConnector = null;
 
             var statics = bepuScene.Simulation.Statics;
             foreach (var staticHandle in staticHandles)

@@ -9,30 +9,30 @@ namespace Adventure.Exploration
 {
     interface IWorldManager
     {
-        int GetLevelSeed(int index);
+        int GetZoneSeed(int index);
     }
 
     class WorldManager : IWorldManager
     {
-        private List<int> createdLevelSeeds = new List<int>();
-        private Random levelRandom;
+        private List<int> createdZoneSeeds = new List<int>();
+        private Random zoneRandom;
 
         public WorldManager
         (
             Persistence persistence
         )
         {
-            levelRandom = new Random(persistence.World.Seed);
+            zoneRandom = new Random(persistence.World.Seed);
         }
 
-        public int GetLevelSeed(int index)
+        public int GetZoneSeed(int index)
         {
             var end = index + 1;
-            for (var i = createdLevelSeeds.Count; i < end; ++i)
+            for (var i = createdZoneSeeds.Count; i < end; ++i)
             {
-                createdLevelSeeds.Add(levelRandom.Next(int.MinValue, int.MaxValue));
+                createdZoneSeeds.Add(zoneRandom.Next(int.MinValue, int.MaxValue));
             }
-            return createdLevelSeeds[index];
+            return createdZoneSeeds[index];
         }
     }
 }

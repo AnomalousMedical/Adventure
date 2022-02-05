@@ -16,14 +16,14 @@ namespace Adventure
         event Action<IZoneManager> ZoneChanged;
 
         bool ChangingZone { get; }
-        Zone CurrentZone { get; }
+        Zone Current { get; }
         bool IsPlayerMoving { get; }
-        Task GoNextLevel();
-        Task GoPreviousLevel();
+        Task GoNext();
+        Task GoPrevious();
         Task Restart();
-        Task WaitForCurrentLevel();
-        Task WaitForNextLevel();
-        Task WaitForPreviousLevel();
+        Task WaitForCurrent();
+        Task WaitForNext();
+        Task WaitForPrevious();
         void StopPlayer();
         void GoStartPoint();
         void GoEndPoint();
@@ -33,10 +33,10 @@ namespace Adventure
 
     class ZoneManager : IDisposable, IZoneManager
     {
-        private bool changingLevels = false;
-        private Zone currentLevel;
-        private Zone nextLevel;
-        private Zone previousLevel;
+        private bool changingZone = false;
+        private Zone currentZone;
+        private Zone nextZone;
+        private Zone previousZone;
 
         private Player player;
         private IObjectResolver objectResolver;
@@ -46,9 +46,9 @@ namespace Adventure
 
         public event Action<IZoneManager> ZoneChanged;
 
-        public bool ChangingZone => changingLevels;
+        public bool ChangingZone => changingZone;
 
-        public Zone CurrentZone => currentLevel;
+        public Zone Current => currentZone;
 
         public bool IsPlayerMoving => player?.IsMoving == true;
 
@@ -71,48 +71,48 @@ namespace Adventure
 
         public async Task Restart()
         {
-            if (changingLevels)
+            if (changingZone)
             {
                 return;
             }
 
-            changingLevels = true;
+            changingZone = true;
 
-            if(previousLevel != null)
+            if(previousZone != null)
             {
-                await previousLevel.WaitForLevelGeneration();
-                previousLevel.RequestDestruction();
+                await previousZone.WaitForGeneration();
+                previousZone.RequestDestruction();
             }
 
-            if(currentLevel != null)
+            if(currentZone != null)
             {
-                await currentLevel.WaitForLevelGeneration();
-                currentLevel.RequestDestruction();
+                await currentZone.WaitForGeneration();
+                currentZone.RequestDestruction();
             }
 
-            if(nextLevel != null)
+            if(nextZone != null)
             {
-                await nextLevel.WaitForLevelGeneration();
-                nextLevel.RequestDestruction();
+                await nextZone.WaitForGeneration();
+                nextZone.RequestDestruction();
             }
 
-            var currentLevelIndex = persistence.Zone.CurrentIndex;
-            currentLevel = CreateLevel(worldManager.GetLevelSeed(currentLevelIndex), new Vector3(0, 0, 0), currentLevelIndex);
-            nextLevel = CreateLevel(worldManager.GetLevelSeed(currentLevelIndex + 1), new Vector3(150, 0, 0), currentLevelIndex + 1);
-            if(currentLevelIndex - 1 >= 0)
+            var currentZoneIndex = persistence.Zone.CurrentIndex;
+            currentZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex), new Vector3(0, 0, 0), currentZoneIndex);
+            nextZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex + 1), new Vector3(150, 0, 0), currentZoneIndex + 1);
+            if(currentZoneIndex - 1 >= 0)
             {
-                previousLevel = CreateLevel(worldManager.GetLevelSeed(currentLevelIndex - 1), new Vector3(-150, 0, 0), currentLevelIndex - 1);
+                previousZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex - 1), new Vector3(-150, 0, 0), currentZoneIndex - 1);
             }
 
-            await currentLevel.WaitForLevelGeneration();
+            await currentZone.WaitForGeneration();
 
-            currentLevel.SetupPhysics();
+            currentZone.SetupPhysics();
 
             if (player == null)
             {
                 player = this.objectResolver.Resolve<Player, Player.Description>(c =>
                 {
-                    c.Translation = currentLevel.StartPoint;
+                    c.Translation = currentZone.StartPoint;
                     var leader = party.ActiveCharacters.First();
                     c.PlayerSpriteInfo = leader.PlayerSprite;
                     c.PrimaryHandItem = leader.PrimaryHandAsset;
@@ -121,22 +121,22 @@ namespace Adventure
             }
             else
             {
-                player.SetLocation(persistence.Player.Position ?? currentLevel.StartPoint);
+                player.SetLocation(persistence.Player.Position ?? currentZone.StartPoint);
             }
 
             ZoneChanged?.Invoke(this);
 
-            await nextLevel.WaitForLevelGeneration();
-            var nextOffset = currentLevel.LocalEndPoint - nextLevel.LocalStartPoint;
-            nextLevel.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
-            if (previousLevel != null)
+            await nextZone.WaitForGeneration();
+            var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
+            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            if (previousZone != null)
             {
-                await previousLevel.WaitForLevelGeneration();
-                var previousOffset = currentLevel.LocalStartPoint - previousLevel.LocalEndPoint;
-                previousLevel.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+                await previousZone.WaitForGeneration();
+                var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
+                previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
             }
 
-            changingLevels = false;
+            changingZone = false;
         }
 
         public void Dispose()
@@ -144,55 +144,55 @@ namespace Adventure
             objectResolver.Dispose();
         }
 
-        public Task WaitForCurrentLevel()
+        public Task WaitForCurrent()
         {
-            return currentLevel?.WaitForLevelGeneration();
+            return currentZone?.WaitForGeneration();
         }
 
-        public Task WaitForNextLevel()
+        public Task WaitForNext()
         {
-            return nextLevel?.WaitForLevelGeneration();
+            return nextZone?.WaitForGeneration();
         }
 
-        public Task WaitForPreviousLevel()
+        public Task WaitForPrevious()
         {
-            return previousLevel?.WaitForLevelGeneration();
+            return previousZone?.WaitForGeneration();
         }
 
-        public async Task GoNextLevel()
+        public async Task GoNext()
         {
-            if (changingLevels)
+            if (changingZone)
             {
                 return;
             }
 
-            changingLevels = true;
-            if (previousLevel != null)
+            changingZone = true;
+            if (previousZone != null)
             {
-                await previousLevel.WaitForLevelGeneration(); //This is pretty unlikely, but have to stop here if level isn't created yet
+                await previousZone.WaitForGeneration(); //This is pretty unlikely, but have to stop here if zone isn't created yet
             }
-            await nextLevel.WaitForLevelGeneration(); //Also unlikely, but next level might not be loaded yet
+            await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
 
-            //Shuffle levels
-            previousLevel?.SetPosition(new Vector3(-150 * 2, 0, 0)); //TODO: Hack, move the level to an out of the way position, the flickering levels are the level being removed
-            previousLevel?.RequestDestruction();
-            previousLevel = currentLevel;
-            currentLevel = nextLevel;
+            //Shuffle zones
+            previousZone?.SetPosition(new Vector3(-150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
+            previousZone?.RequestDestruction();
+            previousZone = currentZone;
+            currentZone = nextZone;
 
-            //Change level index
+            //Change zone index
             ++persistence.Zone.CurrentIndex;
-            var nextLevelIndex = persistence.Zone.CurrentIndex + 1;
-            var levelSeed = worldManager.GetLevelSeed(nextLevelIndex);
+            var nextZoneIndex = persistence.Zone.CurrentIndex + 1;
+            var zoneSeed = worldManager.GetZoneSeed(nextZoneIndex);
 
-            //Create new level
-            nextLevel = CreateLevel(levelSeed, new Vector3(150, 0, 0), nextLevelIndex);
+            //Create new zone
+            nextZone = CreateZone(zoneSeed, new Vector3(150, 0, 0), nextZoneIndex);
 
             //Physics changeover
-            previousLevel.DestroyPhysics();
-            var previousOffset = currentLevel.LocalStartPoint - previousLevel.LocalEndPoint;
-            previousLevel.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
-            currentLevel.SetPosition(new Vector3(0, 0, 0));
-            currentLevel.SetupPhysics();
+            previousZone.DestroyPhysics();
+            var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
+            previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+            currentZone.SetPosition(new Vector3(0, 0, 0));
+            currentZone.SetupPhysics();
 
             var playerLoc = player.GetLocation();
             playerLoc += new Vector3(-150f, previousOffset.y, previousOffset.z);
@@ -200,22 +200,22 @@ namespace Adventure
 
             ZoneChanged?.Invoke(this);
 
-            changingLevels = false;
+            changingZone = false;
 
-            //Keep this last after setting changingLevels
-            await nextLevel.WaitForLevelGeneration();
-            var nextOffset = currentLevel.LocalEndPoint - nextLevel.LocalStartPoint;
-            nextLevel.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            //Keep this last after setting changingZone
+            await nextZone.WaitForGeneration();
+            var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
+            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
         }
 
-        public async Task GoPreviousLevel()
+        public async Task GoPrevious()
         {
-            if (changingLevels)
+            if (changingZone)
             {
                 return;
             }
 
-            //Change level index
+            //Change zone index
             --persistence.Zone.CurrentIndex;
             if (persistence.Zone.CurrentIndex < 0)
             {
@@ -224,36 +224,36 @@ namespace Adventure
                 return;
             }
 
-            changingLevels = true;
-            if (previousLevel != null)
+            changingZone = true;
+            if (previousZone != null)
             {
-                await previousLevel.WaitForLevelGeneration(); //This is pretty unlikely, but have to stop here if level isn't created yet
+                await previousZone.WaitForGeneration(); //This is pretty unlikely, but have to stop here if zone isn't created yet
             }
-            await nextLevel.WaitForLevelGeneration(); //Also unlikely, but next level might not be loaded yet
+            await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
 
-            //Shuffle levels
-            nextLevel?.SetPosition(new Vector3(150 * 2, 0, 0)); //TODO: Hack, move the level to an out of the way position, the flickering levels are the level being removed
-            nextLevel?.RequestDestruction();
-            nextLevel = currentLevel;
-            currentLevel = previousLevel;
+            //Shuffle zones
+            nextZone?.SetPosition(new Vector3(150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
+            nextZone?.RequestDestruction();
+            nextZone = currentZone;
+            currentZone = previousZone;
 
             if (persistence.Zone.CurrentIndex > 0)
             {
-                var previousLevelIndex = persistence.Zone.CurrentIndex - 1;
-                var levelSeed = worldManager.GetLevelSeed(previousLevelIndex);
-                previousLevel = CreateLevel(levelSeed, new Vector3(-150, 0, 0), previousLevelIndex);
+                var previousZoneIndex = persistence.Zone.CurrentIndex - 1;
+                var zoneSeed = worldManager.GetZoneSeed(previousZoneIndex);
+                previousZone = CreateZone(zoneSeed, new Vector3(-150, 0, 0), previousZoneIndex);
             }
             else
             {
-                previousLevel = null;
+                previousZone = null;
             }
 
             //Physics changeover
-            nextLevel.DestroyPhysics();
-            var nextOffset = currentLevel.LocalEndPoint - nextLevel.LocalStartPoint;
-            nextLevel.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
-            currentLevel.SetPosition(new Vector3(0, 0, 0));
-            currentLevel.SetupPhysics();
+            nextZone.DestroyPhysics();
+            var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
+            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            currentZone.SetPosition(new Vector3(0, 0, 0));
+            currentZone.SetupPhysics();
 
             var playerLoc = player.GetLocation();
             playerLoc += new Vector3(150f, nextOffset.y, nextOffset.z);
@@ -261,24 +261,24 @@ namespace Adventure
 
             ZoneChanged?.Invoke(this);
 
-            changingLevels = false;
+            changingZone = false;
 
-            //Keep this last after the changingLevels = false;
-            if(previousLevel != null)
+            //Keep this last after the changingzones = false;
+            if(previousZone != null)
             {
-                await previousLevel.WaitForLevelGeneration();
-                var previousOffset = currentLevel.LocalStartPoint - previousLevel.LocalEndPoint;
-                previousLevel.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+                await previousZone.WaitForGeneration();
+                var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
+                previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
             }
         }
 
-        private Zone CreateLevel(int levelSeed, Vector3 translation, int levelIndex)
+        private Zone CreateZone(int zoneSeed, Vector3 translation, int zoneIndex)
         {
             return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
             {
-                o.Index = levelIndex;
+                o.Index = zoneIndex;
                 o.Translation = translation;
-                o.RandomSeed = levelSeed;
+                o.RandomSeed = zoneSeed;
                 o.Width = 50;
                 o.Height = 50;
                 o.CorridorSpace = 10;
@@ -286,19 +286,19 @@ namespace Adventure
                 o.RoomMin = new IntSize2(2, 2);
                 o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
                 o.CorridorMaxLength = 4;
-                o.GoPrevious = levelIndex != 0;
+                o.GoPrevious = zoneIndex != 0;
                 o.EnemyLevel = 20;
             });
         }
 
         public void GoStartPoint()
         {
-            player.SetLocation(currentLevel.StartPoint);
+            player.SetLocation(currentZone.StartPoint);
         }
 
         public void GoEndPoint()
         {
-            player.SetLocation(currentLevel.EndPoint);
+            player.SetLocation(currentZone.EndPoint);
         }
 
         public void StopPlayer()
@@ -310,8 +310,8 @@ namespace Adventure
 
         public void RebuildPhysics()
         {
-            currentLevel.DestroyPhysics();
-            currentLevel.SetupPhysics();
+            currentZone.DestroyPhysics();
+            currentZone.SetupPhysics();
         }
     }
 }

@@ -166,13 +166,13 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        public void SetLevelPosition(in Vector3 levelPosition)
+        public void SetZonePosition(in Vector3 zonePosition)
         {
             if (this.notCreated) { return; }
 
             bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
             bepuScene.Simulation.Statics.Remove(this.staticHandle);
-            currentPosition = levelPosition + mapOffset;
+            currentPosition = zonePosition + mapOffset;
 
             staticHandle = bepuScene.Simulation.Statics.Add(
             new StaticDescription(

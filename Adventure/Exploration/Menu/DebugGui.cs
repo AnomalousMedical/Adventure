@@ -103,13 +103,13 @@ namespace Adventure.Exploration.Menu
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: battle.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
-                coroutineRunner.RunTask(zoneManager.GoNextLevel());
+                coroutineRunner.RunTask(zoneManager.GoNext());
                 explorationMenu.RequestSubMenu(null);
             }
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: allowBattle.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
-                coroutineRunner.RunTask(zoneManager.GoPreviousLevel());
+                coroutineRunner.RunTask(zoneManager.GoPrevious());
                 explorationMenu.RequestSubMenu(null);
             }
 

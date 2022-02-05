@@ -58,7 +58,7 @@ namespace Adventure
                 finished = false;
                 coroutineRunner.RunTask(async () =>
                 {
-                    await zoneManager.WaitForCurrentLevel();
+                    await zoneManager.WaitForCurrent();
                     finished = true;
                 });
             }
