@@ -104,6 +104,11 @@ namespace Adventure
             /// Set this to true to make a rest area in this zone.
             /// </summary>
             public bool MakeRest { get; set; } = true;
+
+            /// <summary>
+            /// The level of the enemies from 1 to 99
+            /// </summary>
+            public int EnemyLevel { get; set; }
         }
 
         private readonly RTInstances<ILevelManager> rtInstances;
@@ -137,6 +142,7 @@ namespace Adventure
         private int seed;
         private int index;
         private bool makeRestArea;
+        private int enemyLevel;
 
         private Task levelGenerationTask;
         private Vector3 mapUnits;
@@ -169,6 +175,7 @@ namespace Adventure
             RayTracingRenderer renderer
         )
         {
+            this.enemyLevel = description.EnemyLevel;
             this.index = description.Index;
             this.seed = description.RandomSeed;
             this.makeRestArea = description.MakeRest;
@@ -513,6 +520,7 @@ namespace Adventure
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
                     o.Level = index;
                     o.Index = enemyIndex++;
+                    o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next();
                 });
                 placeables.Add(battleTrigger);

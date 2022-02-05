@@ -266,6 +266,7 @@ namespace Adventure
                 o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
                 o.CorridorMaxLength = 4;
                 o.GoPrevious = levelIndex != 0;
+                o.EnemyLevel = 20;
             });
         }
 

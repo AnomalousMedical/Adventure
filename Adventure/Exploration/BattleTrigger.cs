@@ -29,6 +29,8 @@ namespace Adventure
             public int Index { get; set; }
 
             public int BattleSeed { get; set; }
+
+            public int EnemyLevel { get; set; }
         }
 
         public record struct PersistenceData(bool Dead);
@@ -57,6 +59,7 @@ namespace Adventure
         private bool notCreated = true;
 
         public int BattleSeed { get; }
+        public int EnemyLevel { get; }
 
         public BattleTrigger(
             RTInstances<ILevelManager> rtInstances,
@@ -75,6 +78,7 @@ namespace Adventure
                 return;
             }
 
+            this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
             this.notCreated = false;
             this.sprite = description.Sprite;

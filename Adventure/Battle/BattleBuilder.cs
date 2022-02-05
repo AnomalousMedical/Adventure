@@ -10,7 +10,7 @@ namespace Adventure.Battle
 {
     interface IBattleBuilder
     {
-        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random);
+        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
     }
 
     class BattleBuilder : IBattleBuilder
@@ -27,14 +27,8 @@ namespace Adventure.Battle
             enemyLocations.Add(new Vector3(-2.5f, 0f,  6f));
         }
 
-        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random)
+        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level)
         {
-            var level = party.ActiveCharacterSheets.GetAverageLevel() * 4 / 5;
-            if(level < 1)
-            {
-                level = 1;
-            }
-
             var index = 0;
             foreach(var enemyType in GetEnemyBudget(level, random))
             {
