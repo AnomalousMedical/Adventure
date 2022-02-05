@@ -34,7 +34,7 @@ namespace Adventure
         public const int RightHand = 0;
         public const int LeftHand = 1;
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly TLASBuildInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -49,8 +49,8 @@ namespace Adventure
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
 
-        private Attachment<ILevelManager> sword;
-        private Attachment<ILevelManager> shield;
+        private Attachment<IZoneManager> sword;
+        private Attachment<IZoneManager> shield;
 
         private CharacterMover characterMover;
         private TypedIndex shapeIndex;
@@ -87,7 +87,7 @@ namespace Adventure
 
         public Player
         (
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
@@ -133,7 +133,7 @@ namespace Adventure
 
             if (description.PrimaryHandItem != null)
             {
-                sword = objectResolver.Resolve<Attachment<ILevelManager>, Attachment<ILevelManager>.Description>(o =>
+                sword = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
                     var asset = description.PrimaryHandItem;
                     o.Orientation = asset.GetOrientation();
@@ -144,7 +144,7 @@ namespace Adventure
 
             if (description.SecondaryHandItem != null)
             {
-                shield = objectResolver.Resolve<Attachment<ILevelManager>, Attachment<ILevelManager>.Description>(o =>
+                shield = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
                     var asset = description.SecondaryHandItem;
                     o.Orientation = asset.GetOrientation();

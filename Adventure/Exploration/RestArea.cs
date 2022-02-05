@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class RestArea : IDisposable, ILevelPlaceable
+    class RestArea : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -32,12 +32,12 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private readonly IExplorationGameState explorationGameState;
         private readonly ITimeClock timeClock;
         private SpriteInstance spriteInstance;
@@ -57,7 +57,7 @@ namespace Adventure
         private Vector3 currentScale;
 
         public RestArea(
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,
@@ -66,7 +66,7 @@ namespace Adventure
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             Persistence persistence,
-            ILevelManager levelManager,
+            IZoneManager zoneManager,
             IExplorationGameState explorationGameState,
             ITimeClock timeClock)
         {
@@ -80,7 +80,7 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.explorationGameState = explorationGameState;
             this.timeClock = timeClock;
             this.mapOffset = description.MapOffset;
@@ -192,7 +192,7 @@ namespace Adventure
             timeClock.SetTimeRatio(100);
 
             persistence.Player.RespawnLevel = levelIndex;
-            persistence.Player.RespawnPosition = levelManager.GetPlayerLoc();
+            persistence.Player.RespawnPosition = zoneManager.GetPlayerLoc();
 
             long? endTime = null;
 
@@ -205,7 +205,7 @@ namespace Adventure
 
                 if(c.CurrentTimeMicro > endTime)
                 {
-                    levelManager.RebuildPhysics();
+                    zoneManager.RebuildPhysics();
 
                     foreach (var member in persistence.Party.Members)
                     {

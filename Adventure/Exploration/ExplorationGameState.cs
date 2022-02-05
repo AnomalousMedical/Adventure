@@ -15,8 +15,8 @@ namespace Adventure
     class ExplorationGameState : IExplorationGameState
     {
         private readonly IBepuScene bepuScene;
-        private readonly ILevelManager levelManager;
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly IZoneManager zoneManager;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IExplorationMenu explorationMenu;
         private readonly IContextMenu contextMenu;
         private IBattleGameState battleState;
@@ -28,17 +28,17 @@ namespace Adventure
         public ExplorationGameState(
             ICoroutineRunner coroutineRunner,
             IBepuScene bepuScene,
-            ILevelManager levelManager,
-            RTInstances<ILevelManager> rtInstances,
+            IZoneManager zoneManager,
+            RTInstances<IZoneManager> rtInstances,
             IExplorationMenu explorationMenu,
             IContextMenu contextMenu)
         {
             this.bepuScene = bepuScene;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.rtInstances = rtInstances;
             this.explorationMenu = explorationMenu;
             this.contextMenu = contextMenu;
-            coroutineRunner.RunTask(levelManager.Restart());
+            coroutineRunner.RunTask(zoneManager.Restart());
         }
 
         public void Link(IBattleGameState battleState)
@@ -49,7 +49,7 @@ namespace Adventure
         public void SetActive(bool active)
         {
             //Stopping them both directions
-            levelManager.StopPlayer();
+            zoneManager.StopPlayer();
         }
 
         public bool AllowBattles { get; set; } = true;

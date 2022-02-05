@@ -16,7 +16,7 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private readonly ITimeClock timeClock;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly Party party;
@@ -38,7 +38,7 @@ namespace Adventure.Exploration.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            ILevelManager levelManager,
+            IZoneManager zoneManager,
             ITimeClock timeClock,
             ICoroutineRunner coroutineRunner,
             Party party,
@@ -49,7 +49,7 @@ namespace Adventure.Exploration.Menu
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.timeClock = timeClock;
             this.coroutineRunner = coroutineRunner;
             this.party = party;
@@ -91,25 +91,25 @@ namespace Adventure.Exploration.Menu
 
             if(sharpGui.Button(goStart, navUp: asimov.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
             {
-                levelManager.GoStartPoint();
+                zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null);
             }
 
             if (sharpGui.Button(goEnd, navUp: asimov.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
             {
-                levelManager.GoEndPoint();
+                zoneManager.GoEndPoint();
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (!levelManager.ChangingLevels && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: battle.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: battle.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
-                coroutineRunner.RunTask(levelManager.GoNextLevel());
+                coroutineRunner.RunTask(zoneManager.GoNextLevel());
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (!levelManager.ChangingLevels && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: allowBattle.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: allowBattle.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
-                coroutineRunner.RunTask(levelManager.GoPreviousLevel());
+                coroutineRunner.RunTask(zoneManager.GoPreviousLevel());
                 explorationMenu.RequestSubMenu(null);
             }
 

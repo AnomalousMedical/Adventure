@@ -18,7 +18,7 @@ namespace Adventure.GameOver
         private readonly RTInstances<IBattleManager> rtInstances;
         private readonly IScreenPositioner screenPositioner;
         private readonly ICoroutineRunner coroutineRunner;
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
         private IGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
@@ -33,7 +33,7 @@ namespace Adventure.GameOver
             RTInstances<IBattleManager> rtInstances,
             IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
-            ILevelManager levelManager,
+            IZoneManager zoneManager,
             Persistence persistence
         )
         {
@@ -41,7 +41,7 @@ namespace Adventure.GameOver
             this.rtInstances = rtInstances;
             this.screenPositioner = screenPositioner;
             this.coroutineRunner = coroutineRunner;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.persistence = persistence;
             layout = new ColumnLayout(gameOver, restart) { Margin = new IntPad(10) };
         }
@@ -53,7 +53,7 @@ namespace Adventure.GameOver
 
         public void SetActive(bool active)
         {
-            persistence.Level.CurrentLevelIndex = persistence.Player.RespawnLevel ?? 0;
+            persistence.Zone.CurrentIndex = persistence.Player.RespawnLevel ?? 0;
             persistence.Player.Position = persistence.Player.RespawnPosition;
             persistence.BattleTriggers.ClearData();
 
@@ -76,7 +76,7 @@ namespace Adventure.GameOver
             if (sharpGui.Button(restart))
             {
 
-                coroutineRunner.RunTask(levelManager.Restart());
+                coroutineRunner.RunTask(zoneManager.Restart());
                 nextState = explorationState;
             }
 

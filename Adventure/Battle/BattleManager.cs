@@ -67,7 +67,7 @@ namespace Adventure.Battle
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly CameraMover cameraMover;
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private readonly Party party;
         private readonly IDamageCalculator damageCalculator;
         private readonly IBackgroundMusicManager backgroundMusicManager;
@@ -98,7 +98,7 @@ namespace Adventure.Battle
             IScaleHelper scaleHelper,
             IObjectResolverFactory objectResolverFactory,
             CameraMover cameraMover,
-            ILevelManager levelManager,
+            IZoneManager zoneManager,
             Party party,
             IDamageCalculator damageCalculator,
             IBackgroundMusicManager backgroundMusicManager,
@@ -112,7 +112,7 @@ namespace Adventure.Battle
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.cameraMover = cameraMover;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.party = party;
             this.damageCalculator = damageCalculator;
             this.backgroundMusicManager = backgroundMusicManager;
@@ -125,12 +125,12 @@ namespace Adventure.Battle
 
             cursor = this.objectResolver.Resolve<TargetCursor>();
 
-            levelManager.LevelChanged += LevelManager_LevelChanged;
+            zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
         }
 
         public void Dispose()
         {
-            levelManager.LevelChanged -= LevelManager_LevelChanged;
+            zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
             objectResolver.Dispose();
         }
 
@@ -153,7 +153,7 @@ namespace Adventure.Battle
             }
 
             var rand = new Random(battleSeed);
-            enemies.AddRange(battleBuilder.CreateEnemies(this.objectResolver, party, levelManager.CurrentLevel.Biome, rand, level));
+            enemies.AddRange(battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.CurrentZone.Biome, rand, level));
         }
 
         public void SetActive(bool active)
@@ -377,7 +377,7 @@ namespace Adventure.Battle
             eventLayer.alertEventsHandled();
         }
 
-        private void LevelManager_LevelChanged(ILevelManager levelManager)
+        private void ZoneManager_ZoneChanged(IZoneManager levelManager)
         {
             battleArena?.RequestDestruction();
 
@@ -385,7 +385,7 @@ namespace Adventure.Battle
             {
                 o.Scale = new Vector3(20, 0.1f, 20);
                 o.Translation = new Vector3(0f, o.Scale.y / -2f, 0f);
-                o.Texture = levelManager.CurrentLevel.Biome.FloorTexture;
+                o.Texture = levelManager.CurrentZone.Biome.FloorTexture;
             });
         }
 

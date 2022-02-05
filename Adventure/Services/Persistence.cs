@@ -17,7 +17,7 @@ namespace Adventure.Services
 
         public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
-        public LevelData Level { get; } = new LevelData();
+        public ZoneData Zone { get; } = new ZoneData();
 
         public PlayerData Player { get; } = new PlayerData();
 
@@ -34,9 +34,9 @@ namespace Adventure.Services
 
             private Dictionary<int, Dictionary<int, T>> entryDictionary = new Dictionary<int, Dictionary<int, T>>();
 
-            public T GetData(int level, int key)
+            public T GetData(int zone, int key)
             {
-                if (entryDictionary.TryGetValue(level, out var levelData))
+                if (entryDictionary.TryGetValue(zone, out var levelData))
                 {
                     if (levelData.TryGetValue(key, out var val))
                     {
@@ -47,13 +47,13 @@ namespace Adventure.Services
                 return default(T);
             }
 
-            public void SetData(int level, int key, T value)
+            public void SetData(int zone, int key, T value)
             {
                 Dictionary<int, T> levelData;
-                if (!entryDictionary.TryGetValue(level, out levelData))
+                if (!entryDictionary.TryGetValue(zone, out levelData))
                 {
                     levelData = new Dictionary<int, T>();
-                    entryDictionary[level] = levelData;
+                    entryDictionary[zone] = levelData;
                 }
                 levelData[key] = value;
             }
@@ -64,9 +64,9 @@ namespace Adventure.Services
             }
         }
 
-        public class LevelData
+        public class ZoneData
         {
-            public int CurrentLevelIndex { get; set; }
+            public int CurrentIndex { get; set; }
         }
 
         public class PlayerData

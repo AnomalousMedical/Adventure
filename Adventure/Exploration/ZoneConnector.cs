@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class LevelConnector : IDisposable
+    class ZoneConnector : IDisposable
     {
         public class Description : SceneObjectDesc
         {
@@ -25,26 +25,26 @@ namespace Adventure
         private readonly IBepuScene bepuScene;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly ICoroutineRunner coroutineRunner;
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool goPrevious;
 
-        public LevelConnector(
+        public ZoneConnector(
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,
             Description description,
             ICollidableTypeIdentifier collidableIdentifier,
             ICoroutineRunner coroutineRunner,
-            ILevelManager levelManager)
+            IZoneManager zoneManager)
         {
             this.goPrevious = description.GoPrevious;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.coroutineRunner = coroutineRunner;
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
 
             var shape = new Box(description.Scale.x, description.Scale.y, description.Scale.z); //TODO: Each one creates its own, try to load from resources
             shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
@@ -96,11 +96,11 @@ namespace Adventure
                 {
                     if (this.goPrevious)
                     {
-                        await levelManager.GoPreviousLevel();
+                        await zoneManager.GoPreviousLevel();
                     }
                     else
                     {
-                        await levelManager.GoNextLevel();
+                        await zoneManager.GoNextLevel();
                     }
                 });
             }            

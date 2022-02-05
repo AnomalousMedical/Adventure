@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class BattleTrigger : IDisposable, ILevelPlaceable
+    class BattleTrigger : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -24,7 +24,7 @@ namespace Adventure
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
 
-            public int Level { get; set; }
+            public int Zone { get; set; }
 
             public int Index { get; set; }
 
@@ -36,7 +36,7 @@ namespace Adventure
         public record struct PersistenceData(bool Dead);
         private PersistenceData state;
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
@@ -62,7 +62,7 @@ namespace Adventure
         public int EnemyLevel { get; }
 
         public BattleTrigger(
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,
@@ -72,7 +72,7 @@ namespace Adventure
             IExplorationGameState explorationGameState,
             Persistence persistence)
         {
-            state = persistence.BattleTriggers.GetData(description.Level, description.Index);
+            state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
             if (state.Dead)
             {
                 return;
@@ -141,7 +141,7 @@ namespace Adventure
         public void BattleWon()
         {
             state.Dead = true;
-            persistence.BattleTriggers.SetData(description.Level, description.Index, state);
+            persistence.BattleTriggers.SetData(description.Zone, description.Index, state);
             this.RequestDestruction();
         }
 

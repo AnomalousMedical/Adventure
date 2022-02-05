@@ -18,7 +18,7 @@ using Adventure.Assets.Original;
 
 namespace Adventure
 {
-    class Asimov : IDisposable, ILevelPlaceable
+    class Asimov : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -33,7 +33,7 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; } = Gargoyle.CreateMaterial();
         }
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
@@ -56,7 +56,7 @@ namespace Adventure
         private Vector3 currentScale;
 
         public Asimov(
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,

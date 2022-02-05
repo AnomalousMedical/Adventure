@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class TreasureTrigger : IDisposable, ILevelPlaceable
+    class TreasureTrigger : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -33,7 +33,7 @@ namespace Adventure
 
         public record struct PersistenceData(bool Open);
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
@@ -56,7 +56,7 @@ namespace Adventure
         private Vector3 currentScale;
 
         public TreasureTrigger(
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,

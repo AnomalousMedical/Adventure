@@ -10,12 +10,33 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class LevelManager : IDisposable, ILevelManager
+    interface IZoneManager
+    {
+
+        event Action<IZoneManager> ZoneChanged;
+
+        bool ChangingZone { get; }
+        Zone CurrentZone { get; }
+        bool IsPlayerMoving { get; }
+        Task GoNextLevel();
+        Task GoPreviousLevel();
+        Task Restart();
+        Task WaitForCurrentLevel();
+        Task WaitForNextLevel();
+        Task WaitForPreviousLevel();
+        void StopPlayer();
+        void GoStartPoint();
+        void GoEndPoint();
+        void RebuildPhysics();
+        Vector3 GetPlayerLoc();
+    }
+
+    class ZoneManager : IDisposable, IZoneManager
     {
         private bool changingLevels = false;
-        private Level currentLevel;
-        private Level nextLevel;
-        private Level previousLevel;
+        private Zone currentLevel;
+        private Zone nextLevel;
+        private Zone previousLevel;
 
         private Player player;
         private IObjectResolver objectResolver;
@@ -23,15 +44,15 @@ namespace Adventure
         private readonly IWorldManager worldManager;
         private readonly Persistence persistence;
 
-        public event Action<ILevelManager> LevelChanged;
+        public event Action<IZoneManager> ZoneChanged;
 
-        public bool ChangingLevels => changingLevels;
+        public bool ChangingZone => changingLevels;
 
-        public Level CurrentLevel => currentLevel;
+        public Zone CurrentZone => currentLevel;
 
         public bool IsPlayerMoving => player?.IsMoving == true;
 
-        public LevelManager(
+        public ZoneManager(
             Party party,
             IWorldManager worldManager,
             IObjectResolverFactory objectResolverFactory,
@@ -75,7 +96,7 @@ namespace Adventure
                 nextLevel.RequestDestruction();
             }
 
-            var currentLevelIndex = persistence.Level.CurrentLevelIndex;
+            var currentLevelIndex = persistence.Zone.CurrentIndex;
             currentLevel = CreateLevel(worldManager.GetLevelSeed(currentLevelIndex), new Vector3(0, 0, 0), currentLevelIndex);
             nextLevel = CreateLevel(worldManager.GetLevelSeed(currentLevelIndex + 1), new Vector3(150, 0, 0), currentLevelIndex + 1);
             if(currentLevelIndex - 1 >= 0)
@@ -103,7 +124,7 @@ namespace Adventure
                 player.SetLocation(persistence.Player.Position ?? currentLevel.StartPoint);
             }
 
-            LevelChanged?.Invoke(this);
+            ZoneChanged?.Invoke(this);
 
             await nextLevel.WaitForLevelGeneration();
             var nextOffset = currentLevel.LocalEndPoint - nextLevel.LocalStartPoint;
@@ -159,8 +180,8 @@ namespace Adventure
             currentLevel = nextLevel;
 
             //Change level index
-            ++persistence.Level.CurrentLevelIndex;
-            var nextLevelIndex = persistence.Level.CurrentLevelIndex + 1;
+            ++persistence.Zone.CurrentIndex;
+            var nextLevelIndex = persistence.Zone.CurrentIndex + 1;
             var levelSeed = worldManager.GetLevelSeed(nextLevelIndex);
 
             //Create new level
@@ -177,7 +198,7 @@ namespace Adventure
             playerLoc += new Vector3(-150f, previousOffset.y, previousOffset.z);
             player.SetLocation(playerLoc);
 
-            LevelChanged?.Invoke(this);
+            ZoneChanged?.Invoke(this);
 
             changingLevels = false;
 
@@ -195,11 +216,11 @@ namespace Adventure
             }
 
             //Change level index
-            --persistence.Level.CurrentLevelIndex;
-            if (persistence.Level.CurrentLevelIndex < 0)
+            --persistence.Zone.CurrentIndex;
+            if (persistence.Zone.CurrentIndex < 0)
             {
                 //Below 0, do nothing
-                persistence.Level.CurrentLevelIndex = 0;
+                persistence.Zone.CurrentIndex = 0;
                 return;
             }
 
@@ -216,9 +237,9 @@ namespace Adventure
             nextLevel = currentLevel;
             currentLevel = previousLevel;
 
-            if (persistence.Level.CurrentLevelIndex > 0)
+            if (persistence.Zone.CurrentIndex > 0)
             {
-                var previousLevelIndex = persistence.Level.CurrentLevelIndex - 1;
+                var previousLevelIndex = persistence.Zone.CurrentIndex - 1;
                 var levelSeed = worldManager.GetLevelSeed(previousLevelIndex);
                 previousLevel = CreateLevel(levelSeed, new Vector3(-150, 0, 0), previousLevelIndex);
             }
@@ -238,7 +259,7 @@ namespace Adventure
             playerLoc += new Vector3(150f, nextOffset.y, nextOffset.z);
             player.SetLocation(playerLoc);
 
-            LevelChanged?.Invoke(this);
+            ZoneChanged?.Invoke(this);
 
             changingLevels = false;
 
@@ -251,9 +272,9 @@ namespace Adventure
             }
         }
 
-        private Level CreateLevel(int levelSeed, Vector3 translation, int levelIndex)
+        private Zone CreateLevel(int levelSeed, Vector3 translation, int levelIndex)
         {
-            return this.objectResolver.Resolve<Level, Level.Description>(o =>
+            return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
             {
                 o.Index = levelIndex;
                 o.Translation = translation;

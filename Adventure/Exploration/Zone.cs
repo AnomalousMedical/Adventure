@@ -23,7 +23,7 @@ using DiligentEngine.RT.HLSL;
 
 namespace Adventure
 {
-    class Level : IDisposable
+    class Zone : IDisposable
     {
         public class Description
         {
@@ -111,14 +111,14 @@ namespace Adventure
             public int EnemyLevel { get; set; }
         }
 
-        private readonly RTInstances<ILevelManager> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly RayTracingRenderer renderer;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBepuScene bepuScene;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
-        private readonly ILogger<Level> logger;
+        private readonly ILogger<Zone> logger;
         private readonly IBiomeManager biomeManager;
         private PrimaryHitShader floorShader;
         private PrimaryHitShader wallShader;
@@ -132,9 +132,9 @@ namespace Adventure
         private MapMesh mapMesh;
         private bool physicsActive = false;
         private IObjectResolver objectResolver;
-        private LevelConnector nextLevelConnector;
-        private LevelConnector previousLevelConnector;
-        private List<ILevelPlaceable> placeables = new List<ILevelPlaceable>();
+        private ZoneConnector nextLevelConnector;
+        private ZoneConnector previousLevelConnector;
+        private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
         private IBiome biome;
         private bool goPrevious;
         private BlasInstanceData floorBlasInstanceData;
@@ -157,13 +157,13 @@ namespace Adventure
         public Vector3 LocalStartPoint => startPointLocal;
         public Vector3 LocalEndPoint => endPointLocal;
 
-        public Level
+        public Zone
         (
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,
             Description description,
-            ILogger<Level> logger,
+            ILogger<Zone> logger,
             IObjectResolverFactory objectResolverFactory,
             IBiomeManager biomeManager,
             MeshBLAS floorMesh,
@@ -171,7 +171,7 @@ namespace Adventure
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances<ILevelManager> rtInstances,
+            RTInstances<IZoneManager> rtInstances,
             RayTracingRenderer renderer
         )
         {
@@ -423,7 +423,7 @@ namespace Adventure
 
             if (goPrevious)
             {
-                this.previousLevelConnector = objectResolver.Resolve<LevelConnector, LevelConnector.Description>(o =>
+                this.previousLevelConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
                 {
                     o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                     o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
@@ -431,7 +431,7 @@ namespace Adventure
                 });
             }
 
-            this.nextLevelConnector = objectResolver.Resolve<LevelConnector, LevelConnector.Description>(o =>
+            this.nextLevelConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
             {
                 o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                 o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
@@ -518,7 +518,7 @@ namespace Adventure
                     var enemy = biome.GetEnemy(RpgMath.EnemyType.Normal);
                     o.Sprite = enemy.Asset.CreateSprite();
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
-                    o.Level = index;
+                    o.Zone = index;
                     o.Index = enemyIndex++;
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next();

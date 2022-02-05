@@ -15,7 +15,7 @@ namespace Adventure
 {
     class SetupGameState : ISetupGameState
     {
-        private readonly ILevelManager levelManager;
+        private readonly IZoneManager zoneManager;
         private readonly Party party;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
@@ -30,15 +30,15 @@ namespace Adventure
 
         public SetupGameState
         (
-            ILevelManager levelManager,
+            IZoneManager zoneManager,
             Party party,
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<ILevelManager> rtInstances
+            RTInstances<IZoneManager> rtInstances
         )
         {
-            this.levelManager = levelManager;
+            this.zoneManager = zoneManager;
             this.party = party;
             this.coroutineRunner = coroutineRunner;
             this.sharpGui = sharpGui;
@@ -58,7 +58,7 @@ namespace Adventure
                 finished = false;
                 coroutineRunner.RunTask(async () =>
                 {
-                    await levelManager.WaitForCurrentLevel();
+                    await zoneManager.WaitForCurrentLevel();
                     finished = true;
                 });
             }
