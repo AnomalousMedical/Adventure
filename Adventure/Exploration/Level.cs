@@ -513,6 +513,7 @@ namespace Adventure
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
                     o.Level = index;
                     o.Index = enemyIndex++;
+                    o.BattleSeed = enemyRandom.Next();
                 });
                 placeables.Add(battleTrigger);
             }

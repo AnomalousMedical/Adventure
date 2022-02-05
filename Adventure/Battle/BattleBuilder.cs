@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
+    interface IBattleBuilder
+    {
+        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random);
+    }
+
     class BattleBuilder : IBattleBuilder
     {
-        private readonly ITimeClock timeClock;
-        private readonly Random random = new Random();
         private readonly List<Vector3> enemyLocations = new List<Vector3>();
 
-        public BattleBuilder(ITimeClock timeClock)
+        public BattleBuilder()
         {
-            this.timeClock = timeClock;
             enemyLocations.Add(new Vector3(-5f, 0f, -4f));
             enemyLocations.Add(new Vector3(-4.5f, 0f, -2f));
             enemyLocations.Add(new Vector3(-4f, 0f,  0f));
@@ -25,7 +27,7 @@ namespace Adventure.Battle
             enemyLocations.Add(new Vector3(-2.5f, 0f,  6f));
         }
 
-        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome)
+        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random)
         {
             var level = party.ActiveCharacterSheets.GetAverageLevel() * 4 / 5;
             if(level < 1)
@@ -34,7 +36,7 @@ namespace Adventure.Battle
             }
 
             var index = 0;
-            foreach(var enemyType in GetEnemyBudget(level, timeClock.IsDay, random))
+            foreach(var enemyType in GetEnemyBudget(level, random))
             {
                 yield return objectResolver.Resolve<Enemy, Enemy.Desc>(c =>
                 {
@@ -68,18 +70,11 @@ namespace Adventure.Battle
             }
         }
 
-        public IEnumerable<EnemyType> GetEnemyBudget(int level, bool night, Random random)
+        public IEnumerable<EnemyType> GetEnemyBudget(int level, Random random)
         {
-            var extremelyRare = 3;
-            var rare = 10;
-            var lessRare = 20;
-
-            if (night)
-            {
-                extremelyRare = 5;
-                rare = 15;
-                lessRare = 25;
-            }
+            const int extremelyRare = 5;
+            const int rare = 15;
+            const int lessRare = 25;
 
             var isExtremelyRare = random.Next(100) < extremelyRare;
             var isRare = !isExtremelyRare && random.Next(100) < rare;
@@ -184,7 +179,7 @@ namespace Adventure.Battle
             //Roll for enemy type
             while (enemyBudget > 0)
             {
-                var type = GetEnemyType(level, night, random);
+                var type = GetEnemyType(level, random);
 
                 switch (type)
                 {
@@ -206,18 +201,11 @@ namespace Adventure.Battle
             }
         }
 
-        public EnemyType GetEnemyType(int level, bool night, Random random)
+        public EnemyType GetEnemyType(int level, Random random)
         {
-            var extremelyRare = 3;
-            var rare = 10;
-            var lessRare = 20;
-
-            if (night)
-            {
-                extremelyRare = 5;
-                rare = 15;
-                lessRare = 25;
-            }
+            const int extremelyRare = 5;
+            const int rare = 15;
+            const int lessRare = 25;
 
             var isExtremelyRare = random.Next(100) < extremelyRare;
             var isRare = !isExtremelyRare && random.Next(100) < rare;

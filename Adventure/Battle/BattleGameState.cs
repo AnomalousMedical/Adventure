@@ -16,6 +16,7 @@ namespace Adventure.Battle
         private IGameState gameOverState;
         private IGameState returnState;
         private BattleTrigger battleTrigger;
+        private Random noTriggerRandom = new Random();
 
         public BattleGameState
         (
@@ -44,7 +45,7 @@ namespace Adventure.Battle
         {
             if (active)
             {
-                battleManager.SetupBattle();
+                battleManager.SetupBattle(battleTrigger?.BattleSeed ?? noTriggerRandom.Next());
             }
             battleManager.SetActive(active);
         }
