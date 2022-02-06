@@ -182,9 +182,7 @@ namespace Adventure
         {
             if (this.notCreated) { return; }
             currentPosition = zonePosition + mapOffset;
-
-            var totalScale = sprite.BaseScale * currentScale;
-            currentPosition.y += totalScale.y / 2;
+            currentPosition.y += currentScale.y / 2;
             this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
