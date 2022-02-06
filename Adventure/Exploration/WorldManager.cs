@@ -72,7 +72,7 @@ namespace Adventure.Exploration
             //For now always giving out set treasures
             o.Treasure = new List<ITreasure>
             {
-                new Treasure
+                new Treasure("Example Treasure")
                 {
 
                 }

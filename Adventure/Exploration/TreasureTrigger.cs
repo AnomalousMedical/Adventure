@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Exploration.Menu.Treasure;
 
 namespace Adventure
 {
@@ -40,6 +41,8 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
+        private readonly IExplorationMenu explorationMenu;
+        private readonly TreasureMenu treasureMenu;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
@@ -67,7 +70,9 @@ namespace Adventure
             ICollidableTypeIdentifier collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            Persistence persistence)
+            Persistence persistence,
+            IExplorationMenu explorationMenu, 
+            TreasureMenu treasureMenu)
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
@@ -80,6 +85,8 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
+            this.explorationMenu = explorationMenu;
+            this.treasureMenu = treasureMenu;
             this.mapOffset = description.MapOffset;
             this.treasure.Add(description.Treasure);
 
@@ -187,8 +194,12 @@ namespace Adventure
         {
             contextMenu.ClearContext(Open);
             sprite.SetAnimation("open");
+            //If something were to go wrong handing out treasure it would be lost, but the
+            //other option opens it up to duplication
             state.Open = true;
             persistence.TreasureTriggers.SetData(zoneIndex, instanceId, state);
+            treasureMenu.GatherTreasures(treasure);
+            explorationMenu.RequestSubMenu(treasureMenu);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

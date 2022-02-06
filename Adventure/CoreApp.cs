@@ -15,6 +15,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Adventure.Exploration.Menu.Asimov;
+using Adventure.Exploration.Menu.Treasure;
 
 namespace Adventure
 {
@@ -108,6 +109,7 @@ namespace Adventure
             services.AddScoped<Asimov>();
             services.AddScoped<Asimov.Description>();
             services.AddScoped<IMagicAbilities, MagicAbilities>();
+            services.AddSingleton<TreasureMenu>();
             services.AddSingleton<IZoneManager, ZoneManager>();
             services.AddSingleton<IWorldManager, WorldManager>();
             services.AddSingleton<IBattleManager, BattleManager>();

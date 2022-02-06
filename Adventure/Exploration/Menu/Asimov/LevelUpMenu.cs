@@ -43,7 +43,7 @@ namespace Adventure.Exploration.Menu.Asimov
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
         {
-            if(currentSheet > persistence.Party.Members.Count)
+            if (currentSheet > persistence.Party.Members.Count)
             {
                 currentSheet = 0;
             }
@@ -81,7 +81,7 @@ Lck: {sheet.CharacterSheet.Luck}";
             if (sharpGui.Button(previous))
             {
                 --currentSheet;
-                if(currentSheet < 0)
+                if (currentSheet < 0)
                 {
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
@@ -89,7 +89,7 @@ Lck: {sheet.CharacterSheet.Luck}";
             if (sharpGui.Button(next))
             {
                 ++currentSheet;
-                if(currentSheet >= persistence.Party.Members.Count)
+                if (currentSheet >= persistence.Party.Members.Count)
                 {
                     currentSheet = 0;
                 }

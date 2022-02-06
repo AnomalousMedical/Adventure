@@ -8,10 +8,16 @@ namespace Adventure
 {
     interface ITreasure
     {
-
+        string InfoText { get; }
     }
 
     class Treasure : ITreasure
     {
+        public string InfoText { get; }
+
+        public Treasure(string infoText)
+        {
+            this.InfoText = infoText;
+        }
     }
 }
