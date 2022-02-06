@@ -6,5 +6,7 @@ namespace Adventure
     {
         void RequestDestruction();
         void SetZonePosition(in Vector3 zonePosition);
+        void CreatePhysics();
+        void DestroyPhysics();
     }
 }

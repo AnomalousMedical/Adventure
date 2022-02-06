@@ -319,6 +319,10 @@ namespace Adventure
                 wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
                 rtInstances.AddTlasBuild(floorInstanceData);
                 rtInstances.AddTlasBuild(wallInstanceData);
+
+                ResetPlacementData();
+                SetupCorridors();
+                SetupRooms();
             });
         }
 
@@ -329,6 +333,11 @@ namespace Adventure
 
         public void Dispose()
         {
+            foreach (var placeable in placeables)
+            {
+                placeable.RequestDestruction();
+            }
+
             objectResolver.Dispose();
             DestroyPhysics();
             activeTextures.RemoveActiveTexture(wallTexture);
@@ -435,9 +444,10 @@ namespace Adventure
                 o.GoPrevious = false;
             });
 
-            ResetPlacementData();
-            SetupCorridors();
-            SetupRooms();
+            foreach (var placeable in placeables)
+            {
+                placeable.CreatePhysics();
+            }
         }
 
         private int restIndex;
@@ -597,9 +607,8 @@ namespace Adventure
 
             foreach (var placeable in placeables)
             {
-                placeable.RequestDestruction();
+                placeable.DestroyPhysics();
             }
-            placeables.Clear();
 
             this.previousZoneConnector?.RequestDestruction();
             this.nextZoneConnector?.RequestDestruction();

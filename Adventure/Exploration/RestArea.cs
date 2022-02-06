@@ -49,6 +49,7 @@ namespace Adventure
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool disposed = false;
+        private bool physicsCreated = false;
         private int levelIndex;
         private int instanceId;
 
@@ -84,16 +85,6 @@ namespace Adventure
             this.explorationGameState = explorationGameState;
             this.timeClock = timeClock;
             this.mapOffset = description.MapOffset;
-            var shape = new Box(description.Scale.x, 1000, description.Scale.z); //TODO: Each one creates its own, try to load from resources
-            shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
-
-            staticHandle = bepuScene.Simulation.Statics.Add(
-                new StaticDescription(
-                    new System.Numerics.Vector3(description.Translation.x, description.Translation.y, description.Translation.z),
-                    new System.Numerics.Quaternion(description.Orientation.x, description.Orientation.y, description.Orientation.z, description.Orientation.w),
-                    new CollidableDescription(shapeIndex, 0.1f)));
-
-            RegisterCollision();
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
@@ -128,9 +119,33 @@ namespace Adventure
             });
         }
 
-        public void BattleWon()
+        public void CreatePhysics()
         {
-            this.RequestDestruction();
+            if (!physicsCreated)
+            {
+                physicsCreated = true;
+                var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
+                shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
+
+                staticHandle = bepuScene.Simulation.Statics.Add(
+                    new StaticDescription(
+                        currentPosition.ToSystemNumerics(),
+                        Quaternion.Identity.ToSystemNumerics(),
+                        new CollidableDescription(shapeIndex, 0.1f)));
+
+                bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision, endEvent: HandleCollisionEnd);
+            }
+        }
+
+        public void DestroyPhysics()
+        {
+            if (physicsCreated)
+            {
+                physicsCreated = false;
+                bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
+                bepuScene.Simulation.Shapes.Remove(shapeIndex);
+                bepuScene.Simulation.Statics.Remove(staticHandle);
+            }
         }
 
         public void Dispose()
@@ -140,9 +155,7 @@ namespace Adventure
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
-            bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
-            bepuScene.Simulation.Shapes.Remove(shapeIndex);
-            bepuScene.Simulation.Statics.Remove(staticHandle);
+            DestroyPhysics();
         }
 
         public void RequestDestruction()
@@ -152,24 +165,11 @@ namespace Adventure
 
         public void SetZonePosition(in Vector3 zonePosition)
         {
-            bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
-            bepuScene.Simulation.Statics.Remove(this.staticHandle);
             currentPosition = zonePosition + mapOffset;
-
-            staticHandle = bepuScene.Simulation.Statics.Add(
-            new StaticDescription(
-                currentPosition.ToSystemNumerics(),
-                Quaternion.Identity.ToSystemNumerics(),
-                new CollidableDescription(shapeIndex, 0.1f)));
-            RegisterCollision();
 
             var totalScale = sprite.BaseScale * currentScale;
             currentPosition.y += totalScale.y / 2;
-        }
-
-        private void RegisterCollision()
-        {
-            bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision, endEvent: HandleCollisionEnd);
+            this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
         private void HandleCollision(CollisionEvent evt)
