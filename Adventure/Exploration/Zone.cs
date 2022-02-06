@@ -31,7 +31,9 @@ namespace Adventure
 
             public Vector3 Translation { get; set; } = Vector3.Zero;
 
-            public int RandomSeed { get; set; } = 0;
+            public int LevelSeed { get; set; }
+
+            public int EnemySeed { get; set; }
 
             public int Width { get; set; } = 50;
 
@@ -145,7 +147,7 @@ namespace Adventure
         private bool goPrevious;
         private BlasInstanceData floorBlasInstanceData;
         private BlasInstanceData wallBlasInstanceData;
-        private int seed;
+        private int enemySeed;
         private int index;
         private bool makeRestArea;
         private bool makeAsimov;
@@ -183,7 +185,7 @@ namespace Adventure
         {
             this.enemyLevel = description.EnemyLevel;
             this.index = description.Index;
-            this.seed = description.RandomSeed;
+            this.enemySeed = description.EnemySeed;
             this.makeRestArea = description.MakeRest;
             this.makeAsimov = description.MakeAsimov;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
@@ -197,6 +199,7 @@ namespace Adventure
             this.rtInstances = rtInstances;
             this.renderer = renderer;
             this.goPrevious = description.GoPrevious;
+            this.biome = description.Biome;
 
             this.currentPosition = description.Translation;
 
@@ -213,9 +216,6 @@ namespace Adventure
                 Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
             };
 
-            var random = new Random(description.RandomSeed);
-            biome = description.Biome;
-
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -230,7 +230,7 @@ namespace Adventure
                 {
                     var sw = new Stopwatch();
                     sw.Start();
-                    var random = new Random(description.RandomSeed);
+                    var random = new Random(description.LevelSeed);
                     var mapBuilder = new csMapbuilder(random, description.Width, description.Height)
                     {
                         BreakOut = description.BreakOut,
@@ -277,7 +277,7 @@ namespace Adventure
                     endPointLocal = mapMesh.PointToVector(endConnector.x, endConnector.y);
 
                     sw.Stop();
-                    logger.LogInformation($"Generated zone {description.Index} seed {description.RandomSeed} in {sw.ElapsedMilliseconds} ms.");
+                    logger.LogInformation($"Generated zone {description.Index} seed {description.LevelSeed} in {sw.ElapsedMilliseconds} ms.");
                 });
 
                 await zoneGenerationTask; //Need the zone before kicking off the calls to End() below.
@@ -481,7 +481,7 @@ namespace Adventure
 
         private void SetupCorridors()
         {
-            var enemyRandom = new Random(seed);
+            var enemyRandom = new Random(enemySeed);
             var usedCorridors = new HashSet<int>();
             var corridorStartIndex = 0;
             var corridors = mapMesh.MapBuilder.Corridors;
@@ -543,7 +543,7 @@ namespace Adventure
                     o.Zone = index;
                     o.Index = enemyIndex++;
                     o.EnemyLevel = enemyLevel;
-                    o.BattleSeed = enemyRandom.Next();
+                    o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
                 });
                 placeables.Add(battleTrigger);
             }

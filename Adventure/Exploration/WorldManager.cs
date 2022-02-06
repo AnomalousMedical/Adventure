@@ -31,8 +31,11 @@ namespace Adventure.Exploration
 
         public void SetupZone(int zoneIndex, Zone.Description o)
         {
+            var random = new Random(GetZoneSeed(zoneIndex));
+
             o.Index = zoneIndex;
-            o.RandomSeed = GetZoneSeed(zoneIndex);
+            o.LevelSeed = random.Next(int.MinValue, int.MaxValue);
+            o.EnemySeed = random.Next(int.MinValue, int.MaxValue);
             o.Width = 50;
             o.Height = 50;
             o.CorridorSpace = 10;
@@ -48,7 +51,7 @@ namespace Adventure.Exploration
                 o.EnemyLevel = 1;
                 o.MakeAsimov = true;
                 o.MakeRest = true;
-                biomeSelectorIndex = o.RandomSeed % biomeManager.Count;
+                biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
             }
             else
             {

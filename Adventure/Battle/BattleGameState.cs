@@ -57,7 +57,7 @@ namespace Adventure.Battle
                     {
                         level = 1;
                     }
-                    battleSeed = noTriggerRandom.Next();
+                    battleSeed = noTriggerRandom.Next(int.MinValue, int.MaxValue);
                 }
                 else
                 {
