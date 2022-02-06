@@ -1,5 +1,8 @@
 # TODO
 
+## Don't allow enemies in connecting corridors
+Don't allow enemies to appear in the connecting corridors or make them larger so you can't contact one not in the current zone
+
 ## Finish emissive lighting
 The emissive lighting is not very good. It still needs to light up nearby objects more accurately and have a limit in length for this.
 

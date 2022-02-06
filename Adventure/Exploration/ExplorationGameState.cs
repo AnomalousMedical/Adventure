@@ -77,11 +77,7 @@ namespace Adventure
             }
             else
             {
-                if (battleTrigger != null)
-                {
-                    battleTrigger.BattleWon();
-                    battleTrigger.RequestDestruction();
-                }
+                battleTrigger?.BattleWon();
             }
         }
 

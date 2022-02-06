@@ -192,7 +192,7 @@ namespace Adventure
 
                 if(c.CurrentTimeMicro > endTime)
                 {
-                    zoneManager.RebuildPhysics();
+                    zoneManager.Rested();
 
                     foreach (var member in persistence.Party.Members)
                     {

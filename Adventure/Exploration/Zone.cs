@@ -398,6 +398,14 @@ namespace Adventure
 
         public int EnemyLevel => enemyLevel;
 
+        public void PlayerRested()
+        {
+            foreach (var placeable in placeables)
+            {
+                placeable.PlayerRested();
+            }
+        }
+
         /// <summary>
         /// Add physics shapes to scene. Should wait until the zone generation is complete first.
         /// </summary>

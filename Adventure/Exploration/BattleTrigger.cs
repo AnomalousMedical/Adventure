@@ -51,12 +51,12 @@ namespace Adventure
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
+        private bool graphicsVisible = false;
+        private bool graphicsLoaded = false;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
-
-        private bool notCreated = true;
 
         public int BattleSeed { get; }
         public int EnemyLevel { get; }
@@ -73,14 +73,9 @@ namespace Adventure
             Persistence persistence)
         {
             state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
-            if (state.Dead)
-            {
-                return;
-            }
 
             this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
-            this.notCreated = false;
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -113,9 +108,12 @@ namespace Adventure
                 this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
 
                 this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
+                graphicsLoaded = true;
+
+                if (!state.Dead)
+                {
+                    AddGraphics();
+                }
             });
         }
 
@@ -123,13 +121,18 @@ namespace Adventure
         {
             state.Dead = true;
             persistence.BattleTriggers.SetData(description.Zone, description.Index, state);
-            this.RequestDestruction();
+            DestroyPhysics();
+            RemoveGraphics();
+        }
+
+        public void PlayerRested()
+        {
+            state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
+            AddGraphics();
         }
 
         public void CreatePhysics()
         {
-            if (this.notCreated) { return; }
-
             if(this.state.Dead) { return; }
 
             if (!physicsCreated)
@@ -150,8 +153,6 @@ namespace Adventure
 
         public void DestroyPhysics()
         {
-            if (this.notCreated) { return; }
-
             if (physicsCreated)
             {
                 physicsCreated = false;
@@ -163,24 +164,42 @@ namespace Adventure
 
         public void Dispose()
         {
-            if (this.notCreated) { return; }
-
             spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
+            RemoveGraphics();
             DestroyPhysics();
+        }
+
+        private void AddGraphics()
+        {
+            if (!graphicsLoaded) { return; }
+
+            if (!graphicsVisible)
+            {
+                graphicsVisible = true;
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite);
+            }
+        }
+
+        private void RemoveGraphics()
+        {
+            if (graphicsVisible)
+            {
+                graphicsVisible = false;
+                rtInstances.RemoveSprite(sprite);
+                rtInstances.RemoveShaderTableBinder(Bind);
+                rtInstances.RemoveTlasBuild(tlasData);
+            }
         }
 
         public void RequestDestruction()
         {
-            if (this.notCreated) { return; }
             this.destructionRequest.RequestDestruction();
         }
 
         public void SetZonePosition(in Vector3 zonePosition)
         {
-            if (this.notCreated) { return; }
             currentPosition = zonePosition + mapOffset;
             currentPosition.y += currentScale.y / 2;
             this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
