@@ -15,15 +15,18 @@ namespace Adventure.Exploration
 
     class WorldManager : IWorldManager
     {
+        private readonly IBiomeManager biomeManager;
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
 
         public WorldManager
         (
-            Persistence persistence
+            Persistence persistence,
+            IBiomeManager biomeManager
         )
         {
             zoneRandom = new Random(persistence.World.Seed);
+            this.biomeManager = biomeManager;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -39,6 +42,7 @@ namespace Adventure.Exploration
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
             o.EnemyLevel = 20;
+            o.Biome = biomeManager.GetBiome(Math.Abs(o.RandomSeed) % biomeManager.Count);
         }
 
         private int GetZoneSeed(int index)

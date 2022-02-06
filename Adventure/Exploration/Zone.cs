@@ -109,6 +109,8 @@ namespace Adventure
             /// The level of the enemies from 1 to 99
             /// </summary>
             public int EnemyLevel { get; set; }
+
+            public IBiome Biome { get; set; }
         }
 
         private readonly RTInstances<IZoneManager> rtInstances;
@@ -119,7 +121,6 @@ namespace Adventure
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly ILogger<Zone> logger;
-        private readonly IBiomeManager biomeManager;
         private PrimaryHitShader floorShader;
         private PrimaryHitShader wallShader;
         private CC0TextureResult floorTexture;
@@ -165,7 +166,6 @@ namespace Adventure
             Description description,
             ILogger<Zone> logger,
             IObjectResolverFactory objectResolverFactory,
-            IBiomeManager biomeManager,
             MeshBLAS floorMesh,
             MeshBLAS wallMesh,
             TextureManager textureManager,
@@ -184,7 +184,6 @@ namespace Adventure
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.logger = logger;
-            this.biomeManager = biomeManager;
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
@@ -208,7 +207,7 @@ namespace Adventure
             };
 
             var random = new Random(description.RandomSeed);
-            biome = biomeManager.GetBiome(random.Next(0, biomeManager.Count));
+            biome = description.Biome;
 
             coroutine.RunTask(async () =>
             {
