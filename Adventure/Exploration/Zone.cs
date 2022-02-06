@@ -203,7 +203,7 @@ namespace Adventure
             this.renderer = renderer;
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
-            this.treasure = description.Treasure;
+            this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
 
             this.currentPosition = description.Translation;
 
@@ -562,7 +562,7 @@ namespace Adventure
                 PopulateRoom(room, treasureStack, treasureChests);
             }
 
-            if(treasureChests.Count == 0)
+            if(treasureChests.Count == 0 && treasureStack.Count > 0)
             {
                 throw new InvalidOperationException("No treasure chests."); //TODO: Handle no treasure chests case for real
             }
