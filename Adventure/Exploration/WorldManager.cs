@@ -41,8 +41,26 @@ namespace Adventure.Exploration
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            o.EnemyLevel = 20;
-            o.Biome = biomeManager.GetBiome(Math.Abs(o.RandomSeed) % biomeManager.Count);
+            int biomeSelectorIndex;
+            if (zoneIndex == 0)
+            {
+                //First zone is a special case, both rest and asimov and level 1 enemies
+                o.EnemyLevel = 1;
+                o.MakeAsimov = true;
+                o.MakeRest = true;
+                biomeSelectorIndex = o.RandomSeed % biomeManager.Count;
+            }
+            else
+            {
+                var zoneBasis = zoneIndex - 1;
+                const int zoneLevelScaler = 2;
+                const int levelScale = 3;
+                o.EnemyLevel = zoneBasis / zoneLevelScaler * levelScale + levelScale;
+                o.MakeAsimov = zoneBasis % zoneLevelScaler == 0;
+                o.MakeRest = zoneBasis % zoneLevelScaler == 1;
+                biomeSelectorIndex = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
+            }
+            o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
         }
 
         private int GetZoneSeed(int index)

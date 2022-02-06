@@ -106,6 +106,11 @@ namespace Adventure
             public bool MakeRest { get; set; } = true;
 
             /// <summary>
+            /// Set this to true to make Asimov in this zone.
+            /// </summary>
+            public bool MakeAsimov { get; set; } = true;
+
+            /// <summary>
             /// The level of the enemies from 1 to 99
             /// </summary>
             public int EnemyLevel { get; set; }
@@ -143,6 +148,7 @@ namespace Adventure
         private int seed;
         private int index;
         private bool makeRestArea;
+        private bool makeAsimov;
         private int enemyLevel;
 
         private Task zoneGenerationTask;
@@ -179,6 +185,7 @@ namespace Adventure
             this.index = description.Index;
             this.seed = description.RandomSeed;
             this.makeRestArea = description.MakeRest;
+            this.makeAsimov = description.MakeAsimov;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
@@ -467,7 +474,7 @@ namespace Adventure
             treasureIndex = 0;
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
-            placeAsimov = true;
+            placeAsimov = this.makeAsimov;
         }
 
         private void SetupCorridors()
