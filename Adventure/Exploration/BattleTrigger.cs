@@ -50,7 +50,6 @@ namespace Adventure
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
-        private bool disposed = false;
         private bool physicsCreated = false;
 
         private Vector3 currentPosition;
@@ -113,12 +112,6 @@ namespace Adventure
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
 
-                if (this.disposed)
-                {
-                    this.spriteInstanceFactory.TryReturn(spriteInstance);
-                    return; //Stop loading
-                }
-
                 this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 rtInstances.AddTlasBuild(tlasData);
                 rtInstances.AddShaderTableBinder(Bind);
@@ -172,7 +165,6 @@ namespace Adventure
         {
             if (this.notCreated) { return; }
 
-            disposed = true;
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
