@@ -69,14 +69,13 @@ namespace Adventure.Exploration
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
 
-            //For now always giving out set treasures
-            o.Treasure = new List<ITreasure>
+            //Dumb test treasure
+            var treasures = new List<ITreasure>();
+            o.Treasure = treasures;
+            for (int i = 0; i < 20; ++i)
             {
-                new Treasure("Example Treasure")
-                {
-
-                }
-            };
+                treasures.Add(new Treasure($"Example Treasure {i}"));
+            }
         }
 
         private int GetZoneSeed(int index)
