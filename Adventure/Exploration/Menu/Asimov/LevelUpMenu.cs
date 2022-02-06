@@ -22,7 +22,7 @@ namespace Adventure.Exploration.Menu.Asimov
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText() { Rect = new IntRect(10, 10, 500, 500) };
+        SharpText info = new SharpText();
         private int currentSheet;
 
         public LevelUpMenu(
@@ -49,10 +49,12 @@ namespace Adventure.Exploration.Menu.Asimov
             }
             var sheet = persistence.Party.Members[currentSheet];
 
+            info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
+
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(levelFighter, levelMage, new RowLayout(previous, next), back) { Margin = new IntPad(10) }
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(levelFighter, levelMage, new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);

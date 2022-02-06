@@ -16,11 +16,11 @@ namespace Adventure.Exploration.Menu.Treasure
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private Stack<ITreasure> currentTreasure;
-        SharpButton take = new SharpButton() { Text = "Take" };
+        SharpButton take = new SharpButton();
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText() { Rect = new IntRect(10, 10, 500, 500) };
+        SharpText info = new SharpText();
         private int currentSheet;
 
         public TreasureMenu
@@ -56,12 +56,13 @@ namespace Adventure.Exploration.Menu.Treasure
             }
             var sheet = persistence.Party.Members[currentSheet];
 
-            take.Text = $"{sheet.CharacterSheet.Name} Take";
+            take.Text = $"Take {sheet.CharacterSheet.Name}";
+            info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(take, new RowLayout(previous, next), back) { Margin = new IntPad(10) }
+               new ColumnLayout(take, new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
