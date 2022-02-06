@@ -42,6 +42,7 @@ namespace Adventure
         private IObjectResolver objectResolver;
         private readonly Party party;
         private readonly IWorldManager worldManager;
+        private readonly IBackgroundMusicManager backgroundMusicManager;
         private readonly Persistence persistence;
 
         public event Action<IZoneManager> ZoneChanged;
@@ -63,10 +64,16 @@ namespace Adventure
         {
             objectResolver = objectResolverFactory.Create();
 
-            backgroundMusicManager.SetBackgroundSong("Music/freepd/Rafael Krux - Black Knight.ogg");
+            this.ZoneChanged += ZoneManager_ZoneChanged;
             this.party = party;
             this.worldManager = worldManager;
+            this.backgroundMusicManager = backgroundMusicManager;
             this.persistence = persistence;
+        }
+
+        private void ZoneManager_ZoneChanged(IZoneManager obj)
+        {
+            backgroundMusicManager.SetBackgroundSong(currentZone.Biome.BgMusic);
         }
 
         public async Task Restart()

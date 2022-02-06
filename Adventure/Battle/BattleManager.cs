@@ -166,7 +166,7 @@ namespace Adventure.Battle
                     cursor.BattleStarted();
                     numbers.Clear();
 
-                    backgroundMusicManager.SetBattleTrack("Music/freepd/Rafael Krux - Hit n Smash.ogg");
+                    backgroundMusicManager.SetBattleTrack(zoneManager.Current.Biome.BattleMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
                     var baseDexTotal = 0;
                     foreach(var player in players)

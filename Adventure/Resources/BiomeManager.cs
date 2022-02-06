@@ -8,58 +8,11 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class Biome : IBiome
+    interface IBiomeManager
     {
-        public string FloorTexture { get; set; }
+        int Count { get; }
 
-        public string WallTexture { get; set; }
-
-        public bool ReflectFloor { get; set; }
-
-        public bool ReflectWall { get; set; }
-
-        public BiomeEnemy GetEnemy(EnemyType type)
-        {
-            BiomeEnemy biomeEnemy;
-            switch (type)
-            {
-                case EnemyType.Badass:
-                    biomeEnemy = BadassEnemy;
-                    break;
-                case EnemyType.Peon:
-                    biomeEnemy = PeonEnemy;
-                    break;
-                default:
-                    biomeEnemy = RegularEnemy;
-                    break;
-            }
-
-            return biomeEnemy ?? RegularEnemy;
-        }
-
-        public BiomeEnemy RegularEnemy { get; set; }
-
-        /// <summary>
-        /// Set this to control the badass version of the enemy separately. You will get a badass enemy
-        /// stat-wise no matter what.
-        /// </summary>
-        public BiomeEnemy BadassEnemy { get; set; }
-
-        /// <summary>
-        /// Set this to control the peon version of the enemy separately. You will get a peon enemy
-        /// stat-wise no matter what.
-        /// </summary>
-        public BiomeEnemy PeonEnemy { get; set; }
-
-        /// <summary>
-        /// The treasure to use for the biome.
-        /// </summary>
-        public BiomeTreasure Treasure { get; set; }
-
-        /// <summary>
-        /// The tent asset to use for this biome.
-        /// </summary>
-        public ISpriteAsset RestAsset { get; set; } = new Assets.Original.Tent();
+        IBiome GetBiome(int index);
     }
 
     class BiomeEnemy

@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
+    interface IBackgroundMusicManager
+    {
+        void SetBackgroundSong(string songFile);
+        void SetBattleTrack(string songFile);
+    }
+
     class BackgroundMusicManager : IDisposable, IBackgroundMusicManager
     {
         private readonly VirtualFileSystem virtualFileSystem;
@@ -47,6 +53,8 @@ namespace Adventure
 
         public void SetBackgroundSong(String songFile)
         {
+            if(currentBackgroundSong == songFile) { return; }
+
             DisposeBgSound();
             if (battleMusicSound == null && songFile != null)
             {
