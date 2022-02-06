@@ -89,16 +89,22 @@ namespace Engine
                     task = create()
                 };
                 keysToEntries[key] = entry;
+            }
+            
+            if(entry.task != null)
+            {
+                //This block can potentially happen multiple times all on the main thread.
+                //This is because you can checkout an entry a 2nd time before the load task
+                //is complete.
+                //The values set are always the same, so this will be safe.
+
                 var created = await entry.task;
                 entry.task = null; //Clear the task on the entry after finished
                 entry.pooled = created.pooled;
                 entry.disposable = created.disposable;
                 pooledToEntries[entry.pooled] = entry;
             }
-            else if(entry.task != null)
-            {
-                await entry.task;
-            }
+
             ++entry.count;
             return entry.pooled;
         }
