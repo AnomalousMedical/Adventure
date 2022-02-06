@@ -97,11 +97,11 @@ namespace Adventure
             }
 
             var currentZoneIndex = persistence.Zone.CurrentIndex;
-            currentZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex), new Vector3(0, 0, 0), currentZoneIndex);
-            nextZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex + 1), new Vector3(150, 0, 0), currentZoneIndex + 1);
+            currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
+            nextZone = CreateZone(new Vector3(150, 0, 0), currentZoneIndex + 1);
             if(currentZoneIndex - 1 >= 0)
             {
-                previousZone = CreateZone(worldManager.GetZoneSeed(currentZoneIndex - 1), new Vector3(-150, 0, 0), currentZoneIndex - 1);
+                previousZone = CreateZone(new Vector3(-150, 0, 0), currentZoneIndex - 1);
             }
 
             await currentZone.WaitForGeneration();
@@ -182,10 +182,9 @@ namespace Adventure
             //Change zone index
             ++persistence.Zone.CurrentIndex;
             var nextZoneIndex = persistence.Zone.CurrentIndex + 1;
-            var zoneSeed = worldManager.GetZoneSeed(nextZoneIndex);
 
             //Create new zone
-            nextZone = CreateZone(zoneSeed, new Vector3(150, 0, 0), nextZoneIndex);
+            nextZone = CreateZone(new Vector3(150, 0, 0), nextZoneIndex);
 
             //Physics changeover
             previousZone.DestroyPhysics();
@@ -240,8 +239,7 @@ namespace Adventure
             if (persistence.Zone.CurrentIndex > 0)
             {
                 var previousZoneIndex = persistence.Zone.CurrentIndex - 1;
-                var zoneSeed = worldManager.GetZoneSeed(previousZoneIndex);
-                previousZone = CreateZone(zoneSeed, new Vector3(-150, 0, 0), previousZoneIndex);
+                previousZone = CreateZone(new Vector3(-150, 0, 0), previousZoneIndex);
             }
             else
             {
@@ -272,22 +270,12 @@ namespace Adventure
             }
         }
 
-        private Zone CreateZone(int zoneSeed, Vector3 translation, int zoneIndex)
+        private Zone CreateZone(Vector3 translation, int zoneIndex)
         {
             return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
             {
-                o.Index = zoneIndex;
+                worldManager.SetupZone(zoneIndex, o);
                 o.Translation = translation;
-                o.RandomSeed = zoneSeed;
-                o.Width = 50;
-                o.Height = 50;
-                o.CorridorSpace = 10;
-                o.RoomDistance = 3;
-                o.RoomMin = new IntSize2(2, 2);
-                o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
-                o.CorridorMaxLength = 4;
-                o.GoPrevious = zoneIndex != 0;
-                o.EnemyLevel = 20;
             });
         }
 
