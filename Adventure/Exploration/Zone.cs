@@ -369,8 +369,6 @@ namespace Adventure
             this.currentPosition = position;
             this.wallInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
-            this.previousZoneConnector?.SetPosition(StartPoint + new Vector3(-(mapUnits.x / 2f + 0.5f), 0f, 0f));
-            this.nextZoneConnector?.SetPosition(EndPoint + new Vector3((mapUnits.x / 2f + 0.5f), 0f, 0f));
             foreach(var placeable in placeables)
             {
                 placeable.SetZonePosition(position);

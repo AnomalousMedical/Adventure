@@ -70,19 +70,6 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        internal void SetPosition(in Vector3 position)
-        {
-            bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
-            bepuScene.Simulation.Statics.Remove(this.staticHandle);
-
-            staticHandle = bepuScene.Simulation.Statics.Add(
-            new StaticDescription(
-                position.ToSystemNumerics(),
-                Quaternion.Identity.ToSystemNumerics(),
-                new CollidableDescription(shapeIndex, 0.1f)));
-            bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), HandleCollision);
-        }
-
         private void HandleCollision(CollisionEvent evt)
         {
             Console.WriteLine(evt.Pair);
