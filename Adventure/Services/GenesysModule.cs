@@ -95,7 +95,7 @@ namespace Adventure.Services
                 sheet.MainHand = new Equipment()
                 {
                     AttackPercent = 100,
-                    Attack = 25
+                    Attack = 18
                 };
                 var hero = new Persistence.CharacterData()
                 {

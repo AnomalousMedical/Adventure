@@ -118,6 +118,8 @@ namespace Adventure
             public int EnemyLevel { get; set; }
 
             public IBiome Biome { get; set; }
+
+            public IEnumerable<ITreasure> Treasure { get; set; }
         }
 
         private readonly RTInstances<IZoneManager> rtInstances;
@@ -152,6 +154,7 @@ namespace Adventure
         private bool makeRestArea;
         private bool makeAsimov;
         private int enemyLevel;
+        private IEnumerable<ITreasure> treasure;
 
         private Task zoneGenerationTask;
         private Vector3 mapUnits;
@@ -200,6 +203,7 @@ namespace Adventure
             this.renderer = renderer;
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
+            this.treasure = description.Treasure;
 
             this.currentPosition = description.Translation;
 
@@ -551,13 +555,30 @@ namespace Adventure
 
         private void SetupRooms()
         {
+            var treasureChests = new List<TreasureTrigger>();
+            var treasureStack = new Stack<ITreasure>(this.treasure);
             foreach (var room in mapMesh.MapBuilder.Rooms)
             {
-                PopulateRoom(room);
+                PopulateRoom(room, treasureStack, treasureChests);
+            }
+
+            if(treasureChests.Count == 0)
+            {
+                throw new InvalidOperationException("No treasure chests."); //TODO: Handle no treasure chests case for real
+            }
+
+            //Drop any remaining treasure in the chests that were placed
+            var dropIndex = 0;
+            var chestCount = treasureChests.Count;
+            foreach(var remainingTreasure in treasureStack)
+            {
+                var placeable = treasureChests[dropIndex % chestCount];
+                placeable.AddTreasure(remainingTreasure);
+                ++dropIndex;
             }
         }
 
-        private void PopulateRoom(Rectangle room)
+        private void PopulateRoom(Rectangle room, Stack<ITreasure> treasureStack, List<TreasureTrigger> treasureChests)
         {
             var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
 
@@ -591,7 +612,7 @@ namespace Adventure
                     });
                     this.placeables.Add(restArea);
                 }
-                else
+                else if(treasureStack.Count > 0)
                 {
                     var treasureTrigger = objectResolver.Resolve<TreasureTrigger, TreasureTrigger.Description>(o =>
                     {
@@ -602,8 +623,10 @@ namespace Adventure
                         var treasure = biome.Treasure;
                         o.Sprite = treasure.Asset.CreateSprite();
                         o.SpriteMaterial = treasure.Asset.CreateMaterial();
+                        o.Treasure = treasureStack.Pop();
                     });
                     this.placeables.Add(treasureTrigger);
+                    treasureChests.Add(treasureTrigger);
                 }
             }
         }

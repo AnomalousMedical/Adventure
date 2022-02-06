@@ -1,5 +1,6 @@
 ﻿using Adventure.Services;
 using Engine;
+using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,18 @@ namespace Adventure.Exploration
         private readonly IBiomeManager biomeManager;
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
+        private IEquipmentCurve equipmentCurve;
 
         public WorldManager
         (
             Persistence persistence,
-            IBiomeManager biomeManager
+            IBiomeManager biomeManager,
+            IEquipmentCurve equipmentCurve
         )
         {
-            zoneRandom = new Random(persistence.World.Seed);
+            this.zoneRandom = new Random(persistence.World.Seed);
             this.biomeManager = biomeManager;
+            this.equipmentCurve = equipmentCurve;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -64,6 +68,15 @@ namespace Adventure.Exploration
                 biomeSelectorIndex = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
+
+            //For now always giving out set treasures
+            o.Treasure = new List<ITreasure>
+            {
+                new Treasure
+                {
+
+                }
+            };
         }
 
         private int GetZoneSeed(int index)

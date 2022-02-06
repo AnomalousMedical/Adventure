@@ -29,6 +29,8 @@ namespace Adventure
             public Sprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
+
+            public ITreasure Treasure { get; set; }
         }
 
         public record struct PersistenceData(bool Open);
@@ -50,6 +52,7 @@ namespace Adventure
         private int zoneIndex;
         private int instanceId;
         private PersistenceData state;
+        private List<ITreasure> treasure = new List<ITreasure>();
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -78,6 +81,7 @@ namespace Adventure
             this.contextMenu = contextMenu;
             this.persistence = persistence;
             this.mapOffset = description.MapOffset;
+            this.treasure.Add(description.Treasure);
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
@@ -147,6 +151,11 @@ namespace Adventure
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
             DestroyPhysics();
+        }
+
+        public void AddTreasure(ITreasure item)
+        {
+            this.treasure.Add(item);
         }
 
         public void RequestDestruction()

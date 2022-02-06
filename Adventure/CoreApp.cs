@@ -130,6 +130,7 @@ namespace Adventure
             services.AddSingleton<AsimovRootMenu>();
             services.AddSingleton<LevelUpMenu>();
             services.AddSingleton<IGenesysModule, GenesysModule>();
+            services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();
