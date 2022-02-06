@@ -322,6 +322,15 @@ namespace Adventure
                 ResetPlacementData();
                 SetupCorridors();
                 SetupRooms();
+
+                //Since this is async the physics can be active before the placeables are created
+                if (physicsActive)
+                {
+                    foreach (var placeable in placeables)
+                    {
+                        placeable.CreatePhysics();
+                    }
+                }
             });
         }
 
