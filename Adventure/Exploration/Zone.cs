@@ -572,7 +572,8 @@ namespace Adventure
 
             if(treasureChests.Count == 0 && treasureStack.Count > 0)
             {
-                throw new InvalidOperationException("No treasure chests."); //TODO: Handle no treasure chests case for real
+                logger.LogWarning("No treasure chests. All loot for this zone will be dropped.");
+                return;
             }
 
             //Drop any remaining treasure in the chests that were placed
