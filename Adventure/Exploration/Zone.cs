@@ -311,17 +311,14 @@ namespace Adventure
                 this.floorTexture = floorTextureTask.Result;
                 this.wallTexture = wallTextureTask.Result;
 
-                if (!destructionRequest.DestructionRequested)
-                {
-                    this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
-                    this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
+                this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
+                this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
 
-                    rtInstances.AddShaderTableBinder(Bind);
-                    floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
-                    wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
-                    rtInstances.AddTlasBuild(floorInstanceData);
-                    rtInstances.AddTlasBuild(wallInstanceData);
-                }
+                rtInstances.AddShaderTableBinder(Bind);
+                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
+                wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
+                rtInstances.AddTlasBuild(floorInstanceData);
+                rtInstances.AddTlasBuild(wallInstanceData);
             });
         }
 

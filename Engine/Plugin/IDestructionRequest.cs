@@ -33,7 +33,9 @@ namespace Engine
 
         /// <summary>
         /// This will return true if the object has been requested for destruction. This can be checked
-        /// during background load to cancel loading the rest of the way it if desired.
+        /// during background load to cancel loading the rest of the way it if desired. Be careful doing
+        /// this as it makes a complicated lifecycle. Use BlockDestruction to ensure a constructor has completed
+        /// and you won't really have to worry about this.
         /// </summary>
         bool DestructionRequested { get; }
     }
