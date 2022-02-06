@@ -116,13 +116,10 @@ namespace Adventure.Battle
                     return; //Stop loading
                 }
 
-                if (!destructionRequest.DestructionRequested)
+                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                if (visible)
                 {
-                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
-                    if (visible)
-                    {
-                        AddToScene();
-                    }
+                    AddToScene();
                 }
             });
         }

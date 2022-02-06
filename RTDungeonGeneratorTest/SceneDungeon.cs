@@ -138,17 +138,14 @@ namespace RTDungeonGeneratorTest
                     this.floorTexture = floorTextureTask.Result;
                     this.wallTexture = wallTextureTask.Result;
 
-                    if (!destructionRequest.DestructionRequested)
-                    {
-                        this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
-                        this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
+                    this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
+                    this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
 
-                        floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
-                        wallBlasInstanceData = this.activeTextures.AddActiveTexture(this.wallTexture);
-                        rtInstances.AddTlasBuild(floorInstanceData);
-                        rtInstances.AddTlasBuild(wallInstanceData);
-                        rtInstances.AddShaderTableBinder(Bind);
-                    }
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
+                    wallBlasInstanceData = this.activeTextures.AddActiveTexture(this.wallTexture);
+                    rtInstances.AddTlasBuild(floorInstanceData);
+                    rtInstances.AddTlasBuild(wallInstanceData);
+                    rtInstances.AddShaderTableBinder(Bind);
 
                     loadingTask.SetResult();
                 }

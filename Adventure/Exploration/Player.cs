@@ -216,13 +216,10 @@ namespace Adventure
                     return; //Stop loading
                 }
 
-                if (!destructionRequest.DestructionRequested)
-                {
-                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
-                    rtInstances.AddTlasBuild(tlasData);
-                    rtInstances.AddShaderTableBinder(Bind);
-                    rtInstances.AddSprite(sprite);
-                }
+                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite);
             });
         }
 

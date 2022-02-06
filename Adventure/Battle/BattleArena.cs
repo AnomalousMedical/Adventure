@@ -91,21 +91,18 @@ namespace Adventure.Battle
                     this.floorShader = floorShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
 
-                    if (!destructionRequest.DestructionRequested)
+                    this.floorInstanceData = new TLASBuildInstanceData()
                     {
-                        this.floorInstanceData = new TLASBuildInstanceData()
-                        {
-                            InstanceName = RTId.CreateId("BattleArenaFloor"),
-                            CustomId = 3, //Texture index
-                            pBLAS = floorMesh.Instance.BLAS.Obj,
-                            Mask = RtStructures.OPAQUE_GEOM_MASK,
-                            Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity)
-                        };
+                        InstanceName = RTId.CreateId("BattleArenaFloor"),
+                        CustomId = 3, //Texture index
+                        pBLAS = floorMesh.Instance.BLAS.Obj,
+                        Mask = RtStructures.OPAQUE_GEOM_MASK,
+                        Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity)
+                    };
 
-                        rtInstances.AddTlasBuild(floorInstanceData);
-                        rtInstances.AddShaderTableBinder(Bind);
-                        blasInstanceData = activeTextures.AddActiveTexture(floorTexture);
-                    }
+                    rtInstances.AddTlasBuild(floorInstanceData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture);
 
                     loadingTask.SetResult();
                 }

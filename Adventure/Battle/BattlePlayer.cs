@@ -204,14 +204,11 @@ namespace Adventure.Battle
                     return; //Stop loading
                 }
 
-                if (!destructionRequest.DestructionRequested)
-                {
-                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
 
-                    rtInstances.AddTlasBuild(tlasData);
-                    rtInstances.AddShaderTableBinder(Bind);
-                    rtInstances.AddSprite(sprite);
-                }
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite);
             });
         }
 

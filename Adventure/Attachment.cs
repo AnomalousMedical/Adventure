@@ -68,13 +68,10 @@ namespace Adventure
                     return; //Stop loading
                 }
 
-                if (!destructionRequest.DestructionRequested) //This is more to prevent a flash for 1 frame of the object
-                {
-                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
-                    rtInstances.AddTlasBuild(tlasData);
-                    rtInstances.AddShaderTableBinder(Bind);
-                    rtInstances.AddSprite(sprite);
-                }
+                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite);
             });
         }
 
