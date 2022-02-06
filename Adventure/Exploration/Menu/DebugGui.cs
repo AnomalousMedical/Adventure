@@ -60,7 +60,7 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
         {
-            averageLevel.Text = $"Level: {party.ActiveCharacterSheets.GetAverageLevel()}";
+            averageLevel.Text = $"Level: {party.ActiveCharacterSheets.GetAverageLevel()} Zone: {zoneManager.Current.EnemyLevel}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";
 
             var layout =

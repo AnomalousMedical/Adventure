@@ -392,6 +392,8 @@ namespace Adventure
 
         public IBiome Biome => biome;
 
+        public int EnemyLevel => enemyLevel;
+
         /// <summary>
         /// Add physics shapes to scene. Should wait until the zone generation is complete first.
         /// </summary>
