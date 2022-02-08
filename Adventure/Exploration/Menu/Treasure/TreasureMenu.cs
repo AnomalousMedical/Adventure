@@ -72,9 +72,10 @@ namespace Adventure.Exploration.Menu.Treasure
             info.Text = treasure.InfoText;
             sharpGui.Text(info);
 
-            if (sharpGui.Button(take))
+            if (sheet.Inventory.HasRoom() && sharpGui.Button(take))
             {
                 currentTreasure.Pop();
+                treasure.GiveTo(sheet.Inventory);
             }
             if (sharpGui.Button(previous))
             {

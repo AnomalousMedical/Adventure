@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Items;
+using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,8 @@ namespace Adventure.Services
         public class CharacterData
         {
             public CharacterSheet CharacterSheet { get; set; }
+
+            public Inventory Inventory { get; set; } = new Inventory();
 
             public String PlayerSprite { get; set; }
 

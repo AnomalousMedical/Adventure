@@ -74,7 +74,11 @@ namespace Adventure.Exploration
             o.Treasure = treasures;
             for (int i = 0; i < 20; ++i)
             {
-                treasures.Add(new Treasure($"Example Treasure {i}"));
+                treasures.Add(new Treasure(new Items.InventoryItem()
+                {
+                    Name = $"Example Treasure {i}",
+                    Number = i
+                }));
             }
         }
 
