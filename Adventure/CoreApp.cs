@@ -15,7 +15,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using Adventure.Exploration.Menu.Asimov;
-using Adventure.Exploration.Menu.Treasure;
 
 namespace Adventure
 {

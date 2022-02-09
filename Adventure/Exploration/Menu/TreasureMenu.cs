@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Exploration.Menu.Treasure
+namespace Adventure.Exploration.Menu
 {
     class TreasureMenu : IExplorationSubMenu
     {
