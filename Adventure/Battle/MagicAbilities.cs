@@ -71,23 +71,9 @@ namespace Adventure.Battle
                 }
             }
 
-            if (!didSomething)
+            if (!didSomething && sharpGui.IsStandardBackPressed())
             {
-                switch (sharpGui.GamepadButtonEntered)
-                {
-                    case GamepadButtonCode.XInput_B:
-                        menuMode = BattlePlayer.MenuMode.Root;
-                        break;
-                    default:
-                        //Handle keyboard
-                        switch (sharpGui.KeyEntered)
-                        {
-                            case KeyboardButtonCode.KC_ESCAPE:
-                                menuMode = BattlePlayer.MenuMode.Root;
-                                break;
-                        }
-                        break;
-                }
+                menuMode = BattlePlayer.MenuMode.Root;
             }
 
             return didSomething;

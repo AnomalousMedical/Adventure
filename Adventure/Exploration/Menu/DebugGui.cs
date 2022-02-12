@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Adventure.Exploration.Menu
 {
+    interface IDebugGui : IExplorationSubMenu
+    {
+    }
+
     class DebugGui : IDebugGui, IExplorationSubMenu
     {
         private readonly ISharpGui sharpGui;
@@ -126,7 +130,7 @@ namespace Adventure.Exploration.Menu
             var time = TimeSpan.FromMilliseconds(timeClock.CurrentTimeMicro * Clock.MicroToMilliseconds);
             sharpGui.Text(currentHour.Rect.Right, currentHour.Rect.Top, timeClock.IsDay ? Engine.Color.Black : Engine.Color.White, $"Time: {time}");
 
-            if (sharpGui.GamepadButtonEntered == GamepadButtonCode.XInput_B || sharpGui.KeyEntered == KeyboardButtonCode.KC_ESCAPE)
+            if (sharpGui.IsStandardBackPressed())
             {
                 explorationMenu.RequestSubMenu(explorationMenu.RootMenu);
             }

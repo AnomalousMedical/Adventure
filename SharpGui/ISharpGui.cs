@@ -143,5 +143,11 @@ namespace SharpGui
         /// <param name="text"></param>
         /// <returns></returns>
         public IntSize2 MeasureText(StringBuilder text);
+
+        /// <summary>
+        /// Determine if this input type's standardized back button is pressed.
+        /// </summary>
+        /// <returns></returns>
+        bool IsStandardBackPressed();
     }
 }

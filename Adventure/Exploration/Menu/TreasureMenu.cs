@@ -44,7 +44,7 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
-            if (currentTreasure.Count == 0)
+            if (currentTreasure == null || currentTreasure.Count == 0)
             {
                 menu.RequestSubMenu(null);
                 return;

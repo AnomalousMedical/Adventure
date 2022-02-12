@@ -255,6 +255,11 @@ namespace SharpGui
             state.StealFocus(id);
         }
 
+        public bool IsStandardBackPressed()
+        {
+            return GamepadButtonEntered == GamepadButtonCode.XInput_B || KeyEntered == KeyboardButtonCode.KC_ESCAPE;
+        }
+
         public Guid ActiveItem => state.ActiveItem;
 
         public Guid HoverItem => state.HoverItem;

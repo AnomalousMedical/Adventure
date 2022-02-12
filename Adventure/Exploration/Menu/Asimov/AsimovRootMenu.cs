@@ -45,7 +45,7 @@ namespace Adventure.Exploration.Menu.Asimov
             {
                 explorationMenu.RequestSubMenu(levelUpMenu);
             }
-            else if (sharpGui.GamepadButtonEntered == Engine.Platform.GamepadButtonCode.XInput_B || sharpGui.KeyEntered == Engine.Platform.KeyboardButtonCode.KC_ESCAPE)
+            else if (sharpGui.IsStandardBackPressed())
             {
                 explorationMenu.RequestSubMenu(null);
             }

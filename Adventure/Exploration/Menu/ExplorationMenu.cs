@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace Adventure.Exploration.Menu
 {
+    interface IExplorationMenu
+    {
+        IDebugGui DebugGui { get; }
+        IRootMenu RootMenu { get; }
+
+        void RequestSubMenu(IExplorationSubMenu subMenu);
+        bool Update(ExplorationGameState explorationGameState);
+    }
+
     class ExplorationMenu : IExplorationMenu
     {
         private readonly ISharpGui sharpGui;

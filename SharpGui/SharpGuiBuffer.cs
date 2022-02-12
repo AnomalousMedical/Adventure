@@ -41,7 +41,7 @@ namespace SharpGui
 
         public void Begin()
         {
-            currentZ =  1.0f - zStep;
+            currentZ = 1.0f - zStep;
             currentText = 0;
             currentQuad = 0;
             NumQuadIndices = 0;
@@ -50,7 +50,7 @@ namespace SharpGui
 
         public void DrawQuad(int left, int top, int right, int bottom, Color color)
         {
-            if(currentQuad >= quadVerts.Length)
+            if (currentQuad >= quadVerts.Length)
             {
                 logger.LogWarning($"Exceeded maximum number of quads '{quadVerts.Length / 4}'.");
                 return;
@@ -78,9 +78,14 @@ namespace SharpGui
 
         public void DrawText(int x, int y, int right, Color color, String text, Font font)
         {
+            if (text == null)
+            {
+                return;
+            }
+
             ///This is closely related to <see cref="Font.MeasureText(string)"/>
             int xOffset = x;
-            
+
             int smallestBearingY = font.SmallestBearingY;
             int yOffset = y - smallestBearingY;
             int tallestLineChar = 0;
@@ -94,7 +99,7 @@ namespace SharpGui
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
                 }
 
-                if(c == '\n')
+                if (c == '\n')
                 {
                     yOffset += tallestLineChar;
                     tallestLineChar = 0;
@@ -112,7 +117,7 @@ namespace SharpGui
             int yOffset = y - smallestBearingY;
             int tallestLineChar = 0;
             var textLength = text.Length;
-            for(int i = 0; i < textLength; ++i)
+            for (int i = 0; i < textLength; ++i)
             {
                 var c = text[i];
                 if (xOffset < right && font.TryGetGlyphInfo(c, out var glyphInfo))
@@ -177,7 +182,7 @@ namespace SharpGui
             textVerts[currentText + 1].pos = new Vector3(right, top, currentZ);
             textVerts[currentText + 2].pos = new Vector3(right, bottom, currentZ);
             textVerts[currentText + 3].pos = new Vector3(left, bottom, currentZ);
-            
+
             textVerts[currentText].color = color;
             textVerts[currentText + 1].color = color;
             textVerts[currentText + 2].color = color;
