@@ -64,6 +64,11 @@ namespace SharpGui
             this.items = new List<Entry>(items.Select(i => new Entry(i)));
         }
 
+        public ColumnLayout(IEnumerable<ILayoutItem> items)
+        {
+            this.items = new List<Entry>(items.Select(i => new Entry(i)));
+        }
+
         public void Clear()
         {
             items.Clear();
