@@ -53,7 +53,7 @@ namespace Adventure
 
         public void SetBackgroundSong(String songFile)
         {
-            if(currentBackgroundSong == songFile) { return; }
+            if (currentBackgroundSong == songFile) { return; }
 
             DisposeBgSound();
             if (battleMusicSound == null && songFile != null)
@@ -75,7 +75,10 @@ namespace Adventure
                 yield return coroutineRunner.WaitSeconds(0);
                 if (bgMusicFinished) //Double check that the song was not changed.
                 {
-                    SetBackgroundSong(currentBackgroundSong);
+                    //This makes the song actually restart, otherwise it will end
+                    var songChange = currentBackgroundSong;
+                    currentBackgroundSong = null;
+                    SetBackgroundSong(songChange);
                 }
             }
             coroutineRunner.Run(co());
