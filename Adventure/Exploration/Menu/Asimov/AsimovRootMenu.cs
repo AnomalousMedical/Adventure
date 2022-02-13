@@ -16,6 +16,7 @@ namespace Adventure.Exploration.Menu.Asimov
         private readonly IScreenPositioner screenPositioner;
         private readonly LevelUpMenu levelUpMenu;
         SharpButton levelUp = new SharpButton() { Text = "Level Up" };
+        SharpButton goodbye = new SharpButton() { Text = "Goodbye" };
 
         public AsimovRootMenu(
             ISharpGui sharpGui,
@@ -35,17 +36,18 @@ namespace Adventure.Exploration.Menu.Asimov
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(levelUp) { Margin = new IntPad(10) }
+               new ColumnLayout(levelUp, goodbye) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(levelUp))
+            if (sharpGui.Button(levelUp, navUp: goodbye.Id, navDown: goodbye.Id))
             {
                 explorationMenu.RequestSubMenu(levelUpMenu);
             }
-            else if (sharpGui.IsStandardBackPressed())
+
+            if (sharpGui.Button(goodbye, navUp: levelUp.Id, navDown: levelUp.Id) || sharpGui.IsStandardBackPressed())
             {
                 explorationMenu.RequestSubMenu(null);
             }
