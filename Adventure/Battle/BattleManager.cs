@@ -296,7 +296,7 @@ namespace Adventure.Battle
                     Vector3 targetPos;
                     if (cursor.TargetPlayers)
                     {
-                        target = players[(int)(cursor.TargetIndex % players.Count)];
+                        target = players[(int)(cursor.PlayerTargetIndex % players.Count)];
                         targetPos = target.CursorDisplayLocation;
 
                         foreach (var player in players)
@@ -306,7 +306,7 @@ namespace Adventure.Battle
                     }
                     else
                     {
-                        target = enemies[(int)(cursor.TargetIndex % enemies.Count)];
+                        target = enemies[(int)(cursor.EnemyTargetIndex % enemies.Count)];
                         targetPos = target.CursorDisplayLocation;
                     }
                     

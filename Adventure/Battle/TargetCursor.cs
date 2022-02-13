@@ -28,7 +28,8 @@ namespace Adventure.Battle
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
 
-        public uint TargetIndex { get; private set; }
+        public uint EnemyTargetIndex { get; private set; }
+        public uint PlayerTargetIndex { get; private set; }
 
         private bool __targetPlayers;
         public bool TargetPlayers
@@ -171,7 +172,8 @@ namespace Adventure.Battle
 
         internal void BattleStarted()
         {
-            TargetIndex = 0;
+            EnemyTargetIndex = 0;
+            PlayerTargetIndex = 0;
         }
 
         public void SetPosition(Vector3 targetPosition)
@@ -280,11 +282,11 @@ namespace Adventure.Battle
         {
             if (TargetPlayers)
             {
-                ++TargetIndex;
+                ++PlayerTargetIndex;
             }
             else
             {
-                --TargetIndex;
+                --EnemyTargetIndex;
             }
         }
 
@@ -292,11 +294,11 @@ namespace Adventure.Battle
         {
             if (TargetPlayers)
             {
-                --TargetIndex;
+                --PlayerTargetIndex;
             }
             else
             {
-                ++TargetIndex;
+                ++EnemyTargetIndex;
             }
         }
 
