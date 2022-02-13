@@ -178,9 +178,6 @@ namespace Adventure
             persistence.BattleTriggers.ClearData();
             timeClock.SetTimeRatio(100);
 
-            persistence.Player.RespawnLevel = levelIndex;
-            persistence.Player.RespawnPosition = zoneManager.GetPlayerLoc();
-
             long? endTime = null;
 
             explorationGameState.SetExplorationEvent(c =>

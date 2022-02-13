@@ -40,6 +40,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly IExplorationMenu explorationMenu;
         private readonly AsimovRootMenu rootMenu;
+        private readonly IZoneManager zoneManager;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
@@ -66,7 +67,8 @@ namespace Adventure
             IContextMenu contextMenu,
             Persistence persistence,
             IExplorationMenu explorationMenu,
-            AsimovRootMenu rootMenu)
+            AsimovRootMenu rootMenu,
+            IZoneManager zoneManager)
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
@@ -79,6 +81,7 @@ namespace Adventure
             this.persistence = persistence;
             this.explorationMenu = explorationMenu;
             this.rootMenu = rootMenu;
+            this.zoneManager = zoneManager;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -170,6 +173,9 @@ namespace Adventure
 
         private void Speak()
         {
+            persistence.Player.RespawnZone = zoneIndex;
+            persistence.Player.RespawnPosition = zoneManager.GetPlayerLoc();
+
             contextMenu.ClearContext(Speak);
             explorationMenu.RequestSubMenu(rootMenu);
         }

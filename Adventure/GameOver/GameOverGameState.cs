@@ -58,7 +58,7 @@ namespace Adventure.GameOver
 
         public void SetActive(bool active)
         {
-            persistence.Zone.CurrentIndex = persistence.Player.RespawnLevel ?? 0;
+            persistence.Zone.CurrentIndex = persistence.Player.RespawnZone ?? 0;
             persistence.Player.Position = persistence.Player.RespawnPosition;
             persistence.BattleTriggers.ClearData();
 
