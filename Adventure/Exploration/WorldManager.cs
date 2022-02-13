@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Items;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 using System;
@@ -72,14 +73,73 @@ namespace Adventure.Exploration
             //Dumb test treasure
             var treasures = new List<ITreasure>();
             o.Treasure = treasures;
-            for (int i = 0; i < 20; ++i)
+
+            if(zoneIndex % 2 == 0)
             {
-                treasures.Add(new Treasure(new Items.InventoryItem()
+                var weapon = new InventoryItem
                 {
-                    Name = $"Example Treasure {i}",
-                    Number = i
-                }));
+                    Action = nameof(Items.Actions.EquipMainHand),
+                    Name = $"Test Sword {o.EnemyLevel}",
+                    Equipment = new Equipment
+                    {
+                        Attack = equipmentCurve.GetAttack(o.EnemyLevel),
+                        AttackPercent = 100,
+                    }
+                };
+                treasures.Add(new Treasure(weapon));
             }
+            else
+            {
+                var weapon = new InventoryItem
+                {
+                    Action = nameof(Items.Actions.EquipMainHand),
+                    Name = $"Test Staff {o.EnemyLevel}",
+                    Equipment = new Equipment
+                    {
+                        MagicAttack = equipmentCurve.GetAttack(o.EnemyLevel),
+                        MagicAttackPercent = 100,
+                        Attack = equipmentCurve.GetAttack(o.EnemyLevel) / 3,
+                        AttackPercent = 35
+                    }
+                };
+                treasures.Add(new Treasure(weapon));
+            }
+
+            var shield = new InventoryItem
+            {
+                Action = nameof(Items.Actions.EquipOffHand),
+                Name = $"Test Shield {o.EnemyLevel}",
+                Equipment = new Equipment
+                {
+                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
+                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
+                }
+            };
+            treasures.Add(new Treasure(shield));
+
+            var acc = new InventoryItem
+            {
+                Action = nameof(Items.Actions.EquipOffHand),
+                Name = $"Test Accessory {o.EnemyLevel}",
+                Equipment = new Equipment
+                {
+                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
+                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
+                }
+            };
+            treasures.Add(new Treasure(acc));
+
+            var armor = new InventoryItem
+            {
+                Action = nameof(Items.Actions.EquipOffHand),
+                Name = $"Test Armor {o.EnemyLevel}",
+                Equipment = new Equipment
+                {
+                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
+                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
+                }
+            };
+            treasures.Add(new Treasure(armor));
         }
 
         private int GetZoneSeed(int index)
