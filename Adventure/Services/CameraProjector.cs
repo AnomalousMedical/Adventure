@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
+    interface ICameraProjector
+    {
+        Vector2 Project(in Vector3 position);
+    }
+
     class CameraProjector : ICameraProjector
     {
         private readonly RTCameraAndLight cameraAndLight;

@@ -12,6 +12,11 @@ using System.Threading.Tasks;
 
 namespace Adventure.GameOver
 {
+    interface IGameOverGameState : IGameState
+    {
+        void Link(IGameState explorationState);
+    }
+
     class GameOverGameState : IGameOverGameState
     {
         private readonly ISharpGui sharpGui;
