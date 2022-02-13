@@ -62,7 +62,7 @@ namespace Adventure.Exploration.Menu
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
-            itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), p => screenPositioner.GetCenterTopRect(p));
+            itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p));
 
             if (sharpGui.Button(previous))
             {

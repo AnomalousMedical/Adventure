@@ -25,7 +25,7 @@ namespace SharpGui
             }
         }
 
-        public void Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, Func<IntSize2, IntRect> GetLayoutPosition)
+        public void Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition)
         {
             var layout =
                new MarginLayout(new IntPad(Margin),
@@ -43,7 +43,7 @@ namespace SharpGui
                 var next = buttons.Count > 1 ? 1 : 0;
                 int i = 0;
 
-                foreach (var item in items)
+                foreach (var item in items.Skip(CurrentIndex))
                 {
                     if (i >= buttonCount)
                     {
@@ -81,10 +81,20 @@ namespace SharpGui
                     if(sharpGui.FocusedItem == ScrollUp)
                     {
                         sharpGui.StealFocus(button.Id);
+                        --CurrentIndex;
+                        if(CurrentIndex < 0)
+                        {
+                            CurrentIndex = 0;
+                        }
                     }
                     else if (sharpGui.FocusedItem == ScrollDown)
                     {
                         sharpGui.StealFocus(button.Id);
+                        ++CurrentIndex;
+                        if(CurrentIndex + i >= itemCount)
+                        {
+                            CurrentIndex = itemCount - i - 1;
+                        }
                     }
 
                     previous = i;
@@ -100,5 +110,7 @@ namespace SharpGui
         public int MaxWidth { get; set; }
 
         public int Bottom { get; set; } = int.MaxValue;
+
+        public int CurrentIndex { get; set; }
     }
 }
