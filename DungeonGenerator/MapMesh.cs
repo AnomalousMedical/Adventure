@@ -46,8 +46,8 @@ namespace DungeonGenerator
 
             public void Normalize()
             {
-                CopyNormals();
-                return;
+                //CopyNormals();
+                //return;
 
                 var walkWidth = width - 1;
                 var walkHeight = height - 1;
@@ -67,32 +67,32 @@ namespace DungeonGenerator
 
 
                             current.TopLeftNormalized = current.topLeftNormal
-                                + top?.bottomLeftNormal ?? Vector3.Zero
-                                + left?.topRightNormal ?? Vector3.Zero
+                                + (top?.bottomLeftNormal ?? Vector3.Zero)
+                                + (left?.topRightNormal ?? Vector3.Zero)
                                 ;
 
                             current.TopLeftNormalized = current.TopLeftNormalized.Value.normalized();
 
 
                             current.TopRightNormalized = current.topRightNormal
-                                + top?.bottomRightNormal ?? Vector3.Zero
-                                + right?.topLeftNormal ?? Vector3.Zero
+                                + (top?.bottomRightNormal ?? Vector3.Zero)
+                                + (right?.topLeftNormal ?? Vector3.Zero)
                                 ;
 
                             current.TopRightNormalized = current.TopRightNormalized.Value.normalized();
 
 
                             current.BottomLeftNormalized = current.bottomLeftNormal
-                                + bottom?.topLeftNormal ?? Vector3.Zero
-                                + left?.bottomRightNormal ?? Vector3.Zero
+                                + (bottom?.topLeftNormal ?? Vector3.Zero)
+                                + (left?.bottomRightNormal ?? Vector3.Zero)
                                 ;
 
                             current.BottomLeftNormalized = current.BottomLeftNormalized.Value.normalized();
 
 
                             current.BottomRightNormalized = current.bottomRightNormal
-                                + bottom?.topRightNormal ?? Vector3.Zero
-                                + right?.bottomLeftNormal ?? Vector3.Zero
+                                + (bottom?.topRightNormal ?? Vector3.Zero)
+                                + (right?.bottomLeftNormal ?? Vector3.Zero)
                                 ;
 
                             current.BottomRightNormalized = current.BottomRightNormalized.Value.normalized();
