@@ -17,12 +17,13 @@ namespace Adventure.Exploration.Menu.Asimov
         private readonly IScreenPositioner screenPositioner;
         private readonly Persistence persistence;
         private readonly ILevelCalculator levelCalculator;
+        private readonly IZoneManager zoneManager;
         SharpButton levelFighter = new SharpButton() { Text = "Level Up Fighter" };
         SharpButton levelMage = new SharpButton() { Text = "Level Up Mage" };
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText();
+        SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
 
         public LevelUpMenu(
@@ -30,13 +31,15 @@ namespace Adventure.Exploration.Menu.Asimov
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
             Persistence persistence,
-            ILevelCalculator levelCalculator)
+            ILevelCalculator levelCalculator,
+            IZoneManager zoneManager)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.persistence = persistence;
             this.levelCalculator = levelCalculator;
+            this.zoneManager = zoneManager;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -61,7 +64,10 @@ namespace Adventure.Exploration.Menu.Asimov
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
             info.Text = $@"{sheet.CharacterSheet.Name}
+ 
 Lvl: {sheet.CharacterSheet.Level}
+Zone Level: {zoneManager.Current?.EnemyLevel}
+ 
 HP:  {sheet.CharacterSheet.Hp}
 MP:  {sheet.CharacterSheet.Mp}
 Str: {sheet.CharacterSheet.BaseStrength}
@@ -72,15 +78,15 @@ Dex: {sheet.CharacterSheet.BaseDexterity}
 Lck: {sheet.CharacterSheet.Luck}";
             sharpGui.Text(info);
 
-            if (sharpGui.Button(levelFighter))
+            if (sharpGui.Button(levelFighter, navUp: back.Id, navDown: levelMage.Id))
             {
                 sheet.CharacterSheet.LevelUpFighter(levelCalculator);
             }
-            if (sharpGui.Button(levelMage))
+            if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: previous.Id))
             {
                 sheet.CharacterSheet.LevelUpMage(levelCalculator);
             }
-            if (sharpGui.Button(previous))
+            if (sharpGui.Button(previous, navUp: levelMage.Id, navDown: back.Id, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -88,7 +94,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next))
+            if (sharpGui.Button(next, navUp: levelMage.Id, navDown: back.Id, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Party.Members.Count)
@@ -96,7 +102,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = 0;
                 }
             }
-            if (sharpGui.Button(back))
+            if (sharpGui.Button(back, navUp: previous.Id, navDown: levelFighter.Id))
             {
                 explorationMenu.RequestSubMenu(PreviousMenu);
             }

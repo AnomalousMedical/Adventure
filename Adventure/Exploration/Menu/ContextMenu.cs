@@ -21,7 +21,7 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        SharpButton contextButton = new SharpButton() { Text = "Debug" };
+        SharpButton contextButton = new SharpButton();
         private Action activatedCallback;
 
         public ContextMenu(

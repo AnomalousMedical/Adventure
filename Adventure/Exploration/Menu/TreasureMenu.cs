@@ -94,7 +94,7 @@ namespace Adventure.Exploration.Menu
             }
 
             var bottomNavDown = hasInventoryRoom ? take.Id : hasStorageRoom ? store.Id : discard.Id;
-            if (sharpGui.Button(previous, navUp: discard.Id, navDown: bottomNavDown, navLeft: next.Id, navRight: next.Id))
+            if (sharpGui.Button(previous, navUp: discard.Id, navDown: bottomNavDown, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -102,7 +102,7 @@ namespace Adventure.Exploration.Menu
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navUp: discard.Id, navDown: bottomNavDown, navLeft: previous.Id, navRight: previous.Id))
+            if (sharpGui.Button(next, navUp: discard.Id, navDown: bottomNavDown, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Party.Members.Count)

@@ -25,7 +25,7 @@ namespace SharpGui
             }
         }
 
-        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition)
+        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, Guid? navLeft = null, Guid? navRight = null)
         {
             var layout =
                new MarginLayout(new IntPad(Margin),
@@ -73,7 +73,7 @@ namespace SharpGui
 
                     button.Text = item.Text;
 
-                    if (sharpGui.Button(button, navUp: navUpId, navDown: navDownId))
+                    if (sharpGui.Button(button, navUp: navUpId, navDown: navDownId, navLeft: navLeft, navRight: navRight))
                     {
                         return item.Item;
                     }
@@ -114,5 +114,7 @@ namespace SharpGui
         public int Bottom { get; set; } = int.MaxValue;
 
         public int ListIndex { get; set; }
+
+        public Guid TopButton => buttons[0].Id;
     }
 }

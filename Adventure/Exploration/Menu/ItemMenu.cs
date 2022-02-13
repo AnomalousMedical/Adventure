@@ -84,14 +84,16 @@ Lck: {characterData.CharacterSheet.Luck}";
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
-            var selectedItem = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p));
+            var selectedItem = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
 
-            if(selectedItem != null)
+            var hasItems = characterData.Inventory.Items.Count > 0;
+
+            if (selectedItem != null)
             {
                 characterData.Inventory.Use(selectedItem, characterData.CharacterSheet);
             }
 
-            if (sharpGui.Button(previous))
+            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -99,7 +101,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next))
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasItems ? itemButtons.TopButton : previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Party.Members.Count)
@@ -107,7 +109,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     currentSheet = 0;
                 }
             }
-            if (sharpGui.Button(back) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: hasItems ? itemButtons.TopButton : back.Id, navRight: hasItems ? itemButtons.TopButton : back.Id) || sharpGui.IsStandardBackPressed())
             {
                 menu.RequestSubMenu(menu.RootMenu);
             }

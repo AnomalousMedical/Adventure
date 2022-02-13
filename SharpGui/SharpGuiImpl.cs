@@ -255,6 +255,16 @@ namespace SharpGui
             state.StealFocus(id);
         }
 
+        public bool IsStandardNextPressed()
+        {
+            return GamepadButtonEntered == GamepadButtonCode.XInput_RightShoulder || KeyEntered == KeyboardButtonCode.KC_PGUP;
+        }
+
+        public bool IsStandardPreviousPressed()
+        {
+            return GamepadButtonEntered == GamepadButtonCode.XInput_LeftShoulder || KeyEntered == KeyboardButtonCode.KC_PGDOWN;
+        }
+
         public bool IsStandardBackPressed()
         {
             return GamepadButtonEntered == GamepadButtonCode.XInput_B || KeyEntered == KeyboardButtonCode.KC_ESCAPE;

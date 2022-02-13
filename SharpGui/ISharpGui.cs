@@ -100,6 +100,8 @@ namespace SharpGui
         /// </summary>
         /// <param name="input"></param>
         void Panel(SharpPanel input);
+        bool IsStandardNextPressed();
+        bool IsStandardPreviousPressed();
 
         /// <summary>
         /// Measure the size of a button.
