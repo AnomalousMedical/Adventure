@@ -39,19 +39,19 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(debug, items) { Margin = new IntPad(10) }
+               new ColumnLayout(items, debug) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(debug))
-            {
-                explorationMenu.RequestSubMenu(explorationMenu.DebugGui);
-            }
-            else if (sharpGui.Button(items))
+            if (sharpGui.Button(items, navDown: debug.Id, navUp: debug.Id))
             {
                 explorationMenu.RequestSubMenu(itemMenu);
+            }
+            else if (sharpGui.Button(debug, navDown: items.Id, navUp: items.Id))
+            {
+                explorationMenu.RequestSubMenu(explorationMenu.DebugGui);
             }
             else if (sharpGui.IsStandardBackPressed())
             {
