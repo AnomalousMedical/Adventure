@@ -74,7 +74,7 @@ namespace Adventure.Exploration
             var treasures = new List<ITreasure>();
             o.Treasure = treasures;
 
-            if(zoneIndex % 2 == 0)
+            if (zoneIndex % 2 == 0)
             {
                 var weapon = new InventoryItem
                 {
@@ -140,6 +140,75 @@ namespace Adventure.Exploration
                 }
             };
             treasures.Add(new Treasure(armor));
+
+            treasures.Add(CreateManaPotion(o));
+            treasures.Add(CreateHealthPotion(o));
+            treasures.Add(CreateTravelersCoin(o));
+        }
+
+        private static ITreasure CreateManaPotion(Zone.Description o)
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(Items.Actions.RestoreMp),
+            };
+
+            if (o.EnemyLevel < 30)
+            {
+                item.Number = 25;
+                item.Name = "Tiny Mana Potion";
+            }
+            else if (o.EnemyLevel < 65)
+            {
+                item.Number = 75;
+                item.Name = "Mana Potion";
+            }
+            else
+            {
+                item.Number = 150;
+                item.Name = "Big Mana Potion";
+            }
+
+            return new Treasure(item);
+        }
+
+        private static ITreasure CreateHealthPotion(Zone.Description o)
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(Items.Actions.RestoreHp),
+            };
+
+            if (o.EnemyLevel < 30)
+            {
+                item.Number = 50;
+                item.Name = "Tiny Health Potion";
+            }
+            else if (o.EnemyLevel < 65)
+            {
+                item.Number = 300;
+                item.Name = "Health Potion";
+            }
+            else
+            {
+                item.Number = 1000;
+                item.Name = "Big Health Potion";
+            }
+
+            return new Treasure(item);
+        }
+
+        private static ITreasure CreateTravelersCoin(Zone.Description o)
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(Items.Actions.Resurrect),
+            };
+
+            item.Number = 25;
+            item.Name = "Traveler's Coin";
+
+            return new Treasure(item);
         }
 
         private int GetZoneSeed(int index)
