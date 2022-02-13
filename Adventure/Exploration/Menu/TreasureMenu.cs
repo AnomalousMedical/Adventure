@@ -21,7 +21,7 @@ namespace Adventure.Exploration.Menu
         SharpButton discard = new SharpButton() { Text = "Discard" };
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
-        SharpText info = new SharpText();
+        SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
 
         public TreasureMenu
