@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
+    interface IFirstGameStateBuilder
+    {
+        IGameState GetFirstGameState();
+    }
+
     class FirstGameStateBuilder : IFirstGameStateBuilder
     {
         private readonly IGameState gameState;

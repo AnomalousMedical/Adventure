@@ -13,6 +13,11 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
+    interface ISetupGameState : IGameState
+    {
+        void Link(IGameState nextState);
+    }
+
     class SetupGameState : ISetupGameState
     {
         private readonly IZoneManager zoneManager;

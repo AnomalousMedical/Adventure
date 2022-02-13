@@ -1,6 +1,0 @@
-﻿namespace Adventure
-{
-    interface IEnvMapManager
-    {
-    }
-}

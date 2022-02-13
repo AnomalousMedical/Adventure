@@ -8,6 +8,15 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
+    interface IBattleScreenLayout
+    {
+        ColumnLayout InfoColumn { get; }
+
+        void LayoutBattleMenu(params ILayoutItem[] items);
+        public void LayoutBattleMenu(IEnumerable<ILayoutItem> items);
+        void LayoutCommonItems();
+    }
+
     class BattleScreenLayout : IBattleScreenLayout
     {
         private readonly IScreenPositioner screenPositioner;

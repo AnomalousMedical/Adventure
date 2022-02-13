@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
+    interface IMagicAbilities
+    {
+        void AddSpell(ISpell spell);
+        void AddSpells(IEnumerable<ISpell> spell);
+        bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISpell> spellSelectedCb);
+    }
+
     class MagicAbilities : IMagicAbilities
     {
         private readonly IBattleScreenLayout battleScreenLayout;
