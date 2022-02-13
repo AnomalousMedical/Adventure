@@ -39,5 +39,12 @@ namespace SharpGui
         {
             return new IntRect(window.WindowWidth / 2 - size.Width / 2, window.WindowHeight / 2 - size.Height / 2, size.Width, size.Height);
         }
+
+        public IntRect GetCenterTopRect(in IntSize2 size)
+        {
+            return new IntRect(window.WindowWidth / 2 - size.Width / 2, 0, size.Width, size.Height);
+        }
+
+        public IntSize2 ScreenSize => new IntSize2(window.WindowWidth, window.WindowHeight);
     }
 }

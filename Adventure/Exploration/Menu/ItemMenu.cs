@@ -54,6 +54,12 @@ namespace Adventure.Exploration.Menu
                     }
 
                     var button = buttons[i];
+
+                    if(button.Rect.Bottom > Bottom)
+                    {
+                        break;
+                    }
+
                     button.Text = item.Text;
 
                     if (sharpGui.Button(button, navUp: buttons[previous].Id, navDown: buttons[next].Id))
@@ -74,6 +80,8 @@ namespace Adventure.Exploration.Menu
         public int Margin { get; set; }
 
         public int MaxWidth { get; set; }
+
+        public int Bottom { get; set; } = int.MaxValue;
     }
 
     class ItemMenu : IExplorationSubMenu
@@ -82,7 +90,7 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private ButtonColumn itemButtons = new ButtonColumn(5);
+        private ButtonColumn itemButtons = new ButtonColumn(25);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
@@ -127,7 +135,8 @@ namespace Adventure.Exploration.Menu
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
-            itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), p => screenPositioner.GetCenterRect(p));
+            itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+            itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), p => screenPositioner.GetCenterTopRect(p));
 
             if (sharpGui.Button(previous))
             {
