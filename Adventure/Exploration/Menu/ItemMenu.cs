@@ -20,7 +20,7 @@ namespace Adventure.Exploration.Menu
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText();
+        SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
 
         public ItemMenu
@@ -57,7 +57,29 @@ namespace Adventure.Exploration.Menu
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
             sharpGui.Text(info);
-            info.Text = characterData.CharacterSheet.Name;
+            info.Text = 
+$@"{characterData.CharacterSheet.Name}
+ 
+Lvl: {characterData.CharacterSheet.Level}
+
+HP:  {characterData.CharacterSheet.Hp}
+MP:  {characterData.CharacterSheet.Mp}
+ 
+Att:   {characterData.CharacterSheet.Attack}
+Att%:  {characterData.CharacterSheet.AttackPercent}
+MAtt:  {characterData.CharacterSheet.MagicAttack}
+MAtt%: {characterData.CharacterSheet.MagicAttackPercent}
+Def:   {characterData.CharacterSheet.Defense}
+Def%:  {characterData.CharacterSheet.DefensePercent}
+MDef:  {characterData.CharacterSheet.MagicDefense}
+MDef%: {characterData.CharacterSheet.MagicDefensePercent}
+ 
+Str: {characterData.CharacterSheet.BaseStrength}
+Mag: {characterData.CharacterSheet.BaseMagic}
+Vit: {characterData.CharacterSheet.BaseVitality}
+Spr: {characterData.CharacterSheet.BaseSpirit}
+Dex: {characterData.CharacterSheet.BaseDexterity}
+Lck: {characterData.CharacterSheet.Luck}";
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
