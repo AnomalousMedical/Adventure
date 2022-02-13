@@ -98,5 +98,7 @@ struct AngularInfo
 
 
 // Small offset between ray intersection and new ray origin to avoid self-intersections.
-# define SMALL_OFFSET 0.0001
+//TODO: IT might be ideal to move this epsilon to config struct.
+//This value is fairly large, but it fixes the triangles that appear in the world mesh
+# define SMALL_OFFSET 0.1
 
