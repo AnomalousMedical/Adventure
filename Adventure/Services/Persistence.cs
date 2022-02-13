@@ -28,6 +28,11 @@ namespace Adventure.Services
 
         public PartyData Party { get; set; } = new PartyData();
 
+        public Inventory Storage { get; set; } = new Inventory()
+        {
+            Size = 10000
+        };
+
         public class PersistenceEntry<T>
                 where T : struct
         {

@@ -17,9 +17,10 @@ namespace Adventure.Exploration.Menu
         private readonly IScreenPositioner screenPositioner;
         private Stack<ITreasure> currentTreasure;
         SharpButton take = new SharpButton();
+        SharpButton store = new SharpButton() { Text = "Store" };
+        SharpButton discard = new SharpButton() { Text = "Discard" };
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
-        SharpButton back = new SharpButton() { Text = "Back" };
         SharpText info = new SharpText();
         private int currentSheet;
 
@@ -62,7 +63,7 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(take, new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(take, store, discard, new RowLayout(previous, next)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -77,6 +78,18 @@ namespace Adventure.Exploration.Menu
                 currentTreasure.Pop();
                 treasure.GiveTo(sheet.Inventory);
             }
+
+            if (persistence.Storage.HasRoom() && sharpGui.Button(store))
+            {
+                currentTreasure.Pop();
+                treasure.GiveTo(persistence.Storage);
+            }
+
+            if (sharpGui.Button(discard))
+            {
+                currentTreasure.Pop();
+            }
+
             if (sharpGui.Button(previous))
             {
                 --currentSheet;
