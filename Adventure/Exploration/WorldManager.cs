@@ -119,7 +119,7 @@ namespace Adventure.Exploration
 
             var acc = new InventoryItem
             {
-                Action = nameof(Items.Actions.EquipOffHand),
+                Action = nameof(Items.Actions.EquipAccessory),
                 Name = $"Test Accessory {o.EnemyLevel}",
                 Equipment = new Equipment
                 {
@@ -131,7 +131,7 @@ namespace Adventure.Exploration
 
             var armor = new InventoryItem
             {
-                Action = nameof(Items.Actions.EquipOffHand),
+                Action = nameof(Items.Actions.EquipBody),
                 Name = $"Test Armor {o.EnemyLevel}",
                 Equipment = new Equipment
                 {
