@@ -11,6 +11,9 @@ namespace SharpGui
 
     public class ButtonColumn
     {
+        private static Guid ScrollUp = Guid.NewGuid();
+        private static Guid ScrollDown = Guid.NewGuid();
+
         private List<SharpButton> buttons;
 
         public ButtonColumn(int numButtons)
@@ -33,9 +36,6 @@ namespace SharpGui
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(GetLayoutPosition(desiredSize));
 
-            var firstButton = buttons[0];
-            SharpButton lastButton;
-
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
             {
@@ -57,14 +57,35 @@ namespace SharpGui
                         break;
                     }
 
+                    Guid navUpId = buttons[previous].Id;
+                    if(i == 0)
+                    {
+                        navUpId = ScrollUp;
+                    }
+
+                    Guid navDownId = buttons[next].Id;
+                    var nextIndex = i + 1;
+                    var nextButton = nextIndex < buttons.Count ? buttons[nextIndex] : null;
+                    if(nextButton == null || nextButton.Rect.Bottom > Bottom)
+                    {
+                        navDownId = ScrollDown;
+                    }
+
                     button.Text = item.Text;
 
-                    if (sharpGui.Button(button, navUp: buttons[previous].Id, navDown: buttons[next].Id))
+                    if (sharpGui.Button(button, navUp: navUpId, navDown: navDownId))
                     {
 
                     }
 
-                    lastButton = buttons[i];
+                    if(sharpGui.FocusedItem == ScrollUp)
+                    {
+                        sharpGui.StealFocus(button.Id);
+                    }
+                    else if (sharpGui.FocusedItem == ScrollDown)
+                    {
+                        sharpGui.StealFocus(button.Id);
+                    }
 
                     previous = i;
                     next = (i + 2) % buttonCount;
