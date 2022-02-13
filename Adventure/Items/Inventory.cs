@@ -34,6 +34,12 @@ namespace Adventure.Items
 
         public void Use(InventoryItem item, CharacterSheet target)
         {
+            if(item.Action == null)
+            {
+                Items.Remove(item);
+                return;
+            }
+
             var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
             action.Use(item, this, target);
         }
