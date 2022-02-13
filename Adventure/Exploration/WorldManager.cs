@@ -143,7 +143,7 @@ namespace Adventure.Exploration
 
             treasures.Add(CreateManaPotion(o));
             treasures.Add(CreateHealthPotion(o));
-            treasures.Add(CreateTravelersCoin(o));
+            treasures.Add(CreateBoatmansCoin(o));
         }
 
         private static ITreasure CreateManaPotion(Zone.Description o)
@@ -198,7 +198,7 @@ namespace Adventure.Exploration
             return new Treasure(item);
         }
 
-        private static ITreasure CreateTravelersCoin(Zone.Description o)
+        private static ITreasure CreateBoatmansCoin(Zone.Description o)
         {
             var item = new InventoryItem
             {
@@ -206,7 +206,7 @@ namespace Adventure.Exploration
             };
 
             item.Number = 25;
-            item.Name = "Traveler's Coin";
+            item.Name = "Boatman's Coin";
 
             return new Treasure(item);
         }
