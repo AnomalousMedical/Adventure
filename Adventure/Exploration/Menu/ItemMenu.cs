@@ -62,8 +62,8 @@ $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
 
-HP:  {characterData.CharacterSheet.Hp}
-MP:  {characterData.CharacterSheet.Mp}
+HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
+MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
  
 Att:   {characterData.CharacterSheet.Attack}
 Att%:  {characterData.CharacterSheet.AttackPercent}
