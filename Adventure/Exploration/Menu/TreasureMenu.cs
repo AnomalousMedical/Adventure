@@ -58,7 +58,6 @@ namespace Adventure.Exploration.Menu
             var sheet = persistence.Party.Members[currentSheet];
 
             take.Text = $"Take {sheet.CharacterSheet.Name}";
-            info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -71,6 +70,7 @@ namespace Adventure.Exploration.Menu
             var treasure = currentTreasure.Peek();
 
             info.Text = treasure.InfoText;
+            info.Rect = screenPositioner.GetCenterRect(info.GetDesiredSize(sharpGui));
             sharpGui.Text(info);
 
             var hasInventoryRoom = sheet.Inventory.HasRoom();
