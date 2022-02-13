@@ -11,11 +11,144 @@ namespace DungeonGenerator
 {
     public class MapMesh
     {
+        private class NormalizingMesh
+        {
+            record Quad(in Vector3 topLeft, in Vector3 topRight, in Vector3 bottomRight, in Vector3 bottomLeft, in Vector3 topLeftNormal, in Vector3 topRightNormal, in Vector3 bottomRightNormal, in Vector3 bottomLeftNormal, in Vector2 uvTopLeft, in Vector2 uvBottomRight)
+            {
+                public Vector3? TopLeftNormalized { get; set; }
+
+                public Vector3? TopRightNormalized { get; set; }
+
+                public Vector3? BottomRightNormalized { get; set; }
+
+                public Vector3? BottomLeftNormalized { get; set; }
+            }
+
+            private Quad[] quads;
+            private int width;
+            private int height;
+
+            public NormalizingMesh(int width, int height)
+            {
+                //Add a border around the mesh
+                width += 2;
+                height += 2;
+
+                quads = new Quad[width * height];
+                this.width = width;
+                this.height = height;
+            }
+
+            public void AddQuad(in Vector3 topLeft, in Vector3 topRight, in Vector3 bottomRight, in Vector3 bottomLeft, in Vector3 topLeftNormal, in Vector3 topRightNormal, in Vector3 bottomRightNormal, in Vector3 bottomLeftNormal, in Vector2 uvTopLeft, in Vector2 uvBottomRight, int mapX, int mapY)
+            {
+                quads[(mapY + 1) * width + mapX + 1] = new Quad(topLeft, topRight, bottomRight, bottomLeft, topLeftNormal, topRightNormal, bottomRightNormal, bottomLeftNormal, uvTopLeft, uvBottomRight);
+            }
+
+            public void Normalize()
+            {
+                CopyNormals();
+                return;
+
+                var walkWidth = width - 1;
+                var walkHeight = height - 1;
+
+                //Because we adjusted above we can walk this way here without special cases
+                for(var x = 1; x < walkWidth; ++x)
+                {
+                    for(var y = 1; y < walkHeight; ++y)
+                    {
+                        var current = quads[y * width + x];
+                        if(current != null)
+                        {
+                            var left = quads[y * width + x - 1];
+                            var right = quads[y * width + x + 1];
+                            var top = quads[(y - 1) * width + x]; //TODO: double check this, might be the other way
+                            var bottom = quads[(y + 1) * width + x];
+
+
+                            current.TopLeftNormalized = current.topLeftNormal
+                                + top?.bottomLeftNormal ?? Vector3.Zero
+                                + left?.topRightNormal ?? Vector3.Zero
+                                ;
+
+                            current.TopLeftNormalized = current.TopLeftNormalized.Value.normalized();
+
+
+                            current.TopRightNormalized = current.topRightNormal
+                                + top?.bottomRightNormal ?? Vector3.Zero
+                                + right?.topLeftNormal ?? Vector3.Zero
+                                ;
+
+                            current.TopRightNormalized = current.TopRightNormalized.Value.normalized();
+
+
+                            current.BottomLeftNormalized = current.bottomLeftNormal
+                                + bottom?.topLeftNormal ?? Vector3.Zero
+                                + left?.bottomRightNormal ?? Vector3.Zero
+                                ;
+
+                            current.BottomLeftNormalized = current.BottomLeftNormalized.Value.normalized();
+
+
+                            current.BottomRightNormalized = current.bottomRightNormal
+                                + bottom?.topRightNormal ?? Vector3.Zero
+                                + right?.bottomLeftNormal ?? Vector3.Zero
+                                ;
+
+                            current.BottomRightNormalized = current.BottomRightNormalized.Value.normalized();
+                        }
+                    }
+                }
+            }
+
+            public void CopyNormals()
+            {
+                var walkWidth = width - 1;
+                var walkHeight = height - 1;
+
+                //Because we adjusted above we can walk this way here without special cases
+                for (var x = 1; x < walkWidth; ++x)
+                {
+                    for (var y = 1; y < walkHeight; ++y)
+                    {
+                        var current = quads[y * width + x];
+                        if (current != null)
+                        {
+                            current.TopLeftNormalized = current.topLeftNormal;
+                            current.TopRightNormalized = current.topRightNormal;
+                            current.BottomLeftNormalized = current.bottomLeftNormal;
+                            current.BottomRightNormalized = current.bottomRightNormal;
+                        }
+                    }
+                }
+            }
+
+            public void AddToMesh(MeshBLAS meshBlas)
+            {
+                //It won't matter that we walk the extras, they are just null
+                foreach(Quad quad in quads)
+                {
+                    if(quad != null)
+                    {
+                        meshBlas.AddQuad(
+                            quad.topLeft, 
+                            quad.topRight, 
+                            quad.bottomRight, 
+                            quad.bottomLeft, 
+                            quad.TopLeftNormalized.Value, 
+                            quad.TopRightNormalized.Value, 
+                            quad.BottomRightNormalized.Value, 
+                            quad.BottomLeftNormalized.Value, 
+                            quad.uvTopLeft, 
+                            quad.uvBottomRight);
+                    }
+                }
+            }
+        }
+
         private readonly csMapbuilder mapbuilder;
         public csMapbuilder MapBuilder => mapbuilder;
 
-        private MeshBLAS floorMesh;
-        private MeshBLAS wallMesh;
         private List<MapMeshPosition> floorCubeCenterPoints;
         private List<Vector3> boundaryCubeCenterPoints;
         private MapMeshSquareInfo[,] squareInfo; //This array is 1 larger in each dimension, use accessor to translate points
@@ -187,8 +320,8 @@ namespace DungeonGenerator
             squareInfo = new MapMeshSquareInfo[squareCenterMapWidth, squareCenterMapHeight];
             MapMeshTempSquareInfo[,] tempSquareInfo = new MapMeshTempSquareInfo[squareCenterMapWidth, squareCenterMapHeight];
             this.mapbuilder = mapbuilder;
-            this.floorMesh = floorMesh;
-            this.wallMesh = wallMesh;
+            this.FloorMesh = floorMesh;
+            this.WallMesh = wallMesh;
 
             //Figure out number of quads
             uint numFloorQuads = 0;
@@ -241,10 +374,6 @@ namespace DungeonGenerator
                 }
             }
 
-            //Make mesh
-            floorMesh.Begin(numFloorQuads);
-            wallMesh.Begin(numWallQuads);
-
             boundaryCubeCenterPoints = new List<Vector3>((int)(numBoundaryCubes));
             floorCubeCenterPoints = new List<MapMeshPosition>((int)(numFloorCubes));
 
@@ -254,11 +383,14 @@ namespace DungeonGenerator
                 yUvBottom = MapUnitY / MapUnitX;
             }
 
+            var normalizingFloorMesh = new NormalizingMesh(mapWidth, mapHeight);
+            var normalizingWallMesh = new NormalizingMesh(mapWidth, mapHeight);
+
             //Walk all corridors and rooms, this forms the baseline heightmap
             var processedSquares = new bool[mapWidth, mapHeight]; //Its too hard to prevent duplicates from the source just record if a room is done
             var firstCorridor = mapbuilder.Corridors[0];
             currentCorridor = map[firstCorridor.x, firstCorridor.y];
-            ProcessRoom(mapbuilder, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, 0);
+            ProcessRoom(mapbuilder, normalizingFloorMesh, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, 0);
             foreach (var corridor in mapbuilder.Corridors)
             {
                 var mapX = corridor.x;
@@ -270,7 +402,7 @@ namespace DungeonGenerator
                     var roomId = mapbuilder.GetCorridorTerminatingRoom(currentCorridor);
                     if (roomId != csMapbuilder.CorridorCell)
                     {
-                        ProcessRoom(mapbuilder, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, roomId);
+                        ProcessRoom(mapbuilder, normalizingFloorMesh, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, roomId);
                     }
 
                     currentCorridor = cellType;
@@ -279,11 +411,11 @@ namespace DungeonGenerator
                 if (!processedSquares[mapX, mapY])
                 {
                     processedSquares[mapX, mapY] = true;
-                    ProcessSquare(halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                    ProcessSquare(normalizingFloorMesh, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                 }
             }
             UInt16 lastRoomId = (UInt16)(mapbuilder.Rooms.Count - 1);
-            ProcessRoom(mapbuilder, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, lastRoomId);
+            ProcessRoom(mapbuilder, normalizingFloorMesh, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, processedSquares, lastRoomId);
 
             //Figure out heights for remaining squares, which are just empty squares
             //This will make a smooth terrain
@@ -595,10 +727,19 @@ namespace DungeonGenerator
                 {
                     if (!processedSquares[mapX, mapY])
                     {
-                        RenderEmptySquare(tempSquareInfo, mapY, mapX);
+                        RenderEmptySquare(tempSquareInfo, normalizingWallMesh, mapY, mapX);
                     }
                 }
             }
+
+            floorMesh.Begin(numFloorQuads);
+            wallMesh.Begin(numWallQuads);
+
+            normalizingFloorMesh.Normalize();
+            normalizingWallMesh.Normalize();
+
+            normalizingFloorMesh.AddToMesh(floorMesh);
+            normalizingWallMesh.AddToMesh(wallMesh);
         }
 
         public Vector3 PointToVector(int x, int y)
@@ -606,11 +747,11 @@ namespace DungeonGenerator
             return squareInfo[x + 1, y + 1].Center;
         }
 
-        public MeshBLAS FloorMesh => floorMesh;
+        public MeshBLAS FloorMesh { get; }
 
-        public MeshBLAS WallMesh => wallMesh;
+        public MeshBLAS WallMesh { get; }
 
-        private void ProcessRoom(csMapbuilder mapbuilder, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, ushort[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, bool[,] processedSquares, ushort roomId)
+        private void ProcessRoom(csMapbuilder mapbuilder, NormalizingMesh nFloorMesh, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, ushort[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, bool[,] processedSquares, ushort roomId)
         {
             var room = mapbuilder.Rooms[roomId];
             var bottom = room.Bottom;
@@ -622,13 +763,13 @@ namespace DungeonGenerator
                     if (!processedSquares[roomX, roomY])
                     {
                         processedSquares[roomX, roomY] = true;
-                        ProcessSquare(halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, roomX, roomY, mapbuilder);
+                        ProcessSquare(nFloorMesh, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, roomX, roomY, mapbuilder);
                     }
                 }
             }
         }
 
-        private void ProcessSquare(float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, ushort[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csMapbuilder mapbuilder)
+        private void ProcessSquare(NormalizingMesh nFloorMesh, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, ushort[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csMapbuilder mapbuilder)
         {
             //This is a bit odd, corridors previous points are the previous square, but room previous points are their terminating corrdor square
             //This will work ok with some of the calculations below since rooms are always 0 rotation anyway
@@ -726,7 +867,7 @@ namespace DungeonGenerator
             {
                 //Floor
                 GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
-                floorMesh.AddQuad(
+                nFloorMesh.AddQuad(
                     new Vector3(left, floorFarLeftY, far),
                     new Vector3(right, floorFarRightY, far),
                     new Vector3(right, floorNearRightY, near),
@@ -736,7 +877,9 @@ namespace DungeonGenerator
                     floorNormal,
                     floorNormal,
                     topLeft,
-                    bottomRight);
+                    bottomRight,
+                    mapX,
+                    mapY);
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
@@ -855,7 +998,7 @@ namespace DungeonGenerator
             }
         }
 
-        private void RenderEmptySquare(MapMeshTempSquareInfo[,] tempSquareInfo, int mapY, int mapX)
+        private void RenderEmptySquare(MapMeshTempSquareInfo[,] tempSquareInfo, NormalizingMesh nWallMesh, int mapY, int mapX)
         {
             var left = mapX * MapUnitX;
             var right = left + MapUnitX;
@@ -1001,7 +1144,7 @@ namespace DungeonGenerator
 
             GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
 
-            wallMesh.AddQuad(
+            nWallMesh.AddQuad(
                 leftFar,
                 rightFar,
                 rightNear,
@@ -1015,7 +1158,9 @@ namespace DungeonGenerator
                 //cross,
                 //cross,
                 topLeft,
-                bottomRight);
+                bottomRight,
+                mapX,
+                mapY);
         }
 
         private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom)
