@@ -73,24 +73,28 @@ namespace Adventure.Exploration.Menu
             info.Text = treasure.InfoText;
             sharpGui.Text(info);
 
-            if (sheet.Inventory.HasRoom() && sharpGui.Button(take))
+            var hasInventoryRoom = sheet.Inventory.HasRoom();
+            var hasStorageRoom = persistence.Storage.HasRoom();
+
+            if (hasInventoryRoom && sharpGui.Button(take, navUp: previous.Id, navDown: hasStorageRoom ? store.Id : discard.Id))
             {
                 currentTreasure.Pop();
                 treasure.GiveTo(sheet.Inventory);
             }
 
-            if (persistence.Storage.HasRoom() && sharpGui.Button(store))
+            if (hasStorageRoom && sharpGui.Button(store, navUp: hasInventoryRoom ? take.Id : previous.Id, discard.Id))
             {
                 currentTreasure.Pop();
                 treasure.GiveTo(persistence.Storage);
             }
 
-            if (sharpGui.Button(discard))
+            if (sharpGui.Button(discard, navUp: hasStorageRoom ? store.Id : hasInventoryRoom ? take.Id : previous.Id, navDown: previous.Id))
             {
                 currentTreasure.Pop();
             }
 
-            if (sharpGui.Button(previous))
+            var bottomNavDown = hasInventoryRoom ? take.Id : hasStorageRoom ? store.Id : discard.Id;
+            if (sharpGui.Button(previous, navUp: discard.Id, navDown: bottomNavDown, navLeft: next.Id, navRight: next.Id))
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -98,7 +102,7 @@ namespace Adventure.Exploration.Menu
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next))
+            if (sharpGui.Button(next, navUp: discard.Id, navDown: bottomNavDown, navLeft: previous.Id, navRight: previous.Id))
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Party.Members.Count)
