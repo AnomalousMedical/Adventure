@@ -21,7 +21,6 @@ namespace Adventure.Exploration
         private readonly IBiomeManager biomeManager;
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
-        private IEquipmentCurve equipmentCurve;
         private readonly SwordCreator swordCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly StaffCreator staffCreator;
@@ -34,7 +33,6 @@ namespace Adventure.Exploration
         (
             Persistence persistence,
             IBiomeManager biomeManager,
-            IEquipmentCurve equipmentCurve,
             SwordCreator swordCreator,
             ShieldCreator shieldCreator,
             StaffCreator staffCreator,
@@ -46,7 +44,6 @@ namespace Adventure.Exploration
         {
             this.zoneRandom = new Random(persistence.World.Seed);
             this.biomeManager = biomeManager;
-            this.equipmentCurve = equipmentCurve;
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;
             this.staffCreator = staffCreator;

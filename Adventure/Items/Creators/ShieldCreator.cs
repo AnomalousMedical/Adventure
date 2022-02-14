@@ -1,5 +1,7 @@
 ﻿using Adventure.Assets.Equipment;
+using Adventure.Items.Actions;
 using RpgMath;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,17 @@ namespace Adventure.Items.Creators
         {
             this.equipmentCurve = equipmentCurve;
             this.nameGenerator = nameGenerator;
+        }
+
+        public ButtonColumnItem<Func<InventoryItem>> CreateShopEntry(int level)
+        {
+            var adjective = nameGenerator.GetLevelName(level);
+
+            return new ButtonColumnItem<Func<InventoryItem>>()
+            {
+                Text = $"{adjective} Shield",
+                Item = () => new InventoryItem(CreateNormal(level), nameof(EquipMainHand))
+            };
         }
 
         public Equipment CreateNormal(int level)

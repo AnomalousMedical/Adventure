@@ -1,4 +1,5 @@
 ﻿using Adventure.Items;
+using Adventure.Items.Creators;
 using Adventure.Services;
 using Engine;
 using SharpGui;
@@ -17,11 +18,19 @@ namespace Adventure.Exploration.Menu
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly IZoneManager zoneManager;
+        private readonly SwordCreator swordCreator;
+        private readonly ShieldCreator shieldCreator;
+        private readonly StaffCreator staffCreator;
+        private readonly AccessoryCreator accessoryCreator;
+        private readonly ArmorCreator armorCreator;
+        private readonly PotionCreator potionCreator;
+        private readonly AxeCreator axeCreator;
         private ButtonColumn itemButtons = new ButtonColumn(25);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
         SharpText info = new SharpText() { Color = Color.White };
+        SharpText info2 = new SharpText() { Color = Color.White };
         private int currentSheet;
 
         public BuyMenu
@@ -30,7 +39,14 @@ namespace Adventure.Exploration.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            IZoneManager zoneManager
+            IZoneManager zoneManager,
+            SwordCreator swordCreator,
+            ShieldCreator shieldCreator,
+            StaffCreator staffCreator,
+            AccessoryCreator accessoryCreator,
+            ArmorCreator armorCreator,
+            PotionCreator potionCreator,
+            AxeCreator axeCreator
         )
         {
             this.persistence = persistence;
@@ -38,6 +54,13 @@ namespace Adventure.Exploration.Menu
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.zoneManager = zoneManager;
+            this.swordCreator = swordCreator;
+            this.shieldCreator = shieldCreator;
+            this.staffCreator = staffCreator;
+            this.accessoryCreator = accessoryCreator;
+            this.armorCreator = armorCreator;
+            this.potionCreator = potionCreator;
+            this.axeCreator = axeCreator;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
@@ -48,8 +71,6 @@ namespace Adventure.Exploration.Menu
             }
             var characterData = persistence.Party.Members[currentSheet];
 
-            info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
-
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
@@ -59,7 +80,6 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            sharpGui.Text(info);
             info.Text = 
 $@"{characterData.CharacterSheet.Name}
  
@@ -84,19 +104,28 @@ Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
 Lck: {characterData.CharacterSheet.Luck}";
 
+            info2.Text = $@"Gold: {persistence.Party.Gold}"; //TODO: Showing the gold, but need to acutally spend it
+                        
+            info.Rect = screenPositioner.GetTopLeftRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info).GetDesiredSize(sharpGui));
+            info2.Rect = screenPositioner.GetTopRightRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2).GetDesiredSize(sharpGui));
+
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+
+            sharpGui.Text(info);
+            sharpGui.Text(info2);
+
+            var canBuy = characterData.Inventory.Items.Count < characterData.Inventory.Size;
+
             var selectedItem = itemButtons.Show(sharpGui, ShopItems(), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
-
-            var hasItems = characterData.Inventory.Items.Count > 0;
-
-            if (selectedItem != null)
+            if (canBuy && selectedItem != null)
             {
-                //characterData.Inventory.Use(selectedItem, characterData.CharacterSheet);
+                var item = selectedItem();
+                characterData.Inventory.Items.Add(item);
             }
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -104,7 +133,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     currentSheet = persistence.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasItems ? itemButtons.TopButton : previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Party.Members.Count)
@@ -112,18 +141,100 @@ Lck: {characterData.CharacterSheet.Luck}";
                     currentSheet = 0;
                 }
             }
-            if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: hasItems ? itemButtons.TopButton : back.Id, navRight: hasItems ? itemButtons.TopButton : back.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: itemButtons.TopButton, navRight: itemButtons.TopButton) || sharpGui.IsStandardBackPressed())
             {
                 menu.RequestSubMenu(menu.RootMenu);
             }
         }
 
-        private IEnumerable<ButtonColumnItem<String>> ShopItems()
+        private IEnumerable<ButtonColumnItem<Func<InventoryItem>>> ShopItems()
         {
             var level = zoneManager.Current.EnemyLevel;
 
-            yield return new ButtonColumnItem<String>() { Text = "Item 0" };
-            yield return new ButtonColumnItem<String>() { Text = "Item 1" };
+            if (level > 89)
+            {
+                foreach(var item in CreateShopLevel(90))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 79)
+            {
+                foreach (var item in CreateShopLevel(80))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 69)
+            {
+                foreach (var item in CreateShopLevel(70))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 59)
+            {
+                foreach (var item in CreateShopLevel(60))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 49)
+            {
+                foreach (var item in CreateShopLevel(50))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 39)
+            {
+                foreach (var item in CreateShopLevel(40))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 29)
+            {
+                foreach (var item in CreateShopLevel(30))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 19)
+            {
+                foreach (var item in CreateShopLevel(20))
+                {
+                    yield return item;
+                }
+            }
+
+            if (level > 9)
+            {
+                foreach (var item in CreateShopLevel(10))
+                {
+                    yield return item;
+                }
+            }
+
+            foreach (var item in CreateShopLevel(1))
+            {
+                yield return item;
+            }
+        }
+
+        private IEnumerable<ButtonColumnItem<Func<InventoryItem>>> CreateShopLevel(int level)
+        {
+            yield return swordCreator.CreateShopEntry(level);
+            yield return staffCreator.CreateShopEntry(level);
+            yield return axeCreator.CreateShopEntry(level);
+            yield return shieldCreator.CreateShopEntry(level);
         }
     }
 }
