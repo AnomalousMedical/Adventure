@@ -9,8 +9,8 @@ namespace Adventure.Assets
 {
     interface IAssetFactory
     {
-        IPlayerSprite CreatePlayerSprite(string name);
-        ISpriteAsset CreateSprite(string name);
+        IPlayerSprite CreatePlayer(string name);
+        ISpriteAsset CreateEquipment(string name);
     }
 
     class AssetFactory : IAssetFactory
@@ -22,14 +22,14 @@ namespace Adventure.Assets
             this.simpleActivator = simpleActivator;
         }
 
-        public ISpriteAsset CreateSprite(String name)
+        public ISpriteAsset CreateEquipment(String name)
         {
-            return simpleActivator.CreateInstance<ISpriteAsset>($"Adventure.Assets.Original.{name}");
+            return simpleActivator.CreateInstance<ISpriteAsset>($"Adventure.Assets.Equipment.{name}");
         }
 
-        public IPlayerSprite CreatePlayerSprite(String name)
+        public IPlayerSprite CreatePlayer(String name)
         {
-            return simpleActivator.CreateInstance<IPlayerSprite>($"Adventure.Assets.Original.{name}");
+            return simpleActivator.CreateInstance<IPlayerSprite>($"Adventure.Assets.Players.{name}");
         }
     }
 }

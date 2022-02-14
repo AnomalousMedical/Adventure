@@ -38,16 +38,16 @@ namespace Adventure.Services
                 {
                     AttackPercent = 100,
                     Attack = 18,
-                    Sprite = nameof(Assets.Original.Greatsword01)
+                    Sprite = nameof(Assets.Equipment.Greatsword01)
                 };
                 sheet.OffHand = new Equipment
                 {
-                    Sprite = nameof(Assets.Original.ShieldOfReflection),
+                    Sprite = nameof(Assets.Equipment.ShieldOfReflection),
                     Defense = 18,
                 };
                 var hero = new Persistence.CharacterData()
                 {
-                    PlayerSprite = nameof(Assets.Original.FighterPlayerSprite),
+                    PlayerSprite = nameof(Assets.Players.FighterPlayerSprite),
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
@@ -64,12 +64,12 @@ namespace Adventure.Services
                     Attack = 9,
                     MagicAttack = 32,
                     TwoHanded = true,
-                    Sprite = nameof(Assets.Original.Staff07),
+                    Sprite = nameof(Assets.Equipment.Staff07),
                     Spells = new string[] { nameof(Fir), nameof(Fyre), nameof(Meltdown) }
                 };
                 var hero = new Persistence.CharacterData()
                 {
-                    PlayerSprite = nameof(Assets.Original.MagePlayerSprite),
+                    PlayerSprite = nameof(Assets.Players.MagePlayerSprite),
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
@@ -83,17 +83,17 @@ namespace Adventure.Services
                 {
                     AttackPercent = 100,
                     Attack = 18,
-                    Sprite = nameof(Assets.Original.DaggerNew),
+                    Sprite = nameof(Assets.Equipment.DaggerNew),
                 };
                 sheet.OffHand = new Equipment()
                 {
                     AttackPercent = 100,
                     Attack = 18,
-                    Sprite = nameof(Assets.Original.DaggerNew),
+                    Sprite = nameof(Assets.Equipment.DaggerNew),
                 };
                 var hero = new Persistence.CharacterData()
                 {
-                    PlayerSprite = nameof(Assets.Original.ThiefPlayerSprite),
+                    PlayerSprite = nameof(Assets.Players.ThiefPlayerSprite),
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
@@ -108,12 +108,12 @@ namespace Adventure.Services
                     AttackPercent = 100,
                     Attack = 18,
                     MagicAttack = 18,
-                    Sprite = nameof(Assets.Original.BattleAxe6),
+                    Sprite = nameof(Assets.Equipment.BattleAxe6),
                     Spells = new String[] { nameof(Cure) }
                 };
                 var hero = new Persistence.CharacterData()
                 {
-                    PlayerSprite = nameof(Assets.Original.ClericPlayerSprite),
+                    PlayerSprite = nameof(Assets.Players.ClericPlayerSprite),
                     CharacterSheet = sheet
                 };
                 hero.CharacterSheet.Rest();

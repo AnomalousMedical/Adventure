@@ -71,6 +71,6 @@ namespace Adventure
         /// <summary>
         /// The tent asset to use for this biome.
         /// </summary>
-        public ISpriteAsset RestAsset { get; set; } = new Assets.Original.Tent();
+        public ISpriteAsset RestAsset { get; set; } = new Assets.World.Tent();
     }
 }

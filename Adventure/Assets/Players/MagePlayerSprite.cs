@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Assets.Original
+namespace Adventure.Assets.Players
 {
     internal class MagePlayerSprite : PlayerSprite
     {

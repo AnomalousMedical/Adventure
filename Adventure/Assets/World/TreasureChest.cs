@@ -3,7 +3,7 @@ using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
 
-namespace Adventure.Assets.Original
+namespace Adventure.Assets.World
 {
     class TreasureChest : ISpriteAsset
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Assets.Original
+namespace Adventure.Assets.Players
 {
     public abstract class PlayerSprite : IPlayerSprite
     {

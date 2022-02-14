@@ -111,7 +111,7 @@ namespace Adventure.Battle
             ISpellFactory spellFactory)
         {
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
-            this.playerSpriteInfo = assetFactory.CreatePlayerSprite(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
+            this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
             this.magicAbilities = magicAbilities;
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
@@ -614,7 +614,7 @@ namespace Adventure.Battle
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
-                    var asset = assetFactory.CreateSprite(characterSheet.MainHand.Sprite);
+                    var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
@@ -629,7 +629,7 @@ namespace Adventure.Battle
             {
                 offHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
-                    var asset = assetFactory.CreateSprite(characterSheet.OffHand.Sprite);
+                    var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();

@@ -104,7 +104,7 @@ namespace Adventure
             IAssetFactory assetFactory
         )
         {
-            var playerSpriteInfo = assetFactory.CreatePlayerSprite(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
+            var playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
             this.characterSheet = description.CharacterSheet;
@@ -467,7 +467,7 @@ namespace Adventure
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
-                    var asset = assetFactory.CreateSprite(characterSheet.MainHand.Sprite);
+                    var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
@@ -482,7 +482,7 @@ namespace Adventure
             {
                 offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
-                    var asset = assetFactory.CreateSprite(characterSheet.OffHand.Sprite);
+                    var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
