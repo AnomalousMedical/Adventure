@@ -25,6 +25,9 @@ namespace Adventure.Exploration
         private readonly SwordCreator swordCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly StaffCreator staffCreator;
+        private readonly AccessoryCreator accessoryCreator;
+        private readonly ArmorCreator armorCreator;
+        private readonly PotionCreator potionCreator;
 
         public WorldManager
         (
@@ -33,7 +36,10 @@ namespace Adventure.Exploration
             IEquipmentCurve equipmentCurve,
             SwordCreator swordCreator,
             ShieldCreator shieldCreator,
-            StaffCreator staffCreator
+            StaffCreator staffCreator,
+            AccessoryCreator accessoryCreator,
+            ArmorCreator armorCreator,
+            PotionCreator potionCreator
         )
         {
             this.zoneRandom = new Random(persistence.World.Seed);
@@ -42,6 +48,9 @@ namespace Adventure.Exploration
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;
             this.staffCreator = staffCreator;
+            this.accessoryCreator = accessoryCreator;
+            this.armorCreator = armorCreator;
+            this.potionCreator = potionCreator;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -98,98 +107,16 @@ namespace Adventure.Exploration
             var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
             treasures.Add(new Treasure(shield));
 
-            var acc = new InventoryItem
-            {
-                Action = nameof(Items.Actions.EquipAccessory),
-                Name = $"Test Accessory {o.EnemyLevel}",
-                Equipment = new Equipment
-                {
-                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
-                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
-                }
-            };
-            treasures.Add(new Treasure(acc));
+            //These don't really do anything right now
+            //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));
+            //treasures.Add(new Treasure(acc));
 
-            var armor = new InventoryItem
-            {
-                Action = nameof(Items.Actions.EquipBody),
-                Name = $"Test Armor {o.EnemyLevel}",
-                Equipment = new Equipment
-                {
-                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
-                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
-                }
-            };
+            var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
             treasures.Add(new Treasure(armor));
 
-            treasures.Add(CreateManaPotion(o));
-            treasures.Add(CreateHealthPotion(o));
-            treasures.Add(CreateBoatmansCoin(o));
-        }
-
-        private static ITreasure CreateManaPotion(Zone.Description o)
-        {
-            var item = new InventoryItem
-            {
-                Action = nameof(Items.Actions.RestoreMp),
-            };
-
-            if (o.EnemyLevel < 30)
-            {
-                item.Number = 25;
-                item.Name = "Tiny Mana Potion";
-            }
-            else if (o.EnemyLevel < 65)
-            {
-                item.Number = 75;
-                item.Name = "Mana Potion";
-            }
-            else
-            {
-                item.Number = 150;
-                item.Name = "Big Mana Potion";
-            }
-
-            return new Treasure(item);
-        }
-
-        private static ITreasure CreateHealthPotion(Zone.Description o)
-        {
-            var item = new InventoryItem
-            {
-                Action = nameof(Items.Actions.RestoreHp),
-            };
-
-            if (o.EnemyLevel < 30)
-            {
-                item.Number = 50;
-                item.Name = "Tiny Health Potion";
-            }
-            else if (o.EnemyLevel < 65)
-            {
-                item.Number = 300;
-                item.Name = "Health Potion";
-            }
-            else
-            {
-                item.Number = 1000;
-                item.Name = "Big Health Potion";
-            }
-
-            return new Treasure(item);
-        }
-
-        private static ITreasure CreateBoatmansCoin(Zone.Description o)
-        {
-            var item = new InventoryItem
-            {
-                Action = nameof(Items.Actions.Resurrect),
-            };
-
-            item.Number = 25;
-            item.Name = "Boatman's Coin";
-
-            return new Treasure(item);
+            treasures.Add(potionCreator.CreateManaPotion(o.EnemyLevel));
+            treasures.Add(potionCreator.CreateHealthPotion(o.EnemyLevel));
+            treasures.Add(potionCreator.CreateFerrymansBribe());
         }
 
         private int GetZoneSeed(int index)
