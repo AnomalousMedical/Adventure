@@ -67,6 +67,13 @@ namespace RogueLikeMapBuilder
 
         public UInt16 SouthConnectorIndex { get; private set; } = NullCell;
 
+        public UInt16 WestConnectorRoom { get; private set; } = NullCell;
+
+        public UInt16 EastConnectorRoom { get; private set; } = NullCell;
+
+        public UInt16 NorthConnectorRoom { get; private set; } = NullCell;
+
+        public UInt16 SouthConnectorRoom { get; private set; } = NullCell;
 
         #region builder public properties
 
@@ -327,6 +334,7 @@ namespace RogueLikeMapBuilder
                     {
                         x = lookX;
                         y = lookY;
+                        NorthConnectorRoom = cell;
                         looking = false;
                     }
                 }
@@ -370,6 +378,7 @@ namespace RogueLikeMapBuilder
                     {
                         x = lookX;
                         y = lookY;
+                        SouthConnectorRoom = cell;
                         looking = false;
                     }
                 }
@@ -413,6 +422,7 @@ namespace RogueLikeMapBuilder
                     {
                         x = lookX;
                         y = lookY;
+                        WestConnectorRoom = cell;
                         looking = false;
                     }
                 }
@@ -457,6 +467,7 @@ namespace RogueLikeMapBuilder
                     {
                         x = lookX;
                         y = lookY;
+                        EastConnectorRoom = cell;
                         looking = false;
                     }
                 }
