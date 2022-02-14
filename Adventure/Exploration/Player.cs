@@ -472,6 +472,7 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
+                Sprite_FrameChanged(sprite);
             }
         }
 
@@ -487,6 +488,7 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
+                Sprite_FrameChanged(sprite);
             }
         }
     }
