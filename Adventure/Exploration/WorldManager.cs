@@ -28,6 +28,7 @@ namespace Adventure.Exploration
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
+        private readonly AxeCreator axeCreator;
 
         public WorldManager
         (
@@ -39,7 +40,8 @@ namespace Adventure.Exploration
             StaffCreator staffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
-            PotionCreator potionCreator
+            PotionCreator potionCreator,
+            AxeCreator axeCreator
         )
         {
             this.zoneRandom = new Random(persistence.World.Seed);
@@ -51,6 +53,7 @@ namespace Adventure.Exploration
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
+            this.axeCreator = axeCreator;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -93,16 +96,21 @@ namespace Adventure.Exploration
             var treasures = new List<ITreasure>();
             o.Treasure = treasures;
 
-            if (zoneIndex % 2 == 0)
+            InventoryItem weapon = null;
+            switch (zoneIndex % 3)
             {
-                var weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
+                case 0:
+                    weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                    break;
+                case 1:
+                    weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                    break;
+                case 2:
+                    weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                    break;
             }
-            else
-            {
-                var weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
-            }
+
+            treasures.Add(new Treasure(weapon));
 
             var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
             treasures.Add(new Treasure(shield));

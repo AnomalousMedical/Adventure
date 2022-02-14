@@ -146,6 +146,7 @@ namespace Adventure
             services.AddSingleton<AccessoryCreator>();
             services.AddSingleton<ArmorCreator>();
             services.AddSingleton<PotionCreator>();
+            services.AddSingleton<AxeCreator>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();

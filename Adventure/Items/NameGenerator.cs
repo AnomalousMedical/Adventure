@@ -48,7 +48,7 @@ namespace Adventure.Items
             String adjective;
             if (level < 10)
             {
-                adjective = "Crude";
+                adjective = "Busted";
             }
             else if (level < 20)
             {
@@ -56,19 +56,19 @@ namespace Adventure.Items
             }
             else if (level < 30)
             {
-                adjective = "Aged";
+                adjective = "Worn";
             }
             else if (level < 40)
             {
-                adjective = "Worn";
+                adjective = "Common";
             }
             else if (level < 50)
             {
-                adjective = "Common";
+                adjective = "Deluxe";
             }
             else if (level < 60)
             {
-                adjective = "Deluxe";
+                adjective = "Superior";
             }
             else if (level < 70)
             {
@@ -76,7 +76,7 @@ namespace Adventure.Items
             }
             else if (level < 80)
             {
-                adjective = "Superior";
+                adjective = "Customized";
             }
             else if (level < 90)
             {
