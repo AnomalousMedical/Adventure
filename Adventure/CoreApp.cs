@@ -148,6 +148,7 @@ namespace Adventure
             services.AddSingleton<PotionCreator>();
             services.AddSingleton<AxeCreator>();
             services.AddSingleton<BuyMenu>();
+            services.AddSingleton<RestManager>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();

@@ -36,15 +36,12 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
-        private readonly Persistence persistence;
-        private readonly IZoneManager zoneManager;
+        private readonly RestManager restManager;
         private readonly IExplorationGameState explorationGameState;
-        private readonly ITimeClock timeClock;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
         private readonly IBepuScene bepuScene;
-        private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -56,19 +53,18 @@ namespace Adventure
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public RestArea(
+        public RestArea
+        (
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             IBepuScene bepuScene,
             Description description,
-            ICollidableTypeIdentifier collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            Persistence persistence,
-            IZoneManager zoneManager,
-            IExplorationGameState explorationGameState,
-            ITimeClock timeClock)
+            RestManager restManager,
+            IExplorationGameState explorationGameState
+        )
         {
             this.sprite = description.Sprite;
             this.levelIndex = description.ZoneIndex;
@@ -76,13 +72,10 @@ namespace Adventure
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
-            this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
-            this.persistence = persistence;
-            this.zoneManager = zoneManager;
+            this.restManager = restManager;
             this.explorationGameState = explorationGameState;
-            this.timeClock = timeClock;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -175,33 +168,7 @@ namespace Adventure
         private void Rest()
         {
             contextMenu.ClearContext(Rest);
-            persistence.BattleTriggers.ClearData();
-            timeClock.SetTimeRatio(100);
-
-            long? endTime = null;
-
-            explorationGameState.SetExplorationEvent(c =>
-            {
-                if(endTime == null)
-                {
-                    endTime = c.CurrentTimeMicro + (long)(Clock.SecondsToMicro * 1.3f);
-                }
-
-                if(c.CurrentTimeMicro > endTime)
-                {
-                    zoneManager.Rested();
-
-                    foreach (var member in persistence.Party.Members)
-                    {
-                        member.CharacterSheet.Rest();
-                    }
-
-                    timeClock.ResetTimeFactor();
-                    return false;
-                }
-
-                return true;
-            });
+            restManager.Rest(explorationGameState);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
