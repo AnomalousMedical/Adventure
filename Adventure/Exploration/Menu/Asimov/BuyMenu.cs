@@ -118,7 +118,8 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             var canBuy = characterData.Inventory.Items.Count < characterData.Inventory.Size;
 
-            var selectedItem = itemButtons.Show(sharpGui, ShopItems(), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
+            var shopItems = ShopItems().ToArray();
+            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (canBuy && selectedItem != null)
             {
                 var item = selectedItem();
