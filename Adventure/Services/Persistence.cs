@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace Adventure.Services
@@ -102,9 +102,18 @@ namespace Adventure.Services
 
             public String PlayerSprite { get; set; }
 
-            public String PrimaryHandAsset { get; set; }
+            [JsonIgnore]
+            public String PrimaryHandAsset => CharacterSheet.MainHand?.Sprite;
 
-            public String SecondaryHandAsset { get; set; }
+            [JsonIgnore]
+            public String SecondaryHandAsset => CharacterSheet.OffHand?.Sprite;
+
+            public event Action<CharacterData> OnAssetsModified;
+
+            public void FireAssetsModified()
+            {
+                OnAssetsModified?.Invoke(this);
+            }
 
             public IEnumerable<String> Spells { get; set; }
         }

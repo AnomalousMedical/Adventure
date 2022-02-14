@@ -34,17 +34,21 @@ namespace Adventure.Services
             {
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
                 sheet.Name = "Bob";
-                sheet.MainHand =  new Equipment()
+                sheet.MainHand = new Equipment()
                 {
                     AttackPercent = 100,
-                    Attack = 18
+                    Attack = 18,
+                    Sprite = nameof(Assets.Original.Greatsword01)
+                };
+                sheet.OffHand = new Equipment
+                {
+                    Sprite = nameof(Assets.Original.ShieldOfReflection),
+                    Defense = 18,
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.FighterPlayerSprite),
                     CharacterSheet = sheet,
-                    PrimaryHandAsset = nameof(Assets.Original.Greatsword01),
-                    SecondaryHandAsset = nameof(Assets.Original.ShieldOfReflection)
                 };
                 hero.CharacterSheet.Rest();
                 persistence.Party.Members.Add(hero);
@@ -57,13 +61,15 @@ namespace Adventure.Services
                 {
                     AttackPercent = 35,
                     MagicAttackPercent = 100,
-                    Attack = 9
+                    Attack = 9,
+                    MagicAttack = 32,
+                    TwoHanded = true,
+                    Sprite = nameof(Assets.Original.Staff07),
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.MagePlayerSprite),
                     CharacterSheet = sheet,
-                    PrimaryHandAsset = nameof(Assets.Original.Staff07),
                     Spells = new string[] { nameof(Fir), nameof(Fyre), nameof(Meltdown) }
                 };
                 hero.CharacterSheet.Rest();
@@ -76,14 +82,19 @@ namespace Adventure.Services
                 sheet.MainHand = new Equipment()
                 {
                     AttackPercent = 100,
-                    Attack = 18
+                    Attack = 18,
+                    Sprite = nameof(Assets.Original.DaggerNew),
+                };
+                sheet.OffHand = new Equipment()
+                {
+                    AttackPercent = 100,
+                    Attack = 18,
+                    Sprite = nameof(Assets.Original.DaggerNew),
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.ThiefPlayerSprite),
                     CharacterSheet = sheet,
-                    PrimaryHandAsset = nameof(Assets.Original.DaggerNew),
-                    SecondaryHandAsset = nameof(Assets.Original.DaggerNew)
                 };
                 hero.CharacterSheet.Rest();
                 persistence.Party.Members.Add(hero);
@@ -95,13 +106,14 @@ namespace Adventure.Services
                 sheet.MainHand = new Equipment()
                 {
                     AttackPercent = 100,
-                    Attack = 18
+                    Attack = 18,
+                    MagicAttack = 18,
+                    Sprite = nameof(Assets.Original.BattleAxe6),
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.ClericPlayerSprite),
                     CharacterSheet = sheet,
-                    PrimaryHandAsset = nameof(Assets.Original.BattleAxe6),
                     Spells = new String[] { nameof(Cure) }
                 };
                 hero.CharacterSheet.Rest();

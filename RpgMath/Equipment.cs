@@ -41,5 +41,7 @@ namespace RpgMath
         public long CritChance { get; set; }
 
         public bool TwoHanded { get; set; }
+
+        public string Sprite { get; set; }
     }
 }

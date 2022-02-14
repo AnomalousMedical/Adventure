@@ -101,7 +101,7 @@ namespace RpgMath
             set
             {
                 mainHand = value;
-                if (mainHand.TwoHanded)
+                if (mainHand?.TwoHanded == true)
                 {
                     OffHand = null;
                 }
@@ -118,7 +118,7 @@ namespace RpgMath
             set
             {
                 offHand = value;
-                if (mainHand.TwoHanded)
+                if (offHand != null && mainHand?.TwoHanded == true)
                 {
                     mainHand = null;
                 }
