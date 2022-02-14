@@ -65,12 +65,12 @@ namespace Adventure.Services
                     MagicAttack = 32,
                     TwoHanded = true,
                     Sprite = nameof(Assets.Original.Staff07),
+                    Spells = new string[] { nameof(Fir), nameof(Fyre), nameof(Meltdown) }
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.MagePlayerSprite),
                     CharacterSheet = sheet,
-                    Spells = new string[] { nameof(Fir), nameof(Fyre), nameof(Meltdown) }
                 };
                 hero.CharacterSheet.Rest();
                 persistence.Party.Members.Add(hero);
@@ -109,12 +109,12 @@ namespace Adventure.Services
                     Attack = 18,
                     MagicAttack = 18,
                     Sprite = nameof(Assets.Original.BattleAxe6),
+                    Spells = new String[] { nameof(Cure) }
                 };
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Original.ClericPlayerSprite),
-                    CharacterSheet = sheet,
-                    Spells = new String[] { nameof(Cure) }
+                    CharacterSheet = sheet
                 };
                 hero.CharacterSheet.Rest();
                 persistence.Party.Members.Add(hero);

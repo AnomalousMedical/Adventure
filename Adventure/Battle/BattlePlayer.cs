@@ -88,7 +88,6 @@ namespace Adventure.Battle
             public GamepadId Gamepad = GamepadId.Pad1;
             public CharacterSheet CharacterSheet;
             public String PlayerSprite { get; set; }
-            public IEnumerable<String> Spells { get; set; }
         }
 
         public BattlePlayer(
@@ -129,7 +128,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.magicAbilities.AddSpells(description.Spells.Select(i => spellFactory.CreateSpell(i)));
+            this.magicAbilities.AddSpells(description.CharacterSheet.Spells.Select(i => spellFactory.CreateSpell(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(

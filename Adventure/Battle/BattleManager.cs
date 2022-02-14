@@ -144,7 +144,6 @@ namespace Adventure.Battle
                     c.Translation = new Vector3(4, 0, currentZ);
                     c.CharacterSheet = character.CharacterSheet;
                     c.PlayerSprite = character.PlayerSprite;
-                    c.Spells = character.Spells ?? Enumerable.Empty<String>();
                 }));
 
                 currentZ -= 2;

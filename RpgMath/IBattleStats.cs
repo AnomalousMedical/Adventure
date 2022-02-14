@@ -1,4 +1,6 @@
-﻿namespace RpgMath
+﻿using System.Collections.Generic;
+
+namespace RpgMath
 {
     public interface IBattleStats
     {
@@ -17,6 +19,7 @@
         bool AllowLuckyEvade { get; }
         long Level { get; }
         long ExtraCritChance { get; }
+        IEnumerable<string> Spells { get; }
         Resistance GetResistance(Element element);
     }
 }

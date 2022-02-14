@@ -114,13 +114,12 @@ namespace Adventure.Services
             {
                 OnAssetsModified?.Invoke(this);
             }
-
-            public IEnumerable<String> Spells { get; set; }
         }
 
         public class PartyData
         {
             public List<CharacterData> Members { get; set; } = new List<CharacterData>();
+
             public long Gold { get; set; }
         }
     }

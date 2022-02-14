@@ -179,6 +179,23 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
+        public IEnumerable<String> Spells
+        {
+            get
+            {
+                foreach(var item in EquippedItems())
+                {
+                    if (item.Spells != null)
+                    {
+                        foreach (var spell in item.Spells)
+                        {
+                            yield return spell;
+                        }
+                    }
+                }
+            }
+        }
+
         public void LevelUpMage(ILevelCalculator levelCalculator)
         {
             var hp = MageHp;

@@ -109,6 +109,8 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
+        public IEnumerable<string> Spells => Enumerable.Empty<string>();
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;

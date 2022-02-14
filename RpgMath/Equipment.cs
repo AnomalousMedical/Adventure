@@ -43,5 +43,7 @@ namespace RpgMath
         public bool TwoHanded { get; set; }
 
         public string Sprite { get; set; }
+
+        public IEnumerable<String> Spells { get; set; }
     }
 }
