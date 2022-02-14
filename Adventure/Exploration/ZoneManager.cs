@@ -121,9 +121,8 @@ namespace Adventure
                 {
                     c.Translation = currentZone.StartPoint;
                     var leader = party.ActiveCharacters.First();
-                    c.PlayerSpriteInfo = leader.PlayerSprite;
-                    c.PrimaryHandItem = leader.PrimaryHandAsset;
-                    c.SecondaryHandItem = leader.SecondaryHandAsset;
+                    c.PlayerSprite = leader.PlayerSprite;
+                    c.CharacterSheet = leader.CharacterSheet;
                 });
             }
             else

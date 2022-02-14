@@ -143,10 +143,8 @@ namespace Adventure.Battle
                 {
                     c.Translation = new Vector3(4, 0, currentZ);
                     c.CharacterSheet = character.CharacterSheet;
-                    c.PlayerSpriteInfo = character.PlayerSprite;
-                    c.PrimaryHandItem = character.PrimaryHandAsset;
-                    c.SecondaryHandItem = character.SecondaryHandAsset;
-                    c.Spells = character.Spells ?? Enumerable.Empty<ISpell>();
+                    c.PlayerSprite = character.PlayerSprite;
+                    c.Spells = character.Spells ?? Enumerable.Empty<String>();
                 }));
 
                 currentZ -= 2;

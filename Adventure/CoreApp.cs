@@ -15,6 +15,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Adventure.Exploration.Menu.Asimov;
+using Adventure.Assets;
 
 namespace Adventure
 {
@@ -123,6 +124,9 @@ namespace Adventure
             services.AddSingleton<IBattleScreenLayout, BattleScreenLayout>();
             services.AddSingleton<IFirstGameStateBuilder, FirstGameStateBuilder>();
             services.AddSingleton<IExplorationGameState, ExplorationGameState>();
+            services.AddSingleton<ISimpleActivator, SimpleActivator>();
+            services.AddSingleton<IAssetFactory, AssetFactory>();
+            services.AddSingleton<ISpellFactory, SpellFactory>();
             services.AddSingleton<Party>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();

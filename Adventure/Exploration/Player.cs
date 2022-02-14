@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RpgMath;
 
 namespace Adventure
 {
@@ -26,9 +27,8 @@ namespace Adventure
             public int SecondaryHand = LeftHand;
             public EventLayers EventLayer = EventLayers.Exploration;
             public GamepadId Gamepad = GamepadId.Pad1;
-            public IPlayerSprite PlayerSpriteInfo { get; set; }
-            public ISpriteAsset PrimaryHandItem { get; set; }
-            public ISpriteAsset SecondaryHandItem { get; set; }
+            public String PlayerSprite { get; set; }
+            public CharacterSheet CharacterSheet { get; set; }
         }
 
         public const int RightHand = 0;
@@ -43,6 +43,7 @@ namespace Adventure
         private readonly CameraMover cameraMover;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly Persistence persistence;
+        private readonly IAssetFactory assetFactory;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
 
@@ -97,10 +98,11 @@ namespace Adventure
             Description description,
             CameraMover cameraMover,
             ICollidableTypeIdentifier collidableIdentifier,
-            Persistence persistence
+            Persistence persistence,
+            IAssetFactory assetFactory
         )
         {
-            var playerSpriteInfo = description.PlayerSpriteInfo ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSpriteInfo)} property in your description.");
+            var playerSpriteInfo = assetFactory.CreatePlayerSprite(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -131,22 +133,22 @@ namespace Adventure
             //Sub objects
             objectResolver = objectResolverFactory.Create();
 
-            if (description.PrimaryHandItem != null)
+            if (description.CharacterSheet.MainHand?.Sprite != null)
             {
                 sword = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
-                    var asset = description.PrimaryHandItem;
+                    var asset = assetFactory.CreateSprite(description.CharacterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
 
-            if (description.SecondaryHandItem != null)
+            if (description.CharacterSheet.OffHand?.Sprite != null)
             {
                 shield = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                 {
-                    var asset = description.SecondaryHandItem;
+                    var asset = assetFactory.CreateSprite(description.CharacterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
@@ -164,6 +166,7 @@ namespace Adventure
             this.cameraMover = cameraMover;
             this.collidableIdentifier = collidableIdentifier;
             this.persistence = persistence;
+            this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
             var startPos = persistence.Player.Position ?? description.Translation + new Vector3(0f, halfScale, 0f);

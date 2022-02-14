@@ -18,27 +18,20 @@ namespace Adventure
             this.persistence = persistence;
         }
 
-        public IEnumerable<Character> ActiveCharacters => persistence.Party.Members.Select(i =>
-        {
-            var assemblyName = typeof(Party).Assembly.GetName().Name;
+        public IEnumerable<Persistence.CharacterData> ActiveCharacters => persistence.Party.Members;
 
-            var character = new Character()
+        public int GetAverageLevel()
+        {
+            var level = (int)persistence.Party.Members.Average(i => i.CharacterSheet.Level);
+            if (level < 1)
             {
-                CharacterSheet = i.CharacterSheet,
-                PlayerSprite = CreateInstance<IPlayerSprite>($"Adventure.Assets.Original.{i.PlayerSprite}"),
-                PrimaryHandAsset = i.PrimaryHandAsset != null ? CreateInstance<ISpriteAsset>($"Adventure.Assets.Original.{i.PrimaryHandAsset}") : null,
-                SecondaryHandAsset = i.SecondaryHandAsset != null ? CreateInstance<ISpriteAsset>($"Adventure.Assets.Original.{i.SecondaryHandAsset}") : null,
-                Spells = i.Spells?.Select(s => CreateInstance<ISpell>($"Adventure.Battle.Spells.{s}"))
-            };
-
-            return character;
-        });
-
-        private T CreateInstance<T>(String name)
-        {
-            var type = Type.GetType(name);
-            var instance = (T)Activator.CreateInstance(type);
-            return instance;
+                level = 1;
+            }
+            else if (level > CharacterSheet.MaxLevel)
+            {
+                level = CharacterSheet.MaxLevel;
+            }
+            return level;
         }
 
         public IEnumerable<CharacterSheet> ActiveCharacterSheets => persistence.Party.Members.Select(i => i.CharacterSheet);

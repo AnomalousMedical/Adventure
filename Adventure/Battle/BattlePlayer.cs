@@ -87,10 +87,8 @@ namespace Adventure.Battle
             public EventLayers EventLayer = EventLayers.Battle;
             public GamepadId Gamepad = GamepadId.Pad1;
             public CharacterSheet CharacterSheet;
-            public IPlayerSprite PlayerSpriteInfo { get; set; }
-            public ISpriteAsset PrimaryHandItem { get; set; }
-            public ISpriteAsset SecondaryHandItem { get; set; }
-            public IEnumerable<ISpell> Spells { get; set; }
+            public String PlayerSprite { get; set; }
+            public IEnumerable<String> Spells { get; set; }
         }
 
         public BattlePlayer(
@@ -108,10 +106,12 @@ namespace Adventure.Battle
             ITurnTimer turnTimer,
             IMagicAbilities magicAbilities,
             IXpCalculator xpCalculator,
-            ILevelCalculator levelCalculator)
+            ILevelCalculator levelCalculator,
+            IAssetFactory assetFactory,
+            ISpellFactory spellFactory)
         {
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
-            this.playerSpriteInfo = description.PlayerSpriteInfo ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSpriteInfo)} property in your description.");
+            this.playerSpriteInfo = assetFactory.CreatePlayerSprite(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
             this.magicAbilities = magicAbilities;
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
@@ -129,7 +129,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.magicAbilities.AddSpells(description.Spells);
+            this.magicAbilities.AddSpells(description.Spells.Select(i => spellFactory.CreateSpell(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -156,22 +156,22 @@ namespace Adventure.Battle
             var startPos = description.Translation;
             startPos.y += halfScale;
 
-            if (description.PrimaryHandItem != null)
+            if (description.CharacterSheet.MainHand?.Sprite != null)
             {
                 sword = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
-                    var asset = description.PrimaryHandItem;
+                    var asset = assetFactory.CreateSprite(description.CharacterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
 
-            if (description.SecondaryHandItem != null)
+            if (description.CharacterSheet.OffHand?.Sprite != null)
             {
                 shield = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
-                    var asset = description.SecondaryHandItem;
+                    var asset = assetFactory.CreateSprite(description.CharacterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();

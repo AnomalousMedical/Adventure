@@ -61,7 +61,7 @@ namespace Adventure.Battle
                 int level;
                 if(battleTrigger == null)
                 {
-                    level = party.ActiveCharacterSheets.GetAverageLevel() * 4 / 5;
+                    level = party.GetAverageLevel() * 4 / 5;
                     if (level < 1)
                     {
                         level = 1;
