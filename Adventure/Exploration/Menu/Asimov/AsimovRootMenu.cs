@@ -15,19 +15,23 @@ namespace Adventure.Exploration.Menu.Asimov
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly LevelUpMenu levelUpMenu;
+        private readonly BuyMenu buyMenu;
         SharpButton levelUp = new SharpButton() { Text = "Level Up" };
+        SharpButton buy = new SharpButton() { Text = "Buy" };
         SharpButton goodbye = new SharpButton() { Text = "Goodbye" };
 
         public AsimovRootMenu(
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            LevelUpMenu levelUpMenu)
+            LevelUpMenu levelUpMenu,
+            BuyMenu buyMenu)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.levelUpMenu = levelUpMenu;
+            this.buyMenu = buyMenu;
             levelUpMenu.PreviousMenu = this;
         }
 
@@ -36,18 +40,23 @@ namespace Adventure.Exploration.Menu.Asimov
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(levelUp, goodbye) { Margin = new IntPad(10) }
+               new ColumnLayout(levelUp, buy, goodbye) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(levelUp, navUp: goodbye.Id, navDown: goodbye.Id))
+            if (sharpGui.Button(levelUp, navUp: goodbye.Id, navDown: buy.Id))
             {
                 explorationMenu.RequestSubMenu(levelUpMenu);
             }
 
-            if (sharpGui.Button(goodbye, navUp: levelUp.Id, navDown: levelUp.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(buy, navUp: levelUp.Id, navDown: goodbye.Id))
+            {
+                explorationMenu.RequestSubMenu(buyMenu);
+            }
+
+            if (sharpGui.Button(goodbye, navUp: buy.Id, navDown: levelUp.Id) || sharpGui.IsStandardBackPressed())
             {
                 explorationMenu.RequestSubMenu(null);
             }
