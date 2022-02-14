@@ -16,6 +16,8 @@ using System.Globalization;
 using System.IO;
 using Adventure.Exploration.Menu.Asimov;
 using Adventure.Assets;
+using Adventure.Items;
+using Adventure.Items.Creators;
 
 namespace Adventure
 {
@@ -113,6 +115,7 @@ namespace Adventure
             services.AddSingleton<IZoneManager, ZoneManager>();
             services.AddSingleton<IWorldManager, WorldManager>();
             services.AddSingleton<IBattleManager, BattleManager>();
+            services.AddSingleton<INameGenerator, NameGenerator>();
             services.AddScoped<BattleArena>();
             services.AddScoped<BattleArena.Description>();
             services.AddSingleton<IBiomeManager, BiomeManager>();
@@ -137,6 +140,9 @@ namespace Adventure
             services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<ItemMenu>();
+            services.AddSingleton<SwordCreator>();
+            services.AddSingleton<ShieldCreator>();
+            services.AddSingleton<StaffCreator>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();

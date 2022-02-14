@@ -6,6 +6,8 @@ namespace RpgMath
 {
     public class Equipment
     {
+        public String Name { get; set; }
+
         public long Attack { get; set; }
 
         public long AttackPercent { get; set; }
@@ -43,6 +45,8 @@ namespace RpgMath
         public bool TwoHanded { get; set; }
 
         public string Sprite { get; set; }
+
+        public int PalletSeed { get; set; }
 
         public IEnumerable<String> Spells { get; set; }
     }

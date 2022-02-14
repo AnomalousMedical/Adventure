@@ -1,4 +1,5 @@
 ﻿using Adventure.Items;
+using Adventure.Items.Creators;
 using Adventure.Services;
 using Engine;
 using RpgMath;
@@ -21,17 +22,26 @@ namespace Adventure.Exploration
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
         private IEquipmentCurve equipmentCurve;
+        private readonly SwordCreator swordCreator;
+        private readonly ShieldCreator shieldCreator;
+        private readonly StaffCreator staffCreator;
 
         public WorldManager
         (
             Persistence persistence,
             IBiomeManager biomeManager,
-            IEquipmentCurve equipmentCurve
+            IEquipmentCurve equipmentCurve,
+            SwordCreator swordCreator,
+            ShieldCreator shieldCreator,
+            StaffCreator staffCreator
         )
         {
             this.zoneRandom = new Random(persistence.World.Seed);
             this.biomeManager = biomeManager;
             this.equipmentCurve = equipmentCurve;
+            this.swordCreator = swordCreator;
+            this.shieldCreator = shieldCreator;
+            this.staffCreator = staffCreator;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -76,45 +86,16 @@ namespace Adventure.Exploration
 
             if (zoneIndex % 2 == 0)
             {
-                var weapon = new InventoryItem
-                {
-                    Action = nameof(Items.Actions.EquipMainHand),
-                    Name = $"Test Sword {o.EnemyLevel}",
-                    Equipment = new Equipment
-                    {
-                        Attack = equipmentCurve.GetAttack(o.EnemyLevel),
-                        AttackPercent = 100,
-                    }
-                };
+                var weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
             }
             else
             {
-                var weapon = new InventoryItem
-                {
-                    Action = nameof(Items.Actions.EquipMainHand),
-                    Name = $"Test Staff {o.EnemyLevel}",
-                    Equipment = new Equipment
-                    {
-                        MagicAttack = equipmentCurve.GetAttack(o.EnemyLevel),
-                        MagicAttackPercent = 100,
-                        Attack = equipmentCurve.GetAttack(o.EnemyLevel) / 3,
-                        AttackPercent = 35
-                    }
-                };
+                var weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
             }
 
-            var shield = new InventoryItem
-            {
-                Action = nameof(Items.Actions.EquipOffHand),
-                Name = $"Test Shield {o.EnemyLevel}",
-                Equipment = new Equipment
-                {
-                    Defense = equipmentCurve.GetDefense(o.EnemyLevel),
-                    MagicDefense = equipmentCurve.GetMDefense(o.EnemyLevel)
-                }
-            };
+            var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
             treasures.Add(new Treasure(shield));
 
             var acc = new InventoryItem

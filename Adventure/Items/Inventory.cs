@@ -10,6 +10,18 @@ namespace Adventure.Items
 {
     public class InventoryItem
     {
+        public InventoryItem()
+        {
+
+        }
+
+        public InventoryItem(Equipment equipment, String action)
+        {
+            this.Equipment = equipment;
+            this.Name = equipment.Name;
+            this.Action = action;
+        }
+
         public String Name { get; set; }
 
         public String Action { get; set; }
