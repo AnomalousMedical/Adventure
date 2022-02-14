@@ -28,7 +28,7 @@ namespace Adventure.Items.Creators
             return new ButtonColumnItem<Func<InventoryItem>>()
             {
                 Text = $"{adjective} Shield",
-                Item = () => new InventoryItem(CreateNormal(level), nameof(EquipMainHand))
+                Item = () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand))
             };
         }
 
