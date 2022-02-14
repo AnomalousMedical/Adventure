@@ -7,6 +7,11 @@ namespace RpgMath
 {
     public class CharacterSheet : IBattleStats
     {
+        private static Equipment Unarmed = new Equipment
+        {
+            AttackPercent = 95
+        };
+
         public static CharacterSheet CreateStartingFighter(Random random)
         {
             var s = new CharacterSheet();
@@ -144,6 +149,10 @@ namespace RpgMath
             if (MainHand != null)
             {
                 yield return MainHand;
+            }
+            else
+            {
+                yield return Unarmed;
             }
             if (Body != null)
             {
