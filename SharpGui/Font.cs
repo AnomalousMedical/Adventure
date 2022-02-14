@@ -33,10 +33,10 @@ namespace SharpGui
         {
             get
             {
-                if(smallestBearingY == null)
+                if (smallestBearingY == null)
                 {
                     smallestBearingY = int.MaxValue;
-                    foreach(var c in TallEnglishLetters)
+                    foreach (var c in TallEnglishLetters)
                     {
                         if (TryGetGlyphInfo(c, out var g))
                         {
@@ -56,6 +56,11 @@ namespace SharpGui
 
         public IntSize2 MeasureText(String text)
         {
+            if (text == null)
+            {
+                return new IntSize2(0, 0);
+            }
+
             ///This is closely related to <see cref="SharpGuiBuffer.DrawText(int, int, Color, string, Font)"/>
             int xOffset = 0;
             int yOffset = 0;
@@ -127,7 +132,7 @@ namespace SharpGui
                 }
 
                 //Wider, done, return true
-                if(xOffset > width)
+                if (xOffset > width)
                 {
                     return true;
                 }
