@@ -50,8 +50,10 @@ namespace Adventure
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
 
-        private Attachment<IZoneManager> sword;
-        private Attachment<IZoneManager> shield;
+        private Attachment<IZoneManager> mainHandItem;
+        private Attachment<IZoneManager> offHandItem;
+
+        private CharacterSheet characterSheet;
 
         private CharacterMover characterMover;
         private TypedIndex shapeIndex;
@@ -104,6 +106,8 @@ namespace Adventure
         {
             var playerSpriteInfo = assetFactory.CreatePlayerSprite(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
+            this.assetFactory = assetFactory;
+            this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
             this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
@@ -133,27 +137,11 @@ namespace Adventure
             //Sub objects
             objectResolver = objectResolverFactory.Create();
 
-            if (description.CharacterSheet.MainHand?.Sprite != null)
-            {
-                sword = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
-                {
-                    var asset = assetFactory.CreateSprite(description.CharacterSheet.MainHand.Sprite);
-                    o.Orientation = asset.GetOrientation();
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                });
-            }
+            characterSheet.OnMainHandModified += OnMainHandModified;
+            characterSheet.OnOffHandModified += OnOffHandModified;
 
-            if (description.CharacterSheet.OffHand?.Sprite != null)
-            {
-                shield = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
-                {
-                    var asset = assetFactory.CreateSprite(description.CharacterSheet.OffHand.Sprite);
-                    o.Orientation = asset.GetOrientation();
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                });
-            }
+            OnMainHandModified(characterSheet);
+            OnOffHandModified(characterSheet);
 
             sprite.FrameChanged += Sprite_FrameChanged;
 
@@ -229,6 +217,8 @@ namespace Adventure
         public void Dispose()
         {
             disposed = true;
+            characterSheet.OnMainHandModified -= OnMainHandModified;
+            characterSheet.OnOffHandModified -= OnOffHandModified;
             eventManager.removeEvent(moveForward);
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
@@ -448,26 +438,56 @@ namespace Adventure
 
             var scale = sprite.BaseScale * this.currentScale;
 
-            if(sword != null)
+            if(mainHandItem != null)
             {
                 var primaryAttach = frame.Attachments[this.primaryHand];
                 var offset = scale * primaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                sword.SetPosition(offset, this.currentOrientation, scale);
+                mainHandItem.SetPosition(offset, this.currentOrientation, scale);
             }
 
-            if(shield != null)
+            if(offHandItem != null)
             {
                 var secondaryAttach = frame.Attachments[this.secondaryHand];
                 var offset = scale * secondaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                shield.SetPosition(offset, this.currentOrientation, scale);
+                offHandItem.SetPosition(offset, this.currentOrientation, scale);
             }
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+        }
+
+        private void OnMainHandModified(CharacterSheet obj)
+        {
+            mainHandItem?.RequestDestruction();
+            if (characterSheet.MainHand?.Sprite != null)
+            {
+                mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateSprite(characterSheet.MainHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
+        }
+
+        private void OnOffHandModified(CharacterSheet obj)
+        {
+            offHandItem?.RequestDestruction();
+            if (characterSheet.OffHand?.Sprite != null)
+            {
+                offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateSprite(characterSheet.OffHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
         }
     }
 }

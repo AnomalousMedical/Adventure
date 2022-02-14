@@ -37,8 +37,8 @@ namespace Adventure.Battle
         private GamepadId gamepadId;
         private FrameEventSprite sprite;
 
-        private Attachment<IBattleManager> sword;
-        private Attachment<IBattleManager> shield;
+        private Attachment<IBattleManager> mainHandItem;
+        private Attachment<IBattleManager> offHandItem;
         private Attachment<IBattleManager> castEffect;
 
         private SharpButton attackButton = new SharpButton() { Text = "Attack" };
@@ -55,6 +55,7 @@ namespace Adventure.Battle
         private IMagicAbilities magicAbilities;
         private readonly IXpCalculator xpCalculator;
         private readonly ILevelCalculator levelCalculator;
+        private readonly IAssetFactory assetFactory;
 
         public IBattleStats Stats => this.characterSheet;
 
@@ -114,6 +115,7 @@ namespace Adventure.Battle
             this.magicAbilities = magicAbilities;
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
+            this.assetFactory = assetFactory;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.destructionRequest = destructionRequest;
@@ -155,27 +157,11 @@ namespace Adventure.Battle
             var startPos = description.Translation;
             startPos.y += halfScale;
 
-            if (description.CharacterSheet.MainHand?.Sprite != null)
-            {
-                sword = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
-                {
-                    var asset = assetFactory.CreateSprite(description.CharacterSheet.MainHand.Sprite);
-                    o.Orientation = asset.GetOrientation();
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                });
-            }
+            characterSheet.OnMainHandModified += OnMainHandModified;
+            characterSheet.OnOffHandModified += OnOffHandModified;
 
-            if (description.CharacterSheet.OffHand?.Sprite != null)
-            {
-                shield = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
-                {
-                    var asset = assetFactory.CreateSprite(description.CharacterSheet.OffHand.Sprite);
-                    o.Orientation = asset.GetOrientation();
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                });
-            }
+            OnMainHandModified(characterSheet);
+            OnOffHandModified(characterSheet);
 
             this.startPosition = startPos;
             this.currentPosition = startPos;
@@ -243,6 +229,9 @@ namespace Adventure.Battle
 
         public void Dispose()
         {
+            characterSheet.OnMainHandModified -= OnMainHandModified;
+            characterSheet.OnOffHandModified -= OnOffHandModified;
+
             turnTimer.RemoveTimer(characterTimer);
             battleScreenLayout.InfoColumn.Remove(infoRowLayout);
             characterTimer.TurnReady -= CharacterTimer_TurnReady;
@@ -400,7 +389,7 @@ namespace Adventure.Battle
                 else if (remainingTime > standEndTime)
                 {
                     var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
-                    sword?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
                     sprite.SetAnimation("stand-left");
                     interpolate = 0.0f;
                     start = end = GetAttackLocation(target);
@@ -415,7 +404,7 @@ namespace Adventure.Battle
                 {
                     sprite.SetAnimation("right");
 
-                    sword?.SetAdditionalRotation(Quaternion.Identity);
+                    mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
 
                     start = GetAttackLocation(target);
                     end = this.startPosition;
@@ -517,7 +506,7 @@ namespace Adventure.Battle
                 {
                     sprite.SetAnimation("stand-left");
 
-                    sword?.SetAdditionalRotation(Quaternion.Identity);
+                    mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
 
                     start = target.MeleeAttackLocation;
                     end = this.startPosition;
@@ -566,20 +555,20 @@ namespace Adventure.Battle
             var scale = sprite.BaseScale * this.currentScale;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, scale);
 
-            if(sword != null)
+            if(mainHandItem != null)
             {
                 var primaryAttach = frame.Attachments[this.primaryHand];
                 var offset = scale * primaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                sword.SetPosition(offset, this.currentOrientation, scale);
+                mainHandItem.SetPosition(offset, this.currentOrientation, scale);
             }
 
-            if(shield != null)
+            if(offHandItem != null)
             {
                 var secondaryAttach = frame.Attachments[this.secondaryHand];
                 var offset = scale * secondaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                shield.SetPosition(offset, this.currentOrientation, scale);
+                offHandItem.SetPosition(offset, this.currentOrientation, scale);
             }
 
             if(castEffect != null)
@@ -616,6 +605,36 @@ namespace Adventure.Battle
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+        }
+
+        private void OnMainHandModified(CharacterSheet obj)
+        {
+            mainHandItem?.RequestDestruction();
+            if (characterSheet.MainHand?.Sprite != null)
+            {
+                mainHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateSprite(characterSheet.MainHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
+        }
+
+        private void OnOffHandModified(CharacterSheet obj)
+        {
+            offHandItem?.RequestDestruction();
+            if (characterSheet.OffHand?.Sprite != null)
+            {
+                offHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateSprite(characterSheet.OffHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
         }
     }
 }

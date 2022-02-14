@@ -100,13 +100,19 @@ namespace RpgMath
             }
             set
             {
+                if(mainHand == value) { return; }
+
                 mainHand = value;
                 if (mainHand?.TwoHanded == true)
                 {
                     OffHand = null;
                 }
+
+                OnMainHandModified?.Invoke(this);
             }
         }
+
+        public event Action<CharacterSheet> OnMainHandModified;
 
         private Equipment offHand;
         public Equipment OffHand
@@ -120,10 +126,14 @@ namespace RpgMath
                 offHand = value;
                 if (offHand != null && mainHand?.TwoHanded == true)
                 {
-                    mainHand = null;
+                    MainHand = null;
                 }
+
+                OnOffHandModified?.Invoke(this);
             }
         }
+
+        public event Action<CharacterSheet> OnOffHandModified;
 
         public Equipment Body { get; set; }
 

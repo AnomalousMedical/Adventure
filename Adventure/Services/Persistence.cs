@@ -101,19 +101,6 @@ namespace Adventure.Services
             public Inventory Inventory { get; set; } = new Inventory();
 
             public String PlayerSprite { get; set; }
-
-            [JsonIgnore]
-            public String PrimaryHandAsset => CharacterSheet.MainHand?.Sprite;
-
-            [JsonIgnore]
-            public String SecondaryHandAsset => CharacterSheet.OffHand?.Sprite;
-
-            public event Action<CharacterData> OnAssetsModified;
-
-            public void FireAssetsModified()
-            {
-                OnAssetsModified?.Invoke(this);
-            }
         }
 
         public class PartyData
