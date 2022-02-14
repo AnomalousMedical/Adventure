@@ -73,8 +73,6 @@ namespace Adventure.Exploration
             {
                 //First zone is a special case, both rest and asimov and level 1 enemies
                 o.EnemyLevel = 1;
-                o.MakeAsimov = true;
-                o.MakeRest = true;
                 biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
             }
             else

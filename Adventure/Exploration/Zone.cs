@@ -105,12 +105,12 @@ namespace Adventure
             /// <summary>
             /// Set this to true to make a rest area in this zone.
             /// </summary>
-            public bool MakeRest { get; set; } = true;
+            public bool MakeRest { get; set; }
 
             /// <summary>
             /// Set this to true to make Asimov in this zone.
             /// </summary>
-            public bool MakeAsimov { get; set; } = true;
+            public bool MakeAsimov { get; set; }
 
             /// <summary>
             /// The level of the enemies from 1 to 99
@@ -482,6 +482,7 @@ namespace Adventure
         private int enemyIndex;
         private bool placeRestArea;
         private bool placeAsimov;
+        private ushort asimovRoom = csMapbuilder.NullCell;
         private void ResetPlacementData()
         {
             restIndex = 0;
@@ -489,6 +490,7 @@ namespace Adventure
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
             placeAsimov = this.makeAsimov;
+            asimovRoom = csMapbuilder.NullCell;
         }
 
         private void SetupCorridors()
@@ -565,7 +567,25 @@ namespace Adventure
         {
             var treasureChests = new List<TreasureTrigger>();
             var treasureStack = new Stack<ITreasure>(this.treasure);
-            foreach (var room in mapMesh.MapBuilder.Rooms)
+
+            if (placeAsimov)
+            {
+                asimovRoom = mapMesh.MapBuilder.WestConnectorRoom;
+                var room = mapMesh.MapBuilder.Rooms[asimovRoom - csMapbuilder.RoomCell];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var mapLoc = mapMesh.PointToVector(point.x, point.y);
+
+                placeAsimov = false;
+                var asimov = objectResolver.Resolve<Asimov, Asimov.Description>(o =>
+                {
+                    o.ZoneIndex = index;
+                    o.MapOffset = mapLoc;
+                    o.Translation = currentPosition + o.MapOffset;
+                });
+                this.placeables.Add(asimov);
+            }
+
+            foreach (var room in mapMesh.MapBuilder.Rooms.Where(i => mapMesh.MapBuilder.map[i.Left, i.Top] != asimovRoom))
             {
                 PopulateRoom(room, treasureStack, treasureChests);
             }
@@ -595,18 +615,7 @@ namespace Adventure
             var mapLoc = mapMesh.PointToVector(point.x, point.y);
             if (goPrevious || mapLoc != startPointLocal)
             {
-                if (placeAsimov)
-                {
-                    placeAsimov = false;
-                    var asimov = objectResolver.Resolve<Asimov, Asimov.Description>(o =>
-                    {
-                        o.ZoneIndex = index;
-                        o.MapOffset = mapLoc;
-                        o.Translation = currentPosition + o.MapOffset;
-                    });
-                    this.placeables.Add(asimov);
-                }
-                else if (placeRestArea)
+                if (placeRestArea)
                 {
                     placeRestArea = false;
                     var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
