@@ -55,7 +55,7 @@ namespace Adventure.Battle
                     Level = level,
                     Resistances = biomeEnemy.Resistances
                 };
-                c.Scale = curve.GetScale(level, enemyType) * new Vector3(5.0f, 5.0f, 1.0f);
+                c.Scale = curve.GetScale(level, enemyType);
                 c.Translation = new Vector3(location.x, c.Sprite.BaseScale.y * c.Scale.y / 2.0f, location.z);
                 c.GoldReward = curve.GetGold(level, enemyType);
             });

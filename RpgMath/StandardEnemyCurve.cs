@@ -69,6 +69,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value *= (level / 10 + 3);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -140,6 +143,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 2.5f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -211,6 +217,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 2.1f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -228,6 +237,7 @@ namespace RpgMath
             {
                 switch (enemyType)
                 {
+                    case EnemyType.Boss:
                     case EnemyType.Badass:
                         return 255L;
                     case EnemyType.Peon:
@@ -246,6 +256,7 @@ namespace RpgMath
             {
                 switch (enemyType)
                 {
+                    case EnemyType.Boss:
                     case EnemyType.Badass:
                         return 255L;
                     case EnemyType.Peon:
@@ -359,6 +370,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 3.5f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -430,6 +444,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 2.5f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -501,6 +518,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 2.1f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -572,6 +592,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value *= (level / 10 + 3);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -592,6 +615,9 @@ namespace RpgMath
             
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    value = (long)(value * 4.5f);
+                    break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
@@ -722,6 +748,9 @@ namespace RpgMath
 
             switch (enemyType)
             {
+                case EnemyType.Boss:
+                    scale *= 5f;
+                    break;
                 case EnemyType.Badass:
                     scale *= 1.16666f;
                     break;
