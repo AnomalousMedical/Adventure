@@ -193,7 +193,7 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             var canBuy = characterData.Inventory.HasRoom();
 
-            var shopItems = ShopItems().ToArray(); //TODO: Cache this somehow, don't keep making it
+            var shopItems = ShopItems().Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i)).ToArray(); //TODO: Cache this somehow, don't keep making it
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (canBuy && selectedItem != null)
             {
@@ -231,7 +231,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             }
         }
 
-        private IEnumerable<ButtonColumnItem<ShopEntry>> ShopItems()
+        private IEnumerable<ShopEntry> ShopItems()
         {
             var level = zoneManager.Current.EnemyLevel;
 
@@ -310,7 +310,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             }
         }
 
-        private IEnumerable<ButtonColumnItem<ShopEntry>> CreateShopLevel(int level)
+        private IEnumerable<ShopEntry> CreateShopLevel(int level)
         {
             yield return swordCreator.CreateShopEntry(level);
             yield return staffCreator.CreateShopEntry(level);
@@ -319,5 +319,5 @@ Lck: {characterData.CharacterSheet.Luck}";
         }
     }
 
-    public record ShopEntry(long Cost, Func<InventoryItem> CreateItem) { }
+    public record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem) { }
 }

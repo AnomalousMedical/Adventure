@@ -11,13 +11,9 @@ namespace Adventure.Items.Creators
 {
     class PotionCreator
     {
-        public ButtonColumnItem<ShopEntry> CreateManaPotionShopEntry(int level)
+        public ShopEntry CreateManaPotionShopEntry(int level)
         {
-            return new ButtonColumnItem<ShopEntry>
-            {
-                Text = $"Mana Potion",
-                Item = new ShopEntry(50, () => CreateManaPotion(1))
-            };
+            return new ShopEntry($"Mana Potion", 50, () => CreateManaPotion(1));
         }
 
         public InventoryItem CreateManaPotion(int level)

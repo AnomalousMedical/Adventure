@@ -22,15 +22,11 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ButtonColumnItem<ShopEntry> CreateShopEntry(int level)
+        public ShopEntry CreateShopEntry(int level)
         {
             var adjective = nameGenerator.GetLevelName(level);
 
-            return new ButtonColumnItem<ShopEntry>
-            {
-                Text = $"{adjective} Shield",
-                Item = new ShopEntry(100, () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand)))
-            };
+            return new ShopEntry($"{adjective} Shield", 100, () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand)));
         }
 
         public Equipment CreateNormal(int level)
