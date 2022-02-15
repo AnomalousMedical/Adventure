@@ -117,6 +117,13 @@ namespace Adventure
             /// </summary>
             public int EnemyLevel { get; set; }
 
+            /// <summary>
+            /// The number of battles for the level's "main" corridor.
+            /// Must be at least 1, default is int.MaxValue. This will
+            /// base it on the actual size.
+            /// </summary>
+            public int MaxMainCorridorBattles { get; set; } = int.MaxValue;
+
             public IBiome Biome { get; set; }
 
             public IEnumerable<ITreasure> Treasure { get; set; }
@@ -154,6 +161,7 @@ namespace Adventure
         private bool makeRestArea;
         private bool makeAsimov;
         private int enemyLevel;
+        private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
 
         private Task zoneGenerationTask;
@@ -186,6 +194,7 @@ namespace Adventure
             RayTracingRenderer renderer
         )
         {
+            this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
             this.index = description.Index;
             this.enemySeed = description.EnemySeed;
@@ -510,7 +519,14 @@ namespace Adventure
                 {
                     if (currentCorridor >= csMapbuilder.CorridorCell)
                     {
-                        PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex);
+                        if(currentCorridor == csMapbuilder.MainCorridorCell)
+                        {
+                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, maxMainCorridorBattles);
+                        }
+                        else
+                        {
+                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, 1);
+                        }
                     }
                     corridorStartIndex = currentIndex;
                     currentCorridor = testCorridor;
@@ -518,11 +534,15 @@ namespace Adventure
             }
         }
 
-        private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex)
+        private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex, int maxPossibleFights)
         {
             var numSquares = currentIndex - corridorStartIndex;
-            var maxFights = Math.Max(numSquares / 10, 2);
+            var maxFights = Math.Min(Math.Max(numSquares / 10, 2), maxPossibleFights);
             var minFights = Math.Max(numSquares / 20, 1);
+            if(minFights > maxFights)
+            {
+                minFights = 1;
+            }
             var numEnemies = enemyRandom.Next(minFights, maxFights);
             for(int i = 0; i < numEnemies; ++i)
             {

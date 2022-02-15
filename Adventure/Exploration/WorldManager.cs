@@ -71,9 +71,27 @@ namespace Adventure.Exploration
             int biomeSelectorIndex;
             if (zoneIndex == 0)
             {
-                //First zone is a special case, both rest and asimov and level 1 enemies
                 o.EnemyLevel = 1;
+                o.MaxMainCorridorBattles = 1;
                 biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
+
+                //Give out starting weapons
+                var treasures = new List<ITreasure>();
+                o.Treasure = treasures;
+
+                InventoryItem weapon = null;
+                weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                treasures.Add(new Treasure(weapon));
+                weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                treasures.Add(new Treasure(weapon));
+                weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                treasures.Add(new Treasure(weapon));
+                weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                treasures.Add(new Treasure(weapon));
+
+                treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
             }
             else
             {
@@ -84,42 +102,42 @@ namespace Adventure.Exploration
                 o.MakeAsimov = zoneBasis % zoneLevelScaler == 0;
                 o.MakeRest = zoneBasis % zoneLevelScaler == 1;
                 biomeSelectorIndex = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
+
+                //Dumb test treasure
+                var treasures = new List<ITreasure>();
+                o.Treasure = treasures;
+
+                InventoryItem weapon = null;
+                switch (zoneIndex % 3)
+                {
+                    case 0:
+                        weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        break;
+                    case 1:
+                        weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        break;
+                    case 2:
+                        weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        break;
+                }
+
+                treasures.Add(new Treasure(weapon));
+
+                var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
+                treasures.Add(new Treasure(shield));
+
+                //These don't really do anything right now
+                //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));
+                //treasures.Add(new Treasure(acc));
+
+                var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
+                treasures.Add(new Treasure(armor));
+
+                treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
-
-            //Dumb test treasure
-            var treasures = new List<ITreasure>();
-            o.Treasure = treasures;
-
-            InventoryItem weapon = null;
-            switch (zoneIndex % 3)
-            {
-                case 0:
-                    weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                    break;
-                case 1:
-                    weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                    break;
-                case 2:
-                    weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                    break;
-            }
-
-            treasures.Add(new Treasure(weapon));
-
-            var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
-            treasures.Add(new Treasure(shield));
-
-            //These don't really do anything right now
-            //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));
-            //treasures.Add(new Treasure(acc));
-
-            var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-            treasures.Add(new Treasure(armor));
-
-            treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
-            treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
-            treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
         }
 
         private int GetZoneSeed(int index)
