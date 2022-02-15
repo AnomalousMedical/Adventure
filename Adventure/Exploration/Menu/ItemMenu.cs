@@ -246,7 +246,14 @@ Mag: {characterData.CharacterSheet.BaseMagic}
 Vit: {characterData.CharacterSheet.BaseVitality}
 Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
-Lck: {characterData.CharacterSheet.Luck}";
+Lck: {characterData.CharacterSheet.Luck}
+ ";
+
+                foreach(var item in characterData.CharacterSheet.EquippedItems())
+                {
+                    info.Text += $@"
+{item.Name}";
+                }
             }
 
             sharpGui.Text(info);

@@ -9,6 +9,7 @@ namespace RpgMath
     {
         private static Equipment Unarmed = new Equipment
         {
+            Name = "Unarmed",
             AttackPercent = 95
         };
 
@@ -144,7 +145,7 @@ namespace RpgMath
 
         public Equipment Accessory { get; set; }
 
-        private IEnumerable<Equipment> EquippedItems()
+        public IEnumerable<Equipment> EquippedItems()
         {
             if (MainHand != null)
             {
@@ -154,13 +155,13 @@ namespace RpgMath
             {
                 yield return Unarmed;
             }
-            if (Body != null)
-            {
-                yield return Body;
-            }
             if (OffHand != null)
             {
                 yield return OffHand;
+            }
+            if (Body != null)
+            {
+                yield return Body;
             }
             if (Accessory != null)
             {
