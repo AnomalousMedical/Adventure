@@ -140,6 +140,7 @@ namespace Adventure
             services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<ItemMenu>();
+            services.AddSingleton<UseItemMenu>();
             services.AddSingleton<SwordCreator>();
             services.AddSingleton<ShieldCreator>();
             services.AddSingleton<StaffCreator>();
