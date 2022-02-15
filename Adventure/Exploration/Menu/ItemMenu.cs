@@ -45,10 +45,10 @@ namespace Adventure.Exploration.Menu
 
             var choosingCharacter = characterChoices != null;
 
-            if (sharpGui.FocusedItem != transfer.Id
+            if (!choosingCharacter 
+               && sharpGui.FocusedItem != transfer.Id
                && sharpGui.FocusedItem != cancel.Id
-               && sharpGui.FocusedItem != use.Id
-               && !characterButtons.HasFocus(sharpGui))
+               && sharpGui.FocusedItem != use.Id)
             {
                 sharpGui.StealFocus(use.Id);
             }
@@ -61,7 +61,7 @@ namespace Adventure.Exploration.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s));
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s));
                 clearChoices = sharpGui.IsStandardBackPressed();
                 if (action != null)
                 {
@@ -77,7 +77,7 @@ namespace Adventure.Exploration.Menu
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetTopRightRect(desiredSize));
+            layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
 
             use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
 
