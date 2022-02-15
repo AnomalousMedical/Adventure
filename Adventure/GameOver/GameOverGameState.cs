@@ -58,17 +58,29 @@ namespace Adventure.GameOver
 
         public void SetActive(bool active)
         {
-            persistence.Zone.CurrentIndex = persistence.Player.RespawnZone ?? 0;
-            persistence.Player.Position = persistence.Player.RespawnPosition;
-            persistence.BattleTriggers.ClearData();
-            persistence.Player.LootDropPosition = zoneManager.GetPlayerLoc();
-            persistence.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-            persistence.Player.LootDropGold = persistence.Party.Gold;
-            persistence.Party.Gold = 0;
-
-            foreach (var character in persistence.Party.Members)
+            if (active)
             {
-                character.CharacterSheet.Rest();
+                persistence.Zone.CurrentIndex = persistence.Player.RespawnZone ?? 0;
+                persistence.Player.Position = persistence.Player.RespawnPosition;
+                persistence.BattleTriggers.ClearData();
+                if (persistence.Party.Gold > 0)
+                {
+                    persistence.Player.LootDropPosition = zoneManager.GetPlayerLoc();
+                    persistence.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
+                    persistence.Player.LootDropGold = persistence.Party.Gold;
+                    persistence.Party.Gold = 0;
+                }
+                else
+                {
+                    persistence.Player.LootDropPosition = null;
+                    persistence.Player.LootDropZone = null;
+                    persistence.Player.LootDropGold = 0;
+                }
+
+                foreach (var character in persistence.Party.Members)
+                {
+                    character.CharacterSheet.Rest();
+                }
             }
         }
 
