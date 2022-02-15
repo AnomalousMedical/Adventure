@@ -42,7 +42,7 @@ namespace Adventure.Battle
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public Vector3 MeleeAttackLocation => this.currentPosition + new Vector3(sprite.BaseScale.x * currentScale.x, 0, 0);
+        public Vector3 MeleeAttackLocation => this.currentPosition + new Vector3(currentScale.x * 0.5f, 0, 0);
 
         public Vector3 MagicHitLocation => this.currentPosition + new Vector3(0f, 0f, -0.1f);
 
@@ -184,7 +184,7 @@ namespace Adventure.Battle
 
         private Vector3 GetAttackLocation(IBattleTarget target)
         {
-            var totalScale = sprite.BaseScale * currentScale;
+            var totalScale = currentScale;
             var targetAttackLocation = target.MeleeAttackLocation;
             targetAttackLocation.x -= totalScale.x / 2;
             targetAttackLocation.y = totalScale.y / 2.0f;
