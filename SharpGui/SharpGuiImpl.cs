@@ -205,19 +205,19 @@ namespace SharpGui
             panel.Process(state, buffer, panelStyle);
         }
 
-        public void Text(int x, int y, Color color, String text)
+        public void Text(int x, int y, Color color, String text, float layer = 0f)
         {
-            buffer.DrawText(x, y, int.MaxValue, color, text, renderer.Font);
+            buffer.DrawText(x, y, int.MaxValue, color, text, renderer.Font, layer);
         }
 
-        public void Text(int x, int y, Color color, String text, int maxWidth)
+        public void Text(int x, int y, Color color, String text, int maxWidth, float layer = 0f)
         {
-            buffer.DrawText(x, y, x + maxWidth, color, text, renderer.Font);
+            buffer.DrawText(x, y, x + maxWidth, color, text, renderer.Font, layer);
         }
 
         public void Text(SharpText text)
         {
-            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, renderer.Font);
+            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, renderer.Font, text.Layer);
         }
 
         public void Render(IDeviceContext immediateContext)

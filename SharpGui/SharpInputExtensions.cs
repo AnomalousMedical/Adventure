@@ -41,11 +41,11 @@ namespace SharpGui
                 var shadowRight = right + shadowOffset.x;
                 var shadowBottom = bottom + shadowOffset.y;
 
-                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor);
+                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor, input.Layer);
             }
 
             //Draw border
-            buffer.DrawQuad(left, top, right, bottom, look.BorderColor);
+            buffer.DrawQuad(left, top, right, bottom, look.BorderColor, input.Layer);
 
             //Draw main button
             var mainLeft = left + look.Border.Left;
@@ -53,7 +53,7 @@ namespace SharpGui
             var mainRight = right - look.Border.Right;
             var mainBottom = bottom - look.Border.Bottom;
 
-            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background);
+            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, input.Layer);
 
             //Draw text
             if(input.Text != null)
@@ -63,11 +63,11 @@ namespace SharpGui
                 var textRight = mainRight - look.Padding.Right;
                 if (font.IsTextWider(input.Text, textRight - textLeft))
                 {
-                    buffer.DrawTextReverse(textLeft, textTop, textRight, look.Color, input.Text, font);
+                    buffer.DrawTextReverse(textLeft, textTop, textRight, look.Color, input.Text, font, input.Layer);
                 }
                 else
                 {
-                    buffer.DrawText(textLeft, textTop, textRight, look.Color, input.Text, font);
+                    buffer.DrawText(textLeft, textTop, textRight, look.Color, input.Text, font, input.Layer);
                 }
             }
 

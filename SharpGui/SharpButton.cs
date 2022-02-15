@@ -37,6 +37,8 @@ namespace SharpGui
         public IntRect Rect;
         
         public String Text { get; set; }
+
+        public float Layer { get; set; }
     }
 
     public class SharpButton<T> : SharpButton

@@ -43,5 +43,7 @@ namespace SharpGui
         public IntRect Rect;
 
         public StringBuilder Text { get; set; } = new StringBuilder();
+
+        public float Layer { get; set; }
     }
 }

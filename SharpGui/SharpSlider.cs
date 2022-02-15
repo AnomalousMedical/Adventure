@@ -18,6 +18,8 @@ namespace SharpGui
 
         public IntRect Rect;
         public int Max { get; set; }
+
+        public float Layer { get; set; }
     }
 
     public class SharpSliderHorizontal : SharpSlider

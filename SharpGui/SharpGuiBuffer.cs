@@ -48,7 +48,7 @@ namespace SharpGui
             NumTextIndices = 0;
         }
 
-        public void DrawQuad(int left, int top, int right, int bottom, Color color)
+        public void DrawQuad(int left, int top, int right, int bottom, Color color, float layer)
         {
             if (currentQuad >= quadVerts.Length)
             {
@@ -61,10 +61,10 @@ namespace SharpGui
             float fright = right / (float)osWindow.WindowWidth * 2.0f - 1.0f;
             float fbottom = bottom / (float)osWindow.WindowHeight * -2.0f + 1.0f;
 
-            quadVerts[currentQuad].pos = new Vector3(fleft, ftop, currentZ);
-            quadVerts[currentQuad + 1].pos = new Vector3(fright, ftop, currentZ);
-            quadVerts[currentQuad + 2].pos = new Vector3(fright, fbottom, currentZ);
-            quadVerts[currentQuad + 3].pos = new Vector3(fleft, fbottom, currentZ);
+            quadVerts[currentQuad].pos = new Vector3(fleft, ftop, currentZ - layer);
+            quadVerts[currentQuad + 1].pos = new Vector3(fright, ftop, currentZ - layer);
+            quadVerts[currentQuad + 2].pos = new Vector3(fright, fbottom, currentZ - layer);
+            quadVerts[currentQuad + 3].pos = new Vector3(fleft, fbottom, currentZ - layer);
 
             quadVerts[currentQuad].color = color;
             quadVerts[currentQuad + 1].color = color;
@@ -76,7 +76,7 @@ namespace SharpGui
             currentZ -= zStep;
         }
 
-        public void DrawText(int x, int y, int right, Color color, String text, Font font)
+        public void DrawText(int x, int y, int right, Color color, String text, Font font, float layer)
         {
             if (text == null)
             {
@@ -93,7 +93,7 @@ namespace SharpGui
             {
                 if (xOffset < right && font.TryGetGlyphInfo(c, out var glyphInfo))
                 {
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset += fullAdvance;
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
@@ -108,7 +108,7 @@ namespace SharpGui
             }
         }
 
-        public void DrawText(int x, int y, int right, Color color, StringBuilder text, Font font)
+        public void DrawText(int x, int y, int right, Color color, StringBuilder text, Font font, float layer)
         {
             ///This is closely related to <see cref="Font.MeasureText(StringBuilder)"/>
             int xOffset = x;
@@ -122,7 +122,7 @@ namespace SharpGui
                 var c = text[i];
                 if (xOffset < right && font.TryGetGlyphInfo(c, out var glyphInfo))
                 {
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset += fullAdvance;
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
@@ -137,7 +137,7 @@ namespace SharpGui
             }
         }
 
-        public void DrawTextReverse(int x, int y, int right, Color color, StringBuilder text, Font font)
+        public void DrawTextReverse(int x, int y, int right, Color color, StringBuilder text, Font font, float layer)
         {
             ///This is closely related to <see cref="Font.MeasureText(StringBuilder)"/>
             int xOffset = right;
@@ -152,7 +152,7 @@ namespace SharpGui
                 {
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset -= fullAdvance;
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
                 }
 
@@ -165,7 +165,7 @@ namespace SharpGui
             }
         }
 
-        public void DrawTextQuad(int x, int y, int width, int height, ref Color color, ref GlyphRect uvRect)
+        public void DrawTextQuad(int x, int y, int width, int height, ref Color color, ref GlyphRect uvRect, float layer)
         {
             if (currentText >= textVerts.Length)
             {
@@ -178,10 +178,10 @@ namespace SharpGui
             float top = y / (float)osWindow.WindowHeight * -2.0f + 1.0f;
             float bottom = (y + height) / (float)osWindow.WindowHeight * -2.0f + 1.0f;
 
-            textVerts[currentText].pos = new Vector3(left, top, currentZ);
-            textVerts[currentText + 1].pos = new Vector3(right, top, currentZ);
-            textVerts[currentText + 2].pos = new Vector3(right, bottom, currentZ);
-            textVerts[currentText + 3].pos = new Vector3(left, bottom, currentZ);
+            textVerts[currentText].pos = new Vector3(left, top, currentZ - layer);
+            textVerts[currentText + 1].pos = new Vector3(right, top, currentZ - layer);
+            textVerts[currentText + 2].pos = new Vector3(right, bottom, currentZ - layer);
+            textVerts[currentText + 3].pos = new Vector3(left, bottom, currentZ - layer);
 
             textVerts[currentText].color = color;
             textVerts[currentText + 1].color = color;

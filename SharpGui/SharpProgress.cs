@@ -29,6 +29,8 @@ namespace SharpGui
         {
             this.Rect = rect;
         }
+
+        public float Layer { get; set; }
     }
 
     public class SharpProgressHorizontal : SharpProgress

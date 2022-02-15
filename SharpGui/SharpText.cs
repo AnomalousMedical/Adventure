@@ -12,6 +12,8 @@ namespace SharpGui
         public Color Color;
         public int Width = int.MaxValue;
 
+        public float Layer { get; set; }
+
         public SharpText()
         {
 

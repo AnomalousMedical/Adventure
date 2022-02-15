@@ -37,11 +37,11 @@ namespace SharpGui
                 var shadowRight = right + shadowOffset.x;
                 var shadowBottom = bottom + shadowOffset.y;
 
-                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor);
+                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor, panel.Layer);
             }
 
             //Draw border
-            buffer.DrawQuad(left, top, right, bottom, look.BorderColor);
+            buffer.DrawQuad(left, top, right, bottom, look.BorderColor, panel.Layer);
 
             //Draw main area
             var mainLeft = left + look.Border.Left;
@@ -49,7 +49,7 @@ namespace SharpGui
             var mainRight = right - look.Border.Right;
             var mainBottom = bottom - look.Border.Bottom;
 
-            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background);
+            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, panel.Layer);
         }
 
         public static IntSize2 GetDesiredSize(this SharpPanel panel, SharpGuiState state, SharpStyle style)

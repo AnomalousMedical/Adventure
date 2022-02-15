@@ -33,5 +33,7 @@ namespace SharpGui
         /// The int pad calculated during the last measurement of this panel. <seealso cref="PanelLayout"/>
         /// </summary>
         internal IntPad CalcIntPad;
+
+        public float Layer { get; set; }
     }
 }

@@ -65,7 +65,7 @@ namespace SharpGui
         /// <param name="y"></param>
         /// <param name="color"></param>
         /// <param name="text"></param>
-        void Text(int x, int y, Color color, string text);
+        void Text(int x, int y, Color color, string text, float layer = 0f);
 
         /// <summary>
         /// Draw text up to a max width.
@@ -74,7 +74,7 @@ namespace SharpGui
         /// <param name="y"></param>
         /// <param name="color"></param>
         /// <param name="text"></param>
-        void Text(int x, int y, Color color, string text, int maxWidth);
+        void Text(int x, int y, Color color, string text, int maxWidth, float layer = 0f);
 
         /// <summary>
         /// Draw the given sharp text.

@@ -16,12 +16,12 @@ namespace SharpGui
 
         private List<SharpButton> buttons;
 
-        public ButtonColumn(int numButtons)
+        public ButtonColumn(int numButtons, float layer = 0f)
         {
             buttons = new List<SharpButton>(numButtons);
             for (var i = 0; i < numButtons; i++)
             {
-                buttons.Add(new SharpButton());
+                buttons.Add(new SharpButton() { Layer = layer });
             }
         }
 

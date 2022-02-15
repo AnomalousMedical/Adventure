@@ -40,11 +40,11 @@ namespace SharpGui
                 var shadowRight = right + shadowOffset.x;
                 var shadowBottom = bottom + shadowOffset.y;
 
-                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor);
+                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor, button.Layer);
             }
 
             //Draw border
-            buffer.DrawQuad(left, top, right, bottom, look.BorderColor);
+            buffer.DrawQuad(left, top, right, bottom, look.BorderColor, button.Layer);
 
             //Draw main button
             var mainLeft = left + look.Border.Left;
@@ -52,7 +52,7 @@ namespace SharpGui
             var mainRight = right - look.Border.Right;
             var mainBottom = bottom - look.Border.Bottom;
 
-            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background);
+            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, button.Layer);
 
             //Draw text
             if(button.Text != null)
@@ -61,7 +61,7 @@ namespace SharpGui
                 var textTop = mainTop + look.Padding.Top;
                 var textRight = mainRight - look.Padding.Right;
 
-                buffer.DrawText(textLeft, textTop, textRight, look.Color, button.Text, font);
+                buffer.DrawText(textLeft, textTop, textRight, look.Color, button.Text, font, button.Layer);
             }
 
             //Determine clicked

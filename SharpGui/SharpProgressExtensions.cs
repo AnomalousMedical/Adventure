@@ -30,18 +30,18 @@ namespace SharpGui
                 var shadowRight = right + shadowOffset.x;
                 var shadowBottom = bottom + shadowOffset.y;
 
-                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor);
+                buffer.DrawQuad(shadowLeft, shadowTop, shadowRight, shadowBottom, look.ShadowColor, slider.Layer);
             }
 
             //Draw border
-            buffer.DrawQuad(left, top, right, bottom, look.BorderColor);
+            buffer.DrawQuad(left, top, right, bottom, look.BorderColor, slider.Layer);
 
             // Render the scrollbar
             var mainLeft = left + look.Border.Left;
             var mainTop = top + look.Border.Top;
             var mainRight = right - look.Border.Right;
             var mainBottom = bottom - look.Border.Bottom;
-            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background);
+            buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, slider.Layer);
 
             // Render scroll button
             var buttonAreaLeft = mainLeft + look.Padding.Left;
@@ -51,7 +51,7 @@ namespace SharpGui
             var buttonTop = mainTop + look.Padding.Top;
             int buttonRight = buttonLeft + buttonWidth;
             int buttonBottom = mainBottom - look.Padding.Bottom;
-            buffer.DrawQuad(buttonLeft, buttonTop, buttonRight, buttonBottom, look.Color);
+            buffer.DrawQuad(buttonLeft, buttonTop, buttonRight, buttonBottom, look.Color, slider.Layer);
         }
 
         //public static bool Process(this SharpSliderVertical slider, ref int value, SharpGuiState state, SharpGuiBuffer buffer, SharpStyle style, Guid? navLeft, Guid? navRight)
