@@ -49,6 +49,7 @@ namespace Adventure.Exploration.Menu
             if (!choosingCharacter 
                && sharpGui.FocusedItem != transfer.Id
                && sharpGui.FocusedItem != cancel.Id
+               && sharpGui.FocusedItem != discard.Id
                && sharpGui.FocusedItem != use.Id)
             {
                 sharpGui.StealFocus(use.Id);
