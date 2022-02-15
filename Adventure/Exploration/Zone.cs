@@ -20,6 +20,8 @@ using Size = Engine.IntSize2;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using DiligentEngine.RT.HLSL;
+using Adventure.Services;
+using Adventure.Assets.World;
 
 namespace Adventure
 {
@@ -131,6 +133,7 @@ namespace Adventure
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly RayTracingRenderer renderer;
+        private readonly Persistence persistence;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBepuScene bepuScene;
         private readonly TextureManager textureManager;
@@ -177,6 +180,8 @@ namespace Adventure
         public Vector3 LocalStartPoint => startPointLocal;
         public Vector3 LocalEndPoint => endPointLocal;
 
+        public int Index => index;
+
         public Zone
         (
             IDestructionRequest destructionRequest,
@@ -191,7 +196,8 @@ namespace Adventure
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RTInstances<IZoneManager> rtInstances,
-            RayTracingRenderer renderer
+            RayTracingRenderer renderer,
+            Persistence persistence
         )
         {
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
@@ -210,6 +216,7 @@ namespace Adventure
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.rtInstances = rtInstances;
             this.renderer = renderer;
+            this.persistence = persistence;
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
@@ -342,6 +349,7 @@ namespace Adventure
                 ResetPlacementData();
                 SetupCorridors();
                 SetupRooms();
+                AddLootDrop();
 
                 //Since this is async the physics can be active before the placeables are created
                 if (physicsActive)
@@ -500,6 +508,23 @@ namespace Adventure
             placeRestArea = this.makeRestArea;
             placeAsimov = this.makeAsimov;
             asimovRoom = csMapbuilder.NullCell;
+        }
+
+        private void AddLootDrop()
+        {
+            if(persistence.Player.LootDropZone == index)
+            {
+                var lootDrop = objectResolver.Resolve<LootDropTrigger, LootDropTrigger.Description>(o =>
+                {
+                    o.MapOffset = persistence.Player.LootDropPosition.Value;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var treasure = new GoldPile();
+                    o.Sprite = treasure.CreateSprite();
+                    o.SpriteMaterial = treasure.CreateMaterial();
+                });
+                this.placeables.Add(lootDrop);
+                lootDrop.Disposed += () => this.placeables.Remove(lootDrop);
+            }
         }
 
         private void SetupCorridors()

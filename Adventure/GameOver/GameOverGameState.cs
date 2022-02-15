@@ -25,7 +25,7 @@ namespace Adventure.GameOver
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
-        private IGameState explorationState;
+        private IGameState nextState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpText gameOver = new SharpText("Game Over");
         private ILayoutItem layout;
@@ -51,9 +51,9 @@ namespace Adventure.GameOver
             layout = new ColumnLayout(gameOver, restart) { Margin = new IntPad(10) };
         }
 
-        public void Link(IGameState explorationState)
+        public void Link(IGameState nextState)
         {
-            this.explorationState = explorationState;
+            this.nextState = nextState;
         }
 
         public void SetActive(bool active)
@@ -61,6 +61,10 @@ namespace Adventure.GameOver
             persistence.Zone.CurrentIndex = persistence.Player.RespawnZone ?? 0;
             persistence.Player.Position = persistence.Player.RespawnPosition;
             persistence.BattleTriggers.ClearData();
+            persistence.Player.LootDropPosition = zoneManager.GetPlayerLoc();
+            persistence.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
+            persistence.Player.LootDropGold = persistence.Party.Gold;
+            persistence.Party.Gold = 0;
 
             foreach (var character in persistence.Party.Members)
             {
@@ -82,7 +86,7 @@ namespace Adventure.GameOver
             {
 
                 coroutineRunner.RunTask(zoneManager.Restart());
-                nextState = explorationState;
+                nextState = this.nextState;
             }
 
             return nextState;
