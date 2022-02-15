@@ -30,7 +30,7 @@ namespace Adventure.Services
 
         public Inventory Storage { get; set; } = new Inventory()
         {
-            Size = 10000
+            Size = 20
         };
 
         public class PersistenceEntry<T>
