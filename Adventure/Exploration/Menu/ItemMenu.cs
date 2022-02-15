@@ -53,7 +53,6 @@ namespace Adventure.Exploration.Menu
                 sharpGui.StealFocus(use.Id);
             }
 
-            bool clearChoices = false;
             if (choosingCharacter)
             {
                 characterButtons.StealFocus(sharpGui);
@@ -62,11 +61,17 @@ namespace Adventure.Exploration.Menu
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
                 var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s));
-                clearChoices = sharpGui.IsStandardBackPressed();
                 if (action != null)
                 {
                     action.Invoke();
-                    clearChoices = true;
+                    characterChoices = null;
+                    SelectedItem = null;
+                    return;
+                }
+
+                if (sharpGui.IsStandardBackPressed())
+                {
+                    characterChoices = null;
                 }
             }
 
@@ -126,12 +131,6 @@ namespace Adventure.Exploration.Menu
                 {
                     this.SelectedItem = null;
                 }
-            }
-
-            if (clearChoices)
-            {
-                characterChoices = null;
-                SelectedItem = null;
             }
         }
     }
