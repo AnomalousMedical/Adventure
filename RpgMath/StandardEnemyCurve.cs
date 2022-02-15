@@ -585,62 +585,11 @@ namespace RpgMath
 
         public long GetGold(int level, EnemyType enemyType)
         {
-            long value = 0;
-            if (level < 10)
-            {
-                //1-10
-                value = (long)NumberFunctions.lerp(10f, 100f, (level) / 10f);
-            }
-            else if (level < 20)
-            {
-                //10-20
-                value = (long)NumberFunctions.lerp(100f, 200f, (level - 10) / 10f);
-            }
-            else if (level < 30)
-            {
-                //20-30
-                value = (long)NumberFunctions.lerp(200f, 450f, (level - 20) / 10f);
-            }
-            else if (level < 40)
-            {
-                //30-40
-                value = (long)NumberFunctions.lerp(450f, 800f, (level - 30) / 10f);
-            }
-            else if (level < 50)
-            {
-                //40-50
-                value = (long)NumberFunctions.lerp(800f, 1100f, (level - 40) / 10f);
-            }
-            else if (level < 60)
-            {
-                //50-60
-                value = (long)NumberFunctions.lerp(1100f, 1350f, (level - 50) / 10f);
-            }
-            else if (level < 70)
-            {
-                //60-70
-                value = (long)NumberFunctions.lerp(1350f, 1700f, (level - 60) / 10f);
-            }
-            else if (level < 80)
-            {
-                //70-80
-                value = (long)NumberFunctions.lerp(1700f, 2000f, (level - 70) / 10f);
-            }
-            else if (level < 90)
-            {
-                //80-90
-                value = (long)NumberFunctions.lerp(2000f, 2300f, (level - 80) / 10f);
-            }
-            else if (level < 100)
-            {
-                //90-99
-                value = (long)NumberFunctions.lerp(2300f, 2800f, (level - 90) / 10f);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Level '{level}' is not supported.");
-            }
-
+            var amount = level / 99f;
+            amount = MathF.Min(amount, 1.0f);
+            amount = MathF.Max(amount, 0.0f);
+            long value = (long)NumberFunctions.lerp(10f, 50f, amount);
+            
             switch (enemyType)
             {
                 case EnemyType.Badass:
