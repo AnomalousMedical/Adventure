@@ -59,6 +59,7 @@ namespace Adventure.Battle
             {
                 int battleSeed;
                 int level;
+                bool boss = false;
                 if(battleTrigger == null)
                 {
                     level = party.GetAverageLevel() * 4 / 5;
@@ -67,14 +68,16 @@ namespace Adventure.Battle
                         level = 1;
                     }
                     battleSeed = noTriggerRandom.Next(int.MinValue, int.MaxValue);
+                    boss = true;
                 }
                 else
                 {
                     level = battleTrigger.EnemyLevel;
                     battleSeed = battleTrigger.BattleSeed;
+                    boss = battleTrigger.IsBoss;
                 }
 
-                battleManager.SetupBattle(battleSeed, level);
+                battleManager.SetupBattle(battleSeed, level, boss);
             }
             battleManager.SetActive(active);
         }

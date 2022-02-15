@@ -31,6 +31,8 @@ namespace Adventure
             public int BattleSeed { get; set; }
 
             public int EnemyLevel { get; set; }
+
+            public bool IsBoss { get; set; }
         }
 
         public record struct PersistenceData(bool Dead);
@@ -60,6 +62,7 @@ namespace Adventure
 
         public int BattleSeed { get; }
         public int EnemyLevel { get; }
+        public bool IsBoss { get; init; }
 
         public BattleTrigger(
             RTInstances<IZoneManager> rtInstances,
@@ -74,6 +77,7 @@ namespace Adventure
         {
             state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
 
+            this.IsBoss = description.IsBoss;
             this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
             this.sprite = description.Sprite;

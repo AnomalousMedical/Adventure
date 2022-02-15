@@ -8,6 +8,7 @@ namespace RpgMath
     {
         Peon,
         Normal,
-        Badass
+        Badass,
+        Boss
     }
 }

@@ -41,6 +41,9 @@ namespace Adventure
                 case EnemyType.Peon:
                     biomeEnemy = PeonEnemy;
                     break;
+                case EnemyType.Boss:
+                    biomeEnemy = BossEnemy;
+                    break;
                 default:
                     biomeEnemy = RegularEnemy;
                     break;
@@ -50,6 +53,12 @@ namespace Adventure
         }
 
         public BiomeEnemy RegularEnemy { get; set; }
+
+        /// <summary>
+        /// Set this to control the boss version of the enemy separately. You will get a boss enemy
+        /// stat-wise no matter what.
+        /// </summary>
+        public BiomeEnemy BossEnemy { get; set; }
 
         /// <summary>
         /// Set this to control the badass version of the enemy separately. You will get a badass enemy

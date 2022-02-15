@@ -10,6 +10,7 @@ namespace Adventure.Battle
 {
     interface IBattleBuilder
     {
+        IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
         IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
     }
 
@@ -25,6 +26,40 @@ namespace Adventure.Battle
             enemyLocations.Add(new Vector3(-3.5f, 0f,  2f));
             enemyLocations.Add(new Vector3(-3f, 0f,  4f));
             enemyLocations.Add(new Vector3(-2.5f, 0f,  6f));
+        }
+
+        public IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level)
+        {
+            yield return objectResolver.Resolve<Enemy, Enemy.Desc>(c =>
+            {
+                var enemyType = EnemyType.Boss;
+                var location = enemyLocations[enemyLocations.Count / 2];
+                var biomeEnemy = biome.GetEnemy(enemyType);
+                var curve = biomeEnemy.EnemyCurve;
+                c.Sprite = biomeEnemy.Asset.CreateSprite();
+                c.Sprite.BaseScale *= new Vector3(5.0f, 5.0f, 1.0f);
+                c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();
+                c.BattleStats = new BattleStats()
+                {
+                    Hp = curve.GetHp(level, enemyType),
+                    Mp = curve.GetMp(level, enemyType),
+                    Attack = curve.GetAttack(level, enemyType),
+                    AttackPercent = curve.GetAttackPercent(level, enemyType),
+                    Defense = curve.GetDefense(level, enemyType),
+                    DefensePercent = curve.GetDefensePercent(level, enemyType),
+                    MagicAttack = curve.GetMagicAttack(level, enemyType),
+                    MagicAttackPercent = curve.GetMagicAttackPercent(level, enemyType),
+                    MagicDefensePercent = curve.GetMagicDefensePercent(level, enemyType),
+                    MagicDefense = curve.GetMagicDefense(level, enemyType),
+                    Dexterity = curve.GetDexterity(level, enemyType),
+                    Luck = curve.GetLuck(level, enemyType),
+                    Level = level,
+                    Resistances = biomeEnemy.Resistances
+                };
+                c.Scale = curve.GetScale(level, enemyType);
+                c.Translation = new Vector3(location.x, c.Sprite.BaseScale.y * c.Scale.y / 2.0f, location.z);
+                c.GoldReward = curve.GetGold(level, enemyType);
+            });
         }
 
         public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level)

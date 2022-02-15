@@ -12,7 +12,6 @@ namespace Adventure
     {
         private readonly Persistence persistence;
         private readonly ITimeClock timeClock;
-        private readonly IExplorationGameState explorationGameState;
         private readonly IZoneManager zoneManager;
 
         public RestManager

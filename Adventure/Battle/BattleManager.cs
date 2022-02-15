@@ -42,7 +42,7 @@ namespace Adventure.Battle
         /// </summary>
         /// <param name="active"></param>
         void SetActive(bool active);
-        void SetupBattle(int battleSeed, int level);
+        void SetupBattle(int battleSeed, int level, bool boss);
         Result Update(Clock clock);
         IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetRandomPlayer();
@@ -134,7 +134,7 @@ namespace Adventure.Battle
             objectResolver.Dispose();
         }
 
-        public void SetupBattle(int battleSeed, int level)
+        public void SetupBattle(int battleSeed, int level, bool boss)
         {
             var currentZ = 3;
             foreach (var character in party.ActiveCharacters)
@@ -150,7 +150,10 @@ namespace Adventure.Battle
             }
 
             var rand = new Random(battleSeed);
-            enemies.AddRange(battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level));
+            var createEnemies = boss ?
+                battleBuilder.CreateBoss(this.objectResolver, party, zoneManager.Current.Biome, rand, level) :
+                battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level);
+            enemies.AddRange(createEnemies);
         }
 
         public void SetActive(bool active)
