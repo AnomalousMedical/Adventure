@@ -11,13 +11,77 @@ using System.Threading.Tasks;
 
 namespace Adventure.Exploration.Menu
 {
-    class BuyMenu : IExplorationSubMenu
+    class ConfirmBuyMenu
     {
         private readonly Persistence persistence;
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        SharpButton buy = new SharpButton() { Text = "Buy", Layer = BuyMenu.UseItemMenuLayer };
+        SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = BuyMenu.UseItemMenuLayer };
+        private List<ButtonColumnItem<Action>> characterChoices = null;
+
+        public InventoryItem SelectedItem { get; set; }
+
+        public ConfirmBuyMenu
+        (
+            Persistence persistence,
+            ISharpGui sharpGui,
+            IScaleHelper scaleHelper,
+            IScreenPositioner screenPositioner
+        )
+        {
+            this.persistence = persistence;
+            this.sharpGui = sharpGui;
+            this.scaleHelper = scaleHelper;
+            this.screenPositioner = screenPositioner;
+        }
+
+        public void Update(Persistence.CharacterData characterData)
+        {
+            if (SelectedItem == null) { return; }
+
+            var choosingCharacter = characterChoices != null;
+
+            if (!choosingCharacter
+               && sharpGui.FocusedItem != cancel.Id
+               && sharpGui.FocusedItem != buy.Id)
+            {
+                sharpGui.StealFocus(buy.Id);
+            }
+
+            var layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(buy, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+
+            var desiredSize = layout.GetDesiredSize(sharpGui);
+            layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
+
+            if (sharpGui.Button(buy, navUp: cancel.Id, navDown: cancel.Id))
+            {
+                characterData.Inventory.Items.Add(SelectedItem);
+                this.SelectedItem = null;
+            }
+            if (sharpGui.Button(cancel, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed())
+            {
+                this.SelectedItem = null;
+            }
+        }
+    }
+
+    class BuyMenu : IExplorationSubMenu
+    {
+        public const float ItemButtonsLayer = 0.15f;
+        public const float UseItemMenuLayer = 0.25f;
+
+        private readonly Persistence persistence;
+        private readonly ISharpGui sharpGui;
+        private readonly IScaleHelper scaleHelper;
+        private readonly IScreenPositioner screenPositioner;
         private readonly IZoneManager zoneManager;
+        private readonly ConfirmBuyMenu confirmBuyMenu;
         private readonly SwordCreator swordCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly StaffCreator staffCreator;
@@ -25,7 +89,7 @@ namespace Adventure.Exploration.Menu
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
-        private ButtonColumn itemButtons = new ButtonColumn(25);
+        private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
@@ -40,6 +104,7 @@ namespace Adventure.Exploration.Menu
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
             IZoneManager zoneManager,
+            ConfirmBuyMenu confirmBuyMenu,
             SwordCreator swordCreator,
             ShieldCreator shieldCreator,
             StaffCreator staffCreator,
@@ -54,6 +119,7 @@ namespace Adventure.Exploration.Menu
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.zoneManager = zoneManager;
+            this.confirmBuyMenu = confirmBuyMenu;
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;
             this.staffCreator = staffCreator;
@@ -84,7 +150,9 @@ namespace Adventure.Exploration.Menu
 $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
-
+ 
+Items:  {characterData.Inventory.Items.Count} / {characterData.Inventory.Size}
+ 
 HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
 MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
  
@@ -116,6 +184,8 @@ Lck: {characterData.CharacterSheet.Luck}";
             sharpGui.Text(info);
             sharpGui.Text(info2);
 
+            confirmBuyMenu.Update(characterData);
+
             var canBuy = characterData.Inventory.HasRoom();
 
             var shopItems = ShopItems().ToArray();
@@ -123,7 +193,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             if (canBuy && selectedItem != null)
             {
                 var item = selectedItem();
-                characterData.Inventory.Items.Add(item);
+                confirmBuyMenu.SelectedItem = item;
             }
 
             if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
