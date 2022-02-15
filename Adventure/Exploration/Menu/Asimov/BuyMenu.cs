@@ -288,17 +288,12 @@ Lck: {characterData.CharacterSheet.Luck}";
                 }
             }
 
-            if (level > 9)
+            if (level > 5) //A small cheat to give you access to the first tier a bit sooner.
             {
                 foreach (var item in CreateShopLevel(10))
                 {
                     yield return item;
                 }
-            }
-
-            foreach (var item in CreateShopLevel(1))
-            {
-                yield return item;
             }
         }
 
