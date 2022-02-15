@@ -16,12 +16,12 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        SharpButton use = new SharpButton() { Text = "Use" };
-        SharpButton transfer = new SharpButton() { Text = "Transfer" };
-        SharpButton cancel = new SharpButton() { Text = "Cancel" };
+        SharpButton use = new SharpButton() { Text = "Use", Layer = ItemMenu.UseItemMenuLayer };
+        SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
+        SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
         private List<ButtonColumnItem<Action>> characterChoices = null;
 
-        private ButtonColumn characterButtons = new ButtonColumn(4);
+        private ButtonColumn characterButtons = new ButtonColumn(4, ItemMenu.ChooseTargetLayer);
 
         public InventoryItem SelectedItem { get; set; }
 
@@ -43,7 +43,9 @@ namespace Adventure.Exploration.Menu
         {
             if(SelectedItem == null) { return; }
 
-            if(sharpGui.FocusedItem != transfer.Id
+            var choosingCharacter = characterChoices != null;
+
+            if (sharpGui.FocusedItem != transfer.Id
                && sharpGui.FocusedItem != cancel.Id
                && sharpGui.FocusedItem != use.Id
                && !characterButtons.HasFocus(sharpGui))
@@ -51,13 +53,28 @@ namespace Adventure.Exploration.Menu
                 sharpGui.StealFocus(use.Id);
             }
 
+            bool clearChoices = false;
+            if (choosingCharacter)
+            {
+                characterButtons.StealFocus(sharpGui);
+
+                characterButtons.Margin = scaleHelper.Scaled(10);
+                characterButtons.MaxWidth = scaleHelper.Scaled(900);
+                characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s));
+                clearChoices = sharpGui.IsStandardBackPressed();
+                if (action != null)
+                {
+                    action.Invoke();
+                    clearChoices = true;
+                }
+            }
+
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
                new ColumnLayout(use, transfer, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
-
-            var choosingCharacter = characterChoices != null;
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetTopRightRect(desiredSize));
@@ -103,7 +120,7 @@ namespace Adventure.Exploration.Menu
                     .ToList();
                 }
             }
-            if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed())
             {
                 if (!choosingCharacter)
                 {
@@ -111,36 +128,25 @@ namespace Adventure.Exploration.Menu
                 }
             }
 
-            if (choosingCharacter)
+            if (clearChoices)
             {
-                characterButtons.StealFocus(sharpGui);
-
-                characterButtons.Margin = scaleHelper.Scaled(10);
-                characterButtons.MaxWidth = scaleHelper.Scaled(900);
-                characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s));
-                var clearChoices = sharpGui.IsStandardPreviousPressed();
-                if (action != null)
-                {
-                    action.Invoke();
-                    clearChoices = true;
-                }
-                if (clearChoices)
-                {
-                    characterChoices = null;
-                    SelectedItem = null;
-                }
+                characterChoices = null;
+                SelectedItem = null;
             }
         }
     }
 
     class ItemMenu : IExplorationSubMenu
     {
+        public const float ItemButtonsLayer = 0.15f;
+        public const float UseItemMenuLayer = 0.25f;
+        public const float ChooseTargetLayer = 0.35f;
+
         private readonly Persistence persistence;
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private ButtonColumn itemButtons = new ButtonColumn(25);
+        private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
@@ -211,7 +217,11 @@ Lck: {characterData.CharacterSheet.Luck}";
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+
             bool allowChanges = useItemMenu.SelectedItem == null;
+
+            useItemMenu.Update(characterData);
+
             var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (allowChanges)
             {
@@ -249,8 +259,6 @@ Lck: {characterData.CharacterSheet.Luck}";
                     menu.RequestSubMenu(menu.RootMenu);
                 }
             }
-
-            useItemMenu.Update(characterData);
         }
     }
 }
