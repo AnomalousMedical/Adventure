@@ -62,6 +62,8 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetTopRightRect(desiredSize));
 
+            use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
+
             if (sharpGui.Button(use, navUp: cancel.Id, navDown: transfer.Id))
             {
                 if (!choosingCharacter)
@@ -85,7 +87,20 @@ namespace Adventure.Exploration.Menu
             {
                 if (!choosingCharacter)
                 {
-
+                    characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                    {
+                        if (SelectedItem.Equipment != null)
+                        {
+                            var id = SelectedItem.Equipment.Id;
+                            if (id.HasValue)
+                            {
+                                characterData.CharacterSheet.RemoveEquipment(id.Value);
+                            }
+                        }
+                        characterData.Inventory.Items.Remove(SelectedItem);
+                        i.Inventory.Items.Add(SelectedItem);
+                    }))
+                    .ToList();
                 }
             }
             if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id) || sharpGui.IsStandardPreviousPressed())

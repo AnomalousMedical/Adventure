@@ -168,6 +168,26 @@ namespace RpgMath
             }
         }
 
+        public void RemoveEquipment(Guid id)
+        {
+            if (MainHand?.Id == id)
+            {
+                MainHand = null;
+            }
+            if (Body?.Id == id)
+            {
+                Body = null;
+            }
+            if (OffHand?.Id == id)
+            {
+                OffHand = null;
+            }
+            if (Accessory?.Id == id)
+            {
+                Accessory = null;
+            }
+        }
+
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }
