@@ -63,10 +63,29 @@ namespace Adventure.Exploration.Menu.Asimov
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
+            long levelUpCost = 100;
+            var currentLevel = sheet.CharacterSheet.Level;
+            var zoneLevel = zoneManager.Current?.EnemyLevel ?? 0;
+            var levelDiff = zoneLevel - currentLevel;
+            if (levelDiff > 6)
+            {
+                levelUpCost = 0;
+            }
+            else if(levelDiff > 0)
+            {
+                levelUpCost = 100;
+            }
+            else
+            {
+                levelUpCost += levelDiff * -50;
+            }
+
             info.Text = $@"{sheet.CharacterSheet.Name}
  
-Lvl: {sheet.CharacterSheet.Level}
-Zone Level: {zoneManager.Current?.EnemyLevel}
+Lvl: {currentLevel}
+Zone Level: {zoneLevel}
+ 
+Level Cost: {levelUpCost}
  
 HP:  {sheet.CharacterSheet.Hp}
 MP:  {sheet.CharacterSheet.Mp}
@@ -80,11 +99,19 @@ Lck: {sheet.CharacterSheet.Luck}";
 
             if (sharpGui.Button(levelFighter, navUp: back.Id, navDown: levelMage.Id))
             {
-                sheet.CharacterSheet.LevelUpFighter(levelCalculator);
+                if (levelUpCost == 0 || persistence.Party.Gold - levelUpCost > 0)
+                {
+                    sheet.CharacterSheet.LevelUpFighter(levelCalculator);
+                    persistence.Party.Gold -= levelUpCost;
+                }
             }
             if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: previous.Id))
             {
-                sheet.CharacterSheet.LevelUpMage(levelCalculator);
+                if (levelUpCost == 0 || persistence.Party.Gold - levelUpCost > 0)
+                {
+                    sheet.CharacterSheet.LevelUpMage(levelCalculator);
+                    persistence.Party.Gold -= levelUpCost;
+                }
             }
             if (sharpGui.Button(previous, navUp: levelMage.Id, navDown: back.Id, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {

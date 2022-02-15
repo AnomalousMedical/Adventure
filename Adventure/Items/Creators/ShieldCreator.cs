@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
+using Adventure.Exploration.Menu;
 using Adventure.Items.Actions;
 using RpgMath;
 using SharpGui;
@@ -21,14 +22,14 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ButtonColumnItem<Func<InventoryItem>> CreateShopEntry(int level)
+        public ButtonColumnItem<ShopEntry> CreateShopEntry(int level)
         {
             var adjective = nameGenerator.GetLevelName(level);
 
-            return new ButtonColumnItem<Func<InventoryItem>>()
+            return new ButtonColumnItem<ShopEntry>
             {
                 Text = $"{adjective} Shield",
-                Item = () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand))
+                Item = new ShopEntry(100, () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand)))
             };
         }
 

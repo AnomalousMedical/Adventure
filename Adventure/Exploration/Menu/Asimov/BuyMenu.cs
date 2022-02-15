@@ -19,9 +19,8 @@ namespace Adventure.Exploration.Menu
         private readonly IScreenPositioner screenPositioner;
         SharpButton buy = new SharpButton() { Text = "Buy", Layer = BuyMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = BuyMenu.UseItemMenuLayer };
-        private List<ButtonColumnItem<Action>> characterChoices = null;
 
-        public InventoryItem SelectedItem { get; set; }
+        public ShopEntry SelectedItem { get; set; }
 
         public ConfirmBuyMenu
         (
@@ -41,14 +40,13 @@ namespace Adventure.Exploration.Menu
         {
             if (SelectedItem == null) { return; }
 
-            var choosingCharacter = characterChoices != null;
-
-            if (!choosingCharacter
-               && sharpGui.FocusedItem != cancel.Id
+            if (sharpGui.FocusedItem != cancel.Id
                && sharpGui.FocusedItem != buy.Id)
             {
                 sharpGui.StealFocus(buy.Id);
             }
+
+            buy.Text = $"Buy {SelectedItem.Cost} gold";
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -61,7 +59,12 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(buy, navUp: cancel.Id, navDown: cancel.Id))
             {
-                characterData.Inventory.Items.Add(SelectedItem);
+                if (persistence.Party.Gold - SelectedItem.Cost > 0)
+                {
+                    persistence.Party.Gold -= SelectedItem.Cost;
+                    var item = SelectedItem.CreateItem();
+                    characterData.Inventory.Items.Add(item);
+                }
                 this.SelectedItem = null;
             }
             if (sharpGui.Button(cancel, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed())
@@ -131,6 +134,8 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
+            bool allowChanges = confirmBuyMenu.SelectedItem == null;
+
             if (currentSheet > persistence.Party.Members.Count)
             {
                 currentSheet = 0;
@@ -146,7 +151,7 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            info.Text = 
+            info.Text =
 $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
@@ -172,8 +177,8 @@ Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
 Lck: {characterData.CharacterSheet.Luck}";
 
-            info2.Text = $@"Gold: {persistence.Party.Gold}"; //TODO: Showing the gold, but need to acutally spend it
-                        
+            info2.Text = $@"Gold: {persistence.Party.Gold}";
+
             info.Rect = screenPositioner.GetTopLeftRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info).GetDesiredSize(sharpGui));
             info2.Rect = screenPositioner.GetTopRightRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2).GetDesiredSize(sharpGui));
 
@@ -188,37 +193,45 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             var canBuy = characterData.Inventory.HasRoom();
 
-            var shopItems = ShopItems().ToArray();
+            var shopItems = ShopItems().ToArray(); //TODO: Cache this somehow, don't keep making it
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (canBuy && selectedItem != null)
             {
-                var item = selectedItem();
-                confirmBuyMenu.SelectedItem = item;
+                confirmBuyMenu.SelectedItem = selectedItem;
             }
 
             if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
-                --currentSheet;
-                if (currentSheet < 0)
+                if (allowChanges)
                 {
-                    currentSheet = persistence.Party.Members.Count - 1;
+                    --currentSheet;
+                    if (currentSheet < 0)
+                    {
+                        currentSheet = persistence.Party.Members.Count - 1;
+                    }
                 }
             }
             if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardNextPressed())
             {
-                ++currentSheet;
-                if (currentSheet >= persistence.Party.Members.Count)
+                if (allowChanges)
                 {
-                    currentSheet = 0;
+                    ++currentSheet;
+                    if (currentSheet >= persistence.Party.Members.Count)
+                    {
+                        currentSheet = 0;
+                    }
                 }
             }
             if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: itemButtons.TopButton, navRight: itemButtons.TopButton) || sharpGui.IsStandardBackPressed())
             {
-                menu.RequestSubMenu(menu.RootMenu);
+                if (allowChanges)
+                {
+                    menu.RequestSubMenu(menu.RootMenu);
+                }
             }
         }
 
-        private IEnumerable<ButtonColumnItem<Func<InventoryItem>>> ShopItems()
+        private IEnumerable<ButtonColumnItem<ShopEntry>> ShopItems()
         {
             var level = zoneManager.Current.EnemyLevel;
 
@@ -226,7 +239,7 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             if (level > 89)
             {
-                foreach(var item in CreateShopLevel(90))
+                foreach (var item in CreateShopLevel(90))
                 {
                     yield return item;
                 }
@@ -297,7 +310,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             }
         }
 
-        private IEnumerable<ButtonColumnItem<Func<InventoryItem>>> CreateShopLevel(int level)
+        private IEnumerable<ButtonColumnItem<ShopEntry>> CreateShopLevel(int level)
         {
             yield return swordCreator.CreateShopEntry(level);
             yield return staffCreator.CreateShopEntry(level);
@@ -305,4 +318,6 @@ Lck: {characterData.CharacterSheet.Luck}";
             yield return shieldCreator.CreateShopEntry(level);
         }
     }
+
+    public record ShopEntry(long Cost, Func<InventoryItem> CreateItem) { }
 }

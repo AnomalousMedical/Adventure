@@ -1,4 +1,5 @@
-﻿using Adventure.Items.Actions;
+﻿using Adventure.Exploration.Menu;
+using Adventure.Items.Actions;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ namespace Adventure.Items.Creators
 {
     class PotionCreator
     {
-        public ButtonColumnItem<Func<InventoryItem>> CreateManaPotionShopEntry(int level)
+        public ButtonColumnItem<ShopEntry> CreateManaPotionShopEntry(int level)
         {
-            return new ButtonColumnItem<Func<InventoryItem>>()
+            return new ButtonColumnItem<ShopEntry>
             {
                 Text = $"Mana Potion",
-                Item = () => CreateManaPotion(1)
+                Item = new ShopEntry(50, () => CreateManaPotion(1))
             };
         }
 
