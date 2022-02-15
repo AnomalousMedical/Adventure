@@ -114,6 +114,8 @@ namespace Adventure
             /// </summary>
             public bool MakeAsimov { get; set; }
 
+            public bool MakeBoss { get; set; }
+
             /// <summary>
             /// The level of the enemies from 1 to 99
             /// </summary>
@@ -163,6 +165,7 @@ namespace Adventure
         private int index;
         private bool makeRestArea;
         private bool makeAsimov;
+        private bool makeBoss;
         private int enemyLevel;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
@@ -206,6 +209,7 @@ namespace Adventure
             this.enemySeed = description.EnemySeed;
             this.makeRestArea = description.MakeRest;
             this.makeAsimov = description.MakeAsimov;
+            this.makeBoss = description.MakeBoss;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
@@ -347,8 +351,9 @@ namespace Adventure
                 rtInstances.AddTlasBuild(wallInstanceData);
 
                 ResetPlacementData();
-                SetupCorridors();
-                SetupRooms();
+                var enemyRandom = new Random(enemySeed);
+                SetupCorridors(enemyRandom);
+                SetupRooms(enemyRandom);
                 AddLootDrop();
 
                 //Since this is async the physics can be active before the placeables are created
@@ -499,6 +504,7 @@ namespace Adventure
         private int enemyIndex;
         private bool placeRestArea;
         private bool placeAsimov;
+        private bool placeBoss;
         private ushort asimovRoom = csMapbuilder.NullCell;
         private void ResetPlacementData()
         {
@@ -507,6 +513,7 @@ namespace Adventure
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
             placeAsimov = this.makeAsimov;
+            placeBoss = this.makeBoss;
             asimovRoom = csMapbuilder.NullCell;
         }
 
@@ -527,9 +534,8 @@ namespace Adventure
             }
         }
 
-        private void SetupCorridors()
+        private void SetupCorridors(Random enemyRandom)
         {
-            var enemyRandom = new Random(enemySeed);
             var usedCorridors = new HashSet<int>();
             var corridorStartIndex = 0;
             var corridors = mapMesh.MapBuilder.Corridors;
@@ -538,6 +544,11 @@ namespace Adventure
             var currentCorridor = mapMesh.MapBuilder.map[firstPoint.x, firstPoint.y];
             for(var currentIndex = 0; currentIndex < numCorridors; ++currentIndex)
             {
+                if(currentCorridor == mapMesh.MapBuilder.EastConnectorIndex || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex)
+                {
+                    continue;
+                }
+
                 var corridorPoint = corridors[currentIndex];
                 var testCorridor = mapMesh.MapBuilder.map[corridorPoint.x, corridorPoint.y];
                 if (currentCorridor != testCorridor)
@@ -608,7 +619,7 @@ namespace Adventure
             }
         }
 
-        private void SetupRooms()
+        private void SetupRooms(Random enemyRandom)
         {
             var treasureChests = new List<TreasureTrigger>();
             var treasureStack = new Stack<ITreasure>(this.treasure);
@@ -628,6 +639,26 @@ namespace Adventure
                     o.Translation = currentPosition + o.MapOffset;
                 });
                 this.placeables.Add(asimov);
+            }
+
+            if (placeBoss)
+            {
+                var point = mapMesh.MapBuilder.EastConnector.Value;
+                var battleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
+                {
+                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
+                    o.Translation = currentPosition + o.MapOffset;
+                    var enemy = biome.GetEnemy(RpgMath.EnemyType.Boss);
+                    o.Sprite = enemy.Asset.CreateSprite();
+                    o.SpriteMaterial = enemy.Asset.CreateMaterial();
+                    o.Zone = index;
+                    o.Index = enemyIndex++;
+                    o.EnemyLevel = enemyLevel;
+                    o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
+                    o.IsBoss = true;
+                    o.Scale = new Vector3(2f, 2f, 1f);
+                });
+                placeables.Add(battleTrigger);
             }
 
             foreach (var room in mapMesh.MapBuilder.Rooms.Where(i => mapMesh.MapBuilder.map[i.Left, i.Top] != asimovRoom))

@@ -12,6 +12,7 @@ namespace Adventure.Assets.Enemies
     {
         public const uint Skin = 0xff168516;//Skin (green)
         public const uint Spine = 0xffff0000;//Spines (red)
+        public const uint Eye = 0xff9105bd;//Eye (purple)
 
         //Threax drew this one
 

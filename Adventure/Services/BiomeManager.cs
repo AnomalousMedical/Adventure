@@ -65,6 +65,19 @@ namespace Adventure
                     },
                     EnemyCurve = new StandardEnemyCurve()
                 },
+                BossEnemy = new BiomeEnemy()
+                {
+                    Asset =  new Assets.Enemies.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xffc12935 },
+                            { Assets.Enemies.TinyDino.Spine, 0xff9105bd },
+                            { Assets.Enemies.TinyDino.Eye, 0xffe28516 },
+                        }
+                    },
+                    EnemyCurve = new StandardEnemyCurve()
+                },
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
@@ -157,6 +170,18 @@ namespace Adventure
                         PalletSwap = new Dictionary<uint, uint>
                         {
                             { Assets.Enemies.TinyDino.Skin, 0xff7babaf }
+                        }
+                    },
+                    EnemyCurve = new StandardEnemyCurve()
+                },
+                BossEnemy = new BiomeEnemy()
+                {
+                    Asset =  new Assets.Enemies.TinyDino()
+                    {
+                        PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xff9105bd },
+                            { Assets.Enemies.TinyDino.Eye, 0xff2ccdca }
                         }
                     },
                     EnemyCurve = new StandardEnemyCurve()
