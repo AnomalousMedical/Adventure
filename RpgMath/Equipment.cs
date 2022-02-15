@@ -49,5 +49,15 @@ namespace RpgMath
         public int PalletSeed { get; set; }
 
         public IEnumerable<String> Spells { get; set; }
+
+        public Guid? Id { get; set; }
+
+        public void EnsureEquipmentId()
+        {
+            if (Id == null)
+            {
+                Id = Guid.NewGuid();
+            }
+        }
     }
 }

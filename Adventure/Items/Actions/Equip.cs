@@ -11,6 +11,7 @@ namespace Adventure.Items.Actions
     {
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
+            item.Equipment.EnsureEquipmentId();
             target.MainHand = item.Equipment;
         }
     }
@@ -19,6 +20,7 @@ namespace Adventure.Items.Actions
     {
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
+            item.Equipment.EnsureEquipmentId();
             target.OffHand = item.Equipment;
         }
     }
@@ -27,6 +29,7 @@ namespace Adventure.Items.Actions
     {
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
+            item.Equipment.EnsureEquipmentId();
             target.Accessory = item.Equipment;
         }
     }
@@ -35,6 +38,7 @@ namespace Adventure.Items.Actions
     {
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
+            item.Equipment.EnsureEquipmentId();
             target.Body = item.Equipment;
         }
     }
