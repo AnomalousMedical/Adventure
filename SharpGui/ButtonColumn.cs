@@ -107,6 +107,19 @@ namespace SharpGui
             return default(T);
         }
 
+        public void StealFocus(ISharpGui sharpGui)
+        {
+            if(!HasFocus(sharpGui))
+            {
+                sharpGui.StealFocus(buttons[0].Id);
+            }
+        }
+
+        public bool HasFocus(ISharpGui sharpGui)
+        {
+            return buttons.Any(i => i.Id == sharpGui.FocusedItem);
+        }
+
         public int Margin { get; set; }
 
         public int MaxWidth { get; set; }

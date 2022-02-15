@@ -117,9 +117,9 @@ namespace Adventure.Exploration
             var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
             treasures.Add(new Treasure(armor));
 
-            treasures.Add(potionCreator.CreateManaPotion(o.EnemyLevel));
-            treasures.Add(potionCreator.CreateHealthPotion(o.EnemyLevel));
-            treasures.Add(potionCreator.CreateFerrymansBribe());
+            treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
+            treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
+            treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
         }
 
         private int GetZoneSeed(int index)

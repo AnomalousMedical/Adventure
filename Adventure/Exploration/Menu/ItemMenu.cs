@@ -19,6 +19,9 @@ namespace Adventure.Exploration.Menu
         SharpButton use = new SharpButton() { Text = "Use" };
         SharpButton transfer = new SharpButton() { Text = "Transfer" };
         SharpButton cancel = new SharpButton() { Text = "Cancel" };
+        private List<ButtonColumnItem<Action>> characterChoices = null;
+
+        private ButtonColumn characterButtons = new ButtonColumn(4);
 
         public InventoryItem SelectedItem { get; set; }
 
@@ -42,7 +45,8 @@ namespace Adventure.Exploration.Menu
 
             if(sharpGui.FocusedItem != transfer.Id
                && sharpGui.FocusedItem != cancel.Id
-               && sharpGui.FocusedItem != use.Id)
+               && sharpGui.FocusedItem != use.Id
+               && !characterButtons.HasFocus(sharpGui))
             {
                 sharpGui.StealFocus(use.Id);
             }
@@ -53,21 +57,64 @@ namespace Adventure.Exploration.Menu
                new ColumnLayout(use, transfer, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
+            var choosingCharacter = characterChoices != null;
+
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetTopRightRect(desiredSize));
 
             if (sharpGui.Button(use, navUp: cancel.Id, navDown: transfer.Id))
             {
-                characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet);
-                this.SelectedItem = null;
+                if (!choosingCharacter)
+                {
+                    if(SelectedItem.Equipment != null)
+                    {
+                        characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet);
+                        SelectedItem = null;
+                    }
+                    else
+                    {
+                        characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                        {
+                            characterData.Inventory.Use(SelectedItem, i.CharacterSheet);
+                        }))
+                        .ToList();
+                    }
+                }
             }
             if (sharpGui.Button(transfer, navUp: use.Id, navDown: cancel.Id))
             {
-                
+                if (!choosingCharacter)
+                {
+
+                }
             }
-            if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id))
+            if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id) || sharpGui.IsStandardPreviousPressed())
             {
-                this.SelectedItem = null;
+                if (!choosingCharacter)
+                {
+                    this.SelectedItem = null;
+                }
+            }
+
+            if (choosingCharacter)
+            {
+                characterButtons.StealFocus(sharpGui);
+
+                characterButtons.Margin = scaleHelper.Scaled(10);
+                characterButtons.MaxWidth = scaleHelper.Scaled(900);
+                characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s));
+                var clearChoices = sharpGui.IsStandardPreviousPressed();
+                if (action != null)
+                {
+                    action.Invoke();
+                    clearChoices = true;
+                }
+                if (clearChoices)
+                {
+                    characterChoices = null;
+                    SelectedItem = null;
+                }
             }
         }
     }

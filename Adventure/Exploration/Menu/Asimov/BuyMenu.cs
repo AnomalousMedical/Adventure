@@ -152,6 +152,8 @@ Lck: {characterData.CharacterSheet.Luck}";
         {
             var level = zoneManager.Current.EnemyLevel;
 
+            yield return potionCreator.CreateManaPotionShopEntry(level);
+
             if (level > 89)
             {
                 foreach(var item in CreateShopLevel(90))

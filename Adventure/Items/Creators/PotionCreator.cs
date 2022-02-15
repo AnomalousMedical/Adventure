@@ -1,4 +1,5 @@
 ﻿using Adventure.Items.Actions;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,16 @@ namespace Adventure.Items.Creators
 {
     class PotionCreator
     {
-        public ITreasure CreateManaPotion(int level)
+        public ButtonColumnItem<Func<InventoryItem>> CreateManaPotionShopEntry(int level)
+        {
+            return new ButtonColumnItem<Func<InventoryItem>>()
+            {
+                Text = $"Mana Potion",
+                Item = () => CreateManaPotion(1)
+            };
+        }
+
+        public InventoryItem CreateManaPotion(int level)
         {
             var item = new InventoryItem
             {
@@ -32,10 +42,10 @@ namespace Adventure.Items.Creators
                 item.Name = "Giant Mana Potion";
             }
 
-            return new Treasure(item);
+            return item;
         }
 
-        public ITreasure CreateHealthPotion(int level)
+        public InventoryItem CreateHealthPotion(int level)
         {
             var item = new InventoryItem
             {
@@ -58,10 +68,10 @@ namespace Adventure.Items.Creators
                 item.Name = "Giant Health Potion";
             }
 
-            return new Treasure(item);
+            return item;
         }
 
-        public ITreasure CreateFerrymansBribe()
+        public InventoryItem CreateFerrymansBribe()
         {
             var item = new InventoryItem
             {
@@ -71,7 +81,9 @@ namespace Adventure.Items.Creators
             item.Number = 25;
             item.Name = "Ferryman's Bribe";
 
-            return new Treasure(item);
+            return item;
         }
+
+
     }
 }
