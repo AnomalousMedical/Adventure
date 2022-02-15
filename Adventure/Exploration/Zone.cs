@@ -666,20 +666,21 @@ namespace Adventure
                 PopulateRoom(room, treasureStack, treasureChests);
             }
 
-            if(treasureChests.Count == 0 && treasureStack.Count > 0)
+            if (treasureChests.Count == 0 && treasureStack.Count > 0)
             {
                 logger.LogWarning("No treasure chests. All loot for this zone will be dropped.");
-                return;
             }
-
-            //Drop any remaining treasure in the chests that were placed
-            var dropIndex = 0;
-            var chestCount = treasureChests.Count;
-            foreach(var remainingTreasure in treasureStack)
+            else
             {
-                var placeable = treasureChests[dropIndex % chestCount];
-                placeable.AddTreasure(remainingTreasure);
-                ++dropIndex;
+                //Drop any remaining treasure in the chests that were placed
+                var dropIndex = 0;
+                var chestCount = treasureChests.Count;
+                foreach (var remainingTreasure in treasureStack)
+                {
+                    var placeable = treasureChests[dropIndex % chestCount];
+                    placeable.AddTreasure(remainingTreasure);
+                    ++dropIndex;
+                }
             }
         }
 
