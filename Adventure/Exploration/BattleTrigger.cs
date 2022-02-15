@@ -114,10 +114,7 @@ namespace Adventure
                 this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 graphicsLoaded = true;
 
-                if (!state.Dead)
-                {
-                    AddGraphics();
-                }
+                AddGraphics();
             });
         }
 
