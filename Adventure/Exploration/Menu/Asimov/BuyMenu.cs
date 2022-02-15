@@ -116,7 +116,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             sharpGui.Text(info);
             sharpGui.Text(info2);
 
-            var canBuy = characterData.Inventory.Items.Count < characterData.Inventory.Size;
+            var canBuy = characterData.Inventory.HasRoom();
 
             var shopItems = ShopItems().ToArray();
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);

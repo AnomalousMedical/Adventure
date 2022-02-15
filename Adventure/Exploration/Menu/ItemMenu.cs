@@ -109,7 +109,9 @@ namespace Adventure.Exploration.Menu
             {
                 if (!choosingCharacter)
                 {
-                    characterChoices = persistence.Party.Members.Where(i => i != characterData).Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                    characterChoices = persistence.Party.Members
+                        .Where(i => i != characterData && i.Inventory.HasRoom())
+                        .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
                         if (SelectedItem.Equipment != null)
                         {
