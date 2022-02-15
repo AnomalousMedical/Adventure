@@ -37,6 +37,7 @@ namespace Adventure
 
         public record struct PersistenceData(bool Dead);
         private PersistenceData state;
+        Persistence.PersistenceEntry<BattleTrigger.PersistenceData> persistentStorage;
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -48,7 +49,6 @@ namespace Adventure
         private readonly Description description;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
-        private readonly Persistence persistence;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -75,7 +75,8 @@ namespace Adventure
             IExplorationGameState explorationGameState,
             Persistence persistence)
         {
-            state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
+            persistentStorage = description.IsBoss ? persistence.BossBattleTriggers : persistence.BattleTriggers;
+            state = persistentStorage.GetData(description.Zone, description.Index);
 
             this.IsBoss = description.IsBoss;
             this.EnemyLevel = description.EnemyLevel;
@@ -88,7 +89,6 @@ namespace Adventure
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.explorationGameState = explorationGameState;
-            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -124,14 +124,14 @@ namespace Adventure
         public void BattleWon()
         {
             state.Dead = true;
-            persistence.BattleTriggers.SetData(description.Zone, description.Index, state);
+            persistentStorage.SetData(description.Zone, description.Index, state);
             DestroyPhysics();
             RemoveGraphics();
         }
 
         public void PlayerRested()
         {
-            state = persistence.BattleTriggers.GetData(description.Zone, description.Index);
+            state = persistentStorage.GetData(description.Zone, description.Index);
             AddGraphics();
         }
 
@@ -175,7 +175,7 @@ namespace Adventure
 
         private void AddGraphics()
         {
-            if (!graphicsLoaded) { return; }
+            if (!graphicsLoaded || state.Dead) { return; }
 
             if (!graphicsVisible)
             {

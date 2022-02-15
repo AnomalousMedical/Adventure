@@ -16,6 +16,8 @@ namespace Adventure.Services
     {
         public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
+        public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+
         public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
         public ZoneData Zone { get; } = new ZoneData();

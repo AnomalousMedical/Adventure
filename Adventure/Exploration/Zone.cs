@@ -652,7 +652,7 @@ namespace Adventure
                     o.Sprite = enemy.Asset.CreateSprite();
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
                     o.Zone = index;
-                    o.Index = enemyIndex++;
+                    o.Index = 0; //Only ever 1 boss
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
                     o.IsBoss = true;
