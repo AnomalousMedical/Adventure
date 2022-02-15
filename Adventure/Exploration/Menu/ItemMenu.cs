@@ -90,6 +90,7 @@ namespace Adventure.Exploration.Menu
             {
                 if (!choosingCharacter)
                 {
+                    IsTransfer = false;
                     if(SelectedItem.Equipment != null)
                     {
                         characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet);
@@ -109,6 +110,7 @@ namespace Adventure.Exploration.Menu
             {
                 if (!choosingCharacter)
                 {
+                    IsTransfer = true;
                     characterChoices = persistence.Party.Members
                         .Where(i => i != characterData && i.Inventory.HasRoom())
                         .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
@@ -135,6 +137,10 @@ namespace Adventure.Exploration.Menu
                 }
             }
         }
+
+        public bool IsChoosingCharacters => this.SelectedItem != null && this.characterChoices != null;
+
+        public bool IsTransfer { get; set; }
     }
 
     class ItemMenu : IExplorationSubMenu
@@ -173,6 +179,8 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
+            bool allowChanges = useItemMenu.SelectedItem == null;
+
             if (currentSheet > persistence.Party.Members.Count)
             {
                 currentSheet = 0;
@@ -190,9 +198,34 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            sharpGui.Text(info);
-            info.Text =
-$@"{characterData.CharacterSheet.Name}
+            if (useItemMenu.IsChoosingCharacters)
+            {
+                var text = "";
+                foreach(var character in persistence.Party.Members)
+                {
+                    text += $"{character.CharacterSheet.Name}";
+                    if (useItemMenu.IsTransfer)
+                    {
+                        text += $@"
+Items:  {character.Inventory.Items.Count} / {character.Inventory.Size}
+  
+";
+                    }
+                    else
+                    {
+                        text += $@"
+HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
+MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
+  
+";
+                    }
+                }
+                info.Text = text;
+            }
+            else
+            {
+                info.Text =
+    $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
 
@@ -214,12 +247,13 @@ Vit: {characterData.CharacterSheet.BaseVitality}
 Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
 Lck: {characterData.CharacterSheet.Luck}";
+            }
+
+            sharpGui.Text(info);
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
-
-            bool allowChanges = useItemMenu.SelectedItem == null;
 
             useItemMenu.Update(characterData);
 
