@@ -18,6 +18,7 @@ namespace Adventure.Exploration.Menu
         private readonly IScreenPositioner screenPositioner;
         SharpButton use = new SharpButton() { Text = "Use", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
+        SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
         private List<ButtonColumnItem<Action>> characterChoices = null;
 
@@ -78,7 +79,7 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(use, transfer, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -106,7 +107,7 @@ namespace Adventure.Exploration.Menu
                     }
                 }
             }
-            if (sharpGui.Button(transfer, navUp: use.Id, navDown: cancel.Id))
+            if (sharpGui.Button(transfer, navUp: use.Id, navDown: discard.Id))
             {
                 if (!choosingCharacter)
                 {
@@ -114,22 +115,20 @@ namespace Adventure.Exploration.Menu
                     characterChoices = persistence.Party.Members
                         .Where(i => i != characterData && i.Inventory.HasRoom())
                         .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
-                    {
-                        if (SelectedItem.Equipment != null)
                         {
-                            var id = SelectedItem.Equipment.Id;
-                            if (id.HasValue)
-                            {
-                                characterData.CharacterSheet.RemoveEquipment(id.Value);
-                            }
-                        }
-                        characterData.Inventory.Items.Remove(SelectedItem);
-                        i.Inventory.Items.Add(SelectedItem);
-                    }))
+                            characterData.RemoveItem(SelectedItem);
+                            i.Inventory.Items.Add(SelectedItem);
+                        }))
                     .ToList();
                 }
             }
-            if (sharpGui.Button(cancel, navUp: transfer.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed())
+            if(sharpGui.Button(discard, navUp: transfer.Id, navDown: cancel.Id))
+            {
+                //TODO: Add confirmation for this
+                characterData.RemoveItem(SelectedItem);
+                this.SelectedItem = null;
+            }
+            if (sharpGui.Button(cancel, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed())
             {
                 if (!choosingCharacter)
                 {

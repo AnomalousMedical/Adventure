@@ -101,6 +101,19 @@ namespace Adventure.Services
             public Inventory Inventory { get; set; } = new Inventory();
 
             public String PlayerSprite { get; set; }
+
+            public void RemoveItem(InventoryItem item)
+            {
+                if (item.Equipment != null)
+                {
+                    var id = item.Equipment.Id;
+                    if (id.HasValue)
+                    {
+                        CharacterSheet.RemoveEquipment(id.Value);
+                    }
+                }
+                Inventory.Items.Remove(item);
+            }
         }
 
         public class PartyData
