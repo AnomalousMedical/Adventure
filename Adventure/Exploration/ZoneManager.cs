@@ -27,7 +27,7 @@ namespace Adventure
         void StopPlayer();
         void GoStartPoint();
         void GoEndPoint();
-        void Rested();
+        void ResetPlaceables();
         Vector3 GetPlayerLoc();
     }
 
@@ -302,11 +302,11 @@ namespace Adventure
 
         public Vector3 GetPlayerLoc() => player.GetLocation();
 
-        public void Rested()
+        public void ResetPlaceables()
         {
-            currentZone.PlayerRested();
-            previousZone?.PlayerRested();
-            nextZone?.PlayerRested();
+            currentZone.ResetPlaceables();
+            previousZone?.ResetPlaceables();
+            nextZone?.ResetPlaceables();
             currentZone.DestroyPhysics();
             currentZone.SetupPhysics();
         }

@@ -42,7 +42,7 @@ namespace Adventure
 
                 if (c.CurrentTimeMicro > endTime)
                 {
-                    zoneManager.Rested();
+                    zoneManager.ResetPlaceables();
 
                     foreach (var member in persistence.Party.Members)
                     {

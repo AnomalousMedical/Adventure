@@ -420,11 +420,11 @@ namespace Adventure
 
         public int EnemyLevel => enemyLevel;
 
-        public void PlayerRested()
+        public void ResetPlaceables()
         {
             foreach (var placeable in placeables)
             {
-                placeable.PlayerRested();
+                placeable.Reset();
             }
         }
 

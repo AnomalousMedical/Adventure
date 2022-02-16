@@ -126,7 +126,7 @@ namespace Adventure
             RemoveGraphics();
         }
 
-        public void PlayerRested()
+        public void Reset()
         {
             state = persistentStorage.GetData(description.Zone, description.Index);
             AddGraphics();

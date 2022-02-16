@@ -175,9 +175,11 @@ namespace Adventure
         {
             persistence.Player.RespawnZone = zoneIndex;
             persistence.Player.RespawnPosition = zoneManager.GetPlayerLoc();
+            persistence.BattleTriggers.ClearData();
 
             contextMenu.ClearContext(Speak);
             explorationMenu.RequestSubMenu(rootMenu);
+            zoneManager.ResetPlaceables();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
