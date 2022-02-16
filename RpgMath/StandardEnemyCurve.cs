@@ -371,7 +371,7 @@ namespace RpgMath
             switch (enemyType)
             {
                 case EnemyType.Boss:
-                    value = (long)(value * 3.5f);
+                    value = (long)(value * 1.2f);
                     break;
                 case EnemyType.Badass:
                     value *= 2;
