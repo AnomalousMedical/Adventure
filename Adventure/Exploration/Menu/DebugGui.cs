@@ -82,13 +82,13 @@ namespace Adventure.Exploration.Menu
 
             sharpGui.Text(averageLevel);
 
-            if (sharpGui.Button(battle, navUp: goNextLevel.Id, navDown: asimov.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
+            if (sharpGui.Button(battle, navUp: toggleCamera.Id, navDown: asimov.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
             {
                 explorationGameState.RequestBattle();
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (sharpGui.Button(allowBattle, navUp: goPreviousLevel.Id, navDown: asimov.Id, navRight: battle.Id, navLeft: battle.Id))
+            if (sharpGui.Button(allowBattle, navUp: toggleCamera.Id, navDown: asimov.Id, navRight: battle.Id, navLeft: battle.Id))
             {
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
@@ -122,7 +122,7 @@ namespace Adventure.Exploration.Menu
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (sharpGui.Button(toggleCamera, navUp: goPreviousLevel.Id, navDown: battle.Id))
+            if (sharpGui.Button(toggleCamera, navUp: goNextLevel.Id, navDown: battle.Id))
             {
                 flyCameraManager.Enabled = !flyCameraManager.Enabled;
             }
