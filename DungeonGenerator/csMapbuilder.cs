@@ -330,7 +330,7 @@ namespace RogueLikeMapBuilder
                 for (lookX = 0; looking && lookX < width; ++lookX)
                 {
                     var cell = map[lookX, lookY];
-                    if (cell >= RoomCell && cell < CorridorCell)
+                    if (cell >= RoomCell && cell < NullCell)
                     {
                         x = lookX;
                         y = lookY;
@@ -374,7 +374,7 @@ namespace RogueLikeMapBuilder
                 for (lookX = 0; looking && lookX < width; ++lookX)
                 {
                     var cell = map[lookX, lookY];
-                    if (cell >= RoomCell && cell < CorridorCell)
+                    if (cell >= RoomCell && cell < NullCell)
                     {
                         x = lookX;
                         y = lookY;
@@ -418,7 +418,7 @@ namespace RogueLikeMapBuilder
                 for (lookY = 0; looking && lookY < height; ++lookY)
                 {
                     var cell = map[lookX, lookY];
-                    if (cell >= RoomCell && cell < CorridorCell)
+                    if (cell >= RoomCell && cell < NullCell)
                     {
                         x = lookX;
                         y = lookY;
@@ -463,7 +463,7 @@ namespace RogueLikeMapBuilder
                 for (lookY = 0; looking && lookY < height; ++lookY)
                 {
                     var cell = map[lookX, lookY];
-                    if (cell >= RoomCell && cell < CorridorCell)
+                    if (cell >= RoomCell && cell < NullCell)
                     {
                         x = lookX;
                         y = lookY;
@@ -505,7 +505,10 @@ namespace RogueLikeMapBuilder
         {
             if (corridorTerminatingRooms.TryGetValue(corridorId, out var value))
             {
-                return (UInt16)(value - csMapbuilder.RoomCell);
+                if (value < CorridorCell)
+                {
+                    return (UInt16)(value - csMapbuilder.RoomCell);
+                }
             }
             return csMapbuilder.CorridorCell;
         }

@@ -117,12 +117,40 @@ namespace DungeonGenerator
                                 else
                                 {
                                     //Do a special check for the north, south, east, west connecting corridors
-                                    //Use their terminating rooms as the room previous as well
                                     if (cellType == mapbuilder.WestConnectorIndex || cellType == mapbuilder.EastConnectorIndex || cellType == mapbuilder.NorthConnectorIndex || cellType == mapbuilder.SouthConnectorIndex)
                                     {
                                         var roomId = mapbuilder.GetCorridorTerminatingRoom(cellType);
-                                        var room = mapbuilder.Rooms[roomId];
-                                        previousCorridor = new IntVector2(room.Left, room.Top);
+                                        if (roomId != csMapbuilder.CorridorCell)
+                                        {
+                                            var room = mapbuilder.Rooms[roomId];
+                                            previousCorridor = new IntVector2(room.Left, room.Top);
+                                        }
+                                        else
+                                        {                                            
+                                            //Look for the connection from the last cell, we know more about what to expect here
+                                            var lastCorridorPoint = mapbuilder.Corridors.Where(i => map[i.x, i.y] == cellType).Last();
+                                            if (cellType == mapbuilder.WestConnectorIndex)
+                                            {
+                                                previousCorridor = new IntVector2(lastCorridorPoint.x + 1, lastCorridorPoint.y); //Get east
+                                            }
+                                            else if (cellType == mapbuilder.EastConnectorIndex)
+                                            {
+                                                previousCorridor = new IntVector2(lastCorridorPoint.x - 1, lastCorridorPoint.y); //Get west
+                                            }
+                                            else if (cellType == mapbuilder.NorthConnectorIndex)
+                                            {
+                                                previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y - 1); //Get south
+                                            }
+                                            else if (cellType == mapbuilder.SouthConnectorIndex)
+                                            {
+                                                previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y + 1); //Get north
+                                            }
+                                            else
+                                            {
+                                                //This is really an error condition
+                                                previousCorridor = lastCorridorPoint;
+                                            }
+                                        }
                                     }
                                 }
                             }
