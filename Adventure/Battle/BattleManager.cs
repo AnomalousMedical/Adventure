@@ -92,6 +92,7 @@ namespace Adventure.Battle
         private TargetCursor cursor;
 
         private Random targetRandom = new Random();
+        private String backgroundMusic;
 
         public BattleManager(EventManager eventManager,
             ISharpGui sharpGui,
@@ -150,9 +151,18 @@ namespace Adventure.Battle
             }
 
             var rand = new Random(battleSeed);
-            var createEnemies = boss ?
-                battleBuilder.CreateBoss(this.objectResolver, party, zoneManager.Current.Biome, rand, level) :
-                battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level);
+            IEnumerable<Enemy> createEnemies;
+            if (boss)
+            {
+                backgroundMusic = zoneManager.Current.Biome.BossBattleMusic;
+                createEnemies = battleBuilder.CreateBoss(this.objectResolver, party, zoneManager.Current.Biome, rand, level);
+            }
+            else
+            {
+                backgroundMusic = zoneManager.Current.Biome.BattleMusic;
+                createEnemies = battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level);
+            }
+
             enemies.AddRange(createEnemies);
         }
 
@@ -166,7 +176,7 @@ namespace Adventure.Battle
                     cursor.BattleStarted();
                     numbers.Clear();
 
-                    backgroundMusicManager.SetBattleTrack(zoneManager.Current.Biome.BattleMusic);
+                    backgroundMusicManager.SetBattleTrack(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
                     var baseDexTotal = 0;
                     foreach(var player in players)

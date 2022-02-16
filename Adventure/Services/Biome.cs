@@ -13,6 +13,7 @@ namespace Adventure
         ISpriteAsset RestAsset { get; set; }
         string BgMusic { get; set; }
         string BattleMusic { get; set; }
+        string BossBattleMusic { get; set; }
         BiomeEnemy GetEnemy(EnemyType type);
     }
 
@@ -29,6 +30,8 @@ namespace Adventure
         public string BgMusic { get; set; } = "Music/freepd/Rafael Krux - Black Knight.ogg";
 
         public string BattleMusic { get; set; } = "Music/freepd/Rafael Krux - Hit n Smash.ogg";
+
+        public string BossBattleMusic { get; set; } = "Music/freepd/Bryan Teoh - Honor Bound.ogg";
 
         public BiomeEnemy GetEnemy(EnemyType type)
         {

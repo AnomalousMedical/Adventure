@@ -70,7 +70,7 @@ namespace RpgMath
             switch (enemyType)
             {
                 case EnemyType.Boss:
-                    value *= (level / 10 + 3);
+                    value *= (level / 10 * 2 + 7);
                     break;
                 case EnemyType.Badass:
                     value *= 2;
