@@ -70,6 +70,7 @@ namespace Adventure.Exploration.Menu
         {
             averageLevel.Text = $"Level: {party.GetAverageLevel()} Zone: {zoneManager.Current.EnemyLevel}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";
+            toggleCamera.Text = flyCameraManager.Enabled ? "Disable Fly Camera" : "Enable Fly Camera";
 
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
