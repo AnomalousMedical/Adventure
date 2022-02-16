@@ -75,6 +75,7 @@ namespace Adventure
             services.AddRpgMath();
 
             //Add this app's services
+            services.AddSingleton<FlyCameraManager>();
             services.AddSingleton<SceneTestUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();
             services.AddSingleton<IDebugGui, DebugGui>();

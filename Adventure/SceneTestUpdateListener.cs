@@ -23,10 +23,9 @@ namespace Adventure
         private readonly IDeviceContext immediateContext;
 
         private readonly IObjectResolverFactory objectResolverFactory;
-        private readonly CameraMover cameraMover;
         private readonly Sky sky;
-        private readonly FirstPersonFlyCamera flyCamera;
-        private readonly RTGui rtGui;
+        private readonly FlyCameraManager flyCameraManager;
+        private readonly CameraMover cameraMover;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -36,15 +35,13 @@ namespace Adventure
             ITimeClock timeClock,
             ISharpGui sharpGui,
             IObjectResolverFactory objectResolverFactory,
-            CameraMover cameraMover,
             Sky sky,
             IFirstGameStateBuilder startState,
-            FirstPersonFlyCamera flyCamera,
-            RTGui rtGui,
-            ShaderPreloader shaderPreloader
+            ShaderPreloader shaderPreloader,
+            FlyCameraManager flyCameraManager,
+            CameraMover cameraMover
         )
         {
-            flyCamera.Position = new Vector3(0, 0, -10);
 
             this.swapChain = graphicsEngine.SwapChain;
             this.immediateContext = graphicsEngine.ImmediateContext;
@@ -52,10 +49,9 @@ namespace Adventure
             this.timeClock = timeClock;
             this.sharpGui = sharpGui;
             this.objectResolverFactory = objectResolverFactory;
-            this.cameraMover = cameraMover;
             this.sky = sky;
-            this.flyCamera = flyCamera;
-            this.rtGui = rtGui;
+            this.flyCameraManager = flyCameraManager;
+            this.cameraMover = cameraMover;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -72,11 +68,9 @@ namespace Adventure
 
         public unsafe void sendUpdate(Clock clock)
         {
-
-            //Update
-            //flyCamera.UpdateInput(clock);
             timeClock.Update(clock);
             sharpGui.Begin(clock);
+
             var nextState = this.gameState.Update(clock);
             if (nextState != this.gameState)
             {
@@ -84,9 +78,11 @@ namespace Adventure
                 nextState.SetActive(true);
                 this.gameState = nextState;
             }
-            //rtGui.Update(clock);
+
             sharpGui.End();
             sky.UpdateLight(clock);
+
+            flyCameraManager.Update(clock);
 
             var rtInstances = this.gameState.Instances;
 

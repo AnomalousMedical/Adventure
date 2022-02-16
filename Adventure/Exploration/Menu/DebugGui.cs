@@ -1,4 +1,5 @@
 ﻿using Adventure.Exploration.Menu.Asimov;
+using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
@@ -26,11 +27,12 @@ namespace Adventure.Exploration.Menu
         private readonly Party party;
         private readonly ILevelCalculator levelCalculator;
         private readonly AsimovRootMenu asimovRoot;
+        private readonly FlyCameraManager flyCameraManager;
         SharpButton goNextLevel = new SharpButton() { Text = "Next Stage" };
         SharpButton goPreviousLevel = new SharpButton() { Text = "Previous Stage" };
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
         SharpButton goEnd = new SharpButton() { Text = "Go End" };
-        //SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
+        SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
         SharpButton asimov = new SharpButton() { Text = "Asimov" };
         SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
@@ -47,7 +49,8 @@ namespace Adventure.Exploration.Menu
             ICoroutineRunner coroutineRunner,
             Party party,
             ILevelCalculator levelCalculator,
-            AsimovRootMenu asimovRoot
+            AsimovRootMenu asimovRoot,
+            FlyCameraManager flyCameraManager
         )
         {
             this.sharpGui = sharpGui;
@@ -59,6 +62,7 @@ namespace Adventure.Exploration.Menu
             this.party = party;
             this.levelCalculator = levelCalculator;
             this.asimovRoot = asimovRoot;
+            this.flyCameraManager = flyCameraManager;
             currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
         }
 
@@ -70,7 +74,7 @@ namespace Adventure.Exploration.Menu
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(asimov), new RowLayout(goStart, goEnd), new RowLayout(goNextLevel, goPreviousLevel) /*, toggleCamera*/) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(asimov), new RowLayout(goStart, goEnd), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
@@ -105,22 +109,22 @@ namespace Adventure.Exploration.Menu
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: battle.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoNext());
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: allowBattle.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoPrevious());
                 explorationMenu.RequestSubMenu(null);
             }
 
-            //if (sharpGui.Button(toggleCamera, navUp: goPreviousLevel.Id, navDown: battle.Id))
-            //{
-            //    useFirstPersonCamera = !useFirstPersonCamera;
-            //}
+            if (sharpGui.Button(toggleCamera, navUp: goPreviousLevel.Id, navDown: battle.Id))
+            {
+                flyCameraManager.Enabled = !flyCameraManager.Enabled;
+            }
 
             int currentTime = (int)(timeClock.CurrentTimeMicro * Clock.MicroToSeconds / (60 * 60));
             if (sharpGui.Slider(currentHour, ref currentTime) || sharpGui.ActiveItem == currentHour.Id)
