@@ -626,7 +626,7 @@ namespace Adventure
 
             if (placeAsimov)
             {
-                asimovRoom = mapMesh.MapBuilder.WestConnectorRoom;
+                asimovRoom = csMapbuilder.IsRoomCell(mapMesh.MapBuilder.WestConnectorRoom) ? mapMesh.MapBuilder.WestConnectorRoom : csMapbuilder.RoomCell;
                 var room = mapMesh.MapBuilder.Rooms[asimovRoom - csMapbuilder.RoomCell];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);

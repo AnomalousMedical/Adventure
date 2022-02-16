@@ -158,6 +158,16 @@ namespace RogueLikeMapBuilder
         public const UInt16 MainCorridorCell = CorridorCell;
         public const UInt16 NullCell = UInt16.MaxValue;
 
+        public static bool IsRoomCell(UInt16 cell)
+        {
+            return cell >= RoomCell && cell < CorridorCell;
+        }
+
+        public static bool IsCorridorCell(UInt16 cell)
+        {
+            return cell >= CorridorCell && cell < NullCell;
+        }
+
         private UInt16 currentRoomCell = RoomCell;
         private UInt16 currentCorridorCell = CorridorCell;
         private UInt16 currentOtherCorridorCell = OtherCorridorCell;
