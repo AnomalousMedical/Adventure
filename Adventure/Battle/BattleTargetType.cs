@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
-    enum BattleTargetType
+    public enum BattleTargetType
     {
         Player,
         Enemy

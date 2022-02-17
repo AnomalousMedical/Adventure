@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Items;
 
 namespace Adventure.Battle
 {
@@ -27,6 +28,7 @@ namespace Adventure.Battle
         private readonly ITurnTimer turnTimer;
         private readonly IObjectResolver objectResolver;
         private CharacterSheet characterSheet;
+        private Inventory inventory;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
 
         private readonly TLASBuildInstanceData tlasData;
@@ -53,6 +55,7 @@ namespace Adventure.Battle
         private ILayoutItem infoRowLayout;
 
         private IMagicAbilities magicAbilities;
+        private readonly BattleItemMenu itemMenu;
         private readonly IXpCalculator xpCalculator;
         private readonly ILevelCalculator levelCalculator;
         private readonly IAssetFactory assetFactory;
@@ -88,6 +91,7 @@ namespace Adventure.Battle
             public EventLayers EventLayer = EventLayers.Battle;
             public GamepadId Gamepad = GamepadId.Pad1;
             public CharacterSheet CharacterSheet;
+            public Inventory Inventory;
             public String PlayerSprite { get; set; }
         }
 
@@ -105,14 +109,17 @@ namespace Adventure.Battle
             IBattleManager battleManager,
             ITurnTimer turnTimer,
             IMagicAbilities magicAbilities,
+            BattleItemMenu itemMenu,
             IXpCalculator xpCalculator,
             ILevelCalculator levelCalculator,
             IAssetFactory assetFactory,
             ISpellFactory spellFactory)
         {
+            this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
             this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
             this.magicAbilities = magicAbilities;
+            this.itemMenu = itemMenu;
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
             this.assetFactory = assetFactory;
@@ -270,7 +277,8 @@ namespace Adventure.Battle
         public enum MenuMode
         {
             Root,
-            Magic
+            Magic,
+            Item
         }
 
         private MenuMode currentMenuMode = MenuMode.Root;
@@ -286,6 +294,9 @@ namespace Adventure.Battle
                     break;
                 case MenuMode.Magic:
                     didSomething = magicAbilities.UpdateGui(sharpGui, coroutine, ref currentMenuMode, Cast);
+                    break;
+                case MenuMode.Item:
+                    didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem);
                     break;
             }
 
@@ -342,6 +353,7 @@ namespace Adventure.Battle
 
             if (sharpGui.Button(itemButton, navUp: magicButton.Id, navDown: defendButton.Id))
             {
+                currentMenuMode = MenuMode.Item;
                 didSomething = true;
             }
 
@@ -526,6 +538,97 @@ namespace Adventure.Battle
             });
         }
 
+        private void UseItem(IBattleTarget target, InventoryItem item)
+        {
+            castEffect?.RequestDestruction();
+            castEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+            {
+                ISpriteAsset asset = new Assets.PixelEffects.Nebula();
+                o.RenderShadow = false;
+                o.Sprite = asset.CreateSprite();
+                o.SpriteMaterial = asset.CreateMaterial();
+            });
+
+            var action = inventory.CreateAction(item);
+            var swingEnd = Quaternion.Identity;
+            var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
+
+            long remainingTime = (long)(1.8f * Clock.SecondsToMicro);
+            long standTime = (long)(0.2f * Clock.SecondsToMicro);
+            long standStartTime = remainingTime / 2;
+            long swingTime = standStartTime - standTime / 3;
+            long standEndTime = standStartTime - standTime;
+            bool needsAttack = true;
+            battleManager.DeactivateCurrentPlayer();
+            battleManager.QueueTurn(c =>
+            {
+                if (IsDead)
+                {
+                    return true;
+                }
+
+                var done = false;
+                remainingTime -= c.DeltaTimeMicro;
+                Vector3 start;
+                Vector3 end;
+                float interpolate;
+
+                if (remainingTime > standStartTime)
+                {
+                    sprite.SetAnimation("stand-left");
+                    if (action.AllowTargetChange)
+                    {
+                        target = battleManager.ValidateTarget(this, target);
+                    }
+                    if (!battleManager.IsStillValidTarget(target))
+                    {
+                        return true; //No target, didn't find a new target give up
+                    }
+                    start = this.startPosition;
+                    end = target.MeleeAttackLocation;
+                    interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                }
+                else if (remainingTime > standEndTime)
+                {
+                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
+                    //sword?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+                    sprite.SetAnimation("cast-left");
+                    interpolate = 0.0f;
+                    start = target.MeleeAttackLocation;
+                    end = target.MeleeAttackLocation;
+
+                    if (needsAttack && remainingTime < swingTime)
+                    {
+                        needsAttack = false;
+                        DestroyCastEffect();
+
+                        action.Use(item, inventory, battleManager, objectResolver, coroutine, this, target);
+                    }
+                }
+                else
+                {
+                    sprite.SetAnimation("stand-left");
+
+                    mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
+
+                    start = target.MeleeAttackLocation;
+                    end = this.startPosition;
+                    interpolate = remainingTime / (float)standEndTime;
+                }
+
+                if (remainingTime < 0)
+                {
+                    sprite.SetAnimation("stand-left");
+                    TurnComplete();
+                    done = true;
+                }
+
+                Sprite_FrameChanged(sprite);
+
+                return done;
+            });
+        }
+
         private void DestroyCastEffect()
         {
             castEffect?.RequestDestruction();
@@ -596,9 +699,35 @@ namespace Adventure.Battle
             }
         }
 
+        public void Resurrect(IDamageCalculator calculator, long damage)
+        {
+            if(damage < 0 && !IsDead) { return; } //Don't do anything if healing and not dead
+
+            characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
+            currentHp.UpdateText(GetCurrentHpText());
+
+            //Player died from applied damage
+            if (IsDead)
+            {
+                battleManager.PlayerDead(this);
+                characterTimer.TurnTimerActive = false;
+                characterTimer.Reset();
+            }
+        }
+
         public void TakeMp(long mp)
         {
+            if(IsDead) { return; }
+
             characterSheet.CurrentMp -= mp;
+            if(characterSheet.CurrentMp < 0)
+            {
+                characterSheet.CurrentMp = 0;
+            }
+            else if (characterSheet.CurrentMp > characterSheet.Mp)
+            {
+                characterSheet.CurrentMp = characterSheet.Mp;
+            }
             currentMp.UpdateText(GetCurrentMpText());
         }
 

@@ -319,5 +319,5 @@ Lck: {characterData.CharacterSheet.Luck}";
         }
     }
 
-    public record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem) { }
+    record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem) { }
 }

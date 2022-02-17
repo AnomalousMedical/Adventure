@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Adventure.Battle;
+using Engine;
+using Newtonsoft.Json.Linq;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items
 {
-    public class InventoryItem
+    class InventoryItem
     {
         public InventoryItem()
         {
@@ -31,12 +33,15 @@ namespace Adventure.Items
         public long? Number { get; set; }
     }
 
-    public interface IInventoryAction
+    interface IInventoryAction
     {
+        bool AllowTargetChange => true;
+
         void Use(InventoryItem item, Inventory inventory, CharacterSheet target);
+        void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
     }
 
-    public class Inventory
+    class Inventory
     {
         public List<InventoryItem> Items { get; } = new List<InventoryItem>();
 
@@ -54,6 +59,18 @@ namespace Adventure.Items
 
             var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
             action.Use(item, this, target);
+        }
+        
+        public IInventoryAction CreateAction(InventoryItem item)
+        {
+            if (item.Action == null)
+            {
+                Items.Remove(item);
+                return null;
+            }
+
+            var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
+            return action;
         }
 
         private T CreateInstance<T>(String name)

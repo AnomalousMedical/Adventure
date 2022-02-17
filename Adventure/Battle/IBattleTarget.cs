@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
-    interface IBattleTarget
+    public interface IBattleTarget
     {
         IBattleStats Stats { get; }
 
@@ -26,5 +26,8 @@ namespace Adventure.Battle
 
         public bool IsDead { get; }
         Vector3 MeleeAttackLocation { get; }
+
+        void Resurrect(IDamageCalculator damageCalculator, long damage);
+        void TakeMp(long mp);
     }
 }

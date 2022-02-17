@@ -217,6 +217,24 @@ namespace Adventure.Battle
             currentHp = calculator.ApplyDamage(damage, currentHp, Stats.Hp);
         }
 
+        public void Resurrect(IDamageCalculator damageCalculator, long damage)
+        {
+            //Doesn't do anything
+        }
+
+        public void TakeMp(long mp)
+        {
+            currentMp -= mp;
+            if (currentMp < 0)
+            {
+                currentMp = 0;
+            }
+            else if (currentMp > Stats.Mp)
+            {
+                currentMp = Stats.Mp;
+            }
+        }
+
         public Vector3 DamageDisplayLocation => currentPosition + new Vector3(0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
         public IBattleStats Stats { get; }

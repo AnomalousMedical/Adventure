@@ -9,6 +9,7 @@ namespace RpgMath
         Fire,
         Ice,
         Lightning,
-        Healing
+        Healing,
+        MpRestore
     }
 }

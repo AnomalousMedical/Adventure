@@ -57,6 +57,13 @@ namespace Adventure.Battle
         public void AddDamageNumber(IBattleTarget target, String damage, Color color);
 
         void SwitchPlayer();
+
+        /// <summary>
+        /// Make sure the targets exist with no other logic.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        bool IsStillValidTarget(IBattleTarget target);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -144,6 +151,7 @@ namespace Adventure.Battle
                 {
                     c.Translation = new Vector3(4, 0, currentZ);
                     c.CharacterSheet = character.CharacterSheet;
+                    c.Inventory = character.Inventory;
                     c.PlayerSprite = character.PlayerSprite;
                 }));
 
@@ -419,6 +427,20 @@ namespace Adventure.Battle
             }
 
             return target;
+        }
+
+        public bool IsStillValidTarget(IBattleTarget target)
+        {
+            //Make sure target still exists
+            switch (target.BattleTargetType)
+            {
+                case BattleTargetType.Enemy:
+                    return enemies.Contains(target);
+                case BattleTargetType.Player:
+                    return players.Contains(target);
+            }
+
+            return false;
         }
 
         public void Attack(IBattleTarget attacker, IBattleTarget target)
