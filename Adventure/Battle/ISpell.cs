@@ -1,4 +1,5 @@
 ﻿using Engine;
+using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace Adventure.Battle
 {
     interface ISpell
     {
+        void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
+
         void Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
 
         bool DefaultTargetPlayers => false;

@@ -5,11 +5,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RpgMath;
 
 namespace Adventure.Battle.Spells
 {
     class Cure : ISpell
     {
+        public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
+        {
+            if(source.CurrentMp - MpCost < 0)
+            {
+                return;
+            }
+
+            source.CurrentMp -= MpCost;
+
+            if(target.CurrentHp == 0)
+            {
+                return;
+            }
+
+            var damage = damageCalculator.Cure(source, 5);
+            damage = damageCalculator.RandomVariation(damage);
+
+            damage *= -1; //Make it healing
+
+            //Apply resistance
+            var resistance = target.GetResistance(RpgMath.Element.Healing);
+            damage = damageCalculator.ApplyResistance(damage, resistance);
+
+            target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
+        }
+
         public void Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);

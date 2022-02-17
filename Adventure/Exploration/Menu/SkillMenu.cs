@@ -1,6 +1,8 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle;
+using Adventure.Items;
 using Adventure.Services;
 using Engine;
+using RpgMath;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -13,13 +15,14 @@ namespace Adventure.Exploration.Menu
     class SkillMenu : IExplorationSubMenu
     {
         public const float ItemButtonsLayer = 0.15f;
-        public const float UseSkillMenuLayer = 0.25f;
         public const float ChooseTargetLayer = 0.35f;
 
         private readonly Persistence persistence;
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        private readonly ISpellFactory spellFactory;
+        private readonly IDamageCalculator damageCalculator;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -27,23 +30,55 @@ namespace Adventure.Exploration.Menu
         SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
 
+        private ButtonColumn characterButtons = new ButtonColumn(4, SkillMenu.ChooseTargetLayer);
+        private List<ButtonColumnItem<Action>> characterChoices = null;
+        private String selectedSpell;
+
         public SkillMenu
         (
             Persistence persistence,
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner
+            IScreenPositioner screenPositioner,
+            ISpellFactory spellFactory,
+            IDamageCalculator damageCalculator
         )
         {
             this.persistence = persistence;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
+            this.spellFactory = spellFactory;
+            this.damageCalculator = damageCalculator;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
             var allowChanges = true;
+
+            var choosingCharacter = characterChoices != null;
+
+            if (choosingCharacter)
+            {
+                characterButtons.StealFocus(sharpGui);
+
+                characterButtons.Margin = scaleHelper.Scaled(10);
+                characterButtons.MaxWidth = scaleHelper.Scaled(900);
+                characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s));
+                if (action != null)
+                {
+                    action.Invoke();
+                    characterChoices = null;
+                    selectedSpell = null;
+                    return;
+                }
+
+                if (sharpGui.IsStandardBackPressed())
+                {
+                    characterChoices = null;
+                }
+            }
 
             if (currentSheet > persistence.Party.Members.Count)
             {
@@ -62,31 +97,20 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-//            if (useItemMenu.IsChoosingCharacters)
-//            {
-//                var text = "";
-//                foreach(var character in persistence.Party.Members)
-//                {
-//                    text += $"{character.CharacterSheet.Name}";
-//                    if (useItemMenu.IsTransfer)
-//                    {
-//                        text += $@"
-//Items:  {character.Inventory.Items.Count} / {character.Inventory.Size}
+            if (choosingCharacter)
+            {
+                var text = "";
+                foreach (var character in persistence.Party.Members)
+                {
+                    text += @$"{character.CharacterSheet.Name}
+HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
+MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
   
-//";
-//                    }
-//                    else
-//                    {
-//                        text += $@"
-//HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
-//MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
-  
-//";
-//                    }
-//                }
-//                info.Text = text;
-//            }
-//            else
+";
+                }
+                info.Text = text;
+            }
+            else
             {
                 info.Text =
     $@"{characterData.CharacterSheet.Name}
@@ -127,9 +151,15 @@ Lck: {characterData.CharacterSheet.Luck}
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
             var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Spells.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
-            if (allowChanges)
+            if (allowChanges && newSelection != null)
             {
-                
+                selectedSpell = newSelection;
+                characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                {
+                    var spell = spellFactory.CreateSpell(selectedSpell);
+                    spell.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                }))
+                .ToList();
             }
 
             var hasItems = characterData.Inventory.Items.Count > 0;
