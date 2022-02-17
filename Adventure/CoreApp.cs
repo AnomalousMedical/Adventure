@@ -145,6 +145,7 @@ namespace Adventure
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<ItemMenu>();
             services.AddSingleton<UseItemMenu>();
+            services.AddSingleton<SkillMenu>();
             services.AddSingleton<SwordCreator>();
             services.AddSingleton<ShieldCreator>();
             services.AddSingleton<StaffCreator>();

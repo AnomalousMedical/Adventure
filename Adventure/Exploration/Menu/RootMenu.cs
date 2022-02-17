@@ -19,19 +19,23 @@ namespace Adventure.Exploration.Menu
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly ItemMenu itemMenu;
-        SharpButton debug = new SharpButton() { Text = "Debug" };
+        private readonly SkillMenu skillMenu;
+        SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
+        SharpButton debug = new SharpButton() { Text = "Debug" };
 
         public RootMenu(
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            ItemMenu itemMenu)
+            ItemMenu itemMenu,
+            SkillMenu skillMenu)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.itemMenu = itemMenu;
+            this.skillMenu = skillMenu;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
@@ -39,17 +43,21 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(items, debug) { Margin = new IntPad(10) }
+               new ColumnLayout(skills, items, debug) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(items, navDown: debug.Id, navUp: debug.Id))
+            if (sharpGui.Button(skills, navDown: items.Id, navUp: debug.Id))
+            {
+                explorationMenu.RequestSubMenu(skillMenu);
+            }
+            else if (sharpGui.Button(items, navDown: debug.Id, navUp: skills.Id))
             {
                 explorationMenu.RequestSubMenu(itemMenu);
             }
-            else if (sharpGui.Button(debug, navDown: items.Id, navUp: items.Id))
+            else if (sharpGui.Button(debug, navDown: skills.Id, navUp: items.Id))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.DebugGui);
             }
