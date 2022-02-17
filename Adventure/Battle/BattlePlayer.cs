@@ -711,8 +711,13 @@ namespace Adventure.Battle
             {
                 battleManager.PlayerDead(this);
                 characterTimer.TurnTimerActive = false;
-                characterTimer.Reset();
             }
+            else
+            {
+                characterTimer.TurnTimerActive = true;
+            }
+
+            characterTimer.Reset();
         }
 
         public void TakeMp(long mp)
