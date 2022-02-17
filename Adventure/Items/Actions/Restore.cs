@@ -143,7 +143,14 @@ namespace Adventure.Items.Actions
             var resistance = target.Stats.GetResistance(RpgMath.Element.Healing);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
 
-            battleManager.AddDamageNumber(target, damage);
+            if (target.IsDead || damage > 0)
+            {
+                battleManager.AddDamageNumber(target, damage);
+            }
+            else
+            {
+                battleManager.AddDamageNumber(target, "Miss", Color.Red);
+            }
             target.Resurrect(battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
