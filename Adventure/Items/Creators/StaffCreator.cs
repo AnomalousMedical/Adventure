@@ -27,7 +27,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Fire Staff", 180, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Fire Staff", name.Cost * 2, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
         }
 
         public Equipment CreateNormal(int level)
@@ -43,6 +43,7 @@ namespace Adventure.Items.Creators
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
                 Spells = GetFireSpells(level),
+                TwoHanded = true
             };
 
             return staff;
@@ -59,7 +60,9 @@ namespace Adventure.Items.Creators
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
-                Sprite = nameof(Staff07)
+                Sprite = nameof(Staff07),
+                Spells = GetFireSpells(level),
+                TwoHanded = true
             };
 
             return staff;
@@ -72,11 +75,13 @@ namespace Adventure.Items.Creators
             var staff = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Fire Staff",
-                MagicAttack = equipmentCurve.GetAttack(name.Level + 9),
+                MagicAttack = equipmentCurve.GetAttack(name.Level + 12),
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
-                Sprite = nameof(Staff07)
+                Sprite = nameof(Staff07),
+                Spells = GetFireSpells(level),
+                TwoHanded = true
             };
 
             return staff;

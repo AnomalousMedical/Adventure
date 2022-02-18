@@ -12,7 +12,7 @@ namespace Adventure.Items
         NameResult GetLevelName(int level);
     }
 
-    record NameResult(String Adjective, int Level);
+    record NameResult(String Adjective, int Level, int Cost);
 
     class NameGenerator : INameGenerator
     {
@@ -49,43 +49,43 @@ namespace Adventure.Items
         {
             if (level < 10)
             {
-                return new NameResult("Busted", 1);
+                return new NameResult("Busted", 1, 100);
             }
             else if (level < 20)
             {
-                return new NameResult("Rusty", 10);
+                return new NameResult("Rusty", 10, 125);
             }
             else if (level < 30)
             {
-                return new NameResult("Worn", 20);
+                return new NameResult("Worn", 20, 150);
             }
             else if (level < 40)
             {
-                return new NameResult("Common", 30);
+                return new NameResult("Common", 30, 175);
             }
             else if (level < 50)
             {
-                return new NameResult("Deluxe", 40);
+                return new NameResult("Deluxe", 40, 200);
             }
             else if (level < 60)
             {
-                return new NameResult("Superior", 50);
+                return new NameResult("Superior", 50, 225);
             }
             else if (level < 70)
             {
-                return new NameResult("Fine", 60);
+                return new NameResult("Fine", 60, 250);
             }
             else if (level < 80)
             {
-                return new NameResult("Customized", 70);
+                return new NameResult("Customized", 70, 275);
             }
             else if (level < 90)
             {
-                return new NameResult("Crafted", 80);
+                return new NameResult("Crafted", 80, 300);
             }
             else
             {
-                return new NameResult("Flawless", 90);
+                return new NameResult("Flawless", 90, 325);
             }
         }
     }

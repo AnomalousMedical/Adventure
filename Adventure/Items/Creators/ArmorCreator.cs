@@ -54,8 +54,8 @@ namespace Adventure.Items.Creators
             var sword = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Armor",
-                Defense = equipmentCurve.GetDefense(name.Level + 9),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 9)
+                Defense = equipmentCurve.GetDefense(name.Level + 12),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 12)
             };
 
             return sword;

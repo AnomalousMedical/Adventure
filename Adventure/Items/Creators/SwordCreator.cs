@@ -26,7 +26,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Sword", 100, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Sword", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
         }
 
         public Equipment CreateNormal(int level)
@@ -66,7 +66,7 @@ namespace Adventure.Items.Creators
             var sword = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Sword",
-                Attack = equipmentCurve.GetAttack(name.Level + 9),
+                Attack = equipmentCurve.GetAttack(name.Level + 12),
                 AttackPercent = 100,
                 Sprite = nameof(Greatsword01)
             };

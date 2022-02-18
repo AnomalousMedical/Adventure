@@ -26,7 +26,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Shield", 100, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
+            return new ShopEntry($"{name.Adjective} Shield", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
         }
 
         public Equipment CreateNormal(int level)
@@ -66,8 +66,8 @@ namespace Adventure.Items.Creators
             var shield = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Shield",
-                Defense = equipmentCurve.GetDefense(name.Level + 9),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 9),
+                Defense = equipmentCurve.GetDefense(name.Level + 12),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 12),
                 Sprite = nameof(ShieldOfReflection)
             };
 
