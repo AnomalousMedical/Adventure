@@ -21,13 +21,13 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateNormal(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Armor",
-                Defense = equipmentCurve.GetDefense(level),
-                MagicDefense = equipmentCurve.GetMDefense(level)
+                Name = $"{name.Adjective} Armor",
+                Defense = equipmentCurve.GetDefense(name.Level),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level)
             };
 
             return sword;
@@ -35,13 +35,13 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateEpic(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Epic Armor",
-                Defense = equipmentCurve.GetDefense(level + 6),
-                MagicDefense = equipmentCurve.GetMDefense(level + 6)
+                Name = $"{name.Adjective} Epic Armor",
+                Defense = equipmentCurve.GetDefense(name.Level + 6),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 6)
             };
 
             return sword;
@@ -49,13 +49,13 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateLegendary(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Legendary Armor",
-                Defense = equipmentCurve.GetDefense(level + 9),
-                MagicDefense = equipmentCurve.GetMDefense(level + 9)
+                Name = $"{name.Adjective} Legendary Armor",
+                Defense = equipmentCurve.GetDefense(name.Level + 9),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 9)
             };
 
             return sword;

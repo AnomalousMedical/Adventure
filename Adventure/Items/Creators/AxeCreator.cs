@@ -26,19 +26,19 @@ namespace Adventure.Items.Creators
 
         public ShopEntry CreateShopEntry(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{adjective} Axe", 100, () => new InventoryItem(CreateNormal(level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Axe", 100, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
         }
 
         public Equipment CreateNormal(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Axe",
-                Attack = equipmentCurve.GetAttack(level),
+                Name = $"{name.Adjective} Axe",
+                Attack = equipmentCurve.GetAttack(name.Level),
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Spells = GetCureSpells(level),
@@ -49,12 +49,12 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateEpic(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Epic Axe",
-                Attack = equipmentCurve.GetAttack(level + 6),
+                Name = $"{name.Adjective} Epic Axe",
+                Attack = equipmentCurve.GetAttack(name.Level + 6),
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Spells = GetCureSpells(level),
@@ -65,12 +65,12 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateLegendary(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Legendary Axe",
-                Attack = equipmentCurve.GetAttack(level + 9),
+                Name = $"{name.Adjective} Legendary Axe",
+                Attack = equipmentCurve.GetAttack(name.Level + 9),
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Spells = GetCureSpells(level),

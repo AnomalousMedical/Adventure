@@ -9,8 +9,10 @@ namespace Adventure.Items
     interface INameGenerator
     {
         string Generate(Random random, List<string> section1, string separator1 = " ", List<string> section2 = null, string separator2 = " ", List<string> section3 = null, string separator3 = " ", List<string> section4 = null, string separator4 = " ", List<string> section5 = null);
-        string GetLevelName(int level);
+        NameResult GetLevelName(int level);
     }
+
+    record NameResult(String Adjective, int Level);
 
     class NameGenerator : INameGenerator
     {
@@ -43,51 +45,48 @@ namespace Adventure.Items
             }
         }
 
-        public String GetLevelName(int level)
+        public NameResult GetLevelName(int level)
         {
-            String adjective;
             if (level < 10)
             {
-                adjective = "Busted";
+                return new NameResult("Busted", 1);
             }
             else if (level < 20)
             {
-                adjective = "Rusty";
+                return new NameResult("Rusty", 10);
             }
             else if (level < 30)
             {
-                adjective = "Worn";
+                return new NameResult("Worn", 20);
             }
             else if (level < 40)
             {
-                adjective = "Common";
+                return new NameResult("Common", 30);
             }
             else if (level < 50)
             {
-                adjective = "Deluxe";
+                return new NameResult("Deluxe", 40);
             }
             else if (level < 60)
             {
-                adjective = "Superior";
+                return new NameResult("Superior", 50);
             }
             else if (level < 70)
             {
-                adjective = "Fine";
+                return new NameResult("Fine", 60);
             }
             else if (level < 80)
             {
-                adjective = "Customized";
+                return new NameResult("Customized", 70);
             }
             else if (level < 90)
             {
-                adjective = "Crafted";
+                return new NameResult("Crafted", 80);
             }
             else
             {
-                adjective = "Flawless";
+                return new NameResult("Flawless", 90);
             }
-
-            return adjective;
         }
     }
 }

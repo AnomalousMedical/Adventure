@@ -25,21 +25,21 @@ namespace Adventure.Items.Creators
 
         public ShopEntry CreateShopEntry(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{adjective} Fire Staff", 180, () => new InventoryItem(CreateNormal(level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Fire Staff", 180, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
         }
 
         public Equipment CreateNormal(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var staff = new Equipment
             {
-                Name = $"{adjective} Fire Staff",
-                MagicAttack = equipmentCurve.GetAttack(level),
+                Name = $"{name.Adjective} Fire Staff",
+                MagicAttack = equipmentCurve.GetAttack(name.Level),
                 MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(level) / 3,
+                Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
                 Spells = GetFireSpells(level),
@@ -50,14 +50,14 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateEpic(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var staff = new Equipment
             {
-                Name = $"{adjective} Epic Fire Staff",
-                MagicAttack = equipmentCurve.GetAttack(level + 6),
+                Name = $"{name.Adjective} Epic Fire Staff",
+                MagicAttack = equipmentCurve.GetAttack(name.Level + 6),
                 MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(level) / 3,
+                Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07)
             };
@@ -67,14 +67,14 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateLegendary(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var staff = new Equipment
             {
-                Name = $"{adjective} Legendary Fire Staff",
-                MagicAttack = equipmentCurve.GetAttack(level + 9),
+                Name = $"{name.Adjective} Legendary Fire Staff",
+                MagicAttack = equipmentCurve.GetAttack(name.Level + 9),
                 MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(level) / 3,
+                Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07)
             };

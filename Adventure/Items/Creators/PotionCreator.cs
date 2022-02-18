@@ -13,7 +13,7 @@ namespace Adventure.Items.Creators
     {
         public ShopEntry CreateManaPotionShopEntry(int level)
         {
-            return new ShopEntry($"Mana Potion", 50, () => CreateManaPotion(1));
+            return new ShopEntry($"Mana Potion", 75, () => CreateManaPotion(1));
         }
 
         public InventoryItem CreateManaPotion(int level)

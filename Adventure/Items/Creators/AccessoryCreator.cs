@@ -21,11 +21,11 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateNormal(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Accessory"
+                Name = $"{name.Adjective} Accessory"
             };
 
             return sword;
@@ -33,11 +33,11 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateEpic(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Epic Accessory"
+                Name = $"{name.Adjective} Epic Accessory"
             };
 
             return sword;
@@ -45,11 +45,11 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateLegendary(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var sword = new Equipment
             {
-                Name = $"{adjective} Legendary Accessory"
+                Name = $"{name.Adjective} Legendary Accessory"
             };
 
             return sword;

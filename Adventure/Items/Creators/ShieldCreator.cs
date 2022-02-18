@@ -24,20 +24,20 @@ namespace Adventure.Items.Creators
 
         public ShopEntry CreateShopEntry(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{adjective} Shield", 100, () => new InventoryItem(CreateNormal(level), nameof(EquipOffHand)));
+            return new ShopEntry($"{name.Adjective} Shield", 100, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
         }
 
         public Equipment CreateNormal(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var shield = new Equipment
             {
-                Name = $"{adjective} Shield",
-                Defense = equipmentCurve.GetDefense(level),
-                MagicDefense = equipmentCurve.GetMDefense(level),
+                Name = $"{name.Adjective} Shield",
+                Defense = equipmentCurve.GetDefense(name.Level),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level),
                 Sprite = nameof(ShieldOfReflection)
             };
 
@@ -46,13 +46,13 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateEpic(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var shield = new Equipment
             {
-                Name = $"{adjective} Epic Shield",
-                Defense = equipmentCurve.GetDefense(level + 6),
-                MagicDefense = equipmentCurve.GetMDefense(level + 6),
+                Name = $"{name.Adjective} Epic Shield",
+                Defense = equipmentCurve.GetDefense(name.Level + 6),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 6),
                 Sprite = nameof(ShieldOfReflection)
             };
 
@@ -61,13 +61,13 @@ namespace Adventure.Items.Creators
 
         public Equipment CreateLegendary(int level)
         {
-            var adjective = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetLevelName(level);
 
             var shield = new Equipment
             {
-                Name = $"{adjective} Legendary Shield",
-                Defense = equipmentCurve.GetDefense(level + 9),
-                MagicDefense = equipmentCurve.GetMDefense(level + 9),
+                Name = $"{name.Adjective} Legendary Shield",
+                Defense = equipmentCurve.GetDefense(name.Level + 9),
+                MagicDefense = equipmentCurve.GetMDefense(name.Level + 9),
                 Sprite = nameof(ShieldOfReflection)
             };
 
