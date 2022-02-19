@@ -1,117 +1,60 @@
-﻿using Engine;
-using SoundPlugin;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure
+namespace Adventure.Services
 {
-    interface IBackgroundMusicManager
+    class BackgroundMusicManager : IDisposable
     {
-        void SetBackgroundSong(string songFile);
-        void SetBattleTrack(string songFile);
-    }
+        private readonly IZoneManager zoneManager;
+        private readonly IBackgroundMusicPlayer backgroundMusicManager;
+        private readonly ITimeClock timeClock;
 
-    class BackgroundMusicManager : IDisposable, IBackgroundMusicManager
-    {
-        private readonly VirtualFileSystem virtualFileSystem;
-        private readonly SoundManager soundManager;
-        private readonly ICoroutineRunner coroutineRunner;
-        private SoundAndSource bgMusicSound;
-        private SoundAndSource battleMusicSound;
-        private bool bgMusicFinished = false;
-        private String currentBackgroundSong;
-
-        public BackgroundMusicManager(
-            VirtualFileSystem virtualFileSystem, 
-            SoundManager soundManager,
-            ICoroutineRunner coroutineRunner)
+        public BackgroundMusicManager
+        (
+            IZoneManager zoneManager, 
+            IBackgroundMusicPlayer backgroundMusicManager,
+            ITimeClock timeClock
+        )
         {
-            this.virtualFileSystem = virtualFileSystem;
-            this.soundManager = soundManager;
-            this.coroutineRunner = coroutineRunner;
+            this.zoneManager = zoneManager;
+            this.backgroundMusicManager = backgroundMusicManager;
+            this.timeClock = timeClock;
+
+            zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
+            timeClock.DayStarted += TimeClock_DayStarted;
+            timeClock.NightStarted += TimeClock_NightStarted;
         }
 
         public void Dispose()
         {
-            DisposeBgSound();
-            battleMusicSound?.Dispose();
+            zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
+            timeClock.DayStarted -= TimeClock_DayStarted;
+            timeClock.NightStarted -= TimeClock_NightStarted;
         }
 
-        private void DisposeBgSound()
+        private void TimeClock_NightStarted(TimeClock obj)
         {
-            if (bgMusicSound != null)
-            {
-                bgMusicSound.Source.PlaybackFinished -= BgMusic_PlaybackFinished;
-                bgMusicSound?.Dispose();
-                bgMusicSound = null;
-            }
+            var song = zoneManager.Current.Biome.BgMusicNight;
+            backgroundMusicManager.SetBackgroundSong(song);
         }
 
-        public void SetBackgroundSong(String songFile)
+        private void TimeClock_DayStarted(TimeClock obj)
         {
-            if (currentBackgroundSong == songFile) { return; }
-
-            DisposeBgSound();
-            if (battleMusicSound == null && songFile != null)
-            {
-                var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                bgMusicSound = soundManager.StreamPlaySound(stream);
-                bgMusicSound.Sound.Repeat = true;
-                bgMusicSound.Source.PlaybackFinished += BgMusic_PlaybackFinished;
-                bgMusicFinished = false;
-            }
-            currentBackgroundSong = songFile;
+            var song = zoneManager.Current.Biome.BgMusic;
+            backgroundMusicManager.SetBackgroundSong(song);
         }
 
-        private void BgMusic_PlaybackFinished(Source source)
+        private void ZoneManager_ZoneChanged(IZoneManager obj)
         {
-            bgMusicFinished = true;
-            IEnumerator<YieldAction> co()
+            var song = zoneManager.Current.Biome.BgMusic;
+            if (!timeClock.IsDay)
             {
-                yield return coroutineRunner.WaitSeconds(0);
-                if (bgMusicFinished) //Double check that the song was not changed.
-                {
-                    //This makes the song actually restart, otherwise it will end
-                    var songChange = currentBackgroundSong;
-                    currentBackgroundSong = null;
-                    SetBackgroundSong(songChange);
-                }
+                song = zoneManager.Current.Biome.BgMusicNight;
             }
-            coroutineRunner.Run(co());
-        }
-
-        public void SetBattleTrack(String songFile)
-        {
-            battleMusicSound?.Dispose();
-            battleMusicSound = null;
-
-            if (songFile == null)
-            {
-                if (bgMusicSound != null && !bgMusicFinished && !bgMusicSound.Source.Playing)
-                {
-                    bgMusicSound.Source.resume();
-                }
-                else if (bgMusicSound == null && currentBackgroundSong != null)
-                {
-                    //If we should play a song, but it hasn't started yet, this would happen if the bg music changes during a battle.
-                    SetBackgroundSong(currentBackgroundSong);
-                }
-            }
-            else
-            {
-                var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                battleMusicSound = soundManager.StreamPlaySound(stream);
-                battleMusicSound.Sound.Repeat = true;
-
-                if (bgMusicSound != null)
-                {
-                    bgMusicSound.Source.pause();
-                }
-            }
+            backgroundMusicManager.SetBackgroundSong(song);
         }
     }
 }

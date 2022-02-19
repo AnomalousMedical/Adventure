@@ -133,7 +133,9 @@ namespace Adventure
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
-                }
+                },
+                BgMusic = "Music/opengameart/Fantasy_Origins - Cavernous_Desert02.ogg",
+                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg"
             },
             //Snowy
             new Biome
@@ -189,7 +191,9 @@ namespace Adventure
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
-                }
+                },
+                BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
+                BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg"
             }
         };
 

@@ -21,10 +21,18 @@ namespace Adventure
         void ResetTimeFactor();
         void SetTimeRatio(long speedup);
         void Update(Clock clock);
+
+        public event Action<TimeClock> NightStarted;
+
+        public event Action<TimeClock> DayStarted;
     }
 
     class TimeClock : ITimeClock
     {
+        public event Action<TimeClock> NightStarted;
+
+        public event Action<TimeClock> DayStarted;
+
         const long HoursToMicro = 60L * 60L * Clock.SecondsToMicro;
         const long HoursPerDay = 24L;
         private readonly Persistence persistence;
@@ -51,9 +59,14 @@ namespace Adventure
 
         public void Update(Clock clock)
         {
+            bool wasDay = IsDay;
+
             currentTime += clock.DeltaTimeMicro * timeFactor;
             currentTime %= period;
             persistence.Time.Current = currentTime;
+
+            bool nowDay = IsDay;
+            HandleDayNightEvents(wasDay, nowDay);
         }
 
         public void ResetTimeFactor()
@@ -76,7 +89,10 @@ namespace Adventure
             }
             set
             {
+                bool wasDay = IsDay;
                 currentTime = value % period;
+                bool nowDay = IsDay;
+                HandleDayNightEvents(wasDay, nowDay);
             }
         }
 
@@ -132,6 +148,22 @@ namespace Adventure
                 }
                 //All thats left is (currentTime < dayStart)
                 return (currentTime) * Clock.MicroToSeconds / nightEndFactor + 0.5f;
+            }
+        }
+
+        private void HandleDayNightEvents(bool wasDay, bool nowDay)
+        {
+            if (wasDay != nowDay)
+            {
+                Console.WriteLine($"{wasDay} {nowDay}");
+                if (wasDay && !nowDay)
+                {
+                    NightStarted?.Invoke(this);
+                }
+                else //This is the only remaining case, so don't need any logic
+                {
+                    DayStarted?.Invoke(this);
+                }
             }
         }
     }

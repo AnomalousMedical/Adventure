@@ -77,7 +77,7 @@ namespace Adventure.Battle
         private readonly IZoneManager zoneManager;
         private readonly Party party;
         private readonly IDamageCalculator damageCalculator;
-        private readonly IBackgroundMusicManager backgroundMusicManager;
+        private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private readonly IScreenPositioner screenPositioner;
         private readonly ICameraProjector cameraProjector;
         private readonly ITurnTimer turnTimer;
@@ -109,7 +109,7 @@ namespace Adventure.Battle
             IZoneManager zoneManager,
             Party party,
             IDamageCalculator damageCalculator,
-            IBackgroundMusicManager backgroundMusicManager,
+            IBackgroundMusicPlayer backgroundMusicPlayer,
             IScreenPositioner screenPositioner,
             ICameraProjector cameraProjector,
             ITurnTimer turnTimer,
@@ -123,7 +123,7 @@ namespace Adventure.Battle
             this.zoneManager = zoneManager;
             this.party = party;
             this.damageCalculator = damageCalculator;
-            this.backgroundMusicManager = backgroundMusicManager;
+            this.backgroundMusicPlayer = backgroundMusicPlayer;
             this.screenPositioner = screenPositioner;
             this.cameraProjector = cameraProjector;
             this.turnTimer = turnTimer;
@@ -184,7 +184,7 @@ namespace Adventure.Battle
                     cursor.BattleStarted();
                     numbers.Clear();
 
-                    backgroundMusicManager.SetBattleTrack(backgroundMusic);
+                    backgroundMusicPlayer.SetBattleTrack(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
                     var baseDexTotal = 0;
                     foreach(var player in players)
@@ -235,7 +235,7 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    backgroundMusicManager.SetBattleTrack(null);
+                    backgroundMusicPlayer.SetBattleTrack(null);
 
                     foreach (var player in players)
                     {
@@ -474,7 +474,7 @@ namespace Adventure.Battle
                     if (enemies.Count == 0)
                     {
                         BattleEnded();
-                        backgroundMusicManager.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                        backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                     }
                 }
             }

@@ -12,8 +12,10 @@ namespace Adventure
         BiomeTreasure Treasure { get; set; }
         ISpriteAsset RestAsset { get; set; }
         string BgMusic { get; set; }
+        string BgMusicNight { get; set; }
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
+
         BiomeEnemy GetEnemy(EnemyType type);
     }
 
@@ -27,7 +29,9 @@ namespace Adventure
 
         public bool ReflectWall { get; set; }
 
-        public string BgMusic { get; set; } = "Music/freepd/Rafael Krux - Black Knight.ogg";
+        public string BgMusic { get; set; } = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg";
+
+        public string BgMusicNight { get; set; } = "Music/opengameart/BossLevelVGM - Victoriana Loop.ogg";
 
         public string BattleMusic { get; set; } = "Music/freepd/Rafael Krux - Hit n Smash.ogg";
 

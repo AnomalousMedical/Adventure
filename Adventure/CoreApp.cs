@@ -126,7 +126,8 @@ namespace Adventure
             services.AddSingleton<IGameStateLinker, GameStateLinker>();
             services.AddSingleton<CameraMover>();
             services.AddSingleton<ICollidableTypeIdentifier, CollidableTypeIdentifier>();
-            services.AddSingleton<IBackgroundMusicManager, BackgroundMusicManager>();
+            services.AddSingleton<IBackgroundMusicPlayer, BackgroundMusicPlayer>();
+            services.AddSingleton<BackgroundMusicManager>();
             services.AddSingleton<ICameraProjector, CameraProjector>();
             services.AddSingleton<IBattleScreenLayout, BattleScreenLayout>();
             services.AddSingleton<IFirstGameStateBuilder, FirstGameStateBuilder>();

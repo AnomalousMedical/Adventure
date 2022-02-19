@@ -37,7 +37,8 @@ namespace Adventure
             IObjectResolverFactory objectResolverFactory,
             Sky sky,
             IFirstGameStateBuilder startState,
-            ShaderPreloader shaderPreloader,
+            ShaderPreloader shaderPreloader, //Need this injected to create it
+            BackgroundMusicManager backgroundMusicManager, //Need this injected to create it
             FlyCameraManager flyCameraManager,
             CameraMover cameraMover
         )
