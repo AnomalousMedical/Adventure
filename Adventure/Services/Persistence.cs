@@ -20,6 +20,8 @@ namespace Adventure.Services
 
         public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
+        public PersistenceEntry<Key.PersistenceData> Keys { get; } = new PersistenceEntry<Key.PersistenceData>();
+
         public ZoneData Zone { get; } = new ZoneData();
 
         public PlayerData Player { get; } = new PlayerData();

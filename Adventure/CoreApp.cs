@@ -106,6 +106,8 @@ namespace Adventure
             services.AddScoped<TreasureTrigger.Description>();
             services.AddScoped<Gate>();
             services.AddScoped<Gate.Description>();
+            services.AddScoped<Key>();
+            services.AddScoped<Key.Description>();
             services.AddScoped<RestArea>();
             services.AddScoped<RestArea.Description>();
             services.AddScoped<LootDropTrigger>();

@@ -74,7 +74,7 @@ namespace Adventure.Exploration
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
-                //o.NumSwitches = 1;
+                //o.MakeGate = true;
                 biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
 
                 //Give out starting weapons

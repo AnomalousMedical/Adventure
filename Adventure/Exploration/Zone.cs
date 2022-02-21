@@ -116,7 +116,7 @@ namespace Adventure
 
             public bool MakeBoss { get; set; }
 
-            public int NumSwitches { get; set; }
+            public bool MakeGate { get; set; }
 
             /// <summary>
             /// The level of the enemies from 1 to 99
@@ -168,8 +168,8 @@ namespace Adventure
         private bool makeRestArea;
         private bool makeAsimov;
         private bool makeBoss;
+        private bool makeGate;
         private int enemyLevel;
-        private int numSwitches;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
 
@@ -213,7 +213,7 @@ namespace Adventure
             this.makeRestArea = description.MakeRest;
             this.makeAsimov = description.MakeAsimov;
             this.makeBoss = description.MakeBoss;
-            this.numSwitches = description.NumSwitches;
+            this.makeGate = description.MakeGate;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
@@ -356,8 +356,11 @@ namespace Adventure
 
                 ResetPlacementData();
                 var enemyRandom = new Random(enemySeed);
-                SetupCorridors(enemyRandom);
+                var usedCorridors = new HashSet<int>();
+                SetupCorridors(enemyRandom, usedCorridors);
                 SetupRooms(enemyRandom);
+                PlaceKeySafety(enemyRandom, usedCorridors);
+
                 AddLootDrop();
 
                 //Since this is async the physics can be active before the placeables are created
@@ -510,6 +513,7 @@ namespace Adventure
         private bool placeAsimov;
         private bool placeBoss;
         private bool placeGate;
+        private bool placeKey;
         private ushort asimovRoom = csMapbuilder.NullCell;
         private void ResetPlacementData()
         {
@@ -519,7 +523,7 @@ namespace Adventure
             placeRestArea = this.makeRestArea;
             placeAsimov = this.makeAsimov;
             placeBoss = this.makeBoss;
-            placeGate = this.numSwitches > 0;
+            placeKey = placeGate = makeGate;
             asimovRoom = csMapbuilder.NullCell;
         }
 
@@ -540,9 +544,8 @@ namespace Adventure
             }
         }
 
-        private void SetupCorridors(Random enemyRandom)
+        private void SetupCorridors(Random enemyRandom, HashSet<int> usedCorridors)
         {
-            var usedCorridors = new HashSet<int>();
             var corridorStartIndex = 0;
             var corridors = mapMesh.MapBuilder.Corridors;
             var numCorridors = corridors.Count;
@@ -656,7 +659,7 @@ namespace Adventure
                 var battleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
                 {
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
-                    o.Translation = currentPosition + o.MapOffset;
+                    o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
                     var enemy = biome.GetEnemy(RpgMath.EnemyType.Boss);
                     o.Sprite = enemy.Asset.CreateSprite();
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
@@ -689,7 +692,50 @@ namespace Adventure
                 placeables.Add(gate);
             }
 
-            foreach (var room in mapMesh.MapBuilder.Rooms.Where(i => mapMesh.MapBuilder.map[i.Left, i.Top] != asimovRoom))
+            int keyRoom = csMapbuilder.NullCell;
+
+            if (placeKey)
+            {
+                //This might not be possible, so the key will go in a corridor later if it isn't placed here
+
+                var tries = 0;
+                var triedRooms = new HashSet<int>();
+                var numRooms = mapMesh.MapBuilder.Rooms.Count;
+                triedRooms.Add(asimovRoom);
+                triedRooms.Add(mapMesh.MapBuilder.WestConnectorRoom);
+                triedRooms.Add(mapMesh.MapBuilder.EastConnectorRoom);
+                triedRooms.Add(mapMesh.MapBuilder.NorthConnectorRoom);
+                triedRooms.Add(mapMesh.MapBuilder.SouthConnectorRoom);
+                triedRooms.Add(csMapbuilder.RoomCell); //Not start room
+                triedRooms.Add(csMapbuilder.RoomCell + 1); //Not end room
+                var keyRoomIndex = enemyRandom.Next(0, numRooms);
+
+                if (triedRooms.Count < numRooms) 
+                {
+                    while (triedRooms.Contains(keyRoomIndex))
+                    {
+                        if (++tries > 50)
+                        {
+                            //If we generate too many bad random numbers, just get the first index we can from the list
+                            for (keyRoomIndex = 0; keyRoomIndex < numRooms && triedRooms.Contains(keyRoomIndex); ++keyRoomIndex) { }
+                        }
+                        else
+                        {
+                            keyRoomIndex = enemyRandom.Next(0, numRooms);
+                        }
+                    }
+                    var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
+                    keyRoom = mapMesh.MapBuilder.map[room.Left, room.Top];
+                    var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                    PlaceKey(point);
+                }
+            }
+
+            foreach (var room in mapMesh.MapBuilder.Rooms.Where(i =>
+            {
+                var ri = mapMesh.MapBuilder.map[i.Left, i.Top];
+                return ri != asimovRoom && ri != keyRoom;
+            }))
             {
                 PopulateRoom(room, treasureStack, treasureChests);
             }
@@ -751,6 +797,53 @@ namespace Adventure
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);
                 }
+            }
+        }
+
+        private void PlaceKey(Point point)
+        {
+            var mapLoc = mapMesh.PointToVector(point.x, point.y);
+            var key = objectResolver.Resolve<Key, Key.Description>(o =>
+            {
+                o.InstanceId = treasureIndex++;
+                o.ZoneIndex = index;
+                o.MapOffset = mapLoc;
+                o.Translation = currentPosition + o.MapOffset;
+                var keyAsset = biome.KeyAsset;
+                o.Sprite = keyAsset.CreateSprite();
+                o.SpriteMaterial = keyAsset.CreateMaterial();
+            });
+            this.placeables.Add(key);
+            placeKey = false;
+        }
+
+        private void PlaceKeySafety(Random enemyRandom, HashSet<int> usedCorridors)
+        {
+            //if we got here without placing the key, place it in a corridor, the player removes its physics
+            if (placeKey)
+            {
+                var corridorTry = 0;
+                var corridorCount = mapMesh.MapBuilder.Corridors.Count;
+                var corridorIndex = enemyRandom.Next(0, corridorCount);
+                while (usedCorridors.Contains(corridorIndex))
+                {
+                    if (++corridorTry > 50)
+                    {
+                        //If we generate too many bad random numbers, just get the first index we can from the list
+                        for (corridorIndex = 0; corridorIndex < corridorCount && usedCorridors.Contains(corridorIndex); ++corridorIndex) { }
+                        if (corridorIndex >= corridorCount)
+                        {
+                            throw new InvalidOperationException("This should not happen, but ran out of corridors trying to place a key. This is guarded in the constructor.");
+                        }
+                    }
+                    else
+                    {
+                        corridorIndex = enemyRandom.Next(0, corridorCount);
+                    }
+                }
+                usedCorridors.Add(corridorIndex);
+                var point = mapMesh.MapBuilder.Corridors[corridorIndex];
+                PlaceKey(point);
             }
         }
 

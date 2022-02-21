@@ -12,10 +12,12 @@ namespace Adventure
         BiomeTreasure Treasure { get; set; }
         ISpriteAsset RestAsset { get; set; }
         ISpriteAsset GateAsset { get; set; }
+        ISpriteAsset KeyAsset { get; set; }
         string BgMusic { get; set; }
         string BgMusicNight { get; set; }
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
+
         BiomeEnemy GetEnemy(EnemyType type);
     }
 
@@ -90,5 +92,7 @@ namespace Adventure
         public ISpriteAsset RestAsset { get; set; } = new Assets.World.Tent();
 
         public ISpriteAsset GateAsset { get; set; } = new Assets.World.MetalGate();
+
+        public ISpriteAsset KeyAsset { get; set; } = new Assets.World.RoundKey();
     }
 }

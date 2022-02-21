@@ -5,7 +5,9 @@ using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
+using Adventure.Exploration.Menu;
 using Adventure.Services;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,56 +16,47 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class Gate : IDisposable, IZonePlaceable
+    class Key : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
+            public int ZoneIndex { get; set; }
+
+            public int InstanceId { get; set; }
+
             public Vector3 MapOffset { get; set; }
 
             public Sprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
-
-            public int Zone { get; set; }
-
-            public int Index { get; set; }
-
-            public int BattleSeed { get; set; }
-
-            public int EnemyLevel { get; set; }
-
-            public bool IsBoss { get; set; }
         }
 
-        public record struct PersistenceData(bool Dead);
-        private PersistenceData state;
-        Persistence.PersistenceEntry<PersistenceData> persistentStorage;
+        public record struct PersistenceData(bool Taken);
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
+        private readonly IContextMenu contextMenu;
+        private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
         private readonly IBepuScene bepuScene;
-        private readonly Description description;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
-        private readonly IExplorationGameState explorationGameState;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
-        private bool graphicsVisible = false;
-        private bool graphicsLoaded = false;
+        private bool graphicsCreated = false;
+        private int zoneIndex;
+        private int instanceId;
+        private PersistenceData state;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        private Quaternion blasRotation;
-        private Vector3 blasOffset;
-
-        public Gate(
+        public Key(
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -71,71 +64,57 @@ namespace Adventure
             Description description,
             ICollidableTypeIdentifier collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
-            IExplorationGameState explorationGameState,
+            IContextMenu contextMenu,
             Persistence persistence)
         {
-            //persistentStorage = description.IsBoss ? persistence.BossBattleTriggers : persistence.BattleTriggers;
-            //state = persistentStorage.GetData(description.Zone, description.Index);
-
             this.sprite = description.Sprite;
+            this.zoneIndex = description.ZoneIndex;
+            this.instanceId = description.InstanceId;
+            this.state = persistence.Keys.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
-            this.description = description;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
-            this.explorationGameState = explorationGameState;
+            this.contextMenu = contextMenu;
+            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
             this.currentScale = sprite.BaseScale * description.Scale;
 
-            blasRotation = new Quaternion(Vector3.UnitY, 0.48f * MathF.PI);
-            blasOffset = new Vector3(-0.85f, 0f, 0f);
-
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
             this.tlasData = new TLASBuildInstanceData()
             {
-                InstanceName = RTId.CreateId("Gate"),
+                InstanceName = RTId.CreateId("Key"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(finalPosition + blasOffset, currentOrientation * blasRotation, currentScale)
+                Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
 
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
+                if (!state.Taken)
+                {
+                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
 
-                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
-                graphicsLoaded = true;
+                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                    rtInstances.AddTlasBuild(tlasData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite);
 
-                AddGraphics();
+                    graphicsCreated = true;
+                }
             });
-        }
-
-        public void BattleWon()
-        {
-            state.Dead = true;
-            //persistentStorage.SetData(description.Zone, description.Index, state);
-            DestroyPhysics();
-            RemoveGraphics();
-        }
-
-        public void Reset()
-        {
-            //state = persistentStorage.GetData(description.Zone, description.Index);
-            //AddGraphics();
         }
 
         public void CreatePhysics()
         {
-            if(this.state.Dead) { return; }
-
-            if (!physicsCreated)
+            if (!state.Taken && !physicsCreated)
             {
                 physicsCreated = true;
                 var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
@@ -147,7 +126,7 @@ namespace Adventure
                         Quaternion.Identity.ToSystemNumerics(),
                         new CollidableDescription(shapeIndex, 0.1f)));
 
-                bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision);
+                bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision, endEvent: HandleCollisionEnd);
             }
         }
 
@@ -164,32 +143,19 @@ namespace Adventure
 
         public void Dispose()
         {
-            spriteInstanceFactory.TryReturn(spriteInstance);
-            RemoveGraphics();
+            DestroyGraphics();
             DestroyPhysics();
         }
 
-        private void AddGraphics()
+        private void DestroyGraphics()
         {
-            if (!graphicsLoaded || state.Dead) { return; }
-
-            if (!graphicsVisible)
+            if (graphicsCreated)
             {
-                graphicsVisible = true;
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
-            }
-        }
-
-        private void RemoveGraphics()
-        {
-            if (graphicsVisible)
-            {
-                graphicsVisible = false;
+                spriteInstanceFactory.TryReturn(spriteInstance);
                 rtInstances.RemoveSprite(sprite);
                 rtInstances.RemoveShaderTableBinder(Bind);
                 rtInstances.RemoveTlasBuild(tlasData);
+                graphicsCreated = false;
             }
         }
 
@@ -202,12 +168,29 @@ namespace Adventure
         {
             currentPosition = zonePosition + mapOffset;
             currentPosition.y += currentScale.y / 2;
-            this.tlasData.Transform = new InstanceMatrix(currentPosition + blasOffset, currentOrientation * blasRotation, currentScale);
+            this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
         private void HandleCollision(CollisionEvent evt)
         {
-            
+            if (!state.Taken)
+            {
+                contextMenu.HandleContext("Take", Take);
+            }
+        }
+
+        private void HandleCollisionEnd(CollisionEvent evt)
+        {
+            contextMenu.ClearContext(Take);
+        }
+
+        private void Take()
+        {
+            contextMenu.ClearContext(Take);
+            state.Taken = true;
+            persistence.Keys.SetData(zoneIndex, instanceId, state);
+            DestroyGraphics();
+            DestroyPhysics();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
