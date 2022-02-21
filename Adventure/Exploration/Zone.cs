@@ -116,6 +116,8 @@ namespace Adventure
 
             public bool MakeBoss { get; set; }
 
+            public int NumSwitches { get; set; }
+
             /// <summary>
             /// The level of the enemies from 1 to 99
             /// </summary>
@@ -167,6 +169,7 @@ namespace Adventure
         private bool makeAsimov;
         private bool makeBoss;
         private int enemyLevel;
+        private int numSwitches;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
 
@@ -210,6 +213,7 @@ namespace Adventure
             this.makeRestArea = description.MakeRest;
             this.makeAsimov = description.MakeAsimov;
             this.makeBoss = description.MakeBoss;
+            this.numSwitches = description.NumSwitches;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
@@ -505,6 +509,7 @@ namespace Adventure
         private bool placeRestArea;
         private bool placeAsimov;
         private bool placeBoss;
+        private bool placeGate;
         private ushort asimovRoom = csMapbuilder.NullCell;
         private void ResetPlacementData()
         {
@@ -514,6 +519,7 @@ namespace Adventure
             placeRestArea = this.makeRestArea;
             placeAsimov = this.makeAsimov;
             placeBoss = this.makeBoss;
+            placeGate = this.numSwitches > 0;
             asimovRoom = csMapbuilder.NullCell;
         }
 
@@ -544,7 +550,10 @@ namespace Adventure
             var currentCorridor = mapMesh.MapBuilder.map[firstPoint.x, firstPoint.y];
             for(var currentIndex = 0; currentIndex < numCorridors; ++currentIndex)
             {
-                if(currentCorridor == mapMesh.MapBuilder.EastConnectorIndex || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex)
+                if(currentCorridor == mapMesh.MapBuilder.EastConnectorIndex 
+                || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex 
+                || currentCorridor == mapMesh.MapBuilder.NorthConnectorIndex 
+                || currentCorridor == mapMesh.MapBuilder.SouthConnectorIndex)
                 {
                     continue;
                 }
@@ -659,6 +668,25 @@ namespace Adventure
                     o.Scale = new Vector3(2f, 2f, 1f);
                 });
                 placeables.Add(battleTrigger);
+            }
+
+            if (placeGate)
+            {
+                var point = mapMesh.MapBuilder.EastConnector.Value;
+                var gate = objectResolver.Resolve<Gate, Gate.Description>(o =>
+                {
+                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
+                    o.Translation = currentPosition + o.MapOffset;
+                    var gateAsset = biome.GateAsset;
+                    o.Sprite = gateAsset.CreateSprite();
+                    o.SpriteMaterial = gateAsset.CreateMaterial();
+                    o.Zone = index;
+                    o.Index = 0; //Only ever 1 gate
+                    o.EnemyLevel = enemyLevel;
+                    o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
+                    o.IsBoss = true;
+                });
+                placeables.Add(gate);
             }
 
             foreach (var room in mapMesh.MapBuilder.Rooms.Where(i => mapMesh.MapBuilder.map[i.Left, i.Top] != asimovRoom))
