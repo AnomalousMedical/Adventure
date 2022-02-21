@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Exploration.Menu;
 
 namespace Adventure
 {
@@ -26,18 +27,8 @@ namespace Adventure
 
             public int Zone { get; set; }
 
-            public int Index { get; set; }
-
-            public int BattleSeed { get; set; }
-
-            public int EnemyLevel { get; set; }
-
-            public bool IsBoss { get; set; }
+            public int InstanceId { get; set; }
         }
-
-        public record struct PersistenceData(bool Dead);
-        private PersistenceData state;
-        Persistence.PersistenceEntry<PersistenceData> persistentStorage;
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -48,13 +39,15 @@ namespace Adventure
         private readonly IBepuScene bepuScene;
         private readonly Description description;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
-        private readonly IExplorationGameState explorationGameState;
+        private readonly IContextMenu contextMenu;
+        private readonly Persistence persistence;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
         private bool graphicsVisible = false;
         private bool graphicsLoaded = false;
+        private Key.PersistenceData state;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -63,7 +56,8 @@ namespace Adventure
         private Quaternion blasRotation;
         private Vector3 blasOffset;
 
-        public Gate(
+        public Gate
+        (
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -71,12 +65,11 @@ namespace Adventure
             Description description,
             ICollidableTypeIdentifier collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
-            IExplorationGameState explorationGameState,
-            Persistence persistence)
+            IContextMenu contextMenu,
+            Persistence persistence
+        )
         {
-            //persistentStorage = description.IsBoss ? persistence.BossBattleTriggers : persistence.BattleTriggers;
-            //state = persistentStorage.GetData(description.Zone, description.Index);
-
+            this.state = persistence.Keys.GetData(description.Zone, description.InstanceId);
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -84,7 +77,8 @@ namespace Adventure
             this.description = description;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
-            this.explorationGameState = explorationGameState;
+            this.contextMenu = contextMenu;
+            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -117,23 +111,9 @@ namespace Adventure
             });
         }
 
-        public void BattleWon()
-        {
-            state.Dead = true;
-            //persistentStorage.SetData(description.Zone, description.Index, state);
-            DestroyPhysics();
-            RemoveGraphics();
-        }
-
-        public void Reset()
-        {
-            //state = persistentStorage.GetData(description.Zone, description.Index);
-            //AddGraphics();
-        }
-
         public void CreatePhysics()
         {
-            if(this.state.Dead) { return; }
+            if(this.state.GateOpened) { return; }
 
             if (!physicsCreated)
             {
@@ -147,7 +127,7 @@ namespace Adventure
                         Quaternion.Identity.ToSystemNumerics(),
                         new CollidableDescription(shapeIndex, 0.1f)));
 
-                bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision);
+                bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision, endEvent: HandleCollisionEnd);
             }
         }
 
@@ -171,7 +151,7 @@ namespace Adventure
 
         private void AddGraphics()
         {
-            if (!graphicsLoaded || state.Dead) { return; }
+            if (!graphicsLoaded || state.GateOpened) { return; }
 
             if (!graphicsVisible)
             {
@@ -207,7 +187,35 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            
+            this.state = persistence.Keys.GetData(description.Zone, description.InstanceId);
+            if (!state.GateOpened)
+            {
+                if (state.Taken)
+                {
+                    contextMenu.HandleContext("Open", Open);
+                }
+                else
+                {
+                    contextMenu.HandleContext("Need Key", Open);
+                }
+            }
+        }
+
+        private void HandleCollisionEnd(CollisionEvent evt)
+        {
+            contextMenu.ClearContext(Open);
+        }
+
+        private void Open()
+        {
+            if (state.Taken)
+            {
+                state.GateOpened = true;
+                persistence.Keys.SetData(description.Zone, description.InstanceId, state);
+                contextMenu.ClearContext(Open);
+                RemoveGraphics();
+                DestroyPhysics();
+            }
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

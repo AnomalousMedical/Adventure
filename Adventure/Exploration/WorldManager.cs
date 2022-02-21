@@ -74,7 +74,6 @@ namespace Adventure.Exploration
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
-                //o.MakeGate = true;
                 biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
 
                 //Give out starting weapons
@@ -104,6 +103,7 @@ namespace Adventure.Exploration
                 o.MakeAsimov = zoneBasis % zoneLevelScaler == 0;
                 o.MakeRest = zoneBasis % zoneLevelScaler == 1;
                 o.MakeBoss = zoneBasis % zoneLevelScaler == 1;
+                o.MakeGate = zoneBasis % 4 == 3;
                 biomeSelectorIndex = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
 
                 //Dumb test treasure

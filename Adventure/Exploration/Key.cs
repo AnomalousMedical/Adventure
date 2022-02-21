@@ -31,7 +31,7 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        public record struct PersistenceData(bool Taken);
+        public record struct PersistenceData(bool Taken, bool GateOpened);
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;

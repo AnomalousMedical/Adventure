@@ -684,10 +684,7 @@ namespace Adventure
                     o.Sprite = gateAsset.CreateSprite();
                     o.SpriteMaterial = gateAsset.CreateMaterial();
                     o.Zone = index;
-                    o.Index = 0; //Only ever 1 gate
-                    o.EnemyLevel = enemyLevel;
-                    o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
-                    o.IsBoss = true;
+                    o.InstanceId = 0; //Only ever 1 gate
                 });
                 placeables.Add(gate);
             }

@@ -18,13 +18,17 @@ namespace Adventure.Assets.World
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
                     new SpriteMaterialTextureItem(0xff848e93, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+                },
+                palletSwap: new Dictionary<uint, uint>
+                {
+                    { 0xff848e93, 0xffcb8e17 }
                 }
             );
         }
 
         public Sprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(1.65f, 1.0f, 1.0f) };
+            return new Sprite() { BaseScale = new Vector3(.5f, .5f, 1.0f) };
         }
     }
 }
