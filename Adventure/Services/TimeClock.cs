@@ -155,7 +155,6 @@ namespace Adventure
         {
             if (wasDay != nowDay)
             {
-                Console.WriteLine($"{wasDay} {nowDay}");
                 if (wasDay && !nowDay)
                 {
                     NightStarted?.Invoke(this);
