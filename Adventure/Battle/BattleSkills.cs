@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
-    interface IMagicAbilities
+    interface IBattleSkills
     {
         void AddSpell(ISpell spell);
         void AddSpells(IEnumerable<ISpell> spell);
         bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISpell> spellSelectedCb);
     }
 
-    class MagicAbilities : IMagicAbilities
+    class BattleSkills : IBattleSkills
     {
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleManager battleManager;
@@ -24,7 +24,7 @@ namespace Adventure.Battle
 
         private List<SharpButton<ISpell>> spells = new List<SharpButton<ISpell>>();
 
-        public MagicAbilities(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager)
+        public BattleSkills(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager)
         {
             this.battleScreenLayout = battleScreenLayout;
             this.battleManager = battleManager;

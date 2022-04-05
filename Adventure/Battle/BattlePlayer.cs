@@ -44,7 +44,7 @@ namespace Adventure.Battle
         private Attachment<IBattleManager> castEffect;
 
         private SharpButton attackButton = new SharpButton() { Text = "Attack" };
-        private SharpButton magicButton = new SharpButton() { Text = "Magic" };
+        private SharpButton skillsButton = new SharpButton() { Text = "Skills" };
         private SharpButton itemButton = new SharpButton() { Text = "Item" };
         private SharpButton defendButton = new SharpButton() { Text = "Defend" };
 
@@ -54,7 +54,7 @@ namespace Adventure.Battle
         private SharpText currentMp = new SharpText() { Color = Color.White };
         private ILayoutItem infoRowLayout;
 
-        private IMagicAbilities magicAbilities;
+        private IBattleSkills skills;
         private readonly BattleItemMenu itemMenu;
         private readonly IXpCalculator xpCalculator;
         private readonly ILevelCalculator levelCalculator;
@@ -108,7 +108,7 @@ namespace Adventure.Battle
             ICharacterTimer characterTimer,
             IBattleManager battleManager,
             ITurnTimer turnTimer,
-            IMagicAbilities magicAbilities,
+            IBattleSkills skills,
             BattleItemMenu itemMenu,
             IXpCalculator xpCalculator,
             ILevelCalculator levelCalculator,
@@ -118,7 +118,7 @@ namespace Adventure.Battle
             this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
             this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
-            this.magicAbilities = magicAbilities;
+            this.skills = skills;
             this.itemMenu = itemMenu;
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
@@ -137,7 +137,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.magicAbilities.AddSpells(description.CharacterSheet.Spells.Select(i => spellFactory.CreateSpell(i)));
+            this.skills.AddSpells(description.CharacterSheet.Spells.Select(i => spellFactory.CreateSpell(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -293,7 +293,7 @@ namespace Adventure.Battle
                     didSomething = UpdateRootMenu(sharpGui, didSomething);
                     break;
                 case MenuMode.Magic:
-                    didSomething = magicAbilities.UpdateGui(sharpGui, coroutine, ref currentMenuMode, Cast);
+                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, Cast);
                     break;
                 case MenuMode.Item:
                     didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem);
@@ -330,9 +330,9 @@ namespace Adventure.Battle
 
         private bool UpdateRootMenu(ISharpGui sharpGui, bool didSomething)
         {
-            battleScreenLayout.LayoutBattleMenu(attackButton, magicButton, itemButton, defendButton);
+            battleScreenLayout.LayoutBattleMenu(attackButton, skillsButton, itemButton, defendButton);
 
-            if (sharpGui.Button(attackButton, navUp: defendButton.Id, navDown: magicButton.Id))
+            if (sharpGui.Button(attackButton, navUp: defendButton.Id, navDown: skillsButton.Id))
             {
                 coroutine.RunTask(async () =>
                 {
@@ -345,13 +345,13 @@ namespace Adventure.Battle
                 didSomething = true;
             }
 
-            if (sharpGui.Button(magicButton, navUp: attackButton.Id, navDown: itemButton.Id))
+            if (sharpGui.Button(skillsButton, navUp: attackButton.Id, navDown: itemButton.Id))
             {
                 currentMenuMode = MenuMode.Magic;
                 didSomething = true;
             }
 
-            if (sharpGui.Button(itemButton, navUp: magicButton.Id, navDown: defendButton.Id))
+            if (sharpGui.Button(itemButton, navUp: skillsButton.Id, navDown: defendButton.Id))
             {
                 currentMenuMode = MenuMode.Item;
                 didSomething = true;

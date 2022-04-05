@@ -117,7 +117,7 @@ namespace Adventure
             services.AddScoped<TargetCursor>();
             services.AddScoped<Asimov>();
             services.AddScoped<Asimov.Description>();
-            services.AddScoped<IMagicAbilities, MagicAbilities>();
+            services.AddScoped<IBattleSkills, BattleSkills>();
             services.AddScoped<BattleItemMenu>();
             services.AddSingleton<TreasureMenu>();
             services.AddSingleton<IZoneManager, ZoneManager>();
