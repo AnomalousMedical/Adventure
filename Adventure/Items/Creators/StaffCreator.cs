@@ -42,7 +42,7 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Spells = GetFireSpells(level),
+                Skills = GetFireSpells(level),
                 TwoHanded = true
             };
 
@@ -61,7 +61,7 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Spells = GetFireSpells(level),
+                Skills = GetFireSpells(level),
                 TwoHanded = true
             };
 
@@ -80,7 +80,7 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Spells = GetFireSpells(level),
+                Skills = GetFireSpells(level),
                 TwoHanded = true
             };
 

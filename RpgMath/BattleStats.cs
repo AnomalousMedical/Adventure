@@ -40,7 +40,7 @@ namespace RpgMath
 
         public Dictionary<Element, Resistance> Resistances { get; set; }
 
-        public IEnumerable<string> Spells => Enumerable.Empty<string>();
+        public IEnumerable<string> Skills => Enumerable.Empty<string>();
 
         public Resistance GetResistance(Element element)
         {

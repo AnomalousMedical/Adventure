@@ -37,7 +37,7 @@ namespace Adventure.Battle.Spells
             target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
         }
 
-        public ISpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var damage = battleManager.DamageCalculator.Cure(attacker.Stats, 5);

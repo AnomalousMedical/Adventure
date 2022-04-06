@@ -150,7 +150,7 @@ Lck: {characterData.CharacterSheet.Luck}
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Spells.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
+            var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (allowChanges && newSelection != null)
             {
                 selectedSpell = newSelection;

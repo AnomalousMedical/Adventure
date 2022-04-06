@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Platform;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Adventure.Battle
     {
         void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
 
-        ISpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
+        ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
 
         bool DefaultTargetPlayers => false;
 
@@ -21,12 +22,14 @@ namespace Adventure.Battle
         long MpCost { get; }
     }
 
-    interface ISpellEffect
+    interface ISkillEffect
     {
-        bool Finished { get; set; }
+        bool Finished { get; }
+
+        void Update(Clock clock);
     }
 
-    class SpellEffect : ISpellEffect
+    class SpellEffect : ISkillEffect
     {
         public SpellEffect()
         {
@@ -39,5 +42,10 @@ namespace Adventure.Battle
         }
 
         public bool Finished { get; set; }
+
+        public void Update(Clock clock)
+        {
+
+        }
     }
 }

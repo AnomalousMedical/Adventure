@@ -12,13 +12,12 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
-    //This is more of a holy hammer creator, but its axe art for now
-    class AxeCreator
+    class DaggerCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
         private readonly INameGenerator nameGenerator;
 
-        public AxeCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public DaggerCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
         {
             this.equipmentCurve = equipmentCurve;
             this.nameGenerator = nameGenerator;
@@ -28,7 +27,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Axe", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Dagger", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
         }
 
         public Equipment CreateNormal(int level)
@@ -37,11 +36,10 @@ namespace Adventure.Items.Creators
 
             var sword = new Equipment
             {
-                Name = $"{name.Adjective} Axe",
+                Name = $"{name.Adjective} Dagger",
                 Attack = equipmentCurve.GetAttack(name.Level),
-                AttackPercent = 75,
-                Sprite = nameof(BattleAxe6),
-                Skills = GetCureSpells(level),
+                Sprite = nameof(DaggerNew),
+                Skills = GetSkills(level)
             };
 
             return sword;
@@ -53,11 +51,10 @@ namespace Adventure.Items.Creators
 
             var sword = new Equipment
             {
-                Name = $"{name.Adjective} Epic Axe",
+                Name = $"{name.Adjective} Epic Dagger",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
-                AttackPercent = 75,
-                Sprite = nameof(BattleAxe6),
-                Skills = GetCureSpells(level),
+                Sprite = nameof(DaggerNew),
+                Skills = GetSkills(level)
             };
 
             return sword;
@@ -69,19 +66,18 @@ namespace Adventure.Items.Creators
 
             var sword = new Equipment
             {
-                Name = $"{name.Adjective} Legendary Axe",
+                Name = $"{name.Adjective} Legendary Dagger",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
-                AttackPercent = 75,
-                Sprite = nameof(BattleAxe6),
-                Skills = GetCureSpells(level),
+                Sprite = nameof(DaggerNew),
+                Skills = GetSkills(level),
             };
 
             return sword;
         }
 
-        private IEnumerable<String> GetCureSpells(int level)
+        private IEnumerable<String> GetSkills(int level)
         {
-            yield return nameof(Cure);
+            yield return nameof(Steal);
         }
     }
 }

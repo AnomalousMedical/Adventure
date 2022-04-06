@@ -28,6 +28,7 @@ namespace Adventure.Exploration
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
+        private readonly DaggerCreator daggerCreator;
 
         public WorldManager
         (
@@ -39,7 +40,8 @@ namespace Adventure.Exploration
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
-            AxeCreator axeCreator
+            AxeCreator axeCreator,
+            DaggerCreator daggerCreator
         )
         {
             this.zoneRandom = new Random(persistence.World.Seed);
@@ -51,6 +53,7 @@ namespace Adventure.Exploration
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
             this.axeCreator = axeCreator;
+            this.daggerCreator = daggerCreator;
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -90,6 +93,9 @@ namespace Adventure.Exploration
                 weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
 
+                var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
+                treasures.Add(new Treasure(dagger));
+
                 treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
@@ -128,6 +134,9 @@ namespace Adventure.Exploration
 
                 var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
                 treasures.Add(new Treasure(shield));
+
+                var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
+                treasures.Add(new Treasure(dagger));
 
                 //These don't really do anything right now
                 //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));

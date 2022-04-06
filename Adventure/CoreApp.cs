@@ -18,6 +18,7 @@ using Adventure.Exploration.Menu.Asimov;
 using Adventure.Assets;
 using Adventure.Items;
 using Adventure.Items.Creators;
+using Adventure.Battle.Spells;
 
 namespace Adventure
 {
@@ -119,6 +120,7 @@ namespace Adventure
             services.AddScoped<Asimov.Description>();
             services.AddScoped<IBattleSkills, BattleSkills>();
             services.AddScoped<BattleItemMenu>();
+            services.AddScoped<StealEffect>();
             services.AddSingleton<TreasureMenu>();
             services.AddSingleton<IZoneManager, ZoneManager>();
             services.AddSingleton<IWorldManager, WorldManager>();
@@ -158,6 +160,7 @@ namespace Adventure
             services.AddSingleton<ArmorCreator>();
             services.AddSingleton<PotionCreator>();
             services.AddSingleton<AxeCreator>();
+            services.AddSingleton<DaggerCreator>();
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
             services.AddSingleton<RestManager>();

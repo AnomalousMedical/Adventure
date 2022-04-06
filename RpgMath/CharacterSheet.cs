@@ -219,15 +219,15 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
-        public IEnumerable<String> Spells
+        public IEnumerable<String> Skills
         {
             get
             {
                 foreach(var item in EquippedItems())
                 {
-                    if (item.Spells != null)
+                    if (item.Skills != null)
                     {
-                        foreach (var spell in item.Spells)
+                        foreach (var spell in item.Skills)
                         {
                             yield return spell;
                         }

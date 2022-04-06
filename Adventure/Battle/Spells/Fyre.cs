@@ -11,7 +11,7 @@ namespace Adventure.Battle.Spells
 {
     class Fyre : ISpell
     {
-        public ISpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var resistance = target.Stats.GetResistance(Element.Fire);

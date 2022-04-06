@@ -137,7 +137,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.skills.AddSpells(description.CharacterSheet.Spells.Select(i => spellFactory.CreateSpell(i)));
+            this.skills.AddSpells(description.CharacterSheet.Skills.Select(i => spellFactory.CreateSpell(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -467,7 +467,7 @@ namespace Adventure.Battle
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
-            ISpellEffect spellEffect = null;
+            ISkillEffect skillEffect = null;
             battleManager.DeactivateCurrentPlayer();
             battleManager.QueueTurn(c =>
             {
@@ -477,8 +477,9 @@ namespace Adventure.Battle
                 }
 
                 //If there is a spell effect, just let it run
-                if (spellEffect != null && !spellEffect.Finished)
+                if (skillEffect != null && !skillEffect.Finished)
                 {
+                    skillEffect.Update(c);
                     return false;
                 }
 
@@ -517,7 +518,7 @@ namespace Adventure.Battle
                         else
                         {
                             TakeMp(spell.MpCost);
-                            spell.Apply(battleManager, objectResolver, coroutine, this, target);
+                            skillEffect = spell.Apply(battleManager, objectResolver, coroutine, this, target);
                         }
                     }
                 }

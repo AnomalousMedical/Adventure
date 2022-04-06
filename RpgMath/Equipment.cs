@@ -48,7 +48,7 @@ namespace RpgMath
 
         public int PalletSeed { get; set; }
 
-        public IEnumerable<String> Spells { get; set; }
+        public IEnumerable<String> Skills { get; set; }
 
         public Guid? Id { get; set; }
 

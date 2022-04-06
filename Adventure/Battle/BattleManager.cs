@@ -49,6 +49,7 @@ namespace Adventure.Battle
         void PlayerDead(BattlePlayer battlePlayer);
 
         IDamageCalculator DamageCalculator { get; }
+        bool AllowActivePlayerGui { get; set; }
 
         void HandleDeath(IBattleTarget target);
 
@@ -100,6 +101,8 @@ namespace Adventure.Battle
 
         private Random targetRandom = new Random();
         private String backgroundMusic;
+
+        public bool AllowActivePlayerGui { get; set; } = true;
 
         public BattleManager(EventManager eventManager,
             ISharpGui sharpGui,
@@ -339,7 +342,11 @@ namespace Adventure.Battle
                     }
 
                     cursor.Visible = false;
-                    activePlayer?.UpdateActivePlayerGui(sharpGui);
+
+                    if (AllowActivePlayerGui)
+                    {
+                        activePlayer?.UpdateActivePlayerGui(sharpGui);
+                    }
                 }
 
                 bool allDead = true;

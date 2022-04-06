@@ -19,7 +19,7 @@ namespace RpgMath
         bool AllowLuckyEvade { get; }
         long Level { get; }
         long ExtraCritChance { get; }
-        IEnumerable<string> Spells { get; }
+        IEnumerable<string> Skills { get; }
         Resistance GetResistance(Element element);
     }
 }
