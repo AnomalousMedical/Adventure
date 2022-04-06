@@ -467,12 +467,19 @@ namespace Adventure.Battle
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
+            SpellEffect spellEffect = null;
             battleManager.DeactivateCurrentPlayer();
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
                 {
                     return true;
+                }
+
+                //If there is a spell effect, just let it run
+                if (spellEffect != null && !spellEffect.Finished)
+                {
+                    return false;
                 }
 
                 var done = false;

@@ -11,7 +11,7 @@ namespace Adventure.Battle.Spells
 {
     class Fyre : ISpell
     {
-        public void Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public SpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var resistance = target.Stats.GetResistance(Element.Fire);
@@ -46,6 +46,8 @@ namespace Adventure.Battle.Spells
             {
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
             }
+
+            return new SpellEffect(true);
         }
 
         public string Name => "Fyre";
