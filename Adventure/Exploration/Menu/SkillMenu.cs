@@ -32,7 +32,7 @@ namespace Adventure.Exploration.Menu
 
         private ButtonColumn characterButtons = new ButtonColumn(4, SkillMenu.ChooseTargetLayer);
         private List<ButtonColumnItem<Action>> characterChoices = null;
-        private String selectedSpell;
+        private String selectedSkill;
 
         public SkillMenu
         (
@@ -70,7 +70,7 @@ namespace Adventure.Exploration.Menu
                 {
                     action.Invoke();
                     characterChoices = null;
-                    selectedSpell = null;
+                    selectedSkill = null;
                     return;
                 }
 
@@ -153,11 +153,11 @@ Lck: {characterData.CharacterSheet.Luck}
             var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
             if (allowChanges && newSelection != null)
             {
-                selectedSpell = newSelection;
+                selectedSkill = newSelection;
                 characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                 {
-                    var spell = skillFactory.CreateSkill(selectedSpell);
-                    spell.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                    var skill = skillFactory.CreateSkill(selectedSkill);
+                    skill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
                 }))
                 .ToList();
             }

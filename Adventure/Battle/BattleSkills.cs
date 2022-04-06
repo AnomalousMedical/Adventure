@@ -11,8 +11,8 @@ namespace Adventure.Battle
 {
     interface IBattleSkills
     {
-        void AddSpell(ISkill skill);
-        void AddSpells(IEnumerable<ISkill> skill);
+        void Add(ISkill skill);
+        void AddRange(IEnumerable<ISkill> skill);
         bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb);
     }
 
@@ -30,17 +30,17 @@ namespace Adventure.Battle
             this.battleManager = battleManager;
         }
 
-        public void AddSpell(ISkill skill)
+        public void Add(ISkill skill)
         {
             var button = new SharpButton<ISkill>() { Text = skill.Name, UserObject = skill };
             this.skills.Add(button);
         }
 
-        public void AddSpells(IEnumerable<ISkill> skills)
+        public void AddRange(IEnumerable<ISkill> skills)
         {
-            foreach(var spell in skills)
+            foreach(var skill in skills)
             {
-                AddSpell(spell);
+                Add(skill);
             }
         }
 
@@ -48,25 +48,25 @@ namespace Adventure.Battle
         {
             var didSomething = false;
 
-            var spellCount = skills.Count;
-            if (spellCount > 0)
+            var skillCount = skills.Count;
+            if (skillCount > 0)
             {
-                var previous = spellCount - 1;
+                var previous = skillCount - 1;
                 var next = skills.Count > 1 ? 1 : 0;
 
                 battleScreenLayout.LayoutBattleMenu(skills);
 
-                for (var i = 0; i < spellCount; ++i)
+                for (var i = 0; i < skillCount; ++i)
                 {
                     if (sharpGui.Button(skills[i], navUp: skills[previous].Id, navDown: skills[next].Id))
                     {
-                        var spell = skills[i].UserObject;
+                        var skill = skills[i].UserObject;
                         coroutine.RunTask(async () =>
                         {
-                            var target = await battleManager.GetTarget(spell.DefaultTargetPlayers);
+                            var target = await battleManager.GetTarget(skill.DefaultTargetPlayers);
                             if (target != null)
                             {
-                                skillSelectedCb(target, spell);
+                                skillSelectedCb(target, skill);
                             }
                         });
                         menuMode = BattlePlayer.MenuMode.Root;
@@ -74,7 +74,7 @@ namespace Adventure.Battle
                     }
 
                     previous = i;
-                    next = (i + 2) % spellCount;
+                    next = (i + 2) % skillCount;
                 }
             }
 

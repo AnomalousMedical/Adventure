@@ -137,7 +137,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.skills.AddSpells(description.CharacterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
+            this.skills.AddRange(description.CharacterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -476,7 +476,7 @@ namespace Adventure.Battle
                     return true;
                 }
 
-                //If there is a spell effect, just let it run
+                //If there is an effect, just let it run
                 if (skillEffect != null && !skillEffect.Finished)
                 {
                     skillEffect.Update(c);

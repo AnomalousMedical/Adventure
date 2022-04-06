@@ -227,9 +227,9 @@ namespace RpgMath
                 {
                     if (item.Skills != null)
                     {
-                        foreach (var spell in item.Skills)
+                        foreach (var skill in item.Skills)
                         {
-                            yield return spell;
+                            yield return skill;
                         }
                     }
                 }
