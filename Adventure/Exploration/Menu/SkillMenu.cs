@@ -21,7 +21,7 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private readonly ISpellFactory spellFactory;
+        private readonly ISkillFactory skillFactory;
         private readonly IDamageCalculator damageCalculator;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
@@ -40,7 +40,7 @@ namespace Adventure.Exploration.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            ISpellFactory spellFactory,
+            ISkillFactory skillFactory,
             IDamageCalculator damageCalculator
         )
         {
@@ -48,7 +48,7 @@ namespace Adventure.Exploration.Menu
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
-            this.spellFactory = spellFactory;
+            this.skillFactory = skillFactory;
             this.damageCalculator = damageCalculator;
         }
 
@@ -156,7 +156,7 @@ Lck: {characterData.CharacterSheet.Luck}
                 selectedSpell = newSelection;
                 characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                 {
-                    var spell = spellFactory.CreateSpell(selectedSpell);
+                    var spell = skillFactory.CreateSkill(selectedSpell);
                     spell.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
                 }))
                 .ToList();

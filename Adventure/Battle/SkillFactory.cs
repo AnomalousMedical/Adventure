@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
-    interface ISpellFactory
+    interface ISkillFactory
     {
-        ISpell CreateSpell(string name);
+        ISkill CreateSkill(string name);
     }
 
-    class SpellFactory : ISpellFactory
+    class SkillFactory : ISkillFactory
     {
         private readonly ISimpleActivator simpleActivator;
 
-        public SpellFactory(ISimpleActivator simpleActivator)
+        public SkillFactory(ISimpleActivator simpleActivator)
         {
             this.simpleActivator = simpleActivator;
         }
 
-        public ISpell CreateSpell(String name)
+        public ISkill CreateSkill(String name)
         {
-            return simpleActivator.CreateInstance<ISpell>($"Adventure.Battle.Spells.{name}");
+            return simpleActivator.CreateInstance<ISkill>($"Adventure.Battle.Skills.{name}");
         }
     }
 }

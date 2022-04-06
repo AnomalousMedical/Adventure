@@ -11,9 +11,9 @@ namespace Adventure.Battle
 {
     interface IBattleSkills
     {
-        void AddSpell(ISpell spell);
-        void AddSpells(IEnumerable<ISpell> spell);
-        bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISpell> spellSelectedCb);
+        void AddSpell(ISkill skill);
+        void AddSpells(IEnumerable<ISkill> skill);
+        bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb);
     }
 
     class BattleSkills : IBattleSkills
@@ -22,7 +22,7 @@ namespace Adventure.Battle
         private readonly IBattleManager battleManager;
 
 
-        private List<SharpButton<ISpell>> spells = new List<SharpButton<ISpell>>();
+        private List<SharpButton<ISkill>> skills = new List<SharpButton<ISkill>>();
 
         public BattleSkills(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager)
         {
@@ -30,43 +30,43 @@ namespace Adventure.Battle
             this.battleManager = battleManager;
         }
 
-        public void AddSpell(ISpell spell)
+        public void AddSpell(ISkill skill)
         {
-            var button = new SharpButton<ISpell>() { Text = spell.Name, UserObject = spell };
-            this.spells.Add(button);
+            var button = new SharpButton<ISkill>() { Text = skill.Name, UserObject = skill };
+            this.skills.Add(button);
         }
 
-        public void AddSpells(IEnumerable<ISpell> spells)
+        public void AddSpells(IEnumerable<ISkill> skills)
         {
-            foreach(var spell in spells)
+            foreach(var spell in skills)
             {
                 AddSpell(spell);
             }
         }
 
-        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISpell> spellSelectedCb)
+        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb)
         {
             var didSomething = false;
 
-            var spellCount = spells.Count;
+            var spellCount = skills.Count;
             if (spellCount > 0)
             {
                 var previous = spellCount - 1;
-                var next = spells.Count > 1 ? 1 : 0;
+                var next = skills.Count > 1 ? 1 : 0;
 
-                battleScreenLayout.LayoutBattleMenu(spells);
+                battleScreenLayout.LayoutBattleMenu(skills);
 
                 for (var i = 0; i < spellCount; ++i)
                 {
-                    if (sharpGui.Button(spells[i], navUp: spells[previous].Id, navDown: spells[next].Id))
+                    if (sharpGui.Button(skills[i], navUp: skills[previous].Id, navDown: skills[next].Id))
                     {
-                        var spell = spells[i].UserObject;
+                        var spell = skills[i].UserObject;
                         coroutine.RunTask(async () =>
                         {
                             var target = await battleManager.GetTarget(spell.DefaultTargetPlayers);
                             if (target != null)
                             {
-                                spellSelectedCb(target, spell);
+                                skillSelectedCb(target, spell);
                             }
                         });
                         menuMode = BattlePlayer.MenuMode.Root;

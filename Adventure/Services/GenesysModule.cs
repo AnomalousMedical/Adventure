@@ -1,5 +1,4 @@
-﻿using Adventure.Battle.Spells;
-using RpgMath;
+﻿using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;

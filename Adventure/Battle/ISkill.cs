@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
-    interface ISpell
+    interface ISkill
     {
         void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
 
@@ -29,14 +29,9 @@ namespace Adventure.Battle
         void Update(Clock clock);
     }
 
-    class SpellEffect : ISkillEffect
+    class SkillEffect : ISkillEffect
     {
-        public SpellEffect()
-        {
-
-        }
-
-        public SpellEffect(bool finished)
+        public SkillEffect(bool finished)
         {
             this.Finished = finished;
         }

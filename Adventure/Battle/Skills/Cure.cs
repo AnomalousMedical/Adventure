@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using RpgMath;
 
-namespace Adventure.Battle.Spells
+namespace Adventure.Battle.Skills
 {
-    class Cure : ISpell
+    class Cure : ISkill
     {
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
@@ -69,7 +69,7 @@ namespace Adventure.Battle.Spells
             }
             coroutine.Run(run());
 
-            return new SpellEffect(true);
+            return new SkillEffect(true);
         }
 
         public bool DefaultTargetPlayers => true;

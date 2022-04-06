@@ -113,7 +113,7 @@ namespace Adventure.Battle
             IXpCalculator xpCalculator,
             ILevelCalculator levelCalculator,
             IAssetFactory assetFactory,
-            ISpellFactory spellFactory)
+            ISkillFactory skillFactory)
         {
             this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
@@ -137,7 +137,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.skills.AddSpells(description.CharacterSheet.Skills.Select(i => spellFactory.CreateSpell(i)));
+            this.skills.AddSpells(description.CharacterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -447,7 +447,7 @@ namespace Adventure.Battle
             return targetAttackLocation;
         }
 
-        private void Cast(IBattleTarget target, ISpell spell)
+        private void Cast(IBattleTarget target, ISkill skill)
         {
             castEffect?.RequestDestruction();
             castEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
@@ -511,14 +511,14 @@ namespace Adventure.Battle
                         needsAttack = false;
                         DestroyCastEffect();
 
-                        if (characterSheet.CurrentMp < spell.MpCost)
+                        if (characterSheet.CurrentMp < skill.MpCost)
                         {
                             battleManager.AddDamageNumber(this, "Not Enough MP", Color.Red);
                         }
                         else
                         {
-                            TakeMp(spell.MpCost);
-                            skillEffect = spell.Apply(battleManager, objectResolver, coroutine, this, target);
+                            TakeMp(skill.MpCost);
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target);
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
-using Adventure.Battle.Spells;
+using Adventure.Battle.Skills;
 using Adventure.Exploration.Menu;
 using Adventure.Items.Actions;
 using RpgMath;

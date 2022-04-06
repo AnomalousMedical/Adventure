@@ -18,7 +18,7 @@ using Adventure.Exploration.Menu.Asimov;
 using Adventure.Assets;
 using Adventure.Items;
 using Adventure.Items.Creators;
-using Adventure.Battle.Spells;
+using Adventure.Battle.Skills;
 
 namespace Adventure
 {
@@ -140,7 +140,7 @@ namespace Adventure
             services.AddSingleton<IExplorationGameState, ExplorationGameState>();
             services.AddSingleton<ISimpleActivator, SimpleActivator>();
             services.AddSingleton<IAssetFactory, AssetFactory>();
-            services.AddSingleton<ISpellFactory, SpellFactory>();
+            services.AddSingleton<ISkillFactory, SkillFactory>();
             services.AddSingleton<Party>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();

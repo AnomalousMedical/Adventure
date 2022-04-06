@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Battle.Spells
+namespace Adventure.Battle.Skills
 {
-    class Meltdown : ISpell
+    class Fir : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
@@ -18,7 +18,7 @@ namespace Adventure.Battle.Spells
 
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
             {
-                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 64);
+                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 8);
                 damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                 damage = battleManager.DamageCalculator.RandomVariation(damage);
 
@@ -47,11 +47,11 @@ namespace Adventure.Battle.Spells
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
             }
 
-            return new SpellEffect(true);
+            return new SkillEffect(true);
         }
 
-        public string Name => "Meltdown";
+        public string Name => "Fir";
 
-        public long MpCost => 52;
+        public long MpCost => 4;
     }
 }

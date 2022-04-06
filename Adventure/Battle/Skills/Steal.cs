@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using Engine.Platform;
 using SharpGui;
 
-namespace Adventure.Battle.Spells
+namespace Adventure.Battle.Skills
 {
-    class Steal : ISpell
+    class Steal : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {            

@@ -3,7 +3,6 @@ using Engine;
 using Engine.Platform;
 using RpgMath;
 using Adventure.Battle;
-using Adventure.Battle.Spells;
 using SharpGui;
 using System;
 using System.Collections.Generic;

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Battle.Spells
+namespace Adventure.Battle.Skills
 {
-    class Fyre : ISpell
+    class Fyre : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
@@ -47,7 +47,7 @@ namespace Adventure.Battle.Spells
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
             }
 
-            return new SpellEffect(true);
+            return new SkillEffect(true);
         }
 
         public string Name => "Fyre";
