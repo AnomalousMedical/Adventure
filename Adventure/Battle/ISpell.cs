@@ -12,7 +12,7 @@ namespace Adventure.Battle
     {
         void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
 
-        SpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
+        ISpellEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
 
         bool DefaultTargetPlayers => false;
 
@@ -21,7 +21,12 @@ namespace Adventure.Battle
         long MpCost { get; }
     }
 
-    class SpellEffect
+    interface ISpellEffect
+    {
+        bool Finished { get; set; }
+    }
+
+    class SpellEffect : ISpellEffect
     {
         public SpellEffect()
         {

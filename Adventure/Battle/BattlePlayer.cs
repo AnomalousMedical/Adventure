@@ -467,7 +467,7 @@ namespace Adventure.Battle
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
-            SpellEffect spellEffect = null;
+            ISpellEffect spellEffect = null;
             battleManager.DeactivateCurrentPlayer();
             battleManager.QueueTurn(c =>
             {
