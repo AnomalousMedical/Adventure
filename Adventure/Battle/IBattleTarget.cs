@@ -25,9 +25,11 @@ namespace Adventure.Battle
         public void ApplyDamage(IDamageCalculator calculator, long damage);
 
         public bool IsDead { get; }
+
         Vector3 MeleeAttackLocation { get; }
 
         void Resurrect(IDamageCalculator damageCalculator, long damage);
+
         void TakeMp(long mp);
     }
 }

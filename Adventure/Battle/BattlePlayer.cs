@@ -84,6 +84,8 @@ namespace Adventure.Battle
 
         private Vector3 startPosition;
 
+        private Skills.Attack attack = new Skills.Attack();
+
         public class Description : SceneObjectDesc
         {
             public int PrimaryHand = Player.RightHand;
@@ -367,75 +369,7 @@ namespace Adventure.Battle
 
         private void Attack(IBattleTarget target)
         {
-            var swingEnd = Quaternion.Identity;
-            var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
-
-            long remainingTime = (long)(1.8f * Clock.SecondsToMicro);
-            long standTime = (long)(0.2f * Clock.SecondsToMicro);
-            long standStartTime = remainingTime / 2;
-            long swingTime = standStartTime - standTime / 3;
-            long standEndTime = standStartTime - standTime;
-            bool needsAttack = true;
-            battleManager.DeactivateCurrentPlayer();
-            battleManager.QueueTurn(c =>
-            {
-                if (IsDead)
-                {
-                    return true;
-                }
-
-                var done = false;
-                remainingTime -= c.DeltaTimeMicro;
-                Vector3 start;
-                Vector3 end;
-                float interpolate;
-
-                if (remainingTime > standStartTime)
-                {
-                    sprite.SetAnimation("left");
-                    target = battleManager.ValidateTarget(this, target);
-                    start = this.startPosition;
-                    end = GetAttackLocation(target);
-                    interpolate = (remainingTime - standStartTime) / (float)standStartTime;
-                }
-                else if (remainingTime > standEndTime)
-                {
-                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
-                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
-                    sprite.SetAnimation("stand-left");
-                    interpolate = 0.0f;
-                    start = end = GetAttackLocation(target);
-
-                    if (needsAttack && remainingTime < swingTime)
-                    {
-                        needsAttack = false;
-                        battleManager.Attack(this, target);
-                    }
-                }
-                else
-                {
-                    sprite.SetAnimation("right");
-
-                    mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
-
-                    start = GetAttackLocation(target);
-                    end = this.startPosition;
-                    interpolate = remainingTime / (float)standEndTime;
-                }
-
-                this.currentPosition = end.lerp(start, interpolate);
-
-                if (remainingTime < 0)
-                {
-                    sprite.SetAnimation("stand-left");
-                    TurnComplete();
-                    done = true;
-                }
-
-                Sprite_FrameChanged(sprite);
-
-                return done;
-            });
+            Melee(target, attack);
         }
 
         private Vector3 GetAttackLocation(IBattleTarget target)
