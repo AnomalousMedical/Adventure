@@ -32,11 +32,6 @@ namespace Adventure.Services
 
         public PartyData Party { get; set; } = new PartyData();
 
-        public Inventory Storage { get; set; } = new Inventory()
-        {
-            Size = 20
-        };
-
         public class PersistenceEntry<T>
                 where T : struct
         {
@@ -124,6 +119,8 @@ namespace Adventure.Services
                 }
                 Inventory.Items.Remove(item);
             }
+
+            public bool HasRoom => Inventory.Items.Count < CharacterSheet.InventorySize;
         }
 
         public class PartyData

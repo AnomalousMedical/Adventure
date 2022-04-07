@@ -44,6 +44,8 @@ namespace RpgMath
 
         public bool TwoHanded { get; set; }
 
+        public int InventorySlots { get; set; }
+
         public string Sprite { get; set; }
 
         public int PalletSeed { get; set; }

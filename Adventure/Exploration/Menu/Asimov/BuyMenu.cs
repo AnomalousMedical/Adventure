@@ -156,7 +156,7 @@ $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
  
-Items:  {characterData.Inventory.Items.Count} / {characterData.Inventory.Size}
+Items:  {characterData.Inventory.Items.Count} / {characterData.CharacterSheet.InventorySize}
  
 HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
 MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
@@ -191,7 +191,7 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             confirmBuyMenu.Update(characterData);
 
-            var canBuy = characterData.Inventory.HasRoom();
+            var canBuy = characterData.HasRoom;
 
             var shopItems = ShopItems().Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i)).ToArray(); //TODO: Cache this somehow, don't keep making it
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);

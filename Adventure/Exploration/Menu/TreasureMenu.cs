@@ -17,7 +17,6 @@ namespace Adventure.Exploration.Menu
         private readonly IScreenPositioner screenPositioner;
         private Stack<ITreasure> currentTreasure;
         SharpButton take = new SharpButton();
-        SharpButton store = new SharpButton() { Text = "Store" };
         SharpButton discard = new SharpButton() { Text = "Discard" };
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -62,7 +61,7 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(take, store, discard, new RowLayout(previous, next)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(take, discard, new RowLayout(previous, next)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -73,27 +72,20 @@ namespace Adventure.Exploration.Menu
             info.Rect = screenPositioner.GetCenterRect(info.GetDesiredSize(sharpGui));
             sharpGui.Text(info);
 
-            var hasInventoryRoom = sheet.Inventory.HasRoom();
-            var hasStorageRoom = persistence.Storage.HasRoom();
+            var hasInventoryRoom = sheet.HasRoom;
 
-            if (hasInventoryRoom && sharpGui.Button(take, navUp: previous.Id, navDown: hasStorageRoom ? store.Id : discard.Id))
+            if (hasInventoryRoom && sharpGui.Button(take, navUp: previous.Id, navDown: discard.Id))
             {
                 currentTreasure.Pop();
                 treasure.GiveTo(sheet.Inventory);
             }
 
-            if (hasStorageRoom && sharpGui.Button(store, navUp: hasInventoryRoom ? take.Id : previous.Id, discard.Id))
-            {
-                currentTreasure.Pop();
-                treasure.GiveTo(persistence.Storage);
-            }
-
-            if (sharpGui.Button(discard, navUp: hasStorageRoom ? store.Id : hasInventoryRoom ? take.Id : previous.Id, navDown: previous.Id))
+            if (sharpGui.Button(discard, navUp: hasInventoryRoom ? take.Id : previous.Id, navDown: previous.Id))
             {
                 currentTreasure.Pop();
             }
 
-            var bottomNavDown = hasInventoryRoom ? take.Id : hasStorageRoom ? store.Id : discard.Id;
+            var bottomNavDown = hasInventoryRoom ? take.Id : discard.Id;
             if (sharpGui.Button(previous, navUp: discard.Id, navDown: bottomNavDown, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;

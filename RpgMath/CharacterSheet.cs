@@ -213,6 +213,8 @@ namespace RpgMath
 
         public long Luck => BaseLuck + BonusLuck + EquippedItems().Sum(i => i.Luck);
 
+        public int InventorySize => 6 + EquippedItems().Sum(i => i.InventorySlots);
+
         public bool AllowLuckyEvade => true;
 
         public long Level { get; set; } = 1;

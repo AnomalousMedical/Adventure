@@ -114,7 +114,7 @@ namespace Adventure.Exploration.Menu
                 {
                     IsTransfer = true;
                     characterChoices = persistence.Party.Members
-                        .Where(i => i != characterData && i.Inventory.HasRoom())
+                        .Where(i => i != characterData && i.HasRoom)
                         .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
                             characterData.RemoveItem(SelectedItem);
@@ -207,7 +207,7 @@ namespace Adventure.Exploration.Menu
                     if (useItemMenu.IsTransfer)
                     {
                         text += $@"
-Items:  {character.Inventory.Items.Count} / {character.Inventory.Size}
+Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventorySize}
   
 ";
                     }
@@ -228,6 +228,8 @@ MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
     $@"{characterData.CharacterSheet.Name}
  
 Lvl: {characterData.CharacterSheet.Level}
+
+Items:  {characterData.Inventory.Items.Count} / {characterData.CharacterSheet.InventorySize}
 
 HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
 MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}

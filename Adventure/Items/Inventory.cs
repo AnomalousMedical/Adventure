@@ -45,10 +45,6 @@ namespace Adventure.Items
     {
         public List<InventoryItem> Items { get; } = new List<InventoryItem>();
 
-        public int Size { get; set; } = 10;
-
-        public bool HasRoom() => Items.Count < Size;
-
         public void Use(InventoryItem item, CharacterSheet target)
         {
             if(item.Action == null)
