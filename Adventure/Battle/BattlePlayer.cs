@@ -293,7 +293,7 @@ namespace Adventure.Battle
                     didSomething = UpdateRootMenu(sharpGui, didSomething);
                     break;
                 case MenuMode.Magic:
-                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, Cast);
+                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, UseSkill);
                     break;
                 case MenuMode.Item:
                     didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem);
@@ -447,6 +447,19 @@ namespace Adventure.Battle
             return targetAttackLocation;
         }
 
+        private void UseSkill(IBattleTarget target, ISkill skill)
+        {
+            switch (skill.AttackStyle) 
+            {
+                case SkillAttackStyle.Cast:
+                    Cast(target, skill);
+                    break;
+                case SkillAttackStyle.Melee:
+                    Melee(target, skill);
+                    break;
+            }
+        }
+
         private void Cast(IBattleTarget target, ISkill skill)
         {
             castEffect?.RequestDestruction();
@@ -499,8 +512,6 @@ namespace Adventure.Battle
                 }
                 else if (remainingTime > standEndTime)
                 {
-                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
-                    //sword?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
                     sprite.SetAnimation("cast-left");
                     interpolate = 0.0f;
                     start = target.MeleeAttackLocation;
@@ -540,6 +551,96 @@ namespace Adventure.Battle
                     done = true;
                 }
                 
+                Sprite_FrameChanged(sprite);
+
+                return done;
+            });
+        }
+
+        private void Melee(IBattleTarget target, ISkill skill)
+        {
+            var swingEnd = Quaternion.Identity;
+            var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
+
+            long remainingTime = (long)(1.8f * Clock.SecondsToMicro);
+            long standTime = (long)(0.2f * Clock.SecondsToMicro);
+            long standStartTime = remainingTime / 2;
+            long swingTime = standStartTime - standTime / 3;
+            long standEndTime = standStartTime - standTime;
+            bool needsAttack = true;
+            ISkillEffect skillEffect = null;
+            battleManager.DeactivateCurrentPlayer();
+            battleManager.QueueTurn(c =>
+            {
+                if (IsDead)
+                {
+                    return true;
+                }
+
+                //If there is an effect, just let it run
+                if (skillEffect != null && !skillEffect.Finished)
+                {
+                    skillEffect.Update(c);
+                    return false;
+                }
+
+                var done = false;
+                remainingTime -= c.DeltaTimeMicro;
+                Vector3 start;
+                Vector3 end;
+                float interpolate;
+
+                if (remainingTime > standStartTime)
+                {
+                    sprite.SetAnimation("left");
+                    target = battleManager.ValidateTarget(this, target);
+                    start = this.startPosition;
+                    end = GetAttackLocation(target);
+                    interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                }
+                else if (remainingTime > standEndTime)
+                {
+                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
+                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+                    sprite.SetAnimation("stand-left");
+                    interpolate = 0.0f;
+                    start = end = GetAttackLocation(target);
+
+                    if (needsAttack && remainingTime < swingTime)
+                    {
+                        needsAttack = false;
+
+                        if (characterSheet.CurrentMp < skill.MpCost)
+                        {
+                            battleManager.AddDamageNumber(this, "Not Enough MP", Color.Red);
+                        }
+                        else
+                        {
+                            TakeMp(skill.MpCost);
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target);
+                        }
+                    }
+                }
+                else
+                {
+                    sprite.SetAnimation("right");
+
+                    mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
+
+                    start = GetAttackLocation(target);
+                    end = this.startPosition;
+                    interpolate = remainingTime / (float)standEndTime;
+                }
+
+                this.currentPosition = end.lerp(start, interpolate);
+
+                if (remainingTime < 0)
+                {
+                    sprite.SetAnimation("stand-left");
+                    TurnComplete();
+                    done = true;
+                }
+
                 Sprite_FrameChanged(sprite);
 
                 return done;

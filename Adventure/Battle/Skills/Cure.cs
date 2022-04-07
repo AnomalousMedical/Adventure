@@ -77,5 +77,7 @@ namespace Adventure.Battle.Skills
         public string Name => "Cure";
 
         public long MpCost => 5;
+
+        public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }
 }

@@ -53,5 +53,7 @@ namespace Adventure.Battle.Skills
         public string Name => "Meltdown";
 
         public long MpCost => 52;
+
+        public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }
 }

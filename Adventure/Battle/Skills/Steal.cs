@@ -21,6 +21,8 @@ namespace Adventure.Battle.Skills
         public string Name => "Steal";
 
         public long MpCost => 0;
+
+        public SkillAttackStyle AttackStyle => SkillAttackStyle.Melee;
     }
 
     class StealEffect : ISkillEffect

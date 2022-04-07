@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
+    public enum SkillAttackStyle
+    {
+        Melee,
+        Cast
+    }
+
     interface ISkill
     {
         void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
@@ -20,6 +26,8 @@ namespace Adventure.Battle
         string Name { get; }
 
         long MpCost { get; }
+
+        SkillAttackStyle AttackStyle { get; }
     }
 
     interface ISkillEffect

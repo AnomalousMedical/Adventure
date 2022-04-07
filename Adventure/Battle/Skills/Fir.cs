@@ -53,5 +53,7 @@ namespace Adventure.Battle.Skills
         public string Name => "Fir";
 
         public long MpCost => 4;
+
+        public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }
 }
