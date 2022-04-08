@@ -50,7 +50,7 @@ namespace Adventure
 
         public TimeClock(Persistence persistence)
         {
-            currentTime = persistence.Time.Current ?? 6L * HoursToMicro;
+            currentTime = persistence.Current.Time.Current ?? 6L * HoursToMicro;
             halfPeriod = period / 2;
             dayEndFactor = (dayEnd - dayStart) * Clock.MicroToSeconds;
             nightEndFactor = (dayStart + period - dayEnd) * Clock.MicroToSeconds;
@@ -63,7 +63,7 @@ namespace Adventure
 
             currentTime += clock.DeltaTimeMicro * timeFactor;
             currentTime %= period;
-            persistence.Time.Current = currentTime;
+            persistence.Current.Time.Current = currentTime;
 
             bool nowDay = IsDay;
             HandleDayNightEvents(wasDay, nowDay);

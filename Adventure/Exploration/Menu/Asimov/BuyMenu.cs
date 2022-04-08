@@ -59,9 +59,9 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(buy, navUp: cancel.Id, navDown: cancel.Id))
             {
-                if (persistence.Party.Gold - SelectedItem.Cost > 0)
+                if (persistence.Current.Party.Gold - SelectedItem.Cost > 0)
                 {
-                    persistence.Party.Gold -= SelectedItem.Cost;
+                    persistence.Current.Party.Gold -= SelectedItem.Cost;
                     var item = SelectedItem.CreateItem();
                     characterData.Inventory.Items.Add(item);
                 }
@@ -136,11 +136,11 @@ namespace Adventure.Exploration.Menu
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 
-            if (currentSheet > persistence.Party.Members.Count)
+            if (currentSheet > persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
-            var characterData = persistence.Party.Members[currentSheet];
+            var characterData = persistence.Current.Party.Members[currentSheet];
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -177,7 +177,7 @@ Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
 Lck: {characterData.CharacterSheet.Luck}";
 
-            info2.Text = $@"Gold: {persistence.Party.Gold}";
+            info2.Text = $@"Gold: {persistence.Current.Party.Gold}";
 
             info.Rect = screenPositioner.GetTopLeftRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info).GetDesiredSize(sharpGui));
             info2.Rect = screenPositioner.GetTopRightRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2).GetDesiredSize(sharpGui));
@@ -207,7 +207,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     --currentSheet;
                     if (currentSheet < 0)
                     {
-                        currentSheet = persistence.Party.Members.Count - 1;
+                        currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
                 }
             }
@@ -216,7 +216,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                 if (allowChanges)
                 {
                     ++currentSheet;
-                    if (currentSheet >= persistence.Party.Members.Count)
+                    if (currentSheet >= persistence.Current.Party.Members.Count)
                     {
                         currentSheet = 0;
                     }

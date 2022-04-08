@@ -18,11 +18,11 @@ namespace Adventure
             this.persistence = persistence;
         }
 
-        public IEnumerable<Persistence.CharacterData> ActiveCharacters => persistence.Party.Members;
+        public IEnumerable<Persistence.CharacterData> ActiveCharacters => persistence.Current.Party.Members;
 
         public int GetAverageLevel()
         {
-            var level = (int)persistence.Party.Members.Average(i => i.CharacterSheet.Level);
+            var level = (int)persistence.Current.Party.Members.Average(i => i.CharacterSheet.Level);
             if (level < 1)
             {
                 level = 1;
@@ -34,17 +34,15 @@ namespace Adventure
             return level;
         }
 
-        public IEnumerable<CharacterSheet> ActiveCharacterSheets => persistence.Party.Members.Select(i => i.CharacterSheet);
-
         public long Gold
         {
             get
             {
-                return persistence.Party.Gold;
+                return persistence.Current.Party.Gold;
             }
             set
             {
-                persistence.Party.Gold = value;
+                persistence.Current.Party.Gold = value;
             }
         }
     }

@@ -50,11 +50,11 @@ namespace Adventure.Exploration.Menu
                 return;
             }
 
-            if (currentSheet > persistence.Party.Members.Count)
+            if (currentSheet > persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
-            var sheet = persistence.Party.Members[currentSheet];
+            var sheet = persistence.Current.Party.Members[currentSheet];
 
             take.Text = $"Take {sheet.CharacterSheet.Name}";
 
@@ -91,13 +91,13 @@ namespace Adventure.Exploration.Menu
                 --currentSheet;
                 if (currentSheet < 0)
                 {
-                    currentSheet = persistence.Party.Members.Count - 1;
+                    currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
             if (sharpGui.Button(next, navUp: discard.Id, navDown: bottomNavDown, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
-                if (currentSheet >= persistence.Party.Members.Count)
+                if (currentSheet >= persistence.Current.Party.Members.Count)
                 {
                     currentSheet = 0;
                 }

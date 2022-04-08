@@ -157,7 +157,7 @@ namespace Adventure
             this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
-            var startPos = persistence.Player.Position ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            var startPos = persistence.Current.Player.Position ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
@@ -382,7 +382,7 @@ namespace Adventure
         private void BepuScene_OnUpdated(IBepuScene obj)
         {
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
-            this.persistence.Player.Position = this.currentPosition;
+            this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
             cameraMover.Position = this.currentPosition + cameraOffset;

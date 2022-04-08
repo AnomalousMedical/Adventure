@@ -37,7 +37,6 @@ namespace Adventure
 
         public record struct PersistenceData(bool Dead);
         private PersistenceData state;
-        Persistence.PersistenceEntry<BattleTrigger.PersistenceData> persistentStorage;
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -49,6 +48,7 @@ namespace Adventure
         private readonly Description description;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
+        private readonly Persistence persistence;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -75,8 +75,7 @@ namespace Adventure
             IExplorationGameState explorationGameState,
             Persistence persistence)
         {
-            persistentStorage = description.IsBoss ? persistence.BossBattleTriggers : persistence.BattleTriggers;
-            state = persistentStorage.GetData(description.Zone, description.Index);
+            state = GetState(description, persistence);
 
             this.IsBoss = description.IsBoss;
             this.EnemyLevel = description.EnemyLevel;
@@ -89,6 +88,7 @@ namespace Adventure
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.explorationGameState = explorationGameState;
+            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -121,14 +121,14 @@ namespace Adventure
         public void BattleWon()
         {
             state.Dead = true;
-            persistentStorage.SetData(description.Zone, description.Index, state);
+            SetState(description, persistence, state);
             DestroyPhysics();
             RemoveGraphics();
         }
 
         public void Reset()
         {
-            state = persistentStorage.GetData(description.Zone, description.Index);
+            state = GetState(description, persistence);
             AddGraphics();
         }
 
@@ -218,6 +218,32 @@ namespace Adventure
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+        }
+
+        private static PersistenceData GetState(Description description, Persistence persistence)
+        {
+            PersistenceData result;
+            if (description.IsBoss)
+            {
+                result = persistence.Current.BossBattleTriggers.GetData(description.Zone, description.Index);
+            }
+            else
+            {
+                result = persistence.Current.BattleTriggers.GetData(description.Zone, description.Index);
+            }
+            return result;
+        }
+
+        private static void SetState(Description description, Persistence persistence, PersistenceData data)
+        {
+            if (description.IsBoss)
+            {
+                persistence.Current.BossBattleTriggers.SetData(description.Zone, description.Index, data);
+            }
+            else
+            {
+                persistence.Current.BattleTriggers.SetData(description.Zone, description.Index, data);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Adventure.Services
 {
     interface IPersistenceWriter
     {
-        Persistence Load(Func<Persistence> createNewWorld);
+        Persistence Load(Func<Persistence.GameState> createNewWorld);
         void Save();
     }
 
@@ -46,14 +46,17 @@ namespace Adventure.Services
             logger.LogInformation($"Wrote save to '{outFile}'.");
         }
 
-        public Persistence Load(Func<Persistence> createNewWorld)
+        public Persistence Load(Func<Persistence.GameState> createNewWorld)
         {
             var outFile = GetSaveFile();
 
             if (!File.Exists(outFile))
             {
                 logger.LogInformation($"Creating new save.");
-                persistence = createNewWorld();
+                persistence = new Persistence()
+                {
+                    Current = createNewWorld()
+                };
             }
             else
             {

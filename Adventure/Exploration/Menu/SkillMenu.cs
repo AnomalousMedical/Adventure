@@ -80,11 +80,11 @@ namespace Adventure.Exploration.Menu
                 }
             }
 
-            if (currentSheet > persistence.Party.Members.Count)
+            if (currentSheet > persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
-            var characterData = persistence.Party.Members[currentSheet];
+            var characterData = persistence.Current.Party.Members[currentSheet];
 
             info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
 
@@ -100,7 +100,7 @@ namespace Adventure.Exploration.Menu
             if (choosingCharacter)
             {
                 var text = "";
-                foreach (var character in persistence.Party.Members)
+                foreach (var character in persistence.Current.Party.Members)
                 {
                     text += @$"{character.CharacterSheet.Name}
 HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
@@ -154,7 +154,7 @@ Lck: {characterData.CharacterSheet.Luck}
             if (allowChanges && newSelection != null)
             {
                 selectedSkill = newSelection;
-                characterChoices = persistence.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                 {
                     var skill = skillFactory.CreateSkill(selectedSkill);
                     skill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
@@ -171,7 +171,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     --currentSheet;
                     if (currentSheet < 0)
                     {
-                        currentSheet = persistence.Party.Members.Count - 1;
+                        currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
                 }
             }
@@ -180,7 +180,7 @@ Lck: {characterData.CharacterSheet.Luck}
                 if (allowChanges)
                 {
                     ++currentSheet;
-                    if (currentSheet >= persistence.Party.Members.Count)
+                    if (currentSheet >= persistence.Current.Party.Members.Count)
                     {
                         currentSheet = 0;
                     }

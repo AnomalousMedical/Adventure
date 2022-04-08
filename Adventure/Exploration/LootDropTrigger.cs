@@ -163,10 +163,10 @@ namespace Adventure
         private void Take()
         {
             contextMenu.ClearContext(Take);
-            persistence.Party.Gold += persistence.Player.LootDropGold;
-            persistence.Player.LootDropGold = 0;
-            persistence.Player.LootDropZone = null;
-            persistence.Player.LootDropPosition = null;
+            persistence.Current.Party.Gold += persistence.Current.Player.LootDropGold;
+            persistence.Current.Player.LootDropGold = 0;
+            persistence.Current.Player.LootDropZone = null;
+            persistence.Current.Player.LootDropPosition = null;
             RequestDestruction();
         }
 

@@ -60,24 +60,24 @@ namespace Adventure.GameOver
         {
             if (active)
             {
-                persistence.Zone.CurrentIndex = persistence.Player.RespawnZone ?? 0;
-                persistence.Player.Position = persistence.Player.RespawnPosition;
-                persistence.BattleTriggers.ClearData();
-                if (persistence.Party.Gold > 0)
+                persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
+                persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
+                persistence.Current.BattleTriggers.ClearData();
+                if (persistence.Current.Party.Gold > 0)
                 {
-                    persistence.Player.LootDropPosition = zoneManager.GetPlayerLoc();
-                    persistence.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-                    persistence.Player.LootDropGold = persistence.Party.Gold;
-                    persistence.Party.Gold = 0;
+                    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
+                    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
+                    persistence.Current.Player.LootDropGold = persistence.Current.Party.Gold;
+                    persistence.Current.Party.Gold = 0;
                 }
                 else
                 {
-                    persistence.Player.LootDropPosition = null;
-                    persistence.Player.LootDropZone = null;
-                    persistence.Player.LootDropGold = 0;
+                    persistence.Current.Player.LootDropPosition = null;
+                    persistence.Current.Player.LootDropZone = null;
+                    persistence.Current.Player.LootDropGold = 0;
                 }
 
-                foreach (var character in persistence.Party.Members)
+                foreach (var character in persistence.Current.Party.Members)
                 {
                     character.CharacterSheet.Rest();
                 }

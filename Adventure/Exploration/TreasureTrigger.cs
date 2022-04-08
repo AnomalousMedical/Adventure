@@ -76,7 +76,7 @@ namespace Adventure
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
-            this.state = persistence.TreasureTriggers.GetData(zoneIndex, instanceId);
+            this.state = persistence.Current.TreasureTriggers.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
@@ -196,7 +196,7 @@ namespace Adventure
             //If something were to go wrong handing out treasure it would be lost, but the
             //other option opens it up to duplication
             state.Open = true;
-            persistence.TreasureTriggers.SetData(zoneIndex, instanceId, state);
+            persistence.Current.TreasureTriggers.SetData(zoneIndex, instanceId, state);
             treasureMenu.GatherTreasures(treasure);
             explorationMenu.RequestSubMenu(treasureMenu);
         }

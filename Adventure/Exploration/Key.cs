@@ -70,7 +70,7 @@ namespace Adventure
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
-            this.state = persistence.Keys.GetData(zoneIndex, instanceId);
+            this.state = persistence.Current.Keys.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
@@ -188,7 +188,7 @@ namespace Adventure
         {
             contextMenu.ClearContext(Take);
             state.Taken = true;
-            persistence.Keys.SetData(zoneIndex, instanceId, state);
+            persistence.Current.Keys.SetData(zoneIndex, instanceId, state);
             DestroyGraphics();
             DestroyPhysics();
         }

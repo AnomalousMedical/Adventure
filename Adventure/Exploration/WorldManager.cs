@@ -44,7 +44,7 @@ namespace Adventure.Exploration
             DaggerCreator daggerCreator
         )
         {
-            this.zoneRandom = new Random(persistence.World.Seed);
+            this.zoneRandom = new Random(persistence.Current.World.Seed);
             this.biomeManager = biomeManager;
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;

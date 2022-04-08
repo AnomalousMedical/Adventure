@@ -11,7 +11,7 @@ namespace Adventure.Services
     {
         int Seed { get; set; }
 
-        Persistence SeedWorld(int seed);
+        Persistence.GameState SeedWorld(int seed);
     }
 
     class GenesysModule : IGenesysModule
@@ -24,10 +24,10 @@ namespace Adventure.Services
 
         public int Seed { get; set; }
 
-        public Persistence SeedWorld(int seed)
+        public Persistence.GameState SeedWorld(int seed)
         {
-            var persistence = new Persistence();
-            persistence.World.Seed = seed;
+            var gameState = new Persistence.GameState();
+            gameState.World.Seed = seed;
             var characterRandom = new Random(seed);
 
             {
@@ -39,7 +39,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                persistence.Party.Members.Add(hero);
+                gameState.Party.Members.Add(hero);
             }
 
             {
@@ -51,7 +51,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                persistence.Party.Members.Add(hero);
+                gameState.Party.Members.Add(hero);
             }
 
             {
@@ -63,7 +63,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                persistence.Party.Members.Add(hero);
+                gameState.Party.Members.Add(hero);
             }
 
             {
@@ -75,10 +75,10 @@ namespace Adventure.Services
                     CharacterSheet = sheet
                 };
                 hero.CharacterSheet.Rest();
-                persistence.Party.Members.Add(hero);
+                gameState.Party.Members.Add(hero);
             }
 
-            return persistence;
+            return gameState;
         }
     }
 }

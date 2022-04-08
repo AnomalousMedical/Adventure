@@ -69,7 +69,7 @@ namespace Adventure
             Persistence persistence
         )
         {
-            this.state = persistence.Keys.GetData(description.Zone, description.InstanceId);
+            this.state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -187,7 +187,7 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            this.state = persistence.Keys.GetData(description.Zone, description.InstanceId);
+            this.state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
             if (!state.GateOpened)
             {
                 if (state.Taken)
@@ -211,7 +211,7 @@ namespace Adventure
             if (state.Taken)
             {
                 state.GateOpened = true;
-                persistence.Keys.SetData(description.Zone, description.InstanceId, state);
+                persistence.Current.Keys.SetData(description.Zone, description.InstanceId, state);
                 contextMenu.ClearContext(Open);
                 RemoveGraphics();
                 DestroyPhysics();

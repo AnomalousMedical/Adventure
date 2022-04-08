@@ -529,11 +529,11 @@ namespace Adventure
 
         private void AddLootDrop()
         {
-            if(persistence.Player.LootDropZone == index)
+            if(persistence.Current.Player.LootDropZone == index)
             {
                 var lootDrop = objectResolver.Resolve<LootDropTrigger, LootDropTrigger.Description>(o =>
                 {
-                    o.MapOffset = persistence.Player.LootDropPosition.Value;
+                    o.MapOffset = persistence.Current.Player.LootDropPosition.Value;
                     o.Translation = currentPosition + o.MapOffset;
                     var treasure = new GoldPile();
                     o.Sprite = treasure.CreateSprite();

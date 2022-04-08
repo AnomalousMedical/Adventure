@@ -46,11 +46,11 @@ namespace Adventure.Exploration.Menu.Asimov
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
         {
-            if (currentSheet > persistence.Party.Members.Count)
+            if (currentSheet > persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
-            var sheet = persistence.Party.Members[currentSheet];
+            var sheet = persistence.Current.Party.Members[currentSheet];
 
             info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
 
@@ -99,18 +99,18 @@ Lck: {sheet.CharacterSheet.Luck}";
 
             if (sharpGui.Button(levelFighter, navUp: back.Id, navDown: levelMage.Id))
             {
-                if (levelUpCost == 0 || persistence.Party.Gold - levelUpCost > 0)
+                if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
                     sheet.CharacterSheet.LevelUpFighter(levelCalculator);
-                    persistence.Party.Gold -= levelUpCost;
+                    persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
             if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: previous.Id))
             {
-                if (levelUpCost == 0 || persistence.Party.Gold - levelUpCost > 0)
+                if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
                     sheet.CharacterSheet.LevelUpMage(levelCalculator);
-                    persistence.Party.Gold -= levelUpCost;
+                    persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
             if (sharpGui.Button(previous, navUp: levelMage.Id, navDown: back.Id, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
@@ -118,13 +118,13 @@ Lck: {sheet.CharacterSheet.Luck}";
                 --currentSheet;
                 if (currentSheet < 0)
                 {
-                    currentSheet = persistence.Party.Members.Count - 1;
+                    currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
             if (sharpGui.Button(next, navUp: levelMage.Id, navDown: back.Id, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
-                if (currentSheet >= persistence.Party.Members.Count)
+                if (currentSheet >= persistence.Current.Party.Members.Count)
                 {
                     currentSheet = 0;
                 }

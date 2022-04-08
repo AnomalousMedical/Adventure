@@ -173,9 +173,9 @@ namespace Adventure
 
         private void Speak()
         {
-            persistence.Player.RespawnZone = zoneIndex;
-            persistence.Player.RespawnPosition = zoneManager.GetPlayerLoc();
-            persistence.BattleTriggers.ClearData();
+            persistence.Current.Player.RespawnZone = zoneIndex;
+            persistence.Current.Player.RespawnPosition = zoneManager.GetPlayerLoc();
+            persistence.Current.BattleTriggers.ClearData();
 
             contextMenu.ClearContext(Speak);
             explorationMenu.RequestSubMenu(rootMenu);

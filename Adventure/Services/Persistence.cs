@@ -14,23 +14,32 @@ namespace Adventure.Services
 
     class Persistence
     {
-        public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+        /// <summary>
+        /// The current game state. Do not make copies of this or anything under it as they
+        /// can change at any time.
+        /// </summary>
+        public GameState Current { get; set; }
 
-        public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+        public class GameState
+        {
+            public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
-        public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
+            public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
-        public PersistenceEntry<Key.PersistenceData> Keys { get; } = new PersistenceEntry<Key.PersistenceData>();
+            public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
-        public ZoneData Zone { get; } = new ZoneData();
+            public PersistenceEntry<Key.PersistenceData> Keys { get; } = new PersistenceEntry<Key.PersistenceData>();
 
-        public PlayerData Player { get; } = new PlayerData();
+            public ZoneData Zone { get; } = new ZoneData();
 
-        public TimeData Time { get; } = new TimeData();
+            public PlayerData Player { get; } = new PlayerData();
 
-        public WorldData World { get; set; } = new WorldData();
+            public TimeData Time { get; } = new TimeData();
 
-        public PartyData Party { get; set; } = new PartyData();
+            public WorldData World { get; set; } = new WorldData();
+
+            public PartyData Party { get; set; } = new PartyData();
+        }
 
         public class PersistenceEntry<T>
                 where T : struct

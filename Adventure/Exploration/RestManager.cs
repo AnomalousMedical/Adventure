@@ -28,7 +28,7 @@ namespace Adventure
 
         public void Rest(IExplorationGameState explorationGameState)
         {
-            persistence.BattleTriggers.ClearData();
+            persistence.Current.BattleTriggers.ClearData();
             timeClock.SetTimeRatio(100);
 
             long? endTime = null;
@@ -44,7 +44,7 @@ namespace Adventure
                 {
                     zoneManager.ResetPlaceables();
 
-                    foreach (var member in persistence.Party.Members)
+                    foreach (var member in persistence.Current.Party.Members)
                     {
                         member.CharacterSheet.Rest();
                     }

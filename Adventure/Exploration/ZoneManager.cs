@@ -94,7 +94,7 @@ namespace Adventure
                 nextZone.RequestDestruction();
             }
 
-            var currentZoneIndex = persistence.Zone.CurrentIndex;
+            var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
             currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
             nextZone = CreateZone(new Vector3(150, 0, 0), currentZoneIndex + 1);
             if(currentZoneIndex - 1 >= 0)
@@ -118,7 +118,7 @@ namespace Adventure
             }
             else
             {
-                player.SetLocation(persistence.Player.Position ?? currentZone.StartPoint);
+                player.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
             }
 
             ZoneChanged?.Invoke(this);
@@ -177,8 +177,8 @@ namespace Adventure
             currentZone = nextZone;
 
             //Change zone index
-            ++persistence.Zone.CurrentIndex;
-            var nextZoneIndex = persistence.Zone.CurrentIndex + 1;
+            ++persistence.Current.Zone.CurrentIndex;
+            var nextZoneIndex = persistence.Current.Zone.CurrentIndex + 1;
 
             //Create new zone
             nextZone = CreateZone(new Vector3(150, 0, 0), nextZoneIndex);
@@ -212,11 +212,11 @@ namespace Adventure
             }
 
             //Change zone index
-            --persistence.Zone.CurrentIndex;
-            if (persistence.Zone.CurrentIndex < 0)
+            --persistence.Current.Zone.CurrentIndex;
+            if (persistence.Current.Zone.CurrentIndex < 0)
             {
                 //Below 0, do nothing
-                persistence.Zone.CurrentIndex = 0;
+                persistence.Current.Zone.CurrentIndex = 0;
                 return;
             }
 
@@ -233,9 +233,9 @@ namespace Adventure
             nextZone = currentZone;
             currentZone = previousZone;
 
-            if (persistence.Zone.CurrentIndex > 0)
+            if (persistence.Current.Zone.CurrentIndex > 0)
             {
-                var previousZoneIndex = persistence.Zone.CurrentIndex - 1;
+                var previousZoneIndex = persistence.Current.Zone.CurrentIndex - 1;
                 previousZone = CreateZone(new Vector3(-150, 0, 0), previousZoneIndex);
             }
             else
