@@ -67,6 +67,14 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
 	auto* pFactoryVk = GetEngineFactoryVk();
 	pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &(result.m_pDevice), &(result.m_pImmediateContext));
 
+	if (result.m_pDevice == NULL)
+	{
+		//Fix for amd optimus switchable graphics
+		//https://github.com/KhronosGroup/Vulkan-Loader/issues/552
+		SetEnvironmentVariable(L"DISABLE_LAYER_AMD_SWITCHABLE_GRAPHICS_1", L"1");
+		pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &(result.m_pDevice), &(result.m_pImmediateContext));
+	}
+
 	Win32NativeWindow Window{ hWnd };
 	pFactoryVk->CreateSwapChainVk(result.m_pDevice, result.m_pImmediateContext, SCDesc, Window, &(result.m_pSwapChain));
 
