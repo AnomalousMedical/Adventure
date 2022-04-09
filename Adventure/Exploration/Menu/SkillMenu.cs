@@ -14,7 +14,7 @@ namespace Adventure.Exploration.Menu
 {
     class SkillMenu : IExplorationSubMenu
     {
-        public const float ItemButtonsLayer = 0.15f;
+        public const float SkillButtonsLayer = 0.15f;
         public const float ChooseTargetLayer = 0.35f;
 
         private readonly Persistence persistence;
@@ -23,14 +23,14 @@ namespace Adventure.Exploration.Menu
         private readonly IScreenPositioner screenPositioner;
         private readonly ISkillFactory skillFactory;
         private readonly IDamageCalculator damageCalculator;
-        private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
+        private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
         SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
 
-        private ButtonColumn characterButtons = new ButtonColumn(4, SkillMenu.ChooseTargetLayer);
+        private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private String selectedSkill;
 
@@ -54,8 +54,6 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
-            var allowChanges = true;
-
             var choosingCharacter = characterChoices != null;
 
             if (choosingCharacter)
@@ -65,13 +63,12 @@ namespace Adventure.Exploration.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s));
+                var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s));
                 if (action != null)
                 {
                     action.Invoke();
                     characterChoices = null;
                     selectedSkill = null;
-                    return;
                 }
 
                 if (sharpGui.IsStandardBackPressed())
@@ -154,12 +151,13 @@ Lck: {characterData.CharacterSheet.Luck}
 
             sharpGui.Text(info);
 
-            itemButtons.Margin = scaleHelper.Scaled(10);
-            itemButtons.MaxWidth = scaleHelper.Scaled(900);
-            itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+            skillButtons.Margin = scaleHelper.Scaled(10);
+            skillButtons.MaxWidth = scaleHelper.Scaled(900);
+            skillButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
-            if (allowChanges && newSelection != null)
+            var skillCount = characterData.CharacterSheet.Skills.Count();
+            var newSelection = skillButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), skillCount, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+            if (!choosingCharacter && newSelection != null)
             {
                 selectedSkill = newSelection;
                 characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
@@ -170,11 +168,11 @@ Lck: {characterData.CharacterSheet.Luck}
                 .ToList();
             }
 
-            var hasSkills = characterData.CharacterSheet.Skills.Any();
+            var hasSkills = skillCount > 0;
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? itemButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed())
             {
-                if (allowChanges)
+                if (!choosingCharacter)
                 {
                     --currentSheet;
                     if (currentSheet < 0)
@@ -183,9 +181,9 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
-                if (allowChanges)
+                if (!choosingCharacter)
                 {
                     ++currentSheet;
                     if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -194,9 +192,9 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
             {
-                if (allowChanges)
+                if (!choosingCharacter)
                 {
                     menu.RequestSubMenu(menu.RootMenu);
                 }
