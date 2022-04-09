@@ -11,10 +11,13 @@ namespace Adventure.Exploration.Menu
 {
     class TreasureMenu : IExplorationSubMenu
     {
+        private enum SaveBlocker { Treasure }
+
         private readonly Persistence persistence;
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        private readonly IPersistenceWriter persistenceWriter;
         private Stack<ITreasure> currentTreasure;
         SharpButton take = new SharpButton();
         SharpButton discard = new SharpButton() { Text = "Discard" };
@@ -28,24 +31,29 @@ namespace Adventure.Exploration.Menu
             Persistence persistence,
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner
+            IScreenPositioner screenPositioner,
+            IPersistenceWriter persistenceWriter
         )
         {
             this.persistence = persistence;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
+            this.persistenceWriter = persistenceWriter;
         }
 
         public void GatherTreasures(IEnumerable<ITreasure> treasure)
         {
             this.currentTreasure = new Stack<ITreasure>(treasure);
+            persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
             if (currentTreasure == null || currentTreasure.Count == 0)
             {
+                persistenceWriter.RemoveSaveBlock(SaveBlocker.Treasure);
+                persistenceWriter.Save();
                 menu.RequestSubMenu(null);
                 return;
             }

@@ -12,7 +12,9 @@ namespace Adventure.Services
 {
     interface IPersistenceWriter
     {
+        void AddSaveBlock(object blocker);
         Persistence Load(Func<Persistence.GameState> createNewWorld);
+        void RemoveSaveBlock(object blocker);
         void Save();
     }
 
@@ -21,6 +23,7 @@ namespace Adventure.Services
         private Persistence persistence;
         private readonly ILogger<PersistenceWriter> logger;
         private JsonSerializer serializer;
+        private HashSet<object> saveBlockers = new HashSet<object>();
 
         public PersistenceWriter(ILogger<PersistenceWriter> logger)
         {
@@ -40,10 +43,26 @@ namespace Adventure.Services
         {
             if (persistence == null) { return; }
 
+            if (saveBlockers.Count > 0)
+            {
+                logger.LogInformation($"Save is currently disabled. Skipping save. Reasons: {String.Concat(saveBlockers.Select(i => i?.ToString()))}");
+                return;
+            }
+
             var outFile = GetSaveFile();
             using var stream = new StreamWriter(File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None));
             serializer.Serialize(stream, persistence);
             logger.LogInformation($"Wrote save to '{outFile}'.");
+        }
+
+        public void AddSaveBlock(Object blocker)
+        {
+            saveBlockers.Add(blocker);
+        }
+
+        public void RemoveSaveBlock(Object blocker)
+        {
+            saveBlockers.Remove(blocker);
         }
 
         public Persistence Load(Func<Persistence.GameState> createNewWorld)
