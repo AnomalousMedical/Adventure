@@ -67,14 +67,19 @@ namespace Adventure.Services
             currentCharacter.Text = sheet.CharacterSheet.Name;
             inventoryInfo.Text = $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
 
-            next.SetRect(screenPositioner.GetTopRightRect(next.GetDesiredSize(sharpGui)));
-            previous.SetRect(screenPositioner.GetTopLeftRect(previous.GetDesiredSize(sharpGui)));
+            ILayoutItem layout;
+
+            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), next);
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+
+            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), previous);
+            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
             var treasure = currentTreasure.Peek();
 
             itemInfo.Text = treasure.InfoText;
 
-            var layout =
+            layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
                new ColumnLayout(
@@ -86,8 +91,7 @@ namespace Adventure.Services
                { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
-            var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
+            layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
 
             sharpGui.Text(currentCharacter);
             sharpGui.Text(inventoryInfo);

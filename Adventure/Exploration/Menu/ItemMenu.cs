@@ -187,18 +187,6 @@ namespace Adventure.Exploration.Menu
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
 
-            var marginLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info);
-            marginLayout.SetRect(screenPositioner.GetTopLeftRect(marginLayout.GetDesiredSize(sharpGui)));
-
-            var layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
-            ));
-
-            var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
-
             if (useItemMenu.IsChoosingCharacters)
             {
                 var text = "";
@@ -252,12 +240,31 @@ Dex: {characterData.CharacterSheet.BaseDexterity}
 Lck: {characterData.CharacterSheet.Luck}
  ";
 
-                foreach(var item in characterData.CharacterSheet.EquippedItems())
+                foreach (var item in characterData.CharacterSheet.EquippedItems())
                 {
                     info.Text += $@"
 {item.Name}";
                 }
             }
+
+            ILayoutItem layout;
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(previous, info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(next) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+
+            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+            layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
             sharpGui.Text(info);
 
