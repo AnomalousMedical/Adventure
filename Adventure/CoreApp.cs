@@ -165,6 +165,7 @@ namespace Adventure
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
             services.AddSingleton<RestManager>();
+            services.AddSingleton<PickUpTreasureMenu>();
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();
