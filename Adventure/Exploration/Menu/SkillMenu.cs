@@ -158,7 +158,7 @@ Lck: {characterData.CharacterSheet.Luck}
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
+            var newSelection = itemButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
             if (allowChanges && newSelection != null)
             {
                 selectedSkill = newSelection;
@@ -170,9 +170,9 @@ Lck: {characterData.CharacterSheet.Luck}
                 .ToList();
             }
 
-            var hasItems = characterData.Inventory.Items.Count > 0;
+            var hasSkills = characterData.CharacterSheet.Skills.Any();
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? itemButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 if (allowChanges)
                 {
@@ -183,7 +183,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasItems ? itemButtons.TopButton : previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 if (allowChanges)
                 {
@@ -194,7 +194,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: hasItems ? itemButtons.TopButton : back.Id, navRight: hasItems ? itemButtons.TopButton : back.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
             {
                 if (allowChanges)
                 {

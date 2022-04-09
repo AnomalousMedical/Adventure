@@ -99,19 +99,19 @@ namespace Adventure.Services
 
             var hasInventoryRoom = sheet.HasRoom;
 
-            if (hasInventoryRoom && sharpGui.Button(take, navUp: previous.Id, navDown: discard.Id))
+            if (hasInventoryRoom && sharpGui.Button(take, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 currentTreasure.Pop();
                 treasure.GiveTo(sheet.Inventory);
             }
 
-            if (sharpGui.Button(discard, navUp: hasInventoryRoom ? take.Id : previous.Id, navDown: previous.Id))
+            if (sharpGui.Button(discard, navUp: hasInventoryRoom ? take.Id : discard.Id, navDown: hasInventoryRoom ? take.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 currentTreasure.Pop();
             }
 
             var bottomNavDown = hasInventoryRoom ? take.Id : discard.Id;
-            if (sharpGui.Button(previous, navUp: discard.Id, navDown: bottomNavDown, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navLeft: next.Id, navRight: hasInventoryRoom ? take.Id : discard.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -119,7 +119,7 @@ namespace Adventure.Services
                     currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navUp: discard.Id, navDown: bottomNavDown, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navLeft: hasInventoryRoom ? take.Id : discard.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
