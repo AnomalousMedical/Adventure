@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Items;
+using Engine;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,9 @@ namespace Adventure.Services
 {
     class PickUpTreasureMenu
     {
+        public const float ReplaceButtonsLayer = 0.15f;
+        private static readonly InventoryItem CancelInventoryItem = new InventoryItem();
+
         private enum SaveBlocker { Treasure }
 
         private readonly Persistence persistence;
@@ -26,6 +30,9 @@ namespace Adventure.Services
         SharpText currentCharacter = new SharpText() { Color = Color.White };
         SharpText inventoryInfo = new SharpText() { Color = Color.White };
         private int currentSheet;
+        private bool replacingItem = false;
+
+        private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
 
         public PickUpTreasureMenu
         (
@@ -47,6 +54,7 @@ namespace Adventure.Services
         {
             this.currentTreasure = new Stack<ITreasure>(treasure);
             persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
+            replacingItem = false;
         }
 
         public bool Update()
@@ -63,6 +71,9 @@ namespace Adventure.Services
                 currentSheet = 0;
             }
             var sheet = persistence.Current.Party.Members[currentSheet];
+            var hasInventoryRoom = sheet.HasRoom;
+
+            take.Text = hasInventoryRoom ? "Take" : "Replace";
 
             currentCharacter.Text = sheet.CharacterSheet.Name;
             inventoryInfo.Text = $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
@@ -97,12 +108,18 @@ namespace Adventure.Services
             sharpGui.Text(inventoryInfo);
             sharpGui.Text(itemInfo);
 
-            var hasInventoryRoom = sheet.HasRoom;
-
-            if (hasInventoryRoom && sharpGui.Button(take, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(take, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
             {
-                currentTreasure.Pop();
-                treasure.GiveTo(sheet.Inventory);
+                if (hasInventoryRoom)
+                {
+                    currentTreasure.Pop();
+                    treasure.GiveTo(sheet.Inventory);
+                }
+                else
+                {
+                    replacingItem = true;
+                    sharpGui.StealFocus(replaceButtons.TopButton);
+                }
             }
 
             if (sharpGui.Button(discard, navUp: hasInventoryRoom ? take.Id : discard.Id, navDown: hasInventoryRoom ? take.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
@@ -111,20 +128,46 @@ namespace Adventure.Services
             }
 
             var bottomNavDown = hasInventoryRoom ? take.Id : discard.Id;
-            if (sharpGui.Button(previous, navLeft: next.Id, navRight: hasInventoryRoom ? take.Id : discard.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed())
             {
+                replacingItem = false;
                 --currentSheet;
                 if (currentSheet < 0)
                 {
                     currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navLeft: hasInventoryRoom ? take.Id : discard.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
+                replacingItem = false;
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
                 {
                     currentSheet = 0;
+                }
+            }
+
+            replaceButtons.Margin = scaleHelper.Scaled(10);
+            replaceButtons.MaxWidth = scaleHelper.Scaled(900);
+            replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
+
+            if (replacingItem)
+            {
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+                if (removeItem != null)
+                {
+                    replacingItem = false;
+                    if (removeItem != CancelInventoryItem)
+                    {
+                        sheet.RemoveItem(removeItem);
+                        currentTreasure.Pop();
+                        treasure.GiveTo(sheet.Inventory);
+                    }
+                }
+
+                if (sharpGui.IsStandardBackPressed())
+                {
+                    replacingItem = false;
                 }
             }
 
