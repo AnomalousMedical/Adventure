@@ -133,6 +133,14 @@ namespace Adventure
             public IBiome Biome { get; set; }
 
             public IEnumerable<ITreasure> Treasure { get; set; }
+
+            public IEnumerable<ITreasure> StealTreasure { get; set; }
+
+            public IEnumerable<ITreasure> BossStealTreasure { get; set; }
+
+            public IEnumerable<ITreasure> UniqueStealTreasure { get; set; }
+
+            public IEnumerable<ITreasure> BossUniqueStealTreasure { get; set; }
         }
 
         private readonly RTInstances<IZoneManager> rtInstances;
@@ -357,11 +365,14 @@ namespace Adventure
                 ResetPlacementData();
                 var enemyRandom = new Random(enemySeed);
                 var usedCorridors = new HashSet<int>();
-                SetupCorridors(enemyRandom, usedCorridors);
-                SetupRooms(enemyRandom);
+
+                var battleTriggers = new List<BattleTrigger>();
+                SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
+                SetupRooms(enemyRandom, out var bossBattleTrigger);
                 PlaceKeySafety(enemyRandom, usedCorridors);
 
                 AddLootDrop();
+                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger);
 
                 //Since this is async the physics can be active before the placeables are created
                 if (physicsActive)
@@ -406,7 +417,7 @@ namespace Adventure
         /// <returns></returns>
         public async Task WaitForGeneration()
         {
-            if(zoneGenerationTask != null)
+            if (zoneGenerationTask != null)
             {
                 await zoneGenerationTask;
             }
@@ -417,7 +428,7 @@ namespace Adventure
             this.currentPosition = position;
             this.wallInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
-            foreach(var placeable in placeables)
+            foreach (var placeable in placeables)
             {
                 placeable.SetZonePosition(position);
             }
@@ -515,6 +526,7 @@ namespace Adventure
         private bool placeGate;
         private bool placeKey;
         private ushort asimovRoom = csMapbuilder.NullCell;
+
         private void ResetPlacementData()
         {
             restIndex = 0;
@@ -529,7 +541,7 @@ namespace Adventure
 
         private void AddLootDrop()
         {
-            if(persistence.Current.Player.LootDropZone == index)
+            if (persistence.Current.Player.LootDropZone == index)
             {
                 var lootDrop = objectResolver.Resolve<LootDropTrigger, LootDropTrigger.Description>(o =>
                 {
@@ -544,18 +556,18 @@ namespace Adventure
             }
         }
 
-        private void SetupCorridors(Random enemyRandom, HashSet<int> usedCorridors)
+        private void SetupCorridors(Random enemyRandom, HashSet<int> usedCorridors, List<BattleTrigger> battleTriggers)
         {
             var corridorStartIndex = 0;
             var corridors = mapMesh.MapBuilder.Corridors;
             var numCorridors = corridors.Count;
             var firstPoint = corridors[0];
             var currentCorridor = mapMesh.MapBuilder.map[firstPoint.x, firstPoint.y];
-            for(var currentIndex = 0; currentIndex < numCorridors; ++currentIndex)
+            for (var currentIndex = 0; currentIndex < numCorridors; ++currentIndex)
             {
-                if(currentCorridor == mapMesh.MapBuilder.EastConnectorIndex 
-                || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex 
-                || currentCorridor == mapMesh.MapBuilder.NorthConnectorIndex 
+                if (currentCorridor == mapMesh.MapBuilder.EastConnectorIndex
+                || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex
+                || currentCorridor == mapMesh.MapBuilder.NorthConnectorIndex
                 || currentCorridor == mapMesh.MapBuilder.SouthConnectorIndex)
                 {
                     continue;
@@ -567,13 +579,13 @@ namespace Adventure
                 {
                     if (currentCorridor >= csMapbuilder.CorridorCell)
                     {
-                        if(currentCorridor == csMapbuilder.MainCorridorCell)
+                        if (currentCorridor == csMapbuilder.MainCorridorCell)
                         {
-                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, maxMainCorridorBattles);
+                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, maxMainCorridorBattles, battleTriggers);
                         }
                         else
                         {
-                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, 1);
+                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, 1, battleTriggers);
                         }
                     }
                     corridorStartIndex = currentIndex;
@@ -582,17 +594,17 @@ namespace Adventure
             }
         }
 
-        private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex, int maxPossibleFights)
+        private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex, int maxPossibleFights, List<BattleTrigger> battleTriggers)
         {
             var numSquares = currentIndex - corridorStartIndex;
             var maxFights = Math.Min(Math.Max(numSquares / 10, 2), maxPossibleFights);
             var minFights = Math.Max(numSquares / 20, 1);
-            if(minFights > maxFights)
+            if (minFights > maxFights)
             {
                 minFights = 1;
             }
             var numEnemies = enemyRandom.Next(minFights, maxFights);
-            for(int i = 0; i < numEnemies; ++i)
+            for (int i = 0; i < numEnemies; ++i)
             {
                 var corridorTry = 0;
                 var corridorIndex = enemyRandom.Next(corridorStartIndex, currentIndex);
@@ -627,12 +639,14 @@ namespace Adventure
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
                 });
+                battleTriggers.Add(battleTrigger);
                 placeables.Add(battleTrigger);
             }
         }
 
-        private void SetupRooms(Random enemyRandom)
+        private void SetupRooms(Random enemyRandom, out BattleTrigger bossBattleTrigger)
         {
+            bossBattleTrigger = null;
             var treasureChests = new List<TreasureTrigger>();
             var treasureStack = new Stack<ITreasure>(this.treasure);
 
@@ -656,7 +670,7 @@ namespace Adventure
             if (placeBoss)
             {
                 var point = mapMesh.MapBuilder.EastConnector.Value;
-                var battleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
+                bossBattleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
                 {
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
                     o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
@@ -670,7 +684,7 @@ namespace Adventure
                     o.IsBoss = true;
                     o.Scale = new Vector3(2f, 2f, 1f);
                 });
-                placeables.Add(battleTrigger);
+                placeables.Add(bossBattleTrigger);
             }
 
             if (placeGate)
@@ -707,7 +721,7 @@ namespace Adventure
                 triedRooms.Add(csMapbuilder.RoomCell + 1); //Not end room
                 var keyRoomIndex = enemyRandom.Next(0, numRooms);
 
-                if (triedRooms.Count < numRooms) 
+                if (triedRooms.Count < numRooms)
                 {
                     while (triedRooms.Contains(keyRoomIndex))
                     {
@@ -778,7 +792,7 @@ namespace Adventure
                     });
                     this.placeables.Add(restArea);
                 }
-                else if(treasureStack.Count > 0)
+                else if (treasureStack.Count > 0)
                 {
                     var treasureTrigger = objectResolver.Resolve<TreasureTrigger, TreasureTrigger.Description>(o =>
                     {
@@ -841,6 +855,51 @@ namespace Adventure
                 usedCorridors.Add(corridorIndex);
                 var point = mapMesh.MapBuilder.Corridors[corridorIndex];
                 PlaceKey(point);
+            }
+        }
+
+        private static void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger)
+        {
+            var stealTreasure = description.StealTreasure ?? Enumerable.Empty<ITreasure>();
+            var bossStealTreasure = description.BossStealTreasure ?? Enumerable.Empty<ITreasure>();
+            var uniqueStealTreasure = description.UniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
+            var bossUniqueStealTreasure = description.BossUniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
+
+            foreach (var treasure in stealTreasure)
+            {
+                var index = enemyRandom.Next(battleTriggers.Count);
+                battleTriggers[index].AddStealTreasure(treasure);
+            }
+
+            foreach (var treasure in uniqueStealTreasure)
+            {
+                var index = enemyRandom.Next(battleTriggers.Count);
+                battleTriggers[index].AddUniqueStealTreasure(treasure);
+            }
+
+            if (bossBattleTrigger != null)
+            {
+                foreach (var treasure in bossStealTreasure)
+                {
+                    bossBattleTrigger.AddStealTreasure(treasure);
+                }
+                foreach (var treasure in bossUniqueStealTreasure)
+                {
+                    bossBattleTrigger.AddUniqueStealTreasure(treasure);
+                }
+            }
+            else
+            {
+                foreach (var treasure in bossStealTreasure)
+                {
+                    var index = enemyRandom.Next(battleTriggers.Count);
+                    battleTriggers[index].AddStealTreasure(treasure);
+                }
+                foreach (var treasure in bossUniqueStealTreasure)
+                {
+                    var index = enemyRandom.Next(battleTriggers.Count);
+                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                }
             }
         }
 

@@ -26,6 +26,10 @@ namespace Adventure.Services
 
             public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
+            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueStolenTreasure { get; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
+
+            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueBossStolenTreasure { get; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
+
             public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
             public PersistenceEntry<Key.PersistenceData> Keys { get; } = new PersistenceEntry<Key.PersistenceData>();

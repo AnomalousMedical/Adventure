@@ -35,8 +35,10 @@ namespace Adventure
             public bool IsBoss { get; set; }
         }
 
-        public record struct PersistenceData(bool Dead);
+        public record struct PersistenceData(bool Dead, bool StolenFrom);
         private PersistenceData state;
+
+        public record struct UniqueStolenTreasureData(bool Stolen);
 
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -56,6 +58,8 @@ namespace Adventure
         private bool physicsCreated = false;
         private bool graphicsVisible = false;
         private bool graphicsLoaded = false;
+        private List<ITreasure> stealTreasures;
+        private bool hasUniqueStolenTreasure = false;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -210,6 +214,70 @@ namespace Adventure
             this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
+        public void AddStealTreasure(ITreasure treasure)
+        {
+            if (state.StolenFrom)
+            {
+                return;
+            }
+
+            EnsureStealTreasures();
+            stealTreasures.Add(treasure);
+        }
+
+        public void AddUniqueStealTreasure(ITreasure treasure)
+        {
+            if (state.StolenFrom)
+            {
+                return;
+            }
+
+            var uniqueStolenState = GetUniqueTreasureStolenState(description, persistence);
+            if (!uniqueStolenState.Stolen)
+            {
+                //If the unique treasure is marked stolen, ignore it again forever
+                hasUniqueStolenTreasure = true;
+                EnsureStealTreasures();
+                stealTreasures.Add(treasure);
+            }
+        }
+
+        public IEnumerable<ITreasure> StealTreasure()
+        {
+            if (state.StolenFrom)
+            {
+                return Enumerable.Empty<ITreasure>();
+            }
+
+            if (stealTreasures == null)
+            {
+                //Return bag of money or something here, since so specific assigned treasure
+                //but we don't have that yet
+                return Enumerable.Empty<ITreasure>();
+            }
+
+            state.StolenFrom = true;
+            SetState(description, persistence, state);
+
+            if (hasUniqueStolenTreasure)
+            {
+                SetUniqueStolenTreasureState(description, persistence, new UniqueStolenTreasureData(true));
+            }
+
+            var treasures = stealTreasures;
+            stealTreasures = null;
+
+            return treasures;
+        }
+
+        private void EnsureStealTreasures()
+        {
+            if (stealTreasures == null)
+            {
+                stealTreasures = new List<ITreasure>(3);
+            }
+        }
+
         private void HandleCollision(CollisionEvent evt)
         {
             if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var _)
@@ -247,6 +315,32 @@ namespace Adventure
             else
             {
                 persistence.Current.BattleTriggers.SetData(description.Zone, description.Index, data);
+            }
+        }
+
+        private static UniqueStolenTreasureData GetUniqueTreasureStolenState(Description description, Persistence persistence)
+        {
+            UniqueStolenTreasureData result;
+            if (description.IsBoss)
+            {
+                result = persistence.Current.UniqueBossStolenTreasure.GetData(description.Zone, description.Index);
+            }
+            else
+            {
+                result = persistence.Current.UniqueStolenTreasure.GetData(description.Zone, description.Index);
+            }
+            return result;
+        }
+
+        private static void SetUniqueStolenTreasureState(Description description, Persistence persistence, UniqueStolenTreasureData data)
+        {
+            if (description.IsBoss)
+            {
+                persistence.Current.UniqueBossStolenTreasure.SetData(description.Zone, description.Index, data);
+            }
+            else
+            {
+                persistence.Current.UniqueStolenTreasure.SetData(description.Zone, description.Index, data);
             }
         }
     }

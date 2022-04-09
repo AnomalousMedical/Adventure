@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Platform;
 using SharpGui;
+using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -27,27 +28,23 @@ namespace Adventure.Battle.Skills
 
     class StealEffect : ISkillEffect
     {
-        private readonly ISharpGui sharpGui;
         private readonly IBattleManager battleManager;
-        private readonly IBattleScreenLayout battleScreenLayout;
+        private readonly PickUpTreasureMenu pickUpTreasureMenu;
 
-        private SharpButton button = new SharpButton() { Text = "Grab" };
-
-        public StealEffect(ISharpGui sharpGui, IBattleManager battleManager, IBattleScreenLayout battleScreenLayout)
+        public StealEffect(IBattleManager battleManager, PickUpTreasureMenu pickUpTreasureMenu)
         {
-            this.sharpGui = sharpGui;
             this.battleManager = battleManager;
-            this.battleScreenLayout = battleScreenLayout;
+            this.pickUpTreasureMenu = pickUpTreasureMenu;
             battleManager.AllowActivePlayerGui = false;
+            var treasures = battleManager.Steal();
+            pickUpTreasureMenu.GatherTreasures(treasures);
         }
 
         public bool Finished { get; private set; }
 
         public void Update(Clock clock)
         {
-            battleScreenLayout.LayoutBattleMenu(button);
-
-            if (sharpGui.Button(button))
+            if (pickUpTreasureMenu.Update())
             {
                 battleManager.AllowActivePlayerGui = true;
                 Finished = true;

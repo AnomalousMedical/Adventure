@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Items.Creators;
 
 namespace Adventure.Battle
 {
@@ -23,6 +24,7 @@ namespace Adventure.Battle
         private readonly IBattleManager battleManager;
         private readonly RTInstances<IBattleManager> rtInstances;
         private readonly Party party;
+        private readonly PotionCreator potionCreator;
         private IGameState gameOverState;
         private IGameState returnState;
         private BattleTrigger battleTrigger;
@@ -32,12 +34,14 @@ namespace Adventure.Battle
         (
             IBattleManager battleManager,
             RTInstances<IBattleManager> rtInstances,
-            Party party
+            Party party,
+            PotionCreator potionCreator
         )
         {
             this.battleManager = battleManager;
             this.rtInstances = rtInstances;
             this.party = party;
+            this.potionCreator = potionCreator;
         }
 
         public RTInstances Instances => rtInstances;
@@ -60,6 +64,7 @@ namespace Adventure.Battle
                 int battleSeed;
                 int level;
                 bool boss = false;
+                Func<IEnumerable<ITreasure>> stealCb;
                 if(battleTrigger == null)
                 {
                     level = party.GetAverageLevel() * 4 / 5;
@@ -69,15 +74,29 @@ namespace Adventure.Battle
                     }
                     battleSeed = noTriggerRandom.Next(int.MinValue, int.MaxValue);
                     boss = true;
+                    var hasTreasure = true;
+                    stealCb = () =>
+                    {
+                        if (hasTreasure)
+                        {
+                            hasTreasure = false;
+                            return new[] { new Treasure(potionCreator.CreateManaPotion(level)) };
+                        }
+                        else
+                        {
+                            return Enumerable.Empty<Treasure>();
+                        }
+                    };
                 }
                 else
                 {
                     level = battleTrigger.EnemyLevel;
                     battleSeed = battleTrigger.BattleSeed;
                     boss = battleTrigger.IsBoss;
+                    stealCb = battleTrigger.StealTreasure;
                 }
 
-                battleManager.SetupBattle(battleSeed, level, boss);
+                battleManager.SetupBattle(battleSeed, level, boss, stealCb);
             }
             battleManager.SetActive(active);
         }

@@ -42,7 +42,7 @@ namespace Adventure.Battle
         /// </summary>
         /// <param name="active"></param>
         void SetActive(bool active);
-        void SetupBattle(int battleSeed, int level, bool boss);
+        void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> Steal);
         Result Update(Clock clock);
         IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetRandomPlayer();
@@ -65,6 +65,8 @@ namespace Adventure.Battle
         /// <param name="target"></param>
         /// <returns></returns>
         bool IsStillValidTarget(IBattleTarget target);
+
+        public IEnumerable<ITreasure> Steal();
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -101,6 +103,7 @@ namespace Adventure.Battle
 
         private Random targetRandom = new Random();
         private String backgroundMusic;
+        private Func<IEnumerable<ITreasure>> stealCb;
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
@@ -145,8 +148,9 @@ namespace Adventure.Battle
             objectResolver.Dispose();
         }
 
-        public void SetupBattle(int battleSeed, int level, bool boss)
+        public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb)
         {
+            this.stealCb = stealCb;
             var currentZ = 3;
             foreach (var character in party.ActiveCharacters)
             {
@@ -557,5 +561,10 @@ namespace Adventure.Battle
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;
+
+        public IEnumerable<ITreasure> Steal()
+        {
+            return stealCb?.Invoke() ?? Enumerable.Empty<ITreasure>();
+        }
     }
 }
