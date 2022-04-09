@@ -132,6 +132,8 @@ namespace Adventure.Exploration.Menu
             this.axeCreator = axeCreator;
         }
 
+        public IExplorationSubMenu PreviousMenu { get; set; }
+
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
@@ -179,8 +181,11 @@ Lck: {characterData.CharacterSheet.Luck}";
 
             info2.Text = $@"Gold: {persistence.Current.Party.Gold}";
 
-            info.Rect = screenPositioner.GetTopLeftRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info).GetDesiredSize(sharpGui));
-            info2.Rect = screenPositioner.GetTopRightRect(new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2).GetDesiredSize(sharpGui));
+            var marginLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info);
+            marginLayout.SetRect(screenPositioner.GetTopLeftRect(marginLayout.GetDesiredSize(sharpGui)));
+
+            var marginLayout2 = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2);
+            marginLayout2.SetRect(screenPositioner.GetTopRightRect(marginLayout2.GetDesiredSize(sharpGui)));
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
@@ -226,7 +231,7 @@ Lck: {characterData.CharacterSheet.Luck}";
             {
                 if (allowChanges)
                 {
-                    menu.RequestSubMenu(menu.RootMenu);
+                    menu.RequestSubMenu(PreviousMenu);
                 }
             }
         }

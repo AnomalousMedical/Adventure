@@ -52,7 +52,8 @@ namespace Adventure.Exploration.Menu.Asimov
             }
             var sheet = persistence.Current.Party.Members[currentSheet];
 
-            info.Rect = new IntRect(scaleHelper.Scaled(10), scaleHelper.Scaled(10), scaleHelper.Scaled(500), scaleHelper.Scaled(500));
+            var marginLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info);
+            marginLayout.SetRect(screenPositioner.GetTopLeftRect(marginLayout.GetDesiredSize(sharpGui)));
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),

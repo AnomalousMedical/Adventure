@@ -39,6 +39,7 @@ namespace Adventure.Exploration.Menu.Asimov
             this.buyMenu = buyMenu;
             this.restManager = restManager;
             levelUpMenu.PreviousMenu = this;
+            buyMenu.PreviousMenu = this;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
