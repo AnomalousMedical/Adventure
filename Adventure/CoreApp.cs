@@ -155,6 +155,8 @@ namespace Adventure
             services.AddSingleton<UseItemMenu>();
             services.AddSingleton<SkillMenu>();
             services.AddSingleton<SwordCreator>();
+            services.AddSingleton<SpearCreator>();
+            services.AddSingleton<MaceCreator>();
             services.AddSingleton<ShieldCreator>();
             services.AddSingleton<StaffCreator>();
             services.AddSingleton<AccessoryCreator>();

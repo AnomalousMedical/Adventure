@@ -86,6 +86,8 @@ namespace Adventure.Exploration.Menu
         private readonly IZoneManager zoneManager;
         private readonly ConfirmBuyMenu confirmBuyMenu;
         private readonly SwordCreator swordCreator;
+        private readonly SpearCreator spearCreator;
+        private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly StaffCreator staffCreator;
         private readonly AccessoryCreator accessoryCreator;
@@ -109,6 +111,8 @@ namespace Adventure.Exploration.Menu
             IZoneManager zoneManager,
             ConfirmBuyMenu confirmBuyMenu,
             SwordCreator swordCreator,
+            SpearCreator spearCreator,
+            MaceCreator maceCreator,
             ShieldCreator shieldCreator,
             StaffCreator staffCreator,
             AccessoryCreator accessoryCreator,
@@ -124,6 +128,8 @@ namespace Adventure.Exploration.Menu
             this.zoneManager = zoneManager;
             this.confirmBuyMenu = confirmBuyMenu;
             this.swordCreator = swordCreator;
+            this.spearCreator = spearCreator;
+            this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
             this.staffCreator = staffCreator;
             this.accessoryCreator = accessoryCreator;
@@ -329,6 +335,8 @@ Lck: {characterData.CharacterSheet.Luck}
         private IEnumerable<ShopEntry> CreateShopLevel(int level)
         {
             yield return swordCreator.CreateShopEntry(level);
+            yield return spearCreator.CreateShopEntry(level);
+            yield return maceCreator.CreateShopEntry(level);
             yield return staffCreator.CreateShopEntry(level);
             yield return axeCreator.CreateShopEntry(level);
             yield return shieldCreator.CreateShopEntry(level);
