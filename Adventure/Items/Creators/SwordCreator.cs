@@ -38,7 +38,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Sword",
                 Attack = equipmentCurve.GetAttack(name.Level),
                 AttackPercent = 100,
-                Sprite = nameof(Greatsword01)
+                Sprite = nameof(Greatsword01),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;
@@ -53,7 +54,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Epic Sword",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
                 AttackPercent = 100,
-                Sprite = nameof(Greatsword01)
+                Sprite = nameof(Greatsword01),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;
@@ -68,7 +70,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Legendary Sword",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
                 AttackPercent = 100,
-                Sprite = nameof(Greatsword01)
+                Sprite = nameof(Greatsword01),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;

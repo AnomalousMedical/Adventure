@@ -109,6 +109,8 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
+        public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
+
         public IEnumerable<string> Skills => Enumerable.Empty<string>();
 
         public void LevelUp(ILevelCalculator levelCalculator)

@@ -38,7 +38,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Spear",
                 Attack = equipmentCurve.GetAttack(name.Level),
                 AttackPercent = 100,
-                Sprite = nameof(Spear2Old)
+                Sprite = nameof(Spear2Old),
+                AttackElements = new[] { Element.Piercing }
             };
 
             return sword;
@@ -53,7 +54,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Epic Spear",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
                 AttackPercent = 100,
-                Sprite = nameof(Spear2Old)
+                Sprite = nameof(Spear2Old),
+                AttackElements = new[] { Element.Piercing }
             };
 
             return sword;
@@ -68,7 +70,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Legendary Spear",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
                 AttackPercent = 100,
-                Sprite = nameof(Spear2Old)
+                Sprite = nameof(Spear2Old),
+                AttackElements = new[] { Element.Piercing }
             };
 
             return sword;

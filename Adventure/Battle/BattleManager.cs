@@ -461,7 +461,24 @@ namespace Adventure.Battle
             if (damageCalculator.PhysicalHit(attacker.Stats, target.Stats))
             {
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
+
+                foreach (var attackElement in attacker.Stats.AttackElements)
+                {
+                    var resistance = target.Stats.GetResistance(attackElement);
+                    damage = damageCalculator.ApplyResistance(damage, resistance);
+                    if (resistance == Resistance.Death || resistance == Resistance.Recovery)
+                    {
+                        //This is enough to handle death and recovery for any element.
+                        //The damage returned will be the number needed to apply the effect
+                        //and we just want to stop modifying it immediately and apply it
+                        break;
+                    }
+                }
+
+                //TODO: This may not be the best spot for this since it will randomize the death
+                //and recovery values too
                 damage = damageCalculator.RandomVariation(damage);
+
                 AddDamageNumber(target, damage);
                 target.ApplyDamage(damageCalculator, damage);
                 HandleDeath(target);

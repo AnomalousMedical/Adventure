@@ -6,6 +6,10 @@ namespace RpgMath
 {
     public enum Element
     {
+        None = 0,
+        Piercing,
+        Slashing,
+        Bludgeoning,
         Fire,
         Ice,
         Lightning,

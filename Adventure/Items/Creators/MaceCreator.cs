@@ -38,7 +38,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Mace",
                 Attack = equipmentCurve.GetAttack(name.Level),
                 AttackPercent = 100,
-                Sprite = nameof(MaceLarge2New)
+                Sprite = nameof(MaceLarge2New),
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return sword;
@@ -53,7 +54,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Epic Mace",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
                 AttackPercent = 100,
-                Sprite = nameof(MaceLarge2New)
+                Sprite = nameof(MaceLarge2New),
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return sword;
@@ -68,7 +70,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Legendary Mace",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
                 AttackPercent = 100,
-                Sprite = nameof(MaceLarge2New)
+                Sprite = nameof(MaceLarge2New),
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return sword;

@@ -52,6 +52,8 @@ namespace RpgMath
 
         public IEnumerable<String> Skills { get; set; }
 
+        public IEnumerable<Element> AttackElements { get; set; }
+
         public Guid? Id { get; set; }
 
         public void EnsureEquipmentId()

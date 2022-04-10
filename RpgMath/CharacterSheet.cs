@@ -96,6 +96,8 @@ namespace RpgMath
 
         public long BonusLuck { get; set; }
 
+        public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
+
 
         private Equipment mainHand;
         public Equipment MainHand

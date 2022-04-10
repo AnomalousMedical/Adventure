@@ -43,7 +43,8 @@ namespace Adventure.Items.Creators
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
                 Skills = GetFireSpells(level),
-                TwoHanded = true
+                TwoHanded = true,
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return staff;
@@ -62,7 +63,8 @@ namespace Adventure.Items.Creators
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
                 Skills = GetFireSpells(level),
-                TwoHanded = true
+                TwoHanded = true,
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return staff;
@@ -81,7 +83,8 @@ namespace Adventure.Items.Creators
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
                 Skills = GetFireSpells(level),
-                TwoHanded = true
+                TwoHanded = true,
+                AttackElements = new[] { Element.Bludgeoning }
             };
 
             return staff;

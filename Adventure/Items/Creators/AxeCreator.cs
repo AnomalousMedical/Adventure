@@ -42,6 +42,7 @@ namespace Adventure.Items.Creators
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Skills = GetCureSpells(level),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;
@@ -58,6 +59,7 @@ namespace Adventure.Items.Creators
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Skills = GetCureSpells(level),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;
@@ -74,6 +76,7 @@ namespace Adventure.Items.Creators
                 AttackPercent = 75,
                 Sprite = nameof(BattleAxe6),
                 Skills = GetCureSpells(level),
+                AttackElements = new[] { Element.Slashing }
             };
 
             return sword;

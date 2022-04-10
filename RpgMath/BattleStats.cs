@@ -38,6 +38,8 @@ namespace RpgMath
 
         public long ExtraCritChance { get; set; }
 
+        public IEnumerable<Element> AttackElements { get; set; } = Enumerable.Empty<Element>();
+
         public Dictionary<Element, Resistance> Resistances { get; set; }
 
         public IEnumerable<string> Skills => Enumerable.Empty<string>();

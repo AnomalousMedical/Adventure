@@ -95,7 +95,9 @@ namespace Adventure
                     Resistances = new Dictionary<Element, Resistance>
                     {
                         { Element.Healing, Resistance.Absorb },
-                        { Element.Fire, Resistance.Weak }
+                        { Element.Fire, Resistance.Weak },
+                        { Element.Piercing, Resistance.Resist },
+                        { Element.Bludgeoning, Resistance.Weak }
                     }
                 },
                 BadassEnemy = new BiomeEnemy()
