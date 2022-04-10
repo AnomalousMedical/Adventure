@@ -368,11 +368,11 @@ namespace Adventure
 
                 var battleTriggers = new List<BattleTrigger>();
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
-                SetupRooms(enemyRandom, out var bossBattleTrigger);
+                SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
 
                 AddLootDrop();
-                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger);
+                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
 
                 //Since this is async the physics can be active before the placeables are created
                 if (physicsActive)
@@ -525,6 +525,7 @@ namespace Adventure
         private bool placeBoss;
         private bool placeGate;
         private bool placeKey;
+        private bool placeFirstChest;
         private ushort asimovRoom = csMapbuilder.NullCell;
 
         private void ResetPlacementData()
@@ -537,6 +538,7 @@ namespace Adventure
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
             asimovRoom = csMapbuilder.NullCell;
+            placeFirstChest = true;
         }
 
         private void AddLootDrop()
@@ -644,12 +646,15 @@ namespace Adventure
             }
         }
 
-        private void SetupRooms(Random enemyRandom, out BattleTrigger bossBattleTrigger)
+        private void SetupRooms(Random enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack)
         {
+            //The order of everything in this function is important to ensure all treasure can be distributed
+
             bossBattleTrigger = null;
             var treasureChests = new List<TreasureTrigger>();
-            var treasureStack = new Stack<ITreasure>(this.treasure);
+            treasureStack = new Stack<ITreasure>(this.treasure);
 
+            //Asimov gets a room always
             if (placeAsimov)
             {
                 asimovRoom = csMapbuilder.IsRoomCell(mapMesh.MapBuilder.WestConnectorRoom) ? mapMesh.MapBuilder.WestConnectorRoom : csMapbuilder.RoomCell;
@@ -667,6 +672,7 @@ namespace Adventure
                 this.placeables.Add(asimov);
             }
 
+            //The boss goes in the exit corridor, not the room
             if (placeBoss)
             {
                 var point = mapMesh.MapBuilder.EastConnector.Value;
@@ -687,6 +693,7 @@ namespace Adventure
                 placeables.Add(bossBattleTrigger);
             }
 
+            //The gate goes in the exit corridor, not the room
             if (placeGate)
             {
                 var point = mapMesh.MapBuilder.EastConnector.Value;
@@ -742,6 +749,7 @@ namespace Adventure
                 }
             }
 
+            //Since keys can't go in the connector rooms there will always be at least 1 left when this is called.
             foreach (var room in mapMesh.MapBuilder.Rooms.Where(i =>
             {
                 var ri = mapMesh.MapBuilder.map[i.Left, i.Top];
@@ -751,9 +759,11 @@ namespace Adventure
                 PopulateRoom(room, treasureStack, treasureChests);
             }
 
+            //This really should not be able to happen, but track it anyway
             if (treasureChests.Count == 0 && treasureStack.Count > 0)
             {
-                logger.LogWarning("No treasure chests. All loot for this zone will be dropped.");
+                logger.LogWarning("No treasure chests. All loot for this zone will be converted to stolen treasure.");
+                //The treasure stack is not cleared here and passes its items along to become stolen
             }
             else
             {
@@ -766,6 +776,7 @@ namespace Adventure
                     placeable.AddTreasure(remainingTreasure);
                     ++dropIndex;
                 }
+                treasureStack.Clear(); //Clear the stack since we visited everything in the foreach
             }
         }
 
@@ -773,27 +784,14 @@ namespace Adventure
         {
             var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
 
-            //Special case for first room, a bit hacky, but the computation should work out the same as the start point
+            //Special case for first zone, a bit hacky, but the computation should work out the same as the start point
             var mapLoc = mapMesh.PointToVector(point.x, point.y);
             if (goPrevious || mapLoc != startPointLocal)
             {
-                if (placeRestArea)
+                //This ensures we place at least 1 chest before placing any rest areas
+                if ((placeFirstChest || !placeRestArea) && treasureStack.Count > 0)
                 {
-                    placeRestArea = false;
-                    var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
-                    {
-                        o.InstanceId = restIndex++;
-                        o.ZoneIndex = index;
-                        o.MapOffset = mapLoc;
-                        o.Translation = currentPosition + o.MapOffset;
-                        var asset = biome.RestAsset;
-                        o.Sprite = asset.CreateSprite();
-                        o.SpriteMaterial = asset.CreateMaterial();
-                    });
-                    this.placeables.Add(restArea);
-                }
-                else if (treasureStack.Count > 0)
-                {
+                    placeFirstChest = false;
                     var treasureTrigger = objectResolver.Resolve<TreasureTrigger, TreasureTrigger.Description>(o =>
                     {
                         o.InstanceId = treasureIndex++;
@@ -807,6 +805,21 @@ namespace Adventure
                     });
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);
+                }
+                else if (placeRestArea)
+                {
+                    placeRestArea = false;
+                    var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
+                    {
+                        o.InstanceId = restIndex++;
+                        o.ZoneIndex = index;
+                        o.MapOffset = mapLoc;
+                        o.Translation = currentPosition + o.MapOffset;
+                        var asset = biome.RestAsset;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                    });
+                    this.placeables.Add(restArea);
                 }
             }
         }
@@ -858,7 +871,7 @@ namespace Adventure
             }
         }
 
-        private static void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger)
+        private static void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger, Stack<ITreasure> treasureStack)
         {
             var stealTreasure = description.StealTreasure ?? Enumerable.Empty<ITreasure>();
             var bossStealTreasure = description.BossStealTreasure ?? Enumerable.Empty<ITreasure>();
@@ -901,6 +914,15 @@ namespace Adventure
                     battleTriggers[index].AddUniqueStealTreasure(treasure);
                 }
             }
+
+            //Any extra treasures from the zone are added as unique steal treasures
+            //This is pretty unlikely to happen
+            foreach(var treasure in treasureStack)
+            {
+                var index = enemyRandom.Next(battleTriggers.Count);
+                battleTriggers[index].AddUniqueStealTreasure(treasure);
+            }
+            treasureStack.Clear(); //Visited everything, clear stack
         }
 
         /// <summary>
