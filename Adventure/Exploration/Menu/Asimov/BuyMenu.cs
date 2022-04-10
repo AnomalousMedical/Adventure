@@ -144,15 +144,6 @@ namespace Adventure.Exploration.Menu
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
 
-            var layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
-            ));
-
-            var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
-
             info.Text =
 $@"{characterData.CharacterSheet.Name}
  
@@ -177,15 +168,35 @@ Mag: {characterData.CharacterSheet.BaseMagic}
 Vit: {characterData.CharacterSheet.BaseVitality}
 Spr: {characterData.CharacterSheet.BaseSpirit}
 Dex: {characterData.CharacterSheet.BaseDexterity}
-Lck: {characterData.CharacterSheet.Luck}";
+Lck: {characterData.CharacterSheet.Luck}
+";
+
+            foreach (var item in characterData.CharacterSheet.EquippedItems())
+            {
+                info.Text += $@"
+{item.Name}";
+            }
 
             info2.Text = $@"Gold: {persistence.Current.Party.Gold}";
 
-            var marginLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info);
-            marginLayout.SetRect(screenPositioner.GetTopLeftRect(marginLayout.GetDesiredSize(sharpGui)));
+            ILayoutItem layout;
 
-            var marginLayout2 = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info2);
-            marginLayout2.SetRect(screenPositioner.GetTopRightRect(marginLayout2.GetDesiredSize(sharpGui)));
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(previous, info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(next, info2) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+
+            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+            layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
@@ -199,13 +210,13 @@ Lck: {characterData.CharacterSheet.Luck}";
             var canBuy = characterData.HasRoom;
 
             var shopItems = ShopItems().Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i)).ToArray(); //TODO: Cache this somehow, don't keep making it
-            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: next.Id, navRight: previous.Id);
+            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
             if (canBuy && selectedItem != null)
             {
                 confirmBuyMenu.SelectedItem = selectedItem;
             }
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed())
             {
                 if (allowChanges)
                 {
@@ -216,7 +227,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 if (allowChanges)
                 {
@@ -227,7 +238,7 @@ Lck: {characterData.CharacterSheet.Luck}";
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: previous.Id, navDown: previous.Id, navLeft: itemButtons.TopButton, navRight: itemButtons.TopButton) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
             {
                 if (allowChanges)
                 {
