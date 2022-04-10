@@ -94,6 +94,7 @@ namespace Adventure.Exploration.Menu
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
+        private readonly DaggerCreator daggerCreator;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -118,7 +119,8 @@ namespace Adventure.Exploration.Menu
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
-            AxeCreator axeCreator
+            AxeCreator axeCreator,
+            DaggerCreator daggerCreator
         )
         {
             this.persistence = persistence;
@@ -136,6 +138,7 @@ namespace Adventure.Exploration.Menu
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
             this.axeCreator = axeCreator;
+            this.daggerCreator = daggerCreator;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -340,6 +343,8 @@ Lck: {characterData.CharacterSheet.Luck}
             yield return staffCreator.CreateShopEntry(level);
             yield return axeCreator.CreateShopEntry(level);
             yield return shieldCreator.CreateShopEntry(level);
+            //Can only buy level 1 daggers, they are given out by stealing otherwise
+            yield return daggerCreator.CreateShopEntry(1);
         }
     }
 
