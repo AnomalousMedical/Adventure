@@ -35,6 +35,8 @@ namespace Engine.CameraMovement
         ButtonEvent moveRight;
         ButtonEvent moveUp;
         ButtonEvent moveDown;
+        ButtonEvent moveUpPad;
+        ButtonEvent moveDownPad;
         ButtonEvent pitchUp;
 
         ButtonEvent pitchDown;
@@ -45,17 +47,19 @@ namespace Engine.CameraMovement
 
         public FirstPersonFlyCamera(EventManager eventManager, Description description, IScaleHelper scaleHelper)
         {
-            moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
-            moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
-            moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
-            moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
-            moveUp = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_E });
-            moveDown = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_Q });
-            pitchUp = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_UP });
+            moveForward = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_W });
+            moveBackward = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_S });
+            moveLeft = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_A });
+            moveRight = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_D });
+            moveUp = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_E });
+            moveDown = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_Q });
+            moveUpPad = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger });
+            moveDownPad = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_LTrigger });
+            pitchUp = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_UP });
 
-            pitchDown = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_DOWN });
-            yawLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_LEFT });
-            yawRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_RIGHT });
+            pitchDown = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_DOWN });
+            yawLeft = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_LEFT });
+            yawRight = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_RIGHT });
 
             mouseLook = new ButtonEvent(description.EventLayer, mouseButtons: new MouseButtonCode[] { MouseButtonCode.MB_BUTTON1 });
 
@@ -65,6 +69,8 @@ namespace Engine.CameraMovement
             eventManager.addEvent(moveRight);
             eventManager.addEvent(moveUp);
             eventManager.addEvent(moveDown);
+            eventManager.addEvent(moveUpPad);
+            eventManager.addEvent(moveDownPad);
             eventManager.addEvent(pitchUp);
             eventManager.addEvent(pitchDown);
             eventManager.addEvent(yawLeft);
@@ -82,6 +88,8 @@ namespace Engine.CameraMovement
             eventManager.removeEvent(moveRight);
             eventManager.removeEvent(moveUp);
             eventManager.removeEvent(moveDown);
+            eventManager.removeEvent(moveUpPad);
+            eventManager.removeEvent(moveDownPad);
             eventManager.removeEvent(pitchUp);
             eventManager.removeEvent(pitchDown);
             eventManager.removeEvent(yawLeft);
@@ -186,12 +194,12 @@ namespace Engine.CameraMovement
                 camPos -= currentLeft * clock.DeltaSeconds * moveSpeed;
             }
 
-            if (moveUp.Down)
+            if (moveUp.Down || moveUpPad.Down)
             {
                 camPos += Vector3.Up * clock.DeltaSeconds * moveSpeed;
             }
 
-            if (moveDown.Down)
+            if (moveDown.Down || moveDownPad.Down)
             {
                 camPos += Vector3.Down * clock.DeltaSeconds * moveSpeed;
             }
