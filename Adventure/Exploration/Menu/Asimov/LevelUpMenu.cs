@@ -52,18 +52,6 @@ namespace Adventure.Exploration.Menu.Asimov
             }
             var sheet = persistence.Current.Party.Members[currentSheet];
 
-            var marginLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), info);
-            marginLayout.SetRect(screenPositioner.GetTopLeftRect(marginLayout.GetDesiredSize(sharpGui)));
-
-            var layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(levelFighter, levelMage, new RowLayout(previous, next), back) { Margin = new IntPad(scaleHelper.Scaled(10)) }
-            ));
-
-            var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
-
             long levelUpCost = 100;
             var currentLevel = sheet.CharacterSheet.Level;
             var zoneLevel = zoneManager.Current?.EnemyLevel ?? 0;
@@ -96,9 +84,36 @@ Vit: {sheet.CharacterSheet.BaseVitality}
 Spr: {sheet.CharacterSheet.BaseSpirit}
 Dex: {sheet.CharacterSheet.BaseDexterity}
 Lck: {sheet.CharacterSheet.Luck}";
+
+            ILayoutItem layout;
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(previous, info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(next) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(levelFighter, levelMage) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            ));
+            layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+
+            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+            layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
+
             sharpGui.Text(info);
 
-            if (sharpGui.Button(levelFighter, navUp: back.Id, navDown: levelMage.Id))
+            if (sharpGui.Button(levelFighter, navUp: levelMage.Id, navDown: levelMage.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
@@ -106,7 +121,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
-            if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: previous.Id))
+            if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: levelFighter.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
@@ -114,7 +129,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
-            if (sharpGui.Button(previous, navUp: levelMage.Id, navDown: back.Id, navLeft: next.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, navLeft: next.Id, navRight: levelFighter.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -122,7 +137,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navUp: levelMage.Id, navDown: back.Id, navLeft: previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: levelFighter.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -130,7 +145,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = 0;
                 }
             }
-            if (sharpGui.Button(back, navUp: previous.Id, navDown: levelFighter.Id))
+            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id))
             {
                 explorationMenu.RequestSubMenu(PreviousMenu);
             }
