@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Battle.Skills;
+using Engine;
 using Engine.Platform;
 using SharpGui;
 using System;
@@ -13,68 +14,70 @@ namespace Adventure.Battle
     {
         void Add(ISkill skill);
         void AddRange(IEnumerable<ISkill> skill);
-        bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb);
+        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb);
+        void Clear();
     }
 
     class BattleSkills : IBattleSkills
     {
+        private static readonly ISkill BackSkill = new Fire(); //This instance of fire is the back button
+
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleManager battleManager;
+        private readonly IScaleHelper scaleHelper;
+        private ButtonColumn skillButtons = new ButtonColumn(4);
+        private List<ISkill> skills = new List<ISkill>();
 
-
-        private List<SharpButton<ISkill>> skills = new List<SharpButton<ISkill>>();
-
-        public BattleSkills(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager)
+        public BattleSkills(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager, IScaleHelper scaleHelper)
         {
             this.battleScreenLayout = battleScreenLayout;
             this.battleManager = battleManager;
+            this.scaleHelper = scaleHelper;
         }
 
         public void Add(ISkill skill)
         {
-            var button = new SharpButton<ISkill>() { Text = skill.Name, UserObject = skill };
-            this.skills.Add(button);
+            this.skills.Add(skill);
         }
 
         public void AddRange(IEnumerable<ISkill> skills)
         {
-            foreach(var skill in skills)
-            {
-                Add(skill);
-            }
+            this.skills.AddRange(skills);
+        }
+
+        public void Clear()
+        {
+            skills.Clear();
         }
 
         public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb)
         {
             var didSomething = false;
 
-            var skillCount = skills.Count;
-            if (skillCount > 0)
+            skillButtons.StealFocus(sharpGui);
+
+            skillButtons.Margin = scaleHelper.Scaled(10);
+            skillButtons.MaxWidth = scaleHelper.Scaled(900);
+            skillButtons.Bottom = battleScreenLayout.DynamicButtonBottom;
+            var skill = skillButtons.Show(sharpGui, skills.Select(i => new ButtonColumnItem<ISkill>(i.Name, i)).Append(new ButtonColumnItem<ISkill>("Back", BackSkill)), skills.Count + 1, s => battleScreenLayout.DynamicButtonLocation(s));
+            if (skill != null)
             {
-                var previous = skillCount - 1;
-                var next = skills.Count > 1 ? 1 : 0;
-
-                battleScreenLayout.LayoutBattleMenu(skills);
-
-                for (var i = 0; i < skillCount; ++i)
+                if (skill == BackSkill)
                 {
-                    if (sharpGui.Button(skills[i], navUp: skills[previous].Id, navDown: skills[next].Id))
+                    menuMode = BattlePlayer.MenuMode.Root;
+                }
+                else
+                {
+                    coroutine.RunTask(async () =>
                     {
-                        var skill = skills[i].UserObject;
-                        coroutine.RunTask(async () =>
+                        var target = await battleManager.GetTarget(skill.DefaultTargetPlayers);
+                        if (target != null)
                         {
-                            var target = await battleManager.GetTarget(skill.DefaultTargetPlayers);
-                            if (target != null)
-                            {
-                                skillSelectedCb(target, skill);
-                            }
-                        });
-                        menuMode = BattlePlayer.MenuMode.Root;
-                        didSomething = true;
-                    }
-
-                    previous = i;
-                    next = (i + 2) % skillCount;
+                            skillSelectedCb(target, skill);
+                        }
+                    });
+                    menuMode = BattlePlayer.MenuMode.Root;
+                    didSomething = true;
                 }
             }
 

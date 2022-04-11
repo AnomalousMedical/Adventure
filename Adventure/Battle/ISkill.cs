@@ -34,12 +34,12 @@ namespace Adventure.Battle
     {
         bool Finished { get; }
 
-        void Update(Clock clock);
+        void Update(Clock clock) { }
     }
 
     class SkillEffect : ISkillEffect
     {
-        public SkillEffect(bool finished)
+        public SkillEffect(bool finished = false)
         {
             this.Finished = finished;
         }

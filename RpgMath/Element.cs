@@ -12,7 +12,12 @@ namespace RpgMath
         Bludgeoning,
         Fire,
         Ice,
-        Lightning,
+        Electricity,
+        Acid,
+        Light,
+        Darkness,
+        Water,
+        Poison,
         Healing,
         MpRestore
     }

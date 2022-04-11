@@ -6,25 +6,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Platform;
 
 namespace Adventure.Battle.Skills
 {
-    class Meltdown : ISkill
+    class FireLash : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var resistance = target.Stats.GetResistance(Element.Fire);
 
+            var effect = new SkillEffect();
+
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
             {
-                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 64);
-                damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
-                damage = battleManager.DamageCalculator.RandomVariation(damage);
-
-                battleManager.AddDamageNumber(target, damage);
-                target.ApplyDamage(battleManager.DamageCalculator, damage);
-                battleManager.HandleDeath(target);
+                ApplyDamage(battleManager, attacker, target, resistance);
 
                 var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
@@ -37,22 +34,38 @@ namespace Adventure.Battle.Skills
 
                 IEnumerator<YieldAction> run()
                 {
-                    yield return coroutine.WaitSeconds(1.5);
+                    yield return coroutine.WaitSeconds(0.5);
+                    ApplyDamage(battleManager, attacker, target, resistance);
+
+                    yield return coroutine.WaitSeconds(0.5);
                     applyEffect.RequestDestruction();
+                    battleManager.HandleDeath(target);
+                    effect.Finished = true;
                 }
                 coroutine.Run(run());
             }
             else
             {
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
+                effect.Finished = true;
             }
 
-            return new SkillEffect(true);
+            return effect;
         }
 
-        public string Name => "Meltdown";
+        private static void ApplyDamage(IBattleManager battleManager, IBattleTarget attacker, IBattleTarget target, Resistance resistance)
+        {
+            var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 20);
+            damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+            damage = battleManager.DamageCalculator.RandomVariation(damage);
 
-        public long MpCost => 52;
+            battleManager.AddDamageNumber(target, damage);
+            target.ApplyDamage(battleManager.DamageCalculator, damage);
+        }
+
+        public string Name => "Fire Lash";
+
+        public long MpCost => 28;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }

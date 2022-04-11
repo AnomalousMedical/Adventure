@@ -92,14 +92,18 @@ namespace Adventure.Items.Creators
 
         private IEnumerable<String> GetFireSpells(int level)
         {
-            yield return nameof(Fir);
+            yield return nameof(Fire);
             if(level > 18)
             {
-                yield return nameof(Fyre);
+                yield return nameof(FireBlast);
             }
-            if(level > 32)
+            if (level > 28)
             {
-                yield return nameof(Meltdown);
+                yield return nameof(FireLash);
+            }
+            if (level > 38)
+            {
+                yield return nameof(FireTempest);
             }
         }
     }

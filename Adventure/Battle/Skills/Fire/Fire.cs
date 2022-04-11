@@ -9,22 +9,23 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle.Skills
 {
-    class Fyre : ISkill
+    class Fire : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var resistance = target.Stats.GetResistance(Element.Fire);
 
+            var effect = new SkillEffect();
+
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
             {
-                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 20);
+                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 8);
                 damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                 damage = battleManager.DamageCalculator.RandomVariation(damage);
 
                 battleManager.AddDamageNumber(target, damage);
                 target.ApplyDamage(battleManager.DamageCalculator, damage);
-                battleManager.HandleDeath(target);
 
                 var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
                 {
@@ -37,22 +38,25 @@ namespace Adventure.Battle.Skills
 
                 IEnumerator<YieldAction> run()
                 {
-                    yield return coroutine.WaitSeconds(1.5);
+                    yield return coroutine.WaitSeconds(0.5);
+                    battleManager.HandleDeath(target);
                     applyEffect.RequestDestruction();
+                    effect.Finished = true;
                 }
                 coroutine.Run(run());
             }
             else
             {
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
+                effect.Finished = true;
             }
 
-            return new SkillEffect(true);
+            return effect;
         }
 
-        public string Name => "Fyre";
+        public string Name => "Fire";
 
-        public long MpCost => 22;
+        public long MpCost => 4;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }

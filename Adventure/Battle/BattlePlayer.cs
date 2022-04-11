@@ -59,6 +59,7 @@ namespace Adventure.Battle
         private readonly IXpCalculator xpCalculator;
         private readonly ILevelCalculator levelCalculator;
         private readonly IAssetFactory assetFactory;
+        private readonly ISkillFactory skillFactory;
 
         public IBattleStats Stats => this.characterSheet;
 
@@ -125,6 +126,7 @@ namespace Adventure.Battle
             this.xpCalculator = xpCalculator;
             this.levelCalculator = levelCalculator;
             this.assetFactory = assetFactory;
+            this.skillFactory = skillFactory;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.destructionRequest = destructionRequest;
@@ -139,7 +141,7 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
-            this.skills.AddRange(description.CharacterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
+            UpdateSkills();
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
@@ -383,7 +385,7 @@ namespace Adventure.Battle
 
         private void UseSkill(IBattleTarget target, ISkill skill)
         {
-            switch (skill.AttackStyle) 
+            switch (skill.AttackStyle)
             {
                 case SkillAttackStyle.Cast:
                     Cast(target, skill);
@@ -797,6 +799,7 @@ namespace Adventure.Battle
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+            UpdateSkills();
         }
 
         private void OnOffHandModified(CharacterSheet obj)
@@ -812,6 +815,13 @@ namespace Adventure.Battle
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+            UpdateSkills();
+        }
+
+        private void UpdateSkills()
+        {
+            this.skills.Clear();
+            this.skills.AddRange(characterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
         }
     }
 }
