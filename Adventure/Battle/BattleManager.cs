@@ -67,6 +67,7 @@ namespace Adventure.Battle
         bool IsStillValidTarget(IBattleTarget target);
 
         public IEnumerable<ITreasure> Steal();
+        IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -506,6 +507,21 @@ namespace Adventure.Battle
                     }
                 }
             }
+        }
+
+        public IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target)
+        {
+            if (enemies.Contains(target))
+            {
+                return enemies;
+            }
+
+            if (players.Contains(target))
+            {
+                return players;
+            }
+
+            return Enumerable.Empty<IBattleTarget>();
         }
 
         public void AddDamageNumber(IBattleTarget target, long damage)

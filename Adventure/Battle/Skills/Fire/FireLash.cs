@@ -12,10 +12,12 @@ namespace Adventure.Battle.Skills
 {
     class FireLash : ISkill
     {
+        private const Element element = Element.Fire;
+
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
-            var resistance = target.Stats.GetResistance(Element.Fire);
+            var resistance = target.Stats.GetResistance(element);
 
             var effect = new SkillEffect();
 

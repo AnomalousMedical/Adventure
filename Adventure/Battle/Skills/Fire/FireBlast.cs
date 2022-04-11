@@ -11,47 +11,59 @@ namespace Adventure.Battle.Skills
 {
     class FireBlast : ISkill
     {
+        private const Element element = Element.Fire;
+
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
-            //This one needs a way to hit everything
-
             target = battleManager.ValidateTarget(attacker, target);
-            var resistance = target.Stats.GetResistance(Element.Fire);
+            var groupTargets = battleManager.GetTargetsInGroup(target);
+
+            var applyEffects = new List<Attachment<IBattleManager>>();
+
+            foreach (var currentTarget in groupTargets)
+            {
+                var resistance = currentTarget.Stats.GetResistance(element);
+
+                if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
+                {
+                    var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, 20);
+                    damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+                    damage = battleManager.DamageCalculator.RandomVariation(damage);
+
+                    battleManager.AddDamageNumber(currentTarget, damage);
+                    currentTarget.ApplyDamage(battleManager.DamageCalculator, damage);
+
+                    var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    {
+                        ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                    });
+                    applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                    applyEffects.Add(applyEffect);
+                }
+                else
+                {
+                    battleManager.AddDamageNumber(currentTarget, "Miss", Color.White);
+                }
+            }
 
             var effect = new SkillEffect();
-
-            if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
+            IEnumerator<YieldAction> run()
             {
-                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 20);
-                damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
-                damage = battleManager.DamageCalculator.RandomVariation(damage);
-
-                battleManager.AddDamageNumber(target, damage);
-                target.ApplyDamage(battleManager.DamageCalculator, damage);
-
-                var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                yield return coroutine.WaitSeconds(0.5);
+                foreach (var currentTarget in groupTargets)
                 {
-                    ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
-                    o.RenderShadow = false;
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                });
-                applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
-
-                IEnumerator<YieldAction> run()
-                {
-                    yield return coroutine.WaitSeconds(0.5);
-                    battleManager.HandleDeath(target);
-                    applyEffect.RequestDestruction();
-                    effect.Finished = true;
+                    battleManager.HandleDeath(currentTarget);
                 }
-                coroutine.Run(run());
-            }
-            else
-            {
-                battleManager.AddDamageNumber(target, "Miss", Color.White);
+                foreach (var effect in applyEffects)
+                {
+                    effect.RequestDestruction();
+                }
                 effect.Finished = true;
             }
+            coroutine.Run(run());
 
             return effect;
         }
