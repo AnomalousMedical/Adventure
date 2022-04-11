@@ -57,13 +57,13 @@ namespace Adventure.Battle.Skills
                 }
 
                 yield return coroutine.WaitSeconds(0.5);
-                foreach (var currentTarget in hitTargets)
-                {
-                    battleManager.HandleDeath(currentTarget);
-                }
                 foreach (var effect in applyEffects)
                 {
                     effect.RequestDestruction();
+                }
+                foreach (var currentTarget in hitTargets)
+                {
+                    battleManager.HandleDeath(currentTarget);
                 }
                 effect.Finished = true;
             }
