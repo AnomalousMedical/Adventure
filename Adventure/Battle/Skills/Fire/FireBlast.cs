@@ -16,7 +16,7 @@ namespace Adventure.Battle.Skills
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             target = battleManager.ValidateTarget(attacker, target);
-            var groupTargets = battleManager.GetTargetsInGroup(target);
+            IEnumerable<IBattleTarget> groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
 
             var applyEffects = new List<Attachment<IBattleManager>>();
 
