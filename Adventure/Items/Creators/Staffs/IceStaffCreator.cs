@@ -15,7 +15,7 @@ namespace Adventure.Items.Creators
     class IceStaffCreator : BaseStaffCreator
     {
         public IceStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
-            :base("Ice", equipmentCurve, nameGenerator)
+            :base("Ice", nameof(IceStaff07), equipmentCurve, nameGenerator)
         {
             
         }

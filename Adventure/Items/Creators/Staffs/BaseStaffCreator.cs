@@ -15,12 +15,14 @@ namespace Adventure.Items.Creators
     abstract class BaseStaffCreator
     {
         private readonly string typeName;
+        private readonly string sprite;
         private readonly IEquipmentCurve equipmentCurve;
         private readonly INameGenerator nameGenerator;
 
-        protected BaseStaffCreator(String typeName, IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        protected BaseStaffCreator(String typeName, String sprite, IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
         {
             this.typeName = typeName;
+            this.sprite = sprite;
             this.equipmentCurve = equipmentCurve;
             this.nameGenerator = nameGenerator;
         }
@@ -43,7 +45,7 @@ namespace Adventure.Items.Creators
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
-                Sprite = nameof(Staff07),
+                Sprite = sprite,
                 Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }
@@ -63,7 +65,7 @@ namespace Adventure.Items.Creators
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
-                Sprite = nameof(Staff07),
+                Sprite = sprite,
                 Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }
@@ -83,7 +85,7 @@ namespace Adventure.Items.Creators
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
-                Sprite = nameof(Staff07),
+                Sprite = sprite,
                 Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }

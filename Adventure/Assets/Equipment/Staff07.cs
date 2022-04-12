@@ -7,6 +7,11 @@ namespace Adventure.Assets.Equipment
 {
     class Staff07 : ISpriteAsset
     {
+        public const uint Staff = 0xff9f7f66;//Staff (brown)
+        public const uint Crystal = 0xff3722af;//Crystal (purple)
+
+        protected Dictionary<uint, uint> PalletSwap { get; set; }
+
         public Quaternion GetOrientation()
         {
             return new Quaternion(0, MathFloat.PI / 4f, 0);
@@ -19,9 +24,10 @@ namespace Adventure.Assets.Equipment
                     colorMap: "Graphics/Sprites/Crawl/Weapons/staff_7.png",
                     materials: new HashSet<SpriteMaterialTextureItem>
                     {
-                        new SpriteMaterialTextureItem(0xff9f7f66, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
-                        new SpriteMaterialTextureItem(0xff6a5db6, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
-                    }
+                        new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
+                        new SpriteMaterialTextureItem(Crystal, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
+                    },
+                    palletSwap: PalletSwap
                 );
         }
 
@@ -40,6 +46,28 @@ namespace Adventure.Assets.Equipment
                     },
                 })
             { BaseScale = new Vector3(1f, 1f, 1f) };
+        }
+    }
+
+    class FireStaff07 : Staff07
+    {
+        public FireStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xffde4509 }
+            };
+        }
+    }
+
+    class IceStaff07 : Staff07
+    {
+        public IceStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff0962de }
+            };
         }
     }
 }

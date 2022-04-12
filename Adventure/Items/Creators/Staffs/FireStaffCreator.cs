@@ -15,7 +15,7 @@ namespace Adventure.Items.Creators
     class FireStaffCreator : BaseStaffCreator
     {
         public FireStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
-            :base("Fire", equipmentCurve, nameGenerator)
+            :base("Fire", nameof(FireStaff07), equipmentCurve, nameGenerator)
         {
             
         }
