@@ -70,4 +70,92 @@ namespace Adventure.Assets.Equipment
             };
         }
     }
+
+    class ZapStaff07 : Staff07
+    {
+        public ZapStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xffe3c923 }
+            };
+        }
+    }
+
+    class AcidStaff07 : Staff07
+    {
+        public AcidStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff18c81b }
+            };
+        }
+    }
+
+    class LightStaff07 : Staff07
+    {
+        public LightStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xffffff }
+            };
+        }
+    }
+
+    class DarknessStaff07 : Staff07
+    {
+        public DarknessStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff0c0c0c }
+            };
+        }
+    }
+
+    class WaterStaff07 : Staff07
+    {
+        public WaterStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff1633b9 }
+            };
+        }
+    }
+
+    class PoisonStaff07 : Staff07
+    {
+        public PoisonStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff16b933 }
+            };
+        }
+    }
+
+    class AirStaff07 : Staff07
+    {
+        public AirStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xff5fa7d7 }
+            };
+        }
+    }
+
+    class EarthStaff07 : Staff07
+    {
+        public EarthStaff07()
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Staff07.Crystal, 0xffcd880b }
+            };
+        }
+    }
 }

@@ -18,6 +18,8 @@ namespace RpgMath
         Darkness,
         Water,
         Poison,
+        Air,
+        Earth,
         Healing,
         MpRestore
     }

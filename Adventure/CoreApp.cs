@@ -158,8 +158,16 @@ namespace Adventure
             services.AddSingleton<SpearCreator>();
             services.AddSingleton<MaceCreator>();
             services.AddSingleton<ShieldCreator>();
+            services.AddSingleton<AcidStaffCreator>();
+            services.AddSingleton<AirStaffCreator>();
+            services.AddSingleton<DarknessStaffCreator>();
+            services.AddSingleton<EarthStaffCreator>();
             services.AddSingleton<FireStaffCreator>();
             services.AddSingleton<IceStaffCreator>();
+            services.AddSingleton<LightStaffCreator>();
+            services.AddSingleton<PoisonStaffCreator>();
+            services.AddSingleton<WaterStaffCreator>();
+            services.AddSingleton<ZapStaffCreator>();
             services.AddSingleton<AccessoryCreator>();
             services.AddSingleton<ArmorCreator>();
             services.AddSingleton<PotionCreator>();
