@@ -13,7 +13,8 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        public BaseBlast(String name, Element element, long mpCost, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        //TODO: This is the original cost of tier 2 spells, but that was for single target, so this could be adjusted
+        public BaseBlast(String name, Element element, long mpCost = 22, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;

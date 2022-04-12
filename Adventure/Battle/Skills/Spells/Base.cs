@@ -13,7 +13,8 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        public Base(String name, Element element, long mpCost, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        //TODO: This is the original cost, but maybe it could be a little higher. It might be better to have a v2 that is more powerful and more expensive, but still relativly cheap
+        public Base(String name, Element element, long mpCost = 4, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;

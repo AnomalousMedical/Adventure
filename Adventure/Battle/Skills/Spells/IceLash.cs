@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Platform;
 
 namespace Adventure.Battle.Skills
 {
-    class FireBlast : BaseBlast
+    class IceLash : BaseLash
     {
-        public FireBlast()
-            :base("Fire Blast", Element.Fire)
+        public IceLash()
+            : base("Ice Lash", Element.Ice)
         {
 
         }

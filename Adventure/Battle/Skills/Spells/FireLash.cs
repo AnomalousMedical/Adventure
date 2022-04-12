@@ -13,7 +13,7 @@ namespace Adventure.Battle.Skills
     class FireLash : BaseLash
     {
         public FireLash()
-            : base("Fire Lash", Element.Fire, 28)
+            : base("Fire Lash", Element.Fire)
         {
 
         }

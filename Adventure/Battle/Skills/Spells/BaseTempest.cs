@@ -13,7 +13,8 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        public BaseTempest(String name, Element element, long mpCost, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        //TODO: The mp cost could be double too, need to balance mp
+        public BaseTempest(String name, Element element, long mpCost = 52, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;

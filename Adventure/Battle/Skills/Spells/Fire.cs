@@ -12,7 +12,7 @@ namespace Adventure.Battle.Skills
     class Fire : Base
     {
         public Fire()
-            :base("Fire", Element.Fire, 4)
+            :base("Fire", Element.Fire)
         {
 
         }
