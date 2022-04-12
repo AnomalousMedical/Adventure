@@ -23,7 +23,7 @@ namespace Adventure.Exploration
         private Random zoneRandom;
         private readonly SwordCreator swordCreator;
         private readonly ShieldCreator shieldCreator;
-        private readonly StaffCreator staffCreator;
+        private readonly FireStaffCreator fireStaffCreator;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
@@ -36,7 +36,7 @@ namespace Adventure.Exploration
             IBiomeManager biomeManager,
             SwordCreator swordCreator,
             ShieldCreator shieldCreator,
-            StaffCreator staffCreator,
+            FireStaffCreator fireStaffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
@@ -48,7 +48,7 @@ namespace Adventure.Exploration
             this.biomeManager = biomeManager;
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;
-            this.staffCreator = staffCreator;
+            this.fireStaffCreator = fireStaffCreator;
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
@@ -86,7 +86,7 @@ namespace Adventure.Exploration
                 InventoryItem weapon = null;
                 weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                weapon = new InventoryItem(fireStaffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
                 weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
@@ -134,7 +134,7 @@ namespace Adventure.Exploration
                         weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                         break;
                     case 1:
-                        weapon = new InventoryItem(staffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        weapon = new InventoryItem(fireStaffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                         break;
                     case 2:
                         weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));

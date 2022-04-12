@@ -12,13 +12,15 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
-    class StaffCreator
+    abstract class BaseStaffCreator
     {
+        private readonly string typeName;
         private readonly IEquipmentCurve equipmentCurve;
         private readonly INameGenerator nameGenerator;
 
-        public StaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        protected BaseStaffCreator(String typeName, IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
         {
+            this.typeName = typeName;
             this.equipmentCurve = equipmentCurve;
             this.nameGenerator = nameGenerator;
         }
@@ -27,7 +29,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Fire Staff", name.Cost * 2, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} {this.typeName} Staff", name.Cost * 2, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
         }
 
         public Equipment CreateNormal(int level)
@@ -36,13 +38,13 @@ namespace Adventure.Items.Creators
 
             var staff = new Equipment
             {
-                Name = $"{name.Adjective} Fire Staff",
+                Name = $"{name.Adjective} {typeName} Staff",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Skills = GetFireSpells(level),
+                Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }
             };
@@ -56,13 +58,13 @@ namespace Adventure.Items.Creators
 
             var staff = new Equipment
             {
-                Name = $"{name.Adjective} Epic Fire Staff",
+                Name = $"{name.Adjective} Epic {typeName} Staff",
                 MagicAttack = equipmentCurve.GetAttack(name.Level + 6),
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Skills = GetFireSpells(level),
+                Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }
             };
@@ -76,13 +78,13 @@ namespace Adventure.Items.Creators
 
             var staff = new Equipment
             {
-                Name = $"{name.Adjective} Legendary Fire Staff",
+                Name = $"{name.Adjective} Legendary {typeName} Staff",
                 MagicAttack = equipmentCurve.GetAttack(name.Level + 12),
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(Staff07),
-                Skills = GetFireSpells(level),
+                Skills = GetSpells(level),
                 TwoHanded = true,
                 AttackElements = new[] { Element.Bludgeoning }
             };
@@ -90,21 +92,6 @@ namespace Adventure.Items.Creators
             return staff;
         }
 
-        private IEnumerable<String> GetFireSpells(int level)
-        {
-            yield return nameof(Fire);
-            if(level > 18)
-            {
-                yield return nameof(FireBlast);
-            }
-            if (level > 28)
-            {
-                yield return nameof(FireLash);
-            }
-            if (level > 38)
-            {
-                yield return nameof(FireTempest);
-            }
-        }
+        protected abstract IEnumerable<String> GetSpells(int level);
     }
 }

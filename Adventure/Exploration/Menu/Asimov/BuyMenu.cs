@@ -89,7 +89,8 @@ namespace Adventure.Exploration.Menu
         private readonly SpearCreator spearCreator;
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
-        private readonly StaffCreator staffCreator;
+        private readonly FireStaffCreator fireStaffCreator;
+        private readonly IceStaffCreator iceStaffCreator;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
@@ -115,7 +116,8 @@ namespace Adventure.Exploration.Menu
             SpearCreator spearCreator,
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
-            StaffCreator staffCreator,
+            FireStaffCreator fireStaffCreator,
+            IceStaffCreator iceStaffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
@@ -133,7 +135,8 @@ namespace Adventure.Exploration.Menu
             this.spearCreator = spearCreator;
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
-            this.staffCreator = staffCreator;
+            this.fireStaffCreator = fireStaffCreator;
+            this.iceStaffCreator = iceStaffCreator;
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
@@ -340,7 +343,8 @@ Lck: {characterData.CharacterSheet.Luck}
             yield return swordCreator.CreateShopEntry(level);
             yield return spearCreator.CreateShopEntry(level);
             yield return maceCreator.CreateShopEntry(level);
-            yield return staffCreator.CreateShopEntry(level);
+            yield return fireStaffCreator.CreateShopEntry(level);
+            yield return iceStaffCreator.CreateShopEntry(level);
             yield return axeCreator.CreateShopEntry(level);
             yield return shieldCreator.CreateShopEntry(level);
             //Can only buy level 1 daggers, they are given out by stealing otherwise
