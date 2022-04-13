@@ -17,8 +17,27 @@ namespace Adventure
         string BgMusicNight { get; set; }
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
-
         BiomeEnemy GetEnemy(EnemyType type);
+
+        public BiomeEnemy RegularEnemy { get; set; }
+
+        /// <summary>
+        /// Set this to control the boss version of the enemy separately. You will get a boss enemy
+        /// stat-wise no matter what.
+        /// </summary>
+        public BiomeEnemy BossEnemy { get; set; }
+
+        /// <summary>
+        /// Set this to control the badass version of the enemy separately. You will get a badass enemy
+        /// stat-wise no matter what.
+        /// </summary>
+        public BiomeEnemy BadassEnemy { get; set; }
+
+        /// <summary>
+        /// Set this to control the peon version of the enemy separately. You will get a peon enemy
+        /// stat-wise no matter what.
+        /// </summary>
+        public BiomeEnemy PeonEnemy { get; set; }
     }
 
     class Biome : IBiome
@@ -63,22 +82,10 @@ namespace Adventure
 
         public BiomeEnemy RegularEnemy { get; set; }
 
-        /// <summary>
-        /// Set this to control the boss version of the enemy separately. You will get a boss enemy
-        /// stat-wise no matter what.
-        /// </summary>
         public BiomeEnemy BossEnemy { get; set; }
 
-        /// <summary>
-        /// Set this to control the badass version of the enemy separately. You will get a badass enemy
-        /// stat-wise no matter what.
-        /// </summary>
         public BiomeEnemy BadassEnemy { get; set; }
 
-        /// <summary>
-        /// Set this to control the peon version of the enemy separately. You will get a peon enemy
-        /// stat-wise no matter what.
-        /// </summary>
         public BiomeEnemy PeonEnemy { get; set; }
 
         /// <summary>

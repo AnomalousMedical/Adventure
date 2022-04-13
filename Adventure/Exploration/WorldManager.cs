@@ -19,6 +19,7 @@ namespace Adventure.Exploration
     class WorldManager : IWorldManager
     {
         private readonly IBiomeManager biomeManager;
+        private readonly IMonsterMaker monsterMaker;
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
         private readonly SwordCreator swordCreator;
@@ -34,6 +35,7 @@ namespace Adventure.Exploration
         (
             Persistence persistence,
             IBiomeManager biomeManager,
+            IMonsterMaker monsterMaker,
             SwordCreator swordCreator,
             ShieldCreator shieldCreator,
             FireStaffCreator fireStaffCreator,
@@ -46,6 +48,7 @@ namespace Adventure.Exploration
         {
             this.zoneRandom = new Random(persistence.Current.World.Seed);
             this.biomeManager = biomeManager;
+            this.monsterMaker = monsterMaker;
             this.swordCreator = swordCreator;
             this.shieldCreator = shieldCreator;
             this.fireStaffCreator = fireStaffCreator;
@@ -175,6 +178,7 @@ namespace Adventure.Exploration
                 }
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
+            monsterMaker.PopulateBiome(o.Biome);
         }
 
         private int GetZoneSeed(int index)
