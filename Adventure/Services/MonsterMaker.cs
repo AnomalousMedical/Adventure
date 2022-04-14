@@ -24,10 +24,13 @@ namespace Adventure.Services
 
         public MonsterMaker()
         {
+            monsterTypeMakers.Add(new GhoulMaker());
+            monsterTypeMakers.Add(new OrcKnightMaker());
+            monsterTypeMakers.Add(new SalamanderMaker());
+            monsterTypeMakers.Add(new SirenMaker());
+            monsterTypeMakers.Add(new SkeletonMaker());
             monsterTypeMakers.Add(new TinyDinoMaker());
             monsterTypeMakers.Add(new TinyDinoSwap1Maker());
-            monsterTypeMakers.Add(new SkeletonMaker());
-            monsterTypeMakers.Add(new SalamanderMaker());
         }
 
         public void PopulateBiome(IBiome biome)
