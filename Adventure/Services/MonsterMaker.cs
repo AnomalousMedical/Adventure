@@ -10,7 +10,6 @@ namespace Adventure.Services
     interface IMonsterMaker
     {
         void PopulateBiome(IBiome biome);
-        void PopulateTinyDinos(IBiome biome);
     }
 
     class MonsterMaker : IMonsterMaker
@@ -61,6 +60,103 @@ namespace Adventure.Services
                     }
                 },
                 EnemyCurve = new StandardEnemyCurve()
+            };
+        }
+
+        public void PopulateTinyDinosPalletSwap(IBiome biome)
+        {
+            biome.RegularEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.TinyDino()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xff317a89 }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve()
+            };
+            biome.BadassEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.TinyDino()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xff024f59 }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve()
+            };
+            biome.PeonEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.TinyDino()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xff7babaf }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve()
+            };
+            biome.BossEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.TinyDino()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.TinyDino.Skin, 0xff9105bd },
+                            { Assets.Enemies.TinyDino.Eye, 0xff2ccdca }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve()
+            };
+        }
+
+        public void PopulateSkeleton(IBiome biome)
+        {
+            biome.RegularEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.Skeleton(),
+                EnemyCurve = new StandardEnemyCurve(),
+                Resistances = new Dictionary<Element, Resistance>
+                    {
+                        { Element.Healing, Resistance.Absorb },
+                        { Element.Fire, Resistance.Weak },
+                        { Element.Piercing, Resistance.Resist },
+                        { Element.Bludgeoning, Resistance.Weak }
+                    }
+            };
+            biome.BadassEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.Skeleton()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.Skeleton.Bone, 0xff404040 }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve(),
+                Resistances = new Dictionary<Element, Resistance>
+                    {
+                        { Element.Healing, Resistance.Absorb },
+                        { Element.Fire, Resistance.Weak }
+                    }
+            };
+            biome.PeonEnemy = new BiomeEnemy()
+            {
+                Asset = new Assets.Enemies.Skeleton()
+                {
+                    PalletSwap = new Dictionary<uint, uint>
+                        {
+                            { Assets.Enemies.Skeleton.Bone, 0xffd1cbb6 }
+                        }
+                },
+                EnemyCurve = new StandardEnemyCurve(),
+                Resistances = new Dictionary<Element, Resistance>
+                    {
+                        { Element.Healing, Resistance.Absorb },
+                        { Element.Fire, Resistance.Weak }
+                    }
             };
         }
     }
