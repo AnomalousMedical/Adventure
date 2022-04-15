@@ -22,11 +22,15 @@ namespace Adventure.Services
         public MonsterMaker()
         {
             monsterAssets.Add(new Ghoul());
+            monsterAssets.Add(new GhoulPurple());
             monsterAssets.Add(new OrcKnightOld());
             monsterAssets.Add(new OrcKnightOldBronze());
             monsterAssets.Add(new SalamanderFirebrand());
+            monsterAssets.Add(new SalamanderFirebrandGreen());
             monsterAssets.Add(new SirenNew());
+            monsterAssets.Add(new SirenNewRed());
             monsterAssets.Add(new Skeleton());
+            monsterAssets.Add(new SkeletonBlack());
             monsterAssets.Add(new TinyDino());
             monsterAssets.Add(new TinyDinoBlue());
             monsterAssets.Add(new TinyDinoRed());
@@ -62,7 +66,7 @@ namespace Adventure.Services
             //This is not how this is going to work
             biome.RegularEnemy = new BiomeEnemy
             {
-                Asset = monsterAssets[2],
+                Asset = monsterAssets[9],
                 EnemyCurve = standardEnemyCurve
             };
 
