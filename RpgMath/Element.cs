@@ -21,6 +21,8 @@ namespace RpgMath
         Air,
         Earth,
         Healing,
-        MpRestore
+        MpRestore,
+        RandStart = Piercing,
+        RandEnd = Healing //Healing will not be included with the way c# random works if you use this
     }
 }

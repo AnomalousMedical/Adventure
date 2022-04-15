@@ -11,7 +11,9 @@ namespace Adventure.Services
 {
     interface IMonsterMaker
     {
-        void PopulateBiome(IBiome biome);
+        Dictionary<Element, List<ISpriteAsset>> CreatePrimaryWeaknesses(Random random);
+
+        void PopulateBiome(IBiome biome, Dictionary<Element, List<ISpriteAsset>> elementAssets, Element primaryElement, IEnumerable<KeyValuePair<Element, Resistance>> resistances, Random random);
     }
 
     class MonsterMaker : IMonsterMaker
@@ -37,14 +39,13 @@ namespace Adventure.Services
             monsterAssets.Add(new TinyDinoPurple());
         }
 
+        /// <summary>
+        /// Associate assets with weaknesses, the actual mapping happens when its created.
+        /// </summary>
+        /// <param name="random"></param>
+        /// <returns></returns>
         public Dictionary<Element, List<ISpriteAsset>> CreatePrimaryWeaknesses(Random random)
         {
-            //create primary weaknesses here
-            //Then zones generate what weaknesses they want
-            //based on the zone's primary weakness choose an enemy
-            //add any other zone weaknesses to that enemy
-            //That is now the zone's enemies
-
             //This assumes there are more monsters than elements
             var primaryWeaknesses = new Dictionary<Element, List<ISpriteAsset>>();
             var availableMonsters = new List<ISpriteAsset>(monsterAssets);
@@ -58,34 +59,48 @@ namespace Adventure.Services
                 primaryWeaknesses[element].Add(availableMonsters[index]);
                 availableMonsters.RemoveAt(index);
             }
+            foreach(var monster in availableMonsters)
+            {
+                var element = (Element)random.Next((int)Element.RandStart, (int)Element.RandEnd);
+                primaryWeaknesses[element].Add(monster);
+            }
             return primaryWeaknesses;
         }
 
-        public void PopulateBiome(IBiome biome)
+        public void PopulateBiome(IBiome biome, Dictionary<Element, List<ISpriteAsset>> elementAssets, Element primaryElement, IEnumerable<KeyValuePair<Element, Resistance>> resistances, Random random)
         {
+            var assets = elementAssets[primaryElement];
+            var assetIndex = random.Next(0, assets.Count);
+            var asset = assets[assetIndex];
+            var enemyResistances = new Dictionary<Element, Resistance>(resistances);
+
             //This is not how this is going to work
             biome.RegularEnemy = new BiomeEnemy
             {
-                Asset = monsterAssets[9],
-                EnemyCurve = standardEnemyCurve
+                Asset = asset,
+                EnemyCurve = standardEnemyCurve,
+                Resistances = enemyResistances
             };
 
             biome.BadassEnemy = new BiomeEnemy
             {
-                Asset = monsterAssets[2],
-                EnemyCurve = standardEnemyCurve
+                Asset = asset,
+                EnemyCurve = standardEnemyCurve,
+                Resistances = enemyResistances
             };
 
             biome.PeonEnemy = new BiomeEnemy
             {
-                Asset = monsterAssets[2],
-                EnemyCurve = standardEnemyCurve
+                Asset = asset,
+                EnemyCurve = standardEnemyCurve,
+                Resistances = enemyResistances
             };
 
             biome.BossEnemy = new BiomeEnemy
             {
-                Asset = monsterAssets[2],
-                EnemyCurve = standardEnemyCurve
+                Asset = asset,
+                EnemyCurve = standardEnemyCurve,
+                Resistances = enemyResistances
             };
         }
 

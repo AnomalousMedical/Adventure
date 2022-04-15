@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Assets;
+using Adventure.Items;
 using Adventure.Items.Creators;
 using Adventure.Services;
 using Engine;
@@ -30,6 +31,7 @@ namespace Adventure.Exploration
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
+        private Dictionary<Element, List<ISpriteAsset>> elementAssets;
 
         public WorldManager
         (
@@ -57,15 +59,21 @@ namespace Adventure.Exploration
             this.potionCreator = potionCreator;
             this.axeCreator = axeCreator;
             this.daggerCreator = daggerCreator;
+
+            var weaknessRandom = new Random(persistence.Current.World.Seed);
+            this.elementAssets = monsterMaker.CreatePrimaryWeaknesses(weaknessRandom);
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
         {
-            var random = new Random(GetZoneSeed(zoneIndex));
+            //It is important to keep the random order here, or everything changes
+            var initRandom = new Random(GetZoneSeed(zoneIndex));
+            o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
+            o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
+            var elementalRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue));
+            //Add treasure random and stuff here too
 
             o.Index = zoneIndex;
-            o.LevelSeed = random.Next(int.MinValue, int.MaxValue);
-            o.EnemySeed = random.Next(int.MinValue, int.MaxValue);
             o.Width = 50;
             o.Height = 50;
             o.CorridorSpace = 10;
@@ -178,7 +186,9 @@ namespace Adventure.Exploration
                 }
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
-            monsterMaker.PopulateBiome(o.Biome);
+
+            var element = (Element)elementalRandom.Next((int)Element.RandStart, (int)Element.RandEnd);
+            monsterMaker.PopulateBiome(o.Biome, elementAssets, element, new[] { new KeyValuePair<Element, Resistance>(element, Resistance.Weak) }, elementalRandom);
         }
 
         private int GetZoneSeed(int index)
