@@ -23,10 +23,12 @@ namespace Adventure.Services
 
         public MonsterMaker()
         {
+            monsterAssets.Add(new Bat());
             monsterAssets.Add(new DeepTrollBerserker());
             monsterAssets.Add(new Ghoul());
             monsterAssets.Add(new GhoulPurple());
             monsterAssets.Add(new MerfolkImpalerWaterNew());
+            monsterAssets.Add(new MutantBeast());
             monsterAssets.Add(new OrcKnightOld());
             monsterAssets.Add(new OrcKnightOldBronze());
             monsterAssets.Add(new SalamanderFirebrand());
