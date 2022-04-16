@@ -26,6 +26,7 @@ namespace Adventure.Services
             monsterAssets.Add(new DeepTrollBerserker());
             monsterAssets.Add(new Ghoul());
             monsterAssets.Add(new GhoulPurple());
+            monsterAssets.Add(new MerfolkImpalerWaterNew());
             monsterAssets.Add(new OrcKnightOld());
             monsterAssets.Add(new OrcKnightOldBronze());
             monsterAssets.Add(new SalamanderFirebrand());
