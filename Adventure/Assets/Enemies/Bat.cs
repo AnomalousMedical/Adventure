@@ -13,6 +13,9 @@ namespace Adventure.Assets.Enemies
         public const uint Fur = 0xff855e49;//(brown)
         public const uint Eyes = 0xffff0000;//(Red)
 
+        private static readonly HslColor FurHsl = new IntColor(Fur).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -32,12 +35,12 @@ namespace Adventure.Assets.Enemies
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
 
-        public void SetupSwap(float h, float s, float l, IPallet pallet)
-        { 
+        public void SetupSwap(float h, float s, float l)
+        {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Fur, IntColor.FromHsl(h, s, l).ClosestRgb(pallet.Colors).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ClosestRgb(pallet.Colors).ARGB }
+                { Fur, IntColor.FromHsl(h, FurHsl.S, FurHsl.L).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, EyesHsl.S, EyesHsl.L).ARGB }
             };
         }
     }

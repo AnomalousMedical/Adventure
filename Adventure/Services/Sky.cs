@@ -109,6 +109,7 @@ namespace Adventure
 
         private void BlendSetPallet(float factor, Color[] color1, Color[] color2, Color[] dest)
         {
+            //TODO: Use hsl to calcluate sky instead
             var length = color1.Length;
             for(var i = 0; i < length; ++i)
             {

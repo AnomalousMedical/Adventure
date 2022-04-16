@@ -120,6 +120,11 @@ namespace Engine
             return colorDiffs.color;
         }
 
+        public static IntColor FromHsl(HslColor hslColor)
+        {
+            return FromHsl(hslColor.H, hslColor.S, hslColor.L);
+        }
+
         // https://gist.github.com/UweKeim/fb7f829b852c209557bc49c51ba14c8b
         public static IntColor FromHsl(float hue, float saturation, float light)
         {
@@ -160,6 +165,110 @@ namespace Engine
             var nBlue = Convert.ToByte(blue * 255.0);
 
             return new IntColor(255, nRed, nGreen, nBlue);
+        }
+
+        public HslColor ToHsl()
+        {
+
+            var varR = R / 255.0; //Where RGB values = 0 ÷ 255
+            var varG = G / 255.0;
+            var varB = B / 255.0;
+
+            var varMin = getMinimumValue(varR, varG, varB); //Min. value of RGB
+            var varMax = getMaximumValue(varR, varG, varB); //Max. value of RGB
+            var delMax = varMax - varMin; //Delta RGB value
+
+            double h;
+            double s;
+            var l = (varMax + varMin) / 2;
+
+            if (Math.Abs(delMax - 0) < double.Epsilon) //This is a gray, no chroma...
+            {
+                h = 0; //HSL results = 0 ÷ 1
+                s = 0;
+                // UK:
+                //				s = 1.0;
+            }
+            else //Chromatic data...
+            {
+                if (l < 0.5)
+                {
+                    s = delMax / (varMax + varMin);
+                }
+                else
+                {
+                    s = delMax / (2.0 - varMax - varMin);
+                }
+
+                var delR = ((varMax - varR) / 6.0 + delMax / 2.0) / delMax;
+                var delG = ((varMax - varG) / 6.0 + delMax / 2.0) / delMax;
+                var delB = ((varMax - varB) / 6.0 + delMax / 2.0) / delMax;
+
+                if (Math.Abs(varR - varMax) < double.Epsilon)
+                {
+                    h = delB - delG;
+                }
+                else if (Math.Abs(varG - varMax) < double.Epsilon)
+                {
+                    h = 1.0 / 3.0 + delR - delB;
+                }
+                else if (Math.Abs(varB - varMax) < double.Epsilon)
+                {
+                    h = 2.0 / 3.0 + delG - delR;
+                }
+                else
+                {
+                    // Uwe Keim.
+                    h = 0.0;
+                }
+
+                if (h < 0.0)
+                {
+                    h += 1.0;
+                }
+                if (h > 1.0)
+                {
+                    h -= 1.0;
+                }
+            }
+
+            // --
+
+            return new HslColor(
+                (float)h * 360.0f,
+                (float)s * 100.0f,
+                (float)l * 100.0f);
+        }
+        static double getMinimumValue(params double[] values)
+        {
+            var minValue = values[0];
+
+            if (values.Length >= 2)
+            {
+                for (var i = 1; i < values.Length; i++)
+                {
+                    var num = values[i];
+                    minValue = Math.Min(minValue, num);
+                }
+            }
+
+            return minValue;
+        }
+
+        static double getMaximumValue(params double[] values)
+        {
+            var maxValue = values[0];
+
+            if (values.Length >= 2)
+            {
+                for (var i = 1; i < values.Length; i++)
+                {
+                    var num = values[i];
+                    maxValue = Math.Max(maxValue, num);
+                }
+            }
+
+            return maxValue;
         }
 
         // https://gist.github.com/UweKeim/fb7f829b852c209557bc49c51ba14c8b

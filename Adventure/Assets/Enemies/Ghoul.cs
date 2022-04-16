@@ -14,6 +14,10 @@ namespace Adventure.Assets.Enemies
         public const uint Highlight = 0xff591c16;//(red)
         public const uint Eyes = 0xfff7f700;//(yellow)
 
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor HighlightHsl = new IntColor(Highlight).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -34,13 +38,13 @@ namespace Adventure.Assets.Enemies
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
 
-        public void SetupSwap(float h, float s, float l, IPallet pallet)
+        public void SetupSwap(float h, float s, float l)
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ClosestRgb(pallet.Colors).ARGB },
-                { Highlight, IntColor.FromHsl((h + 90) % 360, s, l).ClosestRgb(pallet.Colors).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ClosestRgb(pallet.Colors).ARGB }
+                { Skin, IntColor.FromHsl(h, SkinHsl.S, SkinHsl.L).ARGB },
+                { Highlight, IntColor.FromHsl((h + 90) % 360, HighlightHsl.S, HighlightHsl.L).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, EyesHsl.S, EyesHsl.L).ARGB }
             };
         }
     }

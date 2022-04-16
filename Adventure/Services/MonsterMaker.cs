@@ -101,13 +101,11 @@ namespace Adventure.Services
                 Resistances = enemyResistances
             };
 
-            var pallet = new Assets.Pallets.Endesga();
-
             //These should only change when resistances change
-            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50, pallet);
-            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50, pallet);
-            biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50, pallet);
-            biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50, pallet);
+            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
         }
 
         private IEnumerable<Element> ElementTypes()

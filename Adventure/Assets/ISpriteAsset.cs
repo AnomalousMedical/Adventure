@@ -16,7 +16,7 @@ namespace Adventure.Assets
 
         SpriteMaterialDescription CreateMaterial();
 
-        void SetupSwap(float h, float s, float l, IPallet pallet) { }
+        void SetupSwap(float h, float s, float l) { }
 
         public ISpriteAsset CreateAnotherInstance()
         {
