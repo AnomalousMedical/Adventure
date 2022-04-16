@@ -37,7 +37,7 @@ namespace Engine
 
         public IntColor(byte a, byte r, byte g, byte b)
         {
-            setValues(a, r, g, b);
+            SetValues(a, r, g, b);
         }
 
         public byte A
@@ -100,9 +100,81 @@ namespace Engine
             }
         }
 
-        public void setValues(byte a, byte r, byte g, byte b)
+        public void SetValues(byte a, byte r, byte g, byte b)
         {
             argb = (uint)(a << AShift) + (uint)(r << RShift) + (uint)(g << GShift) + (uint)(b << BShift);
+        }
+
+        // https://gist.github.com/UweKeim/fb7f829b852c209557bc49c51ba14c8b
+        public static IntColor FromHsl(float hue, float saturation, float light)
+        {
+            double red, green, blue;
+
+            var h = hue / 360.0;
+            var s = saturation / 100.0;
+            var l = light / 100.0;
+
+            if (Math.Abs(s - 0.0) < double.Epsilon)
+            {
+                red = l;
+                green = l;
+                blue = l;
+            }
+            else
+            {
+                double var2;
+
+                if (l < 0.5)
+                {
+                    var2 = l * (1.0 + s);
+                }
+                else
+                {
+                    var2 = l + s - s * l;
+                }
+
+                var var1 = 2.0 * l - var2;
+
+                red = Hue2Rgb(var1, var2, h + 1.0 / 3.0);
+                green = Hue2Rgb(var1, var2, h);
+                blue = Hue2Rgb(var1, var2, h - 1.0 / 3.0);
+            }
+
+            var nRed = Convert.ToByte(red * 255.0);
+            var nGreen = Convert.ToByte(green * 255.0);
+            var nBlue = Convert.ToByte(blue * 255.0);
+
+            return new IntColor(255, nRed, nGreen, nBlue);
+        }
+
+        // https://gist.github.com/UweKeim/fb7f829b852c209557bc49c51ba14c8b
+        private static double Hue2Rgb(
+            double v1,
+            double v2,
+            double vH)
+        {
+            if (vH < 0.0)
+            {
+                vH += 1.0;
+            }
+            if (vH > 1.0)
+            {
+                vH -= 1.0;
+            }
+            if (6.0 * vH < 1.0)
+            {
+                return v1 + (v2 - v1) * 6.0 * vH;
+            }
+            if (2.0 * vH < 1.0)
+            {
+                return v2;
+            }
+            if (3.0 * vH < 2.0)
+            {
+                return v1 + (v2 - v1) * (2.0 / 3.0 - vH) * 6.0;
+            }
+
+            return v1;
         }
     }
 }
