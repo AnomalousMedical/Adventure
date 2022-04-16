@@ -26,23 +26,15 @@ namespace Adventure.Services
             monsterAssets.Add(new Bat());
             monsterAssets.Add(new DeepTrollBerserker());
             monsterAssets.Add(new Ghoul());
-            monsterAssets.Add(new GhoulPurple());
             monsterAssets.Add(new MerfolkImpalerWaterNew());
             monsterAssets.Add(new MutantBeast());
             monsterAssets.Add(new OgreNew());
             monsterAssets.Add(new OrcKnightOld());
-            monsterAssets.Add(new OrcKnightOldBronze());
             monsterAssets.Add(new SalamanderFirebrand());
-            monsterAssets.Add(new SalamanderFirebrandGreen());
             monsterAssets.Add(new SirenNew());
-            monsterAssets.Add(new SirenNewRed());
             monsterAssets.Add(new Skeleton());
-            monsterAssets.Add(new SkeletonBlack());
             monsterAssets.Add(new ThornHunter());
             monsterAssets.Add(new TinyDino());
-            monsterAssets.Add(new TinyDinoBlue());
-            monsterAssets.Add(new TinyDinoRed());
-            monsterAssets.Add(new TinyDinoPurple());
             monsterAssets.Add(new WanderingMushroomNew());
         }
 
