@@ -33,6 +33,7 @@ namespace Adventure.Services
             monsterAssets.Add(new SirenNewRed());
             monsterAssets.Add(new Skeleton());
             monsterAssets.Add(new SkeletonBlack());
+            monsterAssets.Add(new ThornHunter());
             monsterAssets.Add(new TinyDino());
             monsterAssets.Add(new TinyDinoBlue());
             monsterAssets.Add(new TinyDinoRed());
