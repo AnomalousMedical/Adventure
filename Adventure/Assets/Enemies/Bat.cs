@@ -11,7 +11,7 @@ namespace Adventure.Assets.Enemies
     class Bat : ISpriteAsset
     {
         public const uint Fur = 0xff855e49;//(brown)
-        public const uint Eyes = 0xff8f00fa;//(Red)
+        public const uint Eyes = 0xffff0000;//(Red)
 
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
@@ -30,6 +30,15 @@ namespace Adventure.Assets.Enemies
         public Sprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+        }
+
+        public void SetupSwap(float h, float s, float l)
+        { 
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Fur, IntColor.FromHsl(h, s, l).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+            };
         }
     }
 }

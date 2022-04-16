@@ -12,7 +12,7 @@ namespace Adventure.Assets.Enemies
     {
         public const uint Skin = 0xff168516;//Skin (green)
         public const uint Spine = 0xffff0000;//Spines (red)
-        public const uint Eye = 0xff9105bd;//Eye (purple)
+        public const uint Eyes = 0xff9105bd;//Eye (purple)
 
         //Threax drew this one
 
@@ -37,6 +37,16 @@ namespace Adventure.Assets.Enemies
         public Sprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(1.466666666666667f, 1, 1) };
+        }
+
+        public void SetupSwap(float h, float s, float l)
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Skin, IntColor.FromHsl(h, s, l).ARGB },
+                { Spine, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+            };
         }
     }
 }

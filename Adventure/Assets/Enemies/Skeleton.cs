@@ -13,6 +13,7 @@ namespace Adventure.Assets.Enemies
         public const uint ArmorHighlight = 0xffd0873a;//Armor Highlight (copper)
         public const uint Armor = 0xff453c31;//Armor (brown)
         public const uint Bone = 0xffefefef;//Bone (almost white)
+        public const uint Eyes = 0xffbd0000;//(red)
 
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
@@ -33,6 +34,16 @@ namespace Adventure.Assets.Enemies
         public Sprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+        }
+
+        public void SetupSwap(float h, float s, float l)
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Armor, IntColor.FromHsl(h, s, l).ARGB },
+                { ArmorHighlight, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
+                //{ Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB } //Don't mod eyes since we don't mod the bones
+            };
         }
     }
 }

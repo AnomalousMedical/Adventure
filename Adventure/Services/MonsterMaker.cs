@@ -73,34 +73,39 @@ namespace Adventure.Services
             var asset = assets[assetIndex];
             var enemyResistances = new Dictionary<Element, Resistance>(resistances);
 
-            //This is not how this is going to work
             biome.RegularEnemy = new BiomeEnemy
             {
-                Asset = asset,
+                Asset = asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.BadassEnemy = new BiomeEnemy
             {
-                Asset = asset,
+                Asset = asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.PeonEnemy = new BiomeEnemy
             {
-                Asset = asset,
+                Asset = asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.BossEnemy = new BiomeEnemy
             {
-                Asset = asset,
+                Asset = asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
+
+            //These should only change when resistances change
+            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
         }
 
         private IEnumerable<Element> ElementTypes()

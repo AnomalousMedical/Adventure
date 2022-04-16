@@ -13,6 +13,7 @@ namespace Adventure.Assets.Enemies
         public const uint Horns = 0xffffd400;//(yellow)
         public const uint Skin = 0xff7f4415;//(brown)
         public const uint Chest = 0xff760a1a;//(red)
+        public const uint Eyes = 0xff66ffef;//(blue)
 
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
@@ -33,6 +34,17 @@ namespace Adventure.Assets.Enemies
         public Sprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+        }
+
+        public void SetupSwap(float h, float s, float l)
+        {
+            PalletSwap = new Dictionary<uint, uint>
+            {
+                { Skin, IntColor.FromHsl(h, s, l).ARGB },
+                { Horns, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
+                { Chest, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+            };
         }
     }
 }
