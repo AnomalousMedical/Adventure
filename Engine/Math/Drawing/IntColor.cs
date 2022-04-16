@@ -105,6 +105,21 @@ namespace Engine
             argb = (uint)(a << AShift) + (uint)(r << RShift) + (uint)(g << GShift) + (uint)(b << BShift);
         }
 
+        //https://stackoverflow.com/questions/27374550/how-to-compare-color-object-and-get-closest-color-in-an-color
+        // distance in RGB space
+        public IntColor ClosestRgb(IEnumerable<IntColor> colors)
+        {
+            int ColorDiff(IntColor c1, IntColor c2)
+            {
+                return (int)Math.Sqrt((c1.R - c2.R) * (c1.R - c2.R)
+                                       + (c1.G - c2.G) * (c1.G - c2.G)
+                                       + (c1.B - c2.B) * (c1.B - c2.B));
+            }
+
+            var colorDiffs = colors.Select(n => new { color = n, diff = ColorDiff(n, this) }).MinBy(n => n.diff);
+            return colorDiffs.color;
+        }
+
         // https://gist.github.com/UweKeim/fb7f829b852c209557bc49c51ba14c8b
         public static IntColor FromHsl(float hue, float saturation, float light)
         {

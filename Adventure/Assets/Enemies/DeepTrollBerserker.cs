@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿
+using DiligentEngine.RT.Sprites;
 using Engine;
 using System;
 using System.Collections.Generic;
@@ -36,14 +37,14 @@ namespace Adventure.Assets.Enemies
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
 
-        public void SetupSwap(float h, float s, float l)
+        public void SetupSwap(float h, float s, float l, IPallet pallet)
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { SkinHighlight, IntColor.FromHsl((h + 30) % 360, s, l).ARGB },
-                { Rags, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Skin, IntColor.FromHsl(h, s, l).ClosestRgb(pallet.Colors).ARGB },
+                { SkinHighlight, IntColor.FromHsl((h + 30) % 360, s, l).ClosestRgb(pallet.Colors).ARGB },
+                { Rags, IntColor.FromHsl((h + 270) % 360, s, l).ClosestRgb(pallet.Colors).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ClosestRgb(pallet.Colors).ARGB }
             };
         }
     }

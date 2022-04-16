@@ -35,13 +35,13 @@ namespace Adventure.Assets.Enemies
             return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
 
-        public void SetupSwap(float h, float s, float l)
+        public void SetupSwap(float h, float s, float l, IPallet pallet)
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Rose, IntColor.FromHsl(h, s, l).ARGB },
-                { Vines, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Thorns, IntColor.FromHsl((h + 120) % 360, s, l).ARGB },
+                { Rose, IntColor.FromHsl(h, s, l).ClosestRgb(pallet.Colors).ARGB },
+                { Vines, IntColor.FromHsl((h + 90) % 360, s, l).ClosestRgb(pallet.Colors).ARGB },
+                { Thorns, IntColor.FromHsl((h + 120) % 360, s, l).ClosestRgb(pallet.Colors).ARGB },
             };
         }
     }
