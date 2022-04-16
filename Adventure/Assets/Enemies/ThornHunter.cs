@@ -14,6 +14,10 @@ namespace Adventure.Assets.Enemies
         public const uint Vines = 0xff3f5800;//(green)
         public const uint Thorns = 0xffa7bf49;//(light green)
 
+        private static readonly HslColor RoseHsl = new IntColor(Rose).ToHsl();
+        private static readonly HslColor VinesHsl = new IntColor(Vines).ToHsl();
+        private static readonly HslColor ThornsHsl = new IntColor(Thorns).ToHsl();
+        
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -39,9 +43,9 @@ namespace Adventure.Assets.Enemies
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Rose, IntColor.FromHsl(h, s, l).ARGB },
-                { Vines, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Thorns, IntColor.FromHsl((h + 120) % 360, s, l).ARGB },
+                { Rose, IntColor.FromHsl(h, RoseHsl.S, RoseHsl.L).ARGB },
+                { Vines, IntColor.FromHsl((h + 90) % 360, VinesHsl.S, VinesHsl.L).ARGB },
+                { Thorns, IntColor.FromHsl((h + 120) % 360, ThornsHsl.S, ThornsHsl.L).ARGB },
             };
         }
     }

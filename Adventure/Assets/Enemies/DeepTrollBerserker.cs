@@ -16,6 +16,11 @@ namespace Adventure.Assets.Enemies
         public const uint Rags = 0xffdc4416;//(orange)
         public const uint Eyes = 0xffac1010;//(red)
 
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor SkinHighlightHsl = new IntColor(SkinHighlight).ToHsl();
+        private static readonly HslColor RagsHsl = new IntColor(Rags).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -41,10 +46,10 @@ namespace Adventure.Assets.Enemies
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { SkinHighlight, IntColor.FromHsl((h + 30) % 360, s, l).ARGB },
-                { Rags, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Skin, IntColor.FromHsl(h, SkinHsl.S, SkinHsl.L).ARGB },
+                { SkinHighlight, IntColor.FromHsl((h + 30) % 360, SkinHighlightHsl.S, SkinHighlightHsl.L).ARGB },
+                { Rags, IntColor.FromHsl((h + 270) % 360, RagsHsl.S, RagsHsl.L).ARGB },
+                { Eyes, IntColor.FromHsl((h + 180) % 360, EyesHsl.S, EyesHsl.L).ARGB }
             };
         }
     }
