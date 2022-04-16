@@ -41,7 +41,7 @@ namespace Adventure.Assets.Enemies
             PalletSwap = new Dictionary<uint, uint>
             {
                 { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { SkinHighlight, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
+                { SkinHighlight, IntColor.FromHsl((h + 30) % 360, s, l).ARGB },
                 { Rags, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
                 { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
             };
