@@ -37,6 +37,7 @@ namespace Adventure.Services
             monsterAssets.Add(new TinyDinoBlue());
             monsterAssets.Add(new TinyDinoRed());
             monsterAssets.Add(new TinyDinoPurple());
+            monsterAssets.Add(new WanderingMushroomNew());
         }
 
         /// <summary>
