@@ -43,12 +43,14 @@ namespace Adventure
                     return MakeSnowy();
                 case 3:
                     return MakeForest();
+                case 5: //This is a special case beyond the count for a special zone, keep it at the end
+                    return MakeChip();
             }
 
             throw new IndexOutOfRangeException($"Index {index} is greater than the size {Count}.");
         }
 
-        public int Count => 4;
+        public int Count => 4; //Keeping chip out for now
 
         public Biome MakeSnowy()
         {
@@ -106,6 +108,22 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground042_1K",
+                Treasure = new BiomeTreasure()
+                {
+                    Asset = new Assets.World.TreasureChest(),
+                }
+            };
+
+            return biome;
+        }
+
+        public Biome MakeChip()
+        {
+            var biome = new Biome
+            {
+                ReflectFloor = true,
+                FloorTexture = "Graphics/Textures/AmbientCG/Metal032_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Chip005_1K",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),

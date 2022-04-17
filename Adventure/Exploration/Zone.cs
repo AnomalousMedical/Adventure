@@ -256,8 +256,8 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                var floorTextureDesc = new CCOTextureBindingDescription(biome.FloorTexture);
-                var wallTextureDesc = new CCOTextureBindingDescription(biome.WallTexture);
+                var floorTextureDesc = new CCOTextureBindingDescription(biome.FloorTexture, reflective: biome.ReflectFloor);
+                var wallTextureDesc = new CCOTextureBindingDescription(biome.WallTexture, reflective: biome.ReflectWall);
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);

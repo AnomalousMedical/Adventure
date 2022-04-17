@@ -19,7 +19,9 @@ namespace Adventure.Battle
     {
         public class Description : SceneObjectDesc
         {
-            public String Texture { get; set; } = "Graphics/Textures/AmbientCG/Bricks045_1K";
+            public String Texture { get; set; }
+
+            public bool Reflective { get; set; }
         }
 
         private TLASBuildInstanceData floorInstanceData;
@@ -57,7 +59,7 @@ namespace Adventure.Battle
                 using var destructionBlock = destructionRequest.BlockDestruction();
                 try
                 {
-                    var floorTextureDesc = new CCOTextureBindingDescription(description.Texture);
+                    var floorTextureDesc = new CCOTextureBindingDescription(description.Texture, reflective: description.Reflective);
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
 
@@ -79,7 +81,8 @@ namespace Adventure.Battle
                     {
                         ShaderType = PrimaryHitShaderType.Mesh,
                         HasNormalMap = true,
-                        HasPhysicalDescriptorMap = true
+                        HasPhysicalDescriptorMap = true,
+                        Reflective = description.Reflective,
                     });
 
                     await Task.WhenAll

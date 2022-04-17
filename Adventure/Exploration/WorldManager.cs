@@ -91,7 +91,7 @@ namespace Adventure.Exploration
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
                 selectedBiomeIndex = o.LevelSeed % biomeManager.Count;
-                monsterIndex = o.LevelSeed % monsterInfo.Count;
+                monsterIndex = Math.Abs(o.LevelSeed) % monsterInfo.Count;
 
                 //Give out starting weapons
                 var treasures = new List<ITreasure>();
