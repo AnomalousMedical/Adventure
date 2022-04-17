@@ -8,11 +8,20 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
+    enum BiomeType
+    {
+        Countryside = 0,
+        Desert = 1,
+        Snowy = 2,
+        Forest = 3,
+        Max = Forest
+        //Chip is not in here, since it has its own rules
+    }
+
     interface IBiomeManager
     {
-        int Count { get; }
 
-        IBiome GetBiome(int index);
+        IBiome GetBiome(BiomeType type);
         Biome MakeChip();
     }
 
@@ -32,25 +41,23 @@ namespace Adventure
 
     class BiomeManager : IBiomeManager
     {
-        public IBiome GetBiome(int index)
+        public IBiome GetBiome(BiomeType type)
         {
-            switch (index)
+            switch (type)
             {
-                case 0:
+                case BiomeType.Countryside:
                     return MakeCountryside();
-                case 1:
+                case BiomeType.Desert:
                     return MakeDesert();
-                case 2:
+                case BiomeType.Snowy:
                     return MakeSnowy();
-                case 3:
+                case BiomeType.Forest:
                     return MakeForest();
                 //No chip since it is a special zone
             }
 
-            throw new IndexOutOfRangeException($"Index {index} is greater than the size {Count}.");
+            throw new IndexOutOfRangeException($"Biome type '{type}' is not supported.");
         }
-
-        public int Count => 4; //Keeping chip out for now
 
         public Biome MakeSnowy()
         {

@@ -12,31 +12,35 @@ namespace Adventure.Services
     interface IMonsterMaker
     {
         List<MonsterInfo> CreateBaseMonsters(Random random);
-        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, IEnumerable<int> monsterIndices, int bossIndex);
+        void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element attackElement, Element defendElement);
     }
 
-    record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances);
+    record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances, BiomeType NativeBiome)
+    {
+    }
+
+    record MonsterAssetInfo(ISpriteAsset Asset, BiomeType NativeBiome);
 
     class MonsterMaker : IMonsterMaker
     {
-        private List<ISpriteAsset> monsterAssets = new List<ISpriteAsset>();
+        private List<MonsterAssetInfo> monsterAssets = new List<MonsterAssetInfo>();
         private StandardEnemyCurve standardEnemyCurve = new StandardEnemyCurve();
 
         public MonsterMaker()
         {
-            monsterAssets.Add(new Bat());
-            monsterAssets.Add(new DeepTrollBerserker());
-            monsterAssets.Add(new Ghoul());
-            monsterAssets.Add(new MerfolkImpalerWaterNew());
-            monsterAssets.Add(new MutantBeast());
-            monsterAssets.Add(new OgreNew());
-            monsterAssets.Add(new OrcKnightOld());
-            monsterAssets.Add(new SalamanderFirebrand());
-            monsterAssets.Add(new SirenNew());
-            monsterAssets.Add(new Skeleton());
-            monsterAssets.Add(new ThornHunter());
-            monsterAssets.Add(new TinyDino());
-            monsterAssets.Add(new WanderingMushroomNew());
+            monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside));
+            monsterAssets.Add(new MonsterAssetInfo(new DeepTrollBerserker(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new Ghoul(), BiomeType.Desert));
+            monsterAssets.Add(new MonsterAssetInfo(new MerfolkImpalerWaterNew(), BiomeType.Countryside));
+            monsterAssets.Add(new MonsterAssetInfo(new MutantBeast(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Countryside));
+            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Forest));
+            monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert));
+            monsterAssets.Add(new MonsterAssetInfo(new SirenNew(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert));
+            monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest));
+            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
+            monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest));
         }
 
         /// <summary>
@@ -56,7 +60,7 @@ namespace Adventure.Services
                 availableElements.Add(Element.Bludgeoning);
             }
 
-            foreach(var asset in monsterAssets)
+            foreach(var monsterAsset in monsterAssets)
             {
                 RefillElements();
                 int index;
@@ -70,12 +74,13 @@ namespace Adventure.Services
 
                 var monster = new MonsterInfo
                 (
-                    Asset: asset,
+                    Asset: monsterAsset.Asset,
                     Resistances: new Dictionary<Element, Resistance>
                     {
                         { weakElement, Resistance.Weak },
                         { resistElement, Resistance.Resist }
-                    }
+                    },
+                    NativeBiome: monsterAsset.NativeBiome
                 );
 
                 monsters.Add(monster);
@@ -84,17 +89,17 @@ namespace Adventure.Services
             return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, IEnumerable<int> monsterIndices, int bossIndex)
+        public void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element attackElement, Element defendElement)
         {
             //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
 
-            foreach(var monsterIndex in monsterIndices)
+            foreach(var monster in regularEnemies)
             {
-                var enemy = CreateEnemy(monsters[monsterIndex], attackElement, defendElement);
+                var enemy = CreateEnemy(monster, attackElement, defendElement);
                 biome.RegularEnemies.Add(enemy);
             }
 
-            biome.BossEnemy = CreateEnemy(monsters[bossIndex], attackElement, defendElement);
+            biome.BossEnemy = CreateEnemy(boss, attackElement, defendElement);
 
             var elementColor = ElementColors.GetElementalHue(attackElement);
             if (attackElement != Element.None)

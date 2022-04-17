@@ -96,18 +96,23 @@ namespace Adventure.Exploration
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            int monsterIndex;
             var attackElement = Element.None;
             var defendElement = Element.None;
+            MonsterInfo bossMonster;
+            IEnumerable<MonsterInfo> regularMonsters;
             if (zoneIndex == 0)
             {
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
-                var zoneSeed = o.LevelSeed % biomeManager.Count;
-                monsterIndex = Math.Abs(o.LevelSeed) % monsterInfo.Count;
+                var zoneSeed = o.LevelSeed;
+                var monsterRandom = new Random(zoneSeed);
 
-                o.Biome = biomeManager.GetBiome(Math.Abs(zoneSeed) % biomeManager.Count);
+                var biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
+                o.Biome = biomeManager.GetBiome(biomeType);
+                var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == biomeType).ToList();
+                regularMonsters = biomeMonsters;
+                bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
 
                 //Give out starting weapons
                 var treasures = new List<ITreasure>();
@@ -151,18 +156,22 @@ namespace Adventure.Exploration
                 o.MakeGate = zoneBasis % 4 == 3;
                 var zoneSeedIndex = zoneBasis / zoneLevelScaler;
                 var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
+                var monsterRandom = new Random(zoneSeed);
 
                 if (chipZones.Contains(zoneSeedIndex) || o.EnemyLevel > 92)
                 {
                     o.Biome = biomeManager.MakeChip();
+                    regularMonsters = monsterInfo;
+                    bossMonster = monsterInfo[monsterRandom.Next(monsterInfo.Count)];
                 }
                 else
                 {
-                    o.Biome = biomeManager.GetBiome(Math.Abs(zoneSeed) % biomeManager.Count);
+                    var biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
+                    o.Biome = biomeManager.GetBiome(biomeType);
+                    var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == biomeType).ToList();
+                    regularMonsters = biomeMonsters;
+                    bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
                 }
-
-                var monsterRandom = new Random(zoneSeed);
-                monsterIndex = monsterRandom.Next(0, monsterInfo.Count);
 
                 var elementalRandom = new Random(zoneSeed);
                 if (o.EnemyLevel > 14)
@@ -235,7 +244,7 @@ namespace Adventure.Exploration
                 }
             }
             //TODO: This is where to set more monsters into the zone
-            monsterMaker.PopulateBiome(o.Biome, monsterInfo, attackElement, defendElement, new[] { monsterIndex }, monsterIndex);
+            monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, attackElement, defendElement);
         }
 
         private int GetZoneSeed(int index)
