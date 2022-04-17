@@ -632,8 +632,7 @@ namespace Adventure
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
                     o.Translation = currentPosition + o.MapOffset;
                     var enemy = biome.RegularEnemies[enemyRandom.Next(biome.RegularEnemies.Count)];
-                    o.Sprite = enemy.Asset.CreateSprite();
-                    o.SpriteMaterial = enemy.Asset.CreateMaterial();
+                    o.TriggerEnemy = enemy;
                     o.Zone = index;
                     o.Index = enemyIndex++;
                     o.EnemyLevel = enemyLevel;
@@ -678,9 +677,7 @@ namespace Adventure
                 {
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
                     o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
-                    var enemy = biome.BossEnemy;
-                    o.Sprite = enemy.Asset.CreateSprite();
-                    o.SpriteMaterial = enemy.Asset.CreateMaterial();
+                    o.TriggerEnemy = biome.BossEnemy;
                     o.Zone = index;
                     o.Index = 0; //Only ever 1 boss
                     o.EnemyLevel = enemyLevel;

@@ -42,7 +42,7 @@ namespace Adventure.Battle
         /// </summary>
         /// <param name="active"></param>
         void SetActive(bool active);
-        void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> Steal);
+        void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> Steal, BiomeEnemy triggerEnemy);
         Result Update(Clock clock);
         IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetRandomPlayer();
@@ -149,7 +149,7 @@ namespace Adventure.Battle
             objectResolver.Dispose();
         }
 
-        public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb)
+        public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy)
         {
             this.stealCb = stealCb;
             var currentZ = 3;
@@ -176,7 +176,7 @@ namespace Adventure.Battle
             else
             {
                 backgroundMusic = zoneManager.Current.Biome.BattleMusic;
-                createEnemies = battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level);
+                createEnemies = battleBuilder.CreateEnemies(this.objectResolver, party, zoneManager.Current.Biome, rand, level, triggerEnemy);
             }
 
             enemies.AddRange(createEnemies);

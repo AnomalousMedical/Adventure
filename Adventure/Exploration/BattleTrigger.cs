@@ -20,9 +20,7 @@ namespace Adventure
         {
             public Vector3 MapOffset { get; set; }
 
-            public Sprite Sprite { get; set; }
-
-            public SpriteMaterialDescription SpriteMaterial { get; set; }
+            public BiomeEnemy TriggerEnemy { get; set; }
 
             public int Zone { get; set; }
 
@@ -69,6 +67,8 @@ namespace Adventure
         public int EnemyLevel { get; }
         public bool IsBoss { get; init; }
 
+        public BiomeEnemy TriggerEnemy { get; set; }
+
         public BattleTrigger(
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
@@ -86,7 +86,7 @@ namespace Adventure
             this.IsBoss = description.IsBoss;
             this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
-            this.sprite = description.Sprite;
+            this.sprite = description.TriggerEnemy.Asset.CreateSprite();
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
@@ -97,6 +97,7 @@ namespace Adventure
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
             this.mapOffset = description.MapOffset;
+            this.TriggerEnemy = description.TriggerEnemy;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
@@ -116,7 +117,7 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(description.TriggerEnemy.Asset.CreateMaterial());
 
                 this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 graphicsLoaded = true;

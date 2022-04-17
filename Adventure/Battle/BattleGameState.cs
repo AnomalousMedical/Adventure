@@ -65,6 +65,7 @@ namespace Adventure.Battle
                 int level;
                 bool boss = false;
                 Func<IEnumerable<ITreasure>> stealCb;
+                BiomeEnemy triggerEnemy = null;
                 if(battleTrigger == null)
                 {
                     level = party.GetAverageLevel() * 4 / 5;
@@ -94,9 +95,10 @@ namespace Adventure.Battle
                     battleSeed = battleTrigger.BattleSeed;
                     boss = battleTrigger.IsBoss;
                     stealCb = battleTrigger.StealTreasure;
+                    triggerEnemy = battleTrigger.TriggerEnemy;
                 }
 
-                battleManager.SetupBattle(battleSeed, level, boss, stealCb);
+                battleManager.SetupBattle(battleSeed, level, boss, stealCb, triggerEnemy);
             }
             battleManager.SetActive(active);
         }

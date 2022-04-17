@@ -11,7 +11,7 @@ namespace Adventure.Battle
     interface IBattleBuilder
     {
         IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
-        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
+        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level, BiomeEnemy triggerEnemy);
     }
 
     class BattleBuilder : IBattleBuilder
@@ -61,7 +61,7 @@ namespace Adventure.Battle
             });
         }
 
-        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level)
+        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level, BiomeEnemy triggerEnemy)
         {
             var index = 0;
             foreach(var enemyType in GetEnemyBudget(level, random))
@@ -69,7 +69,8 @@ namespace Adventure.Battle
                 yield return objectResolver.Resolve<Enemy, Enemy.Desc>(c =>
                 {
                     var location = enemyLocations[index];
-                    var biomeEnemy = biome.RegularEnemies[random.Next(biome.RegularEnemies.Count)];
+                    var biomeEnemy = triggerEnemy ?? biome.RegularEnemies[random.Next(biome.RegularEnemies.Count)];
+                    triggerEnemy = null;
                     var curve = biomeEnemy.EnemyCurve;
                     c.Sprite = biomeEnemy.Asset.CreateSprite();
                     c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();
