@@ -15,6 +15,11 @@ namespace Adventure.Assets.Enemies
         public const uint Shoulders = 0xffb84f16;//(orange)
         public const uint HelmetHighlight = 0xff852bc8;//(purple)
 
+        private static readonly HslColor TailHsl = new IntColor(Tail).ToHsl();
+        private static readonly HslColor ArmorHsl = new IntColor(Armor).ToHsl();
+        private static readonly HslColor ShouldersHsl = new IntColor(Shoulders).ToHsl();
+        private static readonly HslColor HelmetHighlightHsl = new IntColor(HelmetHighlight).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -39,12 +44,14 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = TailHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Tail, IntColor.FromHsl(h, s, l).ARGB },
-                { Armor, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Shoulders, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
-                { HelmetHighlight, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Tail, IntColor.FromHslOffset(TailHsl, h, baseH).ARGB },
+                { Armor, IntColor.FromHslOffset(ArmorHsl, h, baseH).ARGB },
+                { Shoulders, IntColor.FromHslOffset(ShouldersHsl, h, baseH).ARGB },
+                { HelmetHighlight, IntColor.FromHslOffset(HelmetHighlightHsl, h, baseH).ARGB }
             };
         }
     }

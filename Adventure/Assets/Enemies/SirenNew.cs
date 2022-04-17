@@ -17,6 +17,13 @@ namespace Adventure.Assets.Enemies
         public const uint Pants = 0xff156b0b;//(dark green)
         public const uint Eyes = 0xffffffff;//(white)
 
+        private static readonly HslColor HairHsl = new IntColor(Hair).ToHsl();
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor HighlightHsl = new IntColor(Highlight).ToHsl();
+        private static readonly HslColor ShirtHsl = new IntColor(Shirt).ToHsl();
+        private static readonly HslColor PantsHsl = new IntColor(Pants).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -41,13 +48,15 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = HairHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Hair, IntColor.FromHsl(h, s, l).ARGB },
-                { Highlight, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Shirt, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
-                { Pants, IntColor.FromHsl((h + 300) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Hair, IntColor.FromHslOffset(HairHsl, h, baseH).ARGB },
+                { Highlight, IntColor.FromHslOffset(HighlightHsl, h, baseH).ARGB },
+                { Shirt, IntColor.FromHslOffset(ShirtHsl, h, baseH).ARGB },
+                { Pants, IntColor.FromHslOffset(PantsHsl, h, baseH).ARGB },
+                { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
         }
     }

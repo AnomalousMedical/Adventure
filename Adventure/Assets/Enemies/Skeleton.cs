@@ -15,6 +15,11 @@ namespace Adventure.Assets.Enemies
         public const uint Bone = 0xffefefef;//Bone (almost white)
         public const uint Eyes = 0xffbd0000;//(red)
 
+        private static readonly HslColor ArmorHighlightHsl = new IntColor(ArmorHighlight).ToHsl();
+        private static readonly HslColor ArmorHsl = new IntColor(Armor).ToHsl();
+        private static readonly HslColor BoneHsl = new IntColor(Bone).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -38,11 +43,12 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = ArmorHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Armor, IntColor.FromHsl(h, s, l).ARGB },
-                { ArmorHighlight, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                //{ Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB } //Don't mod eyes since we don't mod the bones
+                { Armor, IntColor.FromHslOffset(ArmorHsl, h, baseH).ARGB },
+                { ArmorHighlight, IntColor.FromHslOffset(ArmorHighlightHsl, h, baseH).ARGB },
             };
         }
     }

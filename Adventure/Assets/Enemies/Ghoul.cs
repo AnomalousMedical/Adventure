@@ -40,11 +40,13 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = SkinHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, SkinHsl.S, SkinHsl.L).ARGB },
-                { Highlight, IntColor.FromHsl((h + 90) % 360, HighlightHsl.S, HighlightHsl.L).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, EyesHsl.S, EyesHsl.L).ARGB }
+                { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
+                { Highlight, IntColor.FromHslOffset(HighlightHsl, h, baseH).ARGB },
+                { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
         }
     }

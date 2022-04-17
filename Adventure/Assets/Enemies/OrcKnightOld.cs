@@ -16,6 +16,12 @@ namespace Adventure.Assets.Enemies
         public const uint Armor = 0xff404040;//(gray)
         public const uint Eyes = 0xffc00000;//(red)
 
+        private static readonly HslColor TusksHsl = new IntColor(Tusks).ToHsl();
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor BeltHsl = new IntColor(Belt).ToHsl();
+        private static readonly HslColor ArmorHsl = new IntColor(Armor).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -39,12 +45,14 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = BeltHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { Armor, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Belt, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
+                { Armor, IntColor.FromHslOffset(ArmorHsl, h, baseH).ARGB },
+                { Belt, IntColor.FromHslOffset(BeltHsl, h, baseH).ARGB },
+                { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
         }
     }

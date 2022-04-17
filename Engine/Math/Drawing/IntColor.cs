@@ -120,6 +120,12 @@ namespace Engine
             return colorDiffs.color;
         }
 
+        public static IntColor FromHslOffset(HslColor hslColor, float inputH, float baseH)
+        {
+            var h = (inputH + (hslColor.H - baseH)) % 360;
+            return FromHsl(h, hslColor.S, hslColor.L);
+        }
+
         public static IntColor FromHsl(HslColor hslColor)
         {
             return FromHsl(hslColor.H, hslColor.S, hslColor.L);

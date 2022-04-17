@@ -14,6 +14,10 @@ namespace Adventure.Assets.Enemies
         public const uint Horns = 0xfffa7e00;//(orange)
         public const uint Eyes = 0xff8f00fa;//(Purple)
 
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor HornsHsl = new IntColor(Horns).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
+
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -36,11 +40,13 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = SkinHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { Horns, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
+                { Horns, IntColor.FromHslOffset(HornsHsl, h, baseH).ARGB },
+                { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
         }
     }

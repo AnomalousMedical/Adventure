@@ -14,7 +14,9 @@ namespace Adventure.Assets.Enemies
         public const uint Spine = 0xffff0000;//Spines (red)
         public const uint Eyes = 0xff9105bd;//Eye (purple)
 
-        //Threax drew this one
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor SpineHsl = new IntColor(Spine).ToHsl();
+        private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
         public string SkinMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
         public string SpineMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
@@ -41,11 +43,13 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = SkinHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { Spine, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { Eyes, IntColor.FromHsl((h + 180) % 360, s, l).ARGB }
+                { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
+                { Spine, IntColor.FromHslOffset(SpineHsl, h, baseH).ARGB },
+                { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
         }
     }

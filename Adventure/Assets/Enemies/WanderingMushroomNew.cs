@@ -12,7 +12,11 @@ namespace Adventure.Assets.Enemies
     {
         public const uint Skin = 0xffffff80;//(yellowish)
         public const uint Cap = 0xffffc000;//(orange)
-        public const uint CapHighlight = 0xffff4000;//(red)
+        public const uint CapHighlight = 0xffe20bdf;//(purple)
+
+        private static readonly HslColor SkinHsl = new IntColor(Skin).ToHsl();
+        private static readonly HslColor CapHsl = new IntColor(Cap).ToHsl();
+        private static readonly HslColor CapHighlightHsl = new IntColor(CapHighlight).ToHsl();
 
         public Dictionary<uint, uint> PalletSwap { get; set; }
         public SpriteMaterialDescription CreateMaterial()
@@ -37,11 +41,13 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = SkinHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Skin, IntColor.FromHsl(h, s, l).ARGB },
-                { Cap, IntColor.FromHsl((h + 90) % 360, s, l).ARGB },
-                { CapHighlight, IntColor.FromHsl((h + 270) % 360, s, l).ARGB },
+                { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
+                { Cap, IntColor.FromHslOffset(CapHsl, h, baseH).ARGB },
+                { CapHighlight, IntColor.FromHslOffset(CapHighlightHsl, h, baseH).ARGB },
             };
         }
     }

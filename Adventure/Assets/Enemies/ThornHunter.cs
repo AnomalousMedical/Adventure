@@ -41,11 +41,13 @@ namespace Adventure.Assets.Enemies
 
         public void SetupSwap(float h, float s, float l)
         {
+            var baseH = RoseHsl.H;
+
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Rose, IntColor.FromHsl(h, RoseHsl.S, RoseHsl.L).ARGB },
-                { Vines, IntColor.FromHsl((h + 90) % 360, VinesHsl.S, VinesHsl.L).ARGB },
-                { Thorns, IntColor.FromHsl((h + 120) % 360, ThornsHsl.S, ThornsHsl.L).ARGB },
+                { Rose, IntColor.FromHslOffset(RoseHsl, h, baseH).ARGB },
+                { Vines, IntColor.FromHslOffset(VinesHsl, h, baseH).ARGB },
+                { Thorns, IntColor.FromHslOffset(ThornsHsl, h, baseH).ARGB },
             };
         }
     }
