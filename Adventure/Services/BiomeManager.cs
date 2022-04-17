@@ -41,12 +41,14 @@ namespace Adventure
                     return MakeDesert();
                 case 2:
                     return MakeSnowy();
+                case 3:
+                    return MakeForest();
             }
 
             throw new IndexOutOfRangeException($"Index {index} is greater than the size {Count}.");
         }
 
-        public int Count => 3;
+        public int Count => 4;
 
         public Biome MakeSnowy()
         {
@@ -89,6 +91,21 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
+                Treasure = new BiomeTreasure()
+                {
+                    Asset = new Assets.World.TreasureChest(),
+                }
+            };
+
+            return biome;
+        }
+
+        public Biome MakeForest()
+        {
+            var biome = new Biome
+            {
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Ground042_1K",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
