@@ -234,7 +234,8 @@ namespace Adventure.Exploration
                     defendElement = Element.MagicStart;
                 }
             }
-            monsterMaker.PopulateBiome(o.Biome, monsterInfo, attackElement, defendElement, monsterIndex);
+            //TODO: This is where to set more monsters into the zone
+            monsterMaker.PopulateBiome(o.Biome, monsterInfo, attackElement, defendElement, new[] { monsterIndex }, monsterIndex);
         }
 
         private int GetZoneSeed(int index)

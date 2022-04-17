@@ -12,7 +12,7 @@ namespace Adventure.Services
     interface IMonsterMaker
     {
         List<MonsterInfo> CreateBaseMonsters(Random random);
-        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, int monsterIndex);
+        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, IEnumerable<int> monsterIndices, int bossIndex);
     }
 
     record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances);
@@ -84,11 +84,40 @@ namespace Adventure.Services
             return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, int monsterIndex)
+        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, IEnumerable<int> monsterIndices, int bossIndex)
         {
-            var monster = monsters[monsterIndex];
-
             //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
+
+            foreach(var monsterIndex in monsterIndices)
+            {
+                var enemy = CreateEnemy(monsters[monsterIndex], attackElement, defendElement);
+                biome.RegularEnemies.Add(enemy);
+            }
+
+            biome.BossEnemy = CreateEnemy(monsters[bossIndex], attackElement, defendElement);
+
+            var elementColor = ElementColors.GetElementalHue(attackElement);
+            if (attackElement != Element.None)
+            {
+
+                foreach (var regularEnemy in biome.RegularEnemies)
+                {
+                    regularEnemy.Asset.SetupSwap(elementColor, 100, 50);
+                }
+                biome.BossEnemy.Asset.SetupSwap(elementColor, 100, 50);
+            }
+            else if(defendElement != Element.None)
+            {
+                foreach(var regularEnemy in biome.RegularEnemies)
+                {
+                    regularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+                }
+                biome.BossEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+            }
+        }
+
+        private BiomeEnemy CreateEnemy(MonsterInfo monster, Element attackElement, Element defendElement)
+        {
             var enemyResistances = new Dictionary<Element, Resistance>();
             if (attackElement != Element.None)
             {
@@ -98,54 +127,19 @@ namespace Adventure.Services
             {
                 enemyResistances[defendElement] = Resistance.Resist;
             }
-            foreach(var resistance in monster.Resistances)
+
+            foreach (var resistance in monster.Resistances)
             {
                 enemyResistances[resistance.Key] = resistance.Value;
             }
 
-            biome.RegularEnemy = new BiomeEnemy
+            var enemy = new BiomeEnemy
             {
                 Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
-
-            biome.BadassEnemy = new BiomeEnemy
-            {
-                Asset = monster.Asset.CreateAnotherInstance(),
-                EnemyCurve = standardEnemyCurve,
-                Resistances = enemyResistances
-            };
-
-            biome.PeonEnemy = new BiomeEnemy
-            {
-                Asset = monster.Asset.CreateAnotherInstance(),
-                EnemyCurve = standardEnemyCurve,
-                Resistances = enemyResistances
-            };
-
-            biome.BossEnemy = new BiomeEnemy
-            {
-                Asset = monster.Asset.CreateAnotherInstance(),
-                EnemyCurve = standardEnemyCurve,
-                Resistances = enemyResistances
-            };
-
-            var elementColor = ElementColors.GetElementalHue(attackElement);
-            if (attackElement != Element.None)
-            {
-                biome.RegularEnemy.Asset.SetupSwap(elementColor, 100, 50);
-                biome.RegularEnemy.Asset.SetupSwap(elementColor, 100, 50);
-                biome.PeonEnemy.Asset.SetupSwap(elementColor, 100, 50);
-                biome.BossEnemy.Asset.SetupSwap(elementColor, 100, 50);
-            }
-            else if(defendElement != Element.None)
-            {
-                biome.RegularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-                biome.RegularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-                biome.PeonEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-                biome.BossEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-            }
+            return enemy;
         }
     }
 }

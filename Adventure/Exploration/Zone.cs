@@ -631,7 +631,7 @@ namespace Adventure
                 {
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
                     o.Translation = currentPosition + o.MapOffset;
-                    var enemy = biome.GetEnemy(RpgMath.EnemyType.Normal);
+                    var enemy = biome.RegularEnemies[enemyRandom.Next(biome.RegularEnemies.Count)];
                     o.Sprite = enemy.Asset.CreateSprite();
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
                     o.Zone = index;
@@ -678,7 +678,7 @@ namespace Adventure
                 {
                     o.MapOffset = mapMesh.PointToVector(point.x, point.y);
                     o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
-                    var enemy = biome.GetEnemy(RpgMath.EnemyType.Boss);
+                    var enemy = biome.BossEnemy;
                     o.Sprite = enemy.Asset.CreateSprite();
                     o.SpriteMaterial = enemy.Asset.CreateMaterial();
                     o.Zone = index;

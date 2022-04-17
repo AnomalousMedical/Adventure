@@ -34,7 +34,7 @@ namespace Adventure.Battle
             {
                 var enemyType = EnemyType.Boss;
                 var location = enemyLocations[enemyLocations.Count / 2];
-                var biomeEnemy = biome.GetEnemy(enemyType);
+                var biomeEnemy = biome.BossEnemy;
                 var curve = biomeEnemy.EnemyCurve;
                 c.Sprite = biomeEnemy.Asset.CreateSprite();
                 c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();
@@ -69,7 +69,7 @@ namespace Adventure.Battle
                 yield return objectResolver.Resolve<Enemy, Enemy.Desc>(c =>
                 {
                     var location = enemyLocations[index];
-                    var biomeEnemy = biome.GetEnemy(enemyType);
+                    var biomeEnemy = biome.RegularEnemies[random.Next(biome.RegularEnemies.Count)];
                     var curve = biomeEnemy.EnemyCurve;
                     c.Sprite = biomeEnemy.Asset.CreateSprite();
                     c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();

@@ -1,5 +1,6 @@
 ﻿using RpgMath;
 using Adventure.Assets;
+using System.Collections.Generic;
 
 namespace Adventure
 {
@@ -17,27 +18,14 @@ namespace Adventure
         string BgMusicNight { get; set; }
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
-        BiomeEnemy GetEnemy(EnemyType type);
 
-        public BiomeEnemy RegularEnemy { get; set; }
+        public List<BiomeEnemy> RegularEnemies { get; }
 
         /// <summary>
         /// Set this to control the boss version of the enemy separately. You will get a boss enemy
         /// stat-wise no matter what.
         /// </summary>
         public BiomeEnemy BossEnemy { get; set; }
-
-        /// <summary>
-        /// Set this to control the badass version of the enemy separately. You will get a badass enemy
-        /// stat-wise no matter what.
-        /// </summary>
-        public BiomeEnemy BadassEnemy { get; set; }
-
-        /// <summary>
-        /// Set this to control the peon version of the enemy separately. You will get a peon enemy
-        /// stat-wise no matter what.
-        /// </summary>
-        public BiomeEnemy PeonEnemy { get; set; }
     }
 
     class Biome : IBiome
@@ -58,35 +46,9 @@ namespace Adventure
 
         public string BossBattleMusic { get; set; } = "Music/freepd/Bryan Teoh - Honor Bound.ogg";
 
-        public BiomeEnemy GetEnemy(EnemyType type)
-        {
-            BiomeEnemy biomeEnemy;
-            switch (type)
-            {
-                case EnemyType.Badass:
-                    biomeEnemy = BadassEnemy;
-                    break;
-                case EnemyType.Peon:
-                    biomeEnemy = PeonEnemy;
-                    break;
-                case EnemyType.Boss:
-                    biomeEnemy = BossEnemy;
-                    break;
-                default:
-                    biomeEnemy = RegularEnemy;
-                    break;
-            }
-
-            return biomeEnemy ?? RegularEnemy;
-        }
-
-        public BiomeEnemy RegularEnemy { get; set; }
+        public List<BiomeEnemy> RegularEnemies { get; set; } = new List<BiomeEnemy>();
 
         public BiomeEnemy BossEnemy { get; set; }
-
-        public BiomeEnemy BadassEnemy { get; set; }
-
-        public BiomeEnemy PeonEnemy { get; set; }
 
         /// <summary>
         /// The treasure to use for the biome.
