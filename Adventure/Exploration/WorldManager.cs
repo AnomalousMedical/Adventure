@@ -32,6 +32,10 @@ namespace Adventure.Exploration
         private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
         private List<MonsterInfo> monsterInfo;
+        private List<int> chipZones = new List<int>();
+
+        const int zoneLevelScaler = 2;
+        const int levelScale = 3;
 
         public WorldManager
         (
@@ -62,6 +66,17 @@ namespace Adventure.Exploration
 
             var weaknessRandom = new Random(persistence.Current.World.Seed);
             this.monsterInfo = monsterMaker.CreateBaseMonsters(weaknessRandom);
+
+            var chipZoneRandom = new Random(persistence.Current.World.Seed);
+            var chipMax = 99 / levelScale;
+            var chipMin = chipMax / 2;
+            chipZones.Add(chipMax); //The last couple of zones are chip zones, then randomly before that
+            chipZones.Add(chipMax - 1);
+            chipMax -= 2;
+            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax)); //This could repeat, but that is ok its just appearance
+            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
+            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
+            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -81,7 +96,6 @@ namespace Adventure.Exploration
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            int selectedBiomeIndex;
             int monsterIndex;
             var attackElement = Element.None;
             var defendElement = Element.None;
@@ -90,8 +104,10 @@ namespace Adventure.Exploration
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
-                selectedBiomeIndex = o.LevelSeed % biomeManager.Count;
+                var zoneSeed = o.LevelSeed % biomeManager.Count;
                 monsterIndex = Math.Abs(o.LevelSeed) % monsterInfo.Count;
+
+                o.Biome = biomeManager.GetBiome(Math.Abs(zoneSeed) % biomeManager.Count);
 
                 //Give out starting weapons
                 var treasures = new List<ITreasure>();
@@ -128,16 +144,23 @@ namespace Adventure.Exploration
             else
             {
                 var zoneBasis = zoneIndex - 1;
-                const int zoneLevelScaler = 2;
-                const int levelScale = 3;
                 o.EnemyLevel = zoneBasis / zoneLevelScaler * levelScale + levelScale;
                 o.MakeAsimov = zoneBasis % zoneLevelScaler == 0;
                 o.MakeRest = zoneBasis % zoneLevelScaler == 1;
                 o.MakeBoss = zoneBasis % zoneLevelScaler == 1;
                 o.MakeGate = zoneBasis % 4 == 3;
-                var zoneSeed = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
-                selectedBiomeIndex = zoneSeed;
-                
+                var zoneSeedIndex = zoneBasis / zoneLevelScaler;
+                var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
+
+                if (chipZones.Contains(zoneSeedIndex) || o.EnemyLevel > 92)
+                {
+                    o.Biome = biomeManager.MakeChip();
+                }
+                else
+                {
+                    o.Biome = biomeManager.GetBiome(Math.Abs(zoneSeed) % biomeManager.Count);
+                }
+
                 var monsterRandom = new Random(zoneSeed);
                 monsterIndex = monsterRandom.Next(0, monsterInfo.Count);
 
@@ -202,9 +225,8 @@ namespace Adventure.Exploration
                     };
                 }
             }
-            o.Biome = biomeManager.GetBiome(Math.Abs(selectedBiomeIndex) % biomeManager.Count);
 
-            if(attackElement == defendElement)
+            if(attackElement != Element.None && defendElement != Element.None && attackElement == defendElement)
             {
                 defendElement += 1;
                 if(defendElement >= Element.MagicEnd)

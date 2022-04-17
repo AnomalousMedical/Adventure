@@ -13,6 +13,7 @@ namespace Adventure
         int Count { get; }
 
         IBiome GetBiome(int index);
+        Biome MakeChip();
     }
 
     class BiomeEnemy
@@ -43,8 +44,7 @@ namespace Adventure
                     return MakeSnowy();
                 case 3:
                     return MakeForest();
-                case 5: //This is a special case beyond the count for a special zone, keep it at the end
-                    return MakeChip();
+                //No chip since it is a special zone
             }
 
             throw new IndexOutOfRangeException($"Index {index} is greater than the size {Count}.");
