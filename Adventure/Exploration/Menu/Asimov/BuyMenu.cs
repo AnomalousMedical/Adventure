@@ -90,14 +90,10 @@ namespace Adventure.Exploration.Menu
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly AcidStaffCreator acidStaffCreator;
-        private readonly AirStaffCreator airStaffCreator;
         private readonly DarknessStaffCreator darknessStaffCreator;
         private readonly EarthStaffCreator earthStaffCreator;
         private readonly FireStaffCreator fireStaffCreator;
         private readonly IceStaffCreator iceStaffCreator;
-        private readonly LightStaffCreator lightStaffCreator;
-        private readonly PoisonStaffCreator poisonStaffCreator;
-        private readonly WaterStaffCreator waterStaffCreator;
         private readonly ZapStaffCreator zapStaffCreator;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
@@ -125,14 +121,10 @@ namespace Adventure.Exploration.Menu
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
             AcidStaffCreator acidStaffCreator,
-            AirStaffCreator airStaffCreator,
             DarknessStaffCreator darknessStaffCreator,
             EarthStaffCreator earthStaffCreator,
             FireStaffCreator fireStaffCreator,
             IceStaffCreator iceStaffCreator,
-            LightStaffCreator lightStaffCreator,
-            PoisonStaffCreator poisonStaffCreator,
-            WaterStaffCreator waterStaffCreator,
             ZapStaffCreator zapStaffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
@@ -152,14 +144,10 @@ namespace Adventure.Exploration.Menu
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
             this.acidStaffCreator = acidStaffCreator;
-            this.airStaffCreator = airStaffCreator;
             this.darknessStaffCreator = darknessStaffCreator;
             this.earthStaffCreator = earthStaffCreator;
             this.fireStaffCreator = fireStaffCreator;
             this.iceStaffCreator = iceStaffCreator;
-            this.lightStaffCreator = lightStaffCreator;
-            this.poisonStaffCreator = poisonStaffCreator;
-            this.waterStaffCreator = waterStaffCreator;
             this.zapStaffCreator = zapStaffCreator;
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
@@ -373,14 +361,10 @@ Lck: {characterData.CharacterSheet.Luck}
             yield return shieldCreator.CreateShopEntry(level);
             
             yield return acidStaffCreator.CreateShopEntry(level);
-            yield return airStaffCreator.CreateShopEntry(level);
             yield return darknessStaffCreator.CreateShopEntry(level);
             yield return earthStaffCreator.CreateShopEntry(level);
             yield return fireStaffCreator.CreateShopEntry(level);
             yield return iceStaffCreator.CreateShopEntry(level);
-            yield return lightStaffCreator.CreateShopEntry(level);
-            yield return poisonStaffCreator.CreateShopEntry(level);
-            yield return waterStaffCreator.CreateShopEntry(level);
             yield return zapStaffCreator.CreateShopEntry(level);
             
             //Can only buy level 1 daggers, they are given out by stealing otherwise

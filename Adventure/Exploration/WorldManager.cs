@@ -31,7 +31,7 @@ namespace Adventure.Exploration
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
-        private Dictionary<Element, List<ISpriteAsset>> elementAssets;
+        private List<MonsterInfo> monsterInfo;
 
         public WorldManager
         (
@@ -61,7 +61,7 @@ namespace Adventure.Exploration
             this.daggerCreator = daggerCreator;
 
             var weaknessRandom = new Random(persistence.Current.World.Seed);
-            this.elementAssets = monsterMaker.CreatePrimaryWeaknesses(weaknessRandom);
+            this.monsterInfo = monsterMaker.CreateBaseMonsters(weaknessRandom);
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -187,8 +187,17 @@ namespace Adventure.Exploration
             }
             o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
 
-            var element = (Element)elementalRandom.Next((int)Element.RandStart, (int)Element.RandEnd);
-            monsterMaker.PopulateBiome(o.Biome, elementAssets, element, new[] { new KeyValuePair<Element, Resistance>(element, Resistance.Weak) }, elementalRandom);
+            var weakness = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            var strength = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            if(weakness == strength)
+            {
+                strength += 1;
+                if(strength >= Element.MagicEnd)
+                {
+                    strength = Element.MagicStart;
+                }
+            }
+            monsterMaker.PopulateBiome(o.Biome, monsterInfo, weakness, strength, elementalRandom);
         }
 
         private int GetZoneSeed(int index)

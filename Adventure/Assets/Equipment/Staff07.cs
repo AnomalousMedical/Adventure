@@ -55,7 +55,7 @@ namespace Adventure.Assets.Equipment
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xffde4509 }
+                { Staff07.Crystal, ElementColors.Fire }
             };
         }
     }
@@ -66,7 +66,7 @@ namespace Adventure.Assets.Equipment
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xff0962de }
+                { Staff07.Crystal, ElementColors.Ice }
             };
         }
     }
@@ -77,7 +77,7 @@ namespace Adventure.Assets.Equipment
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xffe3c923 }
+                { Staff07.Crystal, ElementColors.Electricity }
             };
         }
     }
@@ -88,18 +88,7 @@ namespace Adventure.Assets.Equipment
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xff18c81b }
-            };
-        }
-    }
-
-    class LightStaff07 : Staff07
-    {
-        public LightStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, 0xffffff }
+                { Staff07.Crystal, ElementColors.Acid }
             };
         }
     }
@@ -115,38 +104,7 @@ namespace Adventure.Assets.Equipment
         }
     }
 
-    class WaterStaff07 : Staff07
-    {
-        public WaterStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, 0xff1633b9 }
-            };
-        }
-    }
 
-    class PoisonStaff07 : Staff07
-    {
-        public PoisonStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, 0xff16b933 }
-            };
-        }
-    }
-
-    class AirStaff07 : Staff07
-    {
-        public AirStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, 0xff5fa7d7 }
-            };
-        }
-    }
 
     class EarthStaff07 : Staff07
     {
@@ -154,7 +112,7 @@ namespace Adventure.Assets.Equipment
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xffcd880b }
+                { Staff07.Crystal, ElementColors.Earth }
             };
         }
     }

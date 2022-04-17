@@ -11,10 +11,11 @@ namespace Adventure.Services
 {
     interface IMonsterMaker
     {
-        Dictionary<Element, List<ISpriteAsset>> CreatePrimaryWeaknesses(Random random);
-
-        void PopulateBiome(IBiome biome, Dictionary<Element, List<ISpriteAsset>> elementAssets, Element primaryElement, IEnumerable<KeyValuePair<Element, Resistance>> resistances, Random random);
+        List<MonsterInfo> CreateBaseMonsters(Random random);
+        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element zoneWeakness, Element zoneResist, Random random);
     }
+
+    record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances);
 
     class MonsterMaker : IMonsterMaker
     {
@@ -43,86 +44,106 @@ namespace Adventure.Services
         /// </summary>
         /// <param name="random"></param>
         /// <returns></returns>
-        public Dictionary<Element, List<ISpriteAsset>> CreatePrimaryWeaknesses(Random random)
+        public List<MonsterInfo> CreateBaseMonsters(Random random)
         {
-            //This assumes there are more monsters than elements
-            var primaryWeaknesses = new Dictionary<Element, List<ISpriteAsset>>();
-            var availableMonsters = new List<ISpriteAsset>(monsterAssets);
-            foreach (var element in ElementTypes())
+            var monsters = new List<MonsterInfo>();
+            var availableElements = new List<Element>();
+            void RefillElements()
             {
-                var index = random.Next(0, availableMonsters.Count);
-                if (!primaryWeaknesses.ContainsKey(element))
-                {
-                    primaryWeaknesses[element] = new List<ISpriteAsset>();
-                }
-                primaryWeaknesses[element].Add(availableMonsters[index]);
-                availableMonsters.RemoveAt(index);
+                availableElements.Clear();
+                availableElements.Add(Element.Slashing);
+                availableElements.Add(Element.Piercing);
+                availableElements.Add(Element.Bludgeoning);
             }
-            foreach(var monster in availableMonsters)
+
+            foreach(var asset in monsterAssets)
             {
-                var element = (Element)random.Next((int)Element.RandStart, (int)Element.RandEnd);
-                primaryWeaknesses[element].Add(monster);
+                RefillElements();
+                int index;
+                
+                index = random.Next(availableElements.Count);
+                var weakElement = availableElements[index];
+                availableElements.RemoveAt(index);
+
+                index = random.Next(availableElements.Count);
+                var resistElement = availableElements[index];
+
+                var monster = new MonsterInfo
+                (
+                    Asset: asset,
+                    Resistances: new Dictionary<Element, Resistance>
+                    {
+                        { weakElement, Resistance.Weak },
+                        { resistElement, Resistance.Resist }
+                    }
+                );
+
+                monsters.Add(monster);
             }
-            return primaryWeaknesses;
+
+            return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, Dictionary<Element, List<ISpriteAsset>> elementAssets, Element primaryElement, IEnumerable<KeyValuePair<Element, Resistance>> resistances, Random random)
+        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element zoneWeakness, Element zoneResist, Random random)
         {
-            var assets = elementAssets[primaryElement];
-            var assetIndex = random.Next(0, assets.Count);
-            var asset = assets[assetIndex];
-            var enemyResistances = new Dictionary<Element, Resistance>(resistances);
+            var monsterIndex = random.Next(0, monsters.Count);
+            var monster = monsters[monsterIndex];
+
+            //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
+            var enemyResistances = new Dictionary<Element, Resistance>();
+            if (zoneWeakness != Element.None)
+            {
+                enemyResistances[zoneWeakness] = Resistance.Weak;
+            }
+            else
+            {
+                enemyResistances[zoneResist] = Resistance.Resist;
+            }
+            foreach(var resistance in monster.Resistances)
+            {
+                enemyResistances[resistance.Key] = resistance.Value;
+            }
 
             biome.RegularEnemy = new BiomeEnemy
             {
-                Asset = asset.CreateAnotherInstance(),
+                Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.BadassEnemy = new BiomeEnemy
             {
-                Asset = asset.CreateAnotherInstance(),
+                Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.PeonEnemy = new BiomeEnemy
             {
-                Asset = asset.CreateAnotherInstance(),
+                Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
             biome.BossEnemy = new BiomeEnemy
             {
-                Asset = asset.CreateAnotherInstance(),
+                Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
 
-            //These should only change when resistances change
-            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-            biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-            biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-            biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-        }
-
-        private IEnumerable<Element> ElementTypes()
-        {
-            yield return Element.Piercing;
-            yield return Element.Slashing;
-            yield return Element.Bludgeoning;
-            yield return Element.Fire;
-            yield return Element.Ice;
-            yield return Element.Electricity;
-            yield return Element.Acid;
-            yield return Element.Light;
-            yield return Element.Darkness;
-            yield return Element.Water;
-            yield return Element.Poison;
-            yield return Element.Air;
-            yield return Element.Earth;
+            if (zoneResist != Element.None)
+            {
+                //Enemies resisting something should reflect that element
+                biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+                biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+                biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+                biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+            }
+            else
+            {
+                //Enemies with strengths should look different
+            }
         }
     }
 }
