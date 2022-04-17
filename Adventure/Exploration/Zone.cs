@@ -567,30 +567,28 @@ namespace Adventure
             var currentCorridor = mapMesh.MapBuilder.map[firstPoint.x, firstPoint.y];
             for (var currentIndex = 0; currentIndex < numCorridors; ++currentIndex)
             {
-                if (currentCorridor == mapMesh.MapBuilder.EastConnectorIndex
-                || currentCorridor == mapMesh.MapBuilder.WestConnectorIndex
-                || currentCorridor == mapMesh.MapBuilder.NorthConnectorIndex
-                || currentCorridor == mapMesh.MapBuilder.SouthConnectorIndex)
-                {
-                    continue;
-                }
-
                 var corridorPoint = corridors[currentIndex];
                 var testCorridor = mapMesh.MapBuilder.map[corridorPoint.x, corridorPoint.y];
                 if (currentCorridor != testCorridor)
                 {
-                    if (currentCorridor >= csMapbuilder.CorridorCell)
+                    if (currentCorridor != mapMesh.MapBuilder.EastConnectorIndex
+                     && currentCorridor != mapMesh.MapBuilder.WestConnectorIndex
+                     && currentCorridor != mapMesh.MapBuilder.NorthConnectorIndex
+                     && currentCorridor != mapMesh.MapBuilder.SouthConnectorIndex)
                     {
-                        if (currentCorridor == csMapbuilder.MainCorridorCell)
+                        if (currentCorridor >= csMapbuilder.CorridorCell)
                         {
-                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, maxMainCorridorBattles, battleTriggers);
+                            if (currentCorridor == csMapbuilder.MainCorridorCell)
+                            {
+                                PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, maxMainCorridorBattles, battleTriggers);
+                            }
+                            else
+                            {
+                                PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, 1, battleTriggers);
+                            }
                         }
-                        else
-                        {
-                            PopulateCorridor(enemyRandom, usedCorridors, corridorStartIndex, currentIndex, 1, battleTriggers);
-                        }
+                        corridorStartIndex = currentIndex;
                     }
-                    corridorStartIndex = currentIndex;
                     currentCorridor = testCorridor;
                 }
             }
@@ -871,23 +869,30 @@ namespace Adventure
             }
         }
 
-        private static void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger, Stack<ITreasure> treasureStack)
+        private void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger, Stack<ITreasure> treasureStack)
         {
             var stealTreasure = description.StealTreasure ?? Enumerable.Empty<ITreasure>();
             var bossStealTreasure = description.BossStealTreasure ?? Enumerable.Empty<ITreasure>();
             var uniqueStealTreasure = description.UniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
             var bossUniqueStealTreasure = description.BossUniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
 
-            foreach (var treasure in stealTreasure)
+            if (battleTriggers.Count > 0)
             {
-                var index = enemyRandom.Next(battleTriggers.Count);
-                battleTriggers[index].AddStealTreasure(treasure);
-            }
+                foreach (var treasure in stealTreasure)
+                {
+                    var index = enemyRandom.Next(battleTriggers.Count);
+                    battleTriggers[index].AddStealTreasure(treasure);
+                }
 
-            foreach (var treasure in uniqueStealTreasure)
+                foreach (var treasure in uniqueStealTreasure)
+                {
+                    var index = enemyRandom.Next(battleTriggers.Count);
+                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                }
+            }
+            else
             {
-                var index = enemyRandom.Next(battleTriggers.Count);
-                battleTriggers[index].AddUniqueStealTreasure(treasure);
+                logger.LogWarning($"No battle triggers, cannot place stolen treasure.");
             }
 
             if (bossBattleTrigger != null)
@@ -901,7 +906,7 @@ namespace Adventure
                     bossBattleTrigger.AddUniqueStealTreasure(treasure);
                 }
             }
-            else
+            else if (battleTriggers.Count > 0)
             {
                 foreach (var treasure in bossStealTreasure)
                 {
@@ -914,15 +919,26 @@ namespace Adventure
                     battleTriggers[index].AddUniqueStealTreasure(treasure);
                 }
             }
-
-            //Any extra treasures from the zone are added as unique steal treasures
-            //This is pretty unlikely to happen
-            foreach(var treasure in treasureStack)
+            else
             {
-                var index = enemyRandom.Next(battleTriggers.Count);
-                battleTriggers[index].AddUniqueStealTreasure(treasure);
+                logger.LogWarning($"No battle triggers, cannot place boss stolen treasure.");
             }
-            treasureStack.Clear(); //Visited everything, clear stack
+
+            if (battleTriggers.Count > 0)
+            {
+                //Any extra treasures from the zone are added as unique steal treasures
+                //This is pretty unlikely to happen
+                foreach (var treasure in treasureStack)
+                {
+                    var index = enemyRandom.Next(battleTriggers.Count);
+                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                }
+                treasureStack.Clear(); //Visited everything, clear stack
+            }
+            else
+            {
+                logger.LogWarning($"No battle triggers, cannot place overflow chest treasure.");
+            }
         }
 
         /// <summary>
