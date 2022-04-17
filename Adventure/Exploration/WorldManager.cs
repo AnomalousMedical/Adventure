@@ -243,7 +243,7 @@ namespace Adventure.Exploration
                     defendElement = Element.MagicStart;
                 }
             }
-            //TODO: This is where to set more monsters into the zone
+            
             monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, attackElement, defendElement);
         }
 

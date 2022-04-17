@@ -29,14 +29,14 @@ namespace Adventure.Services
         public MonsterMaker()
         {
             monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside));
-            monsterAssets.Add(new MonsterAssetInfo(new DeepTrollBerserker(), BiomeType.Snowy));
-            monsterAssets.Add(new MonsterAssetInfo(new Ghoul(), BiomeType.Desert));
-            monsterAssets.Add(new MonsterAssetInfo(new MerfolkImpalerWaterNew(), BiomeType.Countryside));
-            monsterAssets.Add(new MonsterAssetInfo(new MutantBeast(), BiomeType.Snowy));
-            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Countryside));
-            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Forest));
+            //monsterAssets.Add(new MonsterAssetInfo(new DeepTrollBerserker(), BiomeType.Snowy));
+            //monsterAssets.Add(new MonsterAssetInfo(new Ghoul(), BiomeType.Desert));
+            //monsterAssets.Add(new MonsterAssetInfo(new MerfolkImpalerWaterNew(), BiomeType.Countryside));
+            //monsterAssets.Add(new MonsterAssetInfo(new MutantBeast(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert));
-            monsterAssets.Add(new MonsterAssetInfo(new SirenNew(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new SirenNew(), BiomeType.Countryside));
             monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert));
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest));
             monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
