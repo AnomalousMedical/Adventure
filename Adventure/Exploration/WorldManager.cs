@@ -70,7 +70,6 @@ namespace Adventure.Exploration
             var initRandom = new Random(GetZoneSeed(zoneIndex));
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
-            var elementalRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue));
             //Add treasure random and stuff here too
 
             o.Index = zoneIndex;
@@ -82,13 +81,17 @@ namespace Adventure.Exploration
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            int biomeSelectorIndex;
+            int selectedBiomeIndex;
+            int monsterIndex;
+            var attackElement = Element.None;
+            var defendElement = Element.None;
             if (zoneIndex == 0)
             {
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
                 o.MakeBoss = true;
-                biomeSelectorIndex = o.LevelSeed % biomeManager.Count;
+                selectedBiomeIndex = o.LevelSeed % biomeManager.Count;
+                monsterIndex = o.LevelSeed % monsterInfo.Count;
 
                 //Give out starting weapons
                 var treasures = new List<ITreasure>();
@@ -132,7 +135,21 @@ namespace Adventure.Exploration
                 o.MakeRest = zoneBasis % zoneLevelScaler == 1;
                 o.MakeBoss = zoneBasis % zoneLevelScaler == 1;
                 o.MakeGate = zoneBasis % 4 == 3;
-                biomeSelectorIndex = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
+                var zoneSeed = GetZoneSeed(zoneBasis / zoneLevelScaler); //Division keeps us pinned on the same type of zone for that many zones
+                selectedBiomeIndex = zoneSeed;
+                
+                var monsterRandom = new Random(zoneSeed);
+                monsterIndex = monsterRandom.Next(0, monsterInfo.Count);
+
+                var elementalRandom = new Random(zoneSeed);
+                if (o.EnemyLevel > 14)
+                {
+                    attackElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                }
+                if (o.EnemyLevel > 20)
+                {
+                    defendElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                }
 
                 //Dumb test treasure
                 var treasures = new List<ITreasure>();
@@ -185,19 +202,17 @@ namespace Adventure.Exploration
                     };
                 }
             }
-            o.Biome = biomeManager.GetBiome(Math.Abs(biomeSelectorIndex) % biomeManager.Count);
+            o.Biome = biomeManager.GetBiome(Math.Abs(selectedBiomeIndex) % biomeManager.Count);
 
-            var weakness = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-            var strength = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-            if(weakness == strength)
+            if(attackElement == defendElement)
             {
-                strength += 1;
-                if(strength >= Element.MagicEnd)
+                defendElement += 1;
+                if(defendElement >= Element.MagicEnd)
                 {
-                    strength = Element.MagicStart;
+                    defendElement = Element.MagicStart;
                 }
             }
-            monsterMaker.PopulateBiome(o.Biome, monsterInfo, weakness, strength, elementalRandom);
+            monsterMaker.PopulateBiome(o.Biome, monsterInfo, attackElement, defendElement, monsterIndex);
         }
 
         private int GetZoneSeed(int index)

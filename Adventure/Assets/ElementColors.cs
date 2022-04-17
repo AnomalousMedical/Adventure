@@ -1,4 +1,5 @@
-﻿using RpgMath;
+﻿using Engine;
+using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Assets
 {
-    internal class ElementColors
+    public static class ElementColors
     {
         public const uint Fire = 0xffde4509;
         public const uint Ice = 0xff0962de;
@@ -16,25 +17,32 @@ namespace Adventure.Assets
         public const uint Darkness = 0xffe109bb;
         public const uint Earth = 0xffcd880b;
 
-        public float GetElementalHue(Element element)
+        public static readonly HslColor FireHsl = new IntColor(Fire).ToHsl();
+        public static readonly HslColor IceHsl = new IntColor(Ice).ToHsl();
+        public static readonly HslColor ElectricityHsl = new IntColor(Electricity).ToHsl();
+        public static readonly HslColor AcidHsl = new IntColor(Acid).ToHsl();
+        public static readonly HslColor DarknessHsl = new IntColor(Darkness).ToHsl();
+        public static readonly HslColor EarthHsl = new IntColor(Earth).ToHsl();
+
+        public static float GetElementalHue(Element element)
         {
             switch (element)
             {
                 case Element.Fire:
-                    return Fire;
+                    return FireHsl.H;
                 case Element.Ice:
-                    return Ice;
+                    return IceHsl.H;
                 case Element.Electricity:
-                    return Electricity;
+                    return ElectricityHsl.H;
                 case Element.Acid:
-                    return Acid;
+                    return AcidHsl.H;
                 case Element.Darkness:
-                    return Darkness;
+                    return DarknessHsl.H;
                 case Element.Earth:
-                    return Earth;
+                    return EarthHsl.H;
             }
 
-            return 120;
+            return 120f;
         }
     }
 }

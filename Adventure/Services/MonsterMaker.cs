@@ -12,7 +12,7 @@ namespace Adventure.Services
     interface IMonsterMaker
     {
         List<MonsterInfo> CreateBaseMonsters(Random random);
-        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element zoneWeakness, Element zoneResist, Random random);
+        void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, int monsterIndex);
     }
 
     record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances);
@@ -84,20 +84,19 @@ namespace Adventure.Services
             return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element zoneWeakness, Element zoneResist, Random random)
+        public void PopulateBiome(IBiome biome, List<MonsterInfo> monsters, Element attackElement, Element defendElement, int monsterIndex)
         {
-            var monsterIndex = random.Next(0, monsters.Count);
             var monster = monsters[monsterIndex];
 
             //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
             var enemyResistances = new Dictionary<Element, Resistance>();
-            if (zoneWeakness != Element.None)
+            if (attackElement != Element.None)
             {
-                enemyResistances[zoneWeakness] = Resistance.Weak;
+                enemyResistances[attackElement] = Resistance.Weak;
             }
             else
             {
-                enemyResistances[zoneResist] = Resistance.Resist;
+                enemyResistances[defendElement] = Resistance.Resist;
             }
             foreach(var resistance in monster.Resistances)
             {
@@ -132,17 +131,20 @@ namespace Adventure.Services
                 Resistances = enemyResistances
             };
 
-            if (zoneResist != Element.None)
+            var elementColor = ElementColors.GetElementalHue(attackElement);
+            if (attackElement != Element.None)
             {
-                //Enemies resisting something should reflect that element
-                biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-                biome.RegularEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-                biome.PeonEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
-                biome.BossEnemy.Asset.SetupSwap(random.Next(0, 360), 100, 50);
+                biome.RegularEnemy.Asset.SetupSwap(elementColor, 100, 50);
+                biome.RegularEnemy.Asset.SetupSwap(elementColor, 100, 50);
+                biome.PeonEnemy.Asset.SetupSwap(elementColor, 100, 50);
+                biome.BossEnemy.Asset.SetupSwap(elementColor, 100, 50);
             }
-            else
+            else if(defendElement != Element.None)
             {
-                //Enemies with strengths should look different
+                biome.RegularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+                biome.RegularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+                biome.PeonEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+                biome.BossEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
             }
         }
     }
