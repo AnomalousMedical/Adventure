@@ -14,16 +14,28 @@ namespace Adventure.Items.Actions
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
-            target.MainHand = item.Equipment;
+            Equip(item, target);
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
             var charSheet = target.Stats as CharacterSheet;
+            Equip(item, charSheet);
+        }
+
+        private static void Equip(InventoryItem item, CharacterSheet charSheet)
+        {
             if (charSheet != null)
             {
-                charSheet.MainHand = item.Equipment;
+                if (charSheet.MainHand?.Id == item.Equipment.Id)
+                {
+                    charSheet.RemoveEquipment(charSheet.MainHand.Id.Value);
+                }
+                else
+                {
+                    charSheet.MainHand = item.Equipment;
+                }
             }
         }
     }
@@ -33,16 +45,28 @@ namespace Adventure.Items.Actions
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
-            target.OffHand = item.Equipment;
+            Equip(item, target);
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
             var charSheet = target.Stats as CharacterSheet;
+            Equip(item, charSheet);
+        }
+
+        private static void Equip(InventoryItem item, CharacterSheet charSheet)
+        {
             if (charSheet != null)
             {
-                charSheet.OffHand = item.Equipment;
+                if (charSheet.OffHand?.Id == item.Equipment.Id)
+                {
+                    charSheet.RemoveEquipment(charSheet.OffHand.Id.Value);
+                }
+                else
+                {
+                    charSheet.OffHand = item.Equipment;
+                }
             }
         }
     }
@@ -52,16 +76,28 @@ namespace Adventure.Items.Actions
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
-            target.Accessory = item.Equipment;
+            Equip(item, target);
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
             var charSheet = target.Stats as CharacterSheet;
+            Equip(item, charSheet);
+        }
+
+        private static void Equip(InventoryItem item, CharacterSheet charSheet)
+        {
             if (charSheet != null)
             {
-                charSheet.Accessory = item.Equipment;
+                if (charSheet.Accessory?.Id == item.Equipment.Id)
+                {
+                    charSheet.RemoveEquipment(charSheet.Accessory.Id.Value);
+                }
+                else
+                {
+                    charSheet.Accessory = item.Equipment;
+                }
             }
         }
     }
@@ -71,16 +107,28 @@ namespace Adventure.Items.Actions
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
-            target.Body = item.Equipment;
+            Equip(item, target);
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
             var charSheet = target.Stats as CharacterSheet;
+            Equip(item, charSheet);
+        }
+
+        private static void Equip(InventoryItem item, CharacterSheet charSheet)
+        {
             if (charSheet != null)
             {
-                charSheet.Body = item.Equipment;
+                if (charSheet.Body?.Id == item.Equipment.Id)
+                {
+                    charSheet.RemoveEquipment(charSheet.Body.Id.Value);
+                }
+                else
+                {
+                    charSheet.Body = item.Equipment;
+                }
             }
         }
     }
