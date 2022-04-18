@@ -90,7 +90,7 @@ namespace Adventure.Exploration
             chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
             chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
             //Ensure we have enough chip zones
-            while(chipZones.Count < 7)
+            while (chipZones.Count < 7)
             {
                 --chipMax;
                 chipZones.Add(chipMax);
@@ -103,7 +103,6 @@ namespace Adventure.Exploration
             var initRandom = new Random(GetZoneSeed(zoneIndex));
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
-            //Add treasure random and stuff here too
 
             o.Index = zoneIndex;
             o.Width = 50;
@@ -127,6 +126,7 @@ namespace Adventure.Exploration
             var zoneSeedIndex = zoneIndex / zoneLevelScaler;
             var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
             var monsterRandom = new Random(zoneSeed);
+            var treasureRandom = new Random(zoneSeed);
 
             if (chipZones.Contains(zoneSeedIndex))
             {
@@ -185,7 +185,7 @@ namespace Adventure.Exploration
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
             }
-            else if(zoneIndex == 1)
+            else if (zoneIndex == 1)
             {
                 o.EnemyLevel = 1;
                 o.MakeAsimov = false;
@@ -268,23 +268,39 @@ namespace Adventure.Exploration
 
                 if (o.MakeBoss)
                 {
-                    var element = o.Biome.BossEnemy.Resistances.Where(i => 
-                       (i.Key == Element.Slashing 
+                    var element = o.Biome.BossEnemy.Resistances.Where(i =>
+                       (i.Key == Element.Slashing
                      || i.Key == Element.Piercing
                      || i.Key == Element.Bludgeoning) && i.Value == Resistance.Weak)
                         .FirstOrDefault();
 
+                    ITreasure bossWeaknessTreasure = null;
+
                     switch (element.Key)
                     {
                         case Element.Slashing:
-                            uniqueStealTreasure.Add(new Treasure(swordCreator.CreateEpic(o.EnemyLevel)));
+                            bossWeaknessTreasure = new Treasure(swordCreator.CreateEpic(o.EnemyLevel));
                             break;
                         case Element.Piercing:
-                            uniqueStealTreasure.Add(new Treasure(spearCreator.CreateEpic(o.EnemyLevel)));
+                            bossWeaknessTreasure = new Treasure(spearCreator.CreateEpic(o.EnemyLevel));
                             break;
                         case Element.Bludgeoning:
-                            uniqueStealTreasure.Add(new Treasure(maceCreator.CreateEpic(o.EnemyLevel)));
+                            bossWeaknessTreasure = new Treasure(maceCreator.CreateEpic(o.EnemyLevel));
                             break;
+                    }
+
+                    if (bossWeaknessTreasure != null)
+                    {
+                        var storageLoc = treasureRandom.Next(2);
+                        switch (storageLoc)
+                        {
+                            case 0:
+                                uniqueStealTreasure.Add(bossWeaknessTreasure);
+                                break;
+                            case 1:
+                                treasures.Add(bossWeaknessTreasure);
+                                break;
+                        }
                     }
                 }
 
@@ -294,15 +310,15 @@ namespace Adventure.Exploration
                 }
             }
 
-            if(attackElement != Element.None && defendElement != Element.None && attackElement == defendElement)
+            if (attackElement != Element.None && defendElement != Element.None && attackElement == defendElement)
             {
                 defendElement += 1;
-                if(defendElement >= Element.MagicEnd)
+                if (defendElement >= Element.MagicEnd)
                 {
                     defendElement = Element.MagicStart;
                 }
             }
-            
+
             monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, attackElement, defendElement);
         }
 
