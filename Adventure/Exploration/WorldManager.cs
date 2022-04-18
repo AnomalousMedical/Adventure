@@ -19,6 +19,7 @@ namespace Adventure.Exploration
 
     class WorldManager : IWorldManager
     {
+        private readonly Persistence persistence;
         private readonly IBiomeManager biomeManager;
         private readonly IMonsterMaker monsterMaker;
         private List<int> createdZoneSeeds = new List<int>();
@@ -35,6 +36,8 @@ namespace Adventure.Exploration
         private readonly DaggerCreator daggerCreator;
         private List<MonsterInfo> monsterInfo;
         private HashSet<int> chipZones = new HashSet<int>();
+        private List<BiomeType> startingZones;
+        private int numStartingZones = (int)BiomeType.Max;
 
         const int zoneLevelScaler = 2;
         const int levelScale = 3;
@@ -57,6 +60,7 @@ namespace Adventure.Exploration
         )
         {
             this.zoneRandom = new Random(persistence.Current.World.Seed);
+            this.persistence = persistence;
             this.biomeManager = biomeManager;
             this.monsterMaker = monsterMaker;
             this.swordCreator = swordCreator;
@@ -132,7 +136,16 @@ namespace Adventure.Exploration
             }
             else
             {
-                var biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
+                BiomeType biomeType;
+                if (zoneSeedIndex < numStartingZones)
+                {
+                    var startupZones = GetStartingZones();
+                    biomeType = startingZones[zoneSeedIndex];
+                }
+                else
+                {
+                    biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
+                }
                 o.Biome = biomeManager.GetBiome(biomeType);
                 var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == biomeType).ToList();
                 regularMonsters = biomeMonsters;
@@ -140,15 +153,14 @@ namespace Adventure.Exploration
             }
 
             var elementalRandom = new Random(zoneSeed);
-            if (o.EnemyLevel > 14)
+            if (zoneSeedIndex >= numStartingZones)
             {
                 attackElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             }
-            if (o.EnemyLevel > 20)
+            if (zoneSeedIndex > numStartingZones + 3)
             {
                 defendElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             }
-
 
             if (zoneIndex == 0)
             {
@@ -300,6 +312,28 @@ namespace Adventure.Exploration
                 createdZoneSeeds.Add(zoneRandom.Next(int.MinValue, int.MaxValue));
             }
             return createdZoneSeeds[index];
+        }
+
+        private List<BiomeType> GetStartingZones()
+        {
+            var starupZoneRandom = new Random(persistence.Current.World.Seed);
+            if (startingZones == null)
+            {
+                var zoneTypes = new List<BiomeType>();
+                for (var i = 0; i < numStartingZones; ++i)
+                {
+                    zoneTypes.Add((BiomeType)i);
+                }
+
+                startingZones = new List<BiomeType>();
+                while (zoneTypes.Count > 0)
+                {
+                    var index = starupZoneRandom.Next(zoneTypes.Count);
+                    startingZones.Add(zoneTypes[index]);
+                    zoneTypes.RemoveAt(index);
+                }
+            }
+            return startingZones;
         }
     }
 }
