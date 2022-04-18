@@ -14,7 +14,7 @@ namespace Adventure
         Desert = 1,
         Snowy = 2,
         Forest = 3,
-        Max = Forest
+        Max = Forest + 1
         //Chip is not in here, since it has its own rules
     }
 
@@ -98,7 +98,8 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
+                //FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
                 Treasure = new BiomeTreasure()
                 {
