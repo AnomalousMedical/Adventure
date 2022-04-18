@@ -24,6 +24,8 @@ namespace Adventure.Exploration
         private List<int> createdZoneSeeds = new List<int>();
         private Random zoneRandom;
         private readonly SwordCreator swordCreator;
+        private readonly SpearCreator spearCreator;
+        private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly FireStaffCreator fireStaffCreator;
         private readonly AccessoryCreator accessoryCreator;
@@ -32,7 +34,7 @@ namespace Adventure.Exploration
         private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
         private List<MonsterInfo> monsterInfo;
-        private List<int> chipZones = new List<int>();
+        private HashSet<int> chipZones = new HashSet<int>();
 
         const int zoneLevelScaler = 2;
         const int levelScale = 3;
@@ -43,6 +45,8 @@ namespace Adventure.Exploration
             IBiomeManager biomeManager,
             IMonsterMaker monsterMaker,
             SwordCreator swordCreator,
+            SpearCreator spearCreator,
+            MaceCreator maceCreator,
             ShieldCreator shieldCreator,
             FireStaffCreator fireStaffCreator,
             AccessoryCreator accessoryCreator,
@@ -56,6 +60,8 @@ namespace Adventure.Exploration
             this.biomeManager = biomeManager;
             this.monsterMaker = monsterMaker;
             this.swordCreator = swordCreator;
+            this.spearCreator = spearCreator;
+            this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
             this.fireStaffCreator = fireStaffCreator;
             this.accessoryCreator = accessoryCreator;
@@ -70,13 +76,21 @@ namespace Adventure.Exploration
             var chipZoneRandom = new Random(persistence.Current.World.Seed);
             var chipMax = 99 / levelScale;
             var chipMin = chipMax / 2;
-            chipZones.Add(chipMax); //The last couple of zones are chip zones, then randomly before that
+            //Make the last couple zones chip zones
+            chipZones.Add(chipMax);
             chipZones.Add(chipMax - 1);
             chipMax -= 2;
-            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax)); //This could repeat, but that is ok its just appearance
+            //Randomly generate a few more zones
             chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
             chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
             chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
+            chipZones.Add(chipZoneRandom.Next(chipMin, chipMax));
+            //Ensure we have enough chip zones
+            while(chipZones.Count < 7)
+            {
+                --chipMax;
+                chipZones.Add(chipMax);
+            }
         }
 
         public void SetupZone(int zoneIndex, Zone.Description o)
@@ -100,19 +114,50 @@ namespace Adventure.Exploration
             var defendElement = Element.None;
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
-            if (zoneIndex == 0)
-            {
-                o.EnemyLevel = 1;
-                o.MaxMainCorridorBattles = 1;
-                o.MakeBoss = true;
-                var zoneSeed = o.LevelSeed;
-                var monsterRandom = new Random(zoneSeed);
 
+            o.EnemyLevel = zoneIndex / zoneLevelScaler * levelScale;
+            o.MakeAsimov = zoneIndex % zoneLevelScaler == 0;
+            o.MakeRest = zoneIndex % zoneLevelScaler == 1;
+            o.MakeBoss = zoneIndex % zoneLevelScaler == 1;
+            o.MakeGate = zoneIndex % 4 == 3;
+            var zoneSeedIndex = zoneIndex / zoneLevelScaler;
+            var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
+            var monsterRandom = new Random(zoneSeed);
+
+            if (chipZones.Contains(zoneSeedIndex))
+            {
+                o.Biome = biomeManager.MakeChip();
+                regularMonsters = monsterInfo;
+                bossMonster = monsterInfo[monsterRandom.Next(monsterInfo.Count)];
+            }
+            else
+            {
                 var biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
                 o.Biome = biomeManager.GetBiome(biomeType);
                 var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == biomeType).ToList();
                 regularMonsters = biomeMonsters;
                 bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
+            }
+
+            var elementalRandom = new Random(zoneSeed);
+            if (o.EnemyLevel > 14)
+            {
+                attackElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            }
+            if (o.EnemyLevel > 20)
+            {
+                defendElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            }
+
+
+            if (zoneIndex == 0)
+            {
+                o.EnemyLevel = 1;
+                o.MaxMainCorridorBattles = 1;
+                o.MakeAsimov = false;
+                o.MakeRest = false;
+                o.MakeBoss = false;
+                o.MakeGate = false;
 
                 //Give out starting weapons
                 var treasures = new List<ITreasure>();
@@ -125,11 +170,45 @@ namespace Adventure.Exploration
                 treasures.Add(new Treasure(weapon));
                 weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                weapon = new InventoryItem(spearCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                treasures.Add(new Treasure(weapon));
+                weapon = new InventoryItem(maceCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
                 treasures.Add(new Treasure(weapon));
 
+                treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(potionCreator.CreateFerrymansBribe()));
+            }
+            else if(zoneIndex == 1)
+            {
+                o.EnemyLevel = 1;
+                o.MakeAsimov = false;
+                o.MakeRest = true;
+                o.MakeBoss = true;
+                o.MakeGate = false;
+
+                //Give out starting armor
+                var treasures = new List<ITreasure>();
+                o.Treasure = treasures;
+
+                var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
+                treasures.Add(new Treasure(shield));
+                
                 var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
                 treasures.Add(new Treasure(dagger));
+
+                //Change some of these to the other armor types
+                var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
+                treasures.Add(new Treasure(armor));
+
+                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
+                treasures.Add(new Treasure(armor));
+
+                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
+                treasures.Add(new Treasure(armor));
+
+                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
+                treasures.Add(new Treasure(armor));
 
                 treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
@@ -137,6 +216,7 @@ namespace Adventure.Exploration
 
                 o.BossUniqueStealTreasure = new List<ITreasure>()
                 {
+                    //This should be element based, so give out what is good in the next area
                     new Treasure(new InventoryItem(swordCreator.CreateEpic(o.EnemyLevel), nameof(Items.Actions.EquipMainHand)))
                 };
 
@@ -146,43 +226,8 @@ namespace Adventure.Exploration
                     new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel))
                 };
             }
-            else
+            else //All other zones
             {
-                var zoneBasis = zoneIndex - 1;
-                o.EnemyLevel = zoneBasis / zoneLevelScaler * levelScale + levelScale;
-                o.MakeAsimov = zoneBasis % zoneLevelScaler == 0;
-                o.MakeRest = zoneBasis % zoneLevelScaler == 1;
-                o.MakeBoss = zoneBasis % zoneLevelScaler == 1;
-                o.MakeGate = zoneBasis % 4 == 3;
-                var zoneSeedIndex = zoneBasis / zoneLevelScaler;
-                var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
-                var monsterRandom = new Random(zoneSeed);
-
-                if (chipZones.Contains(zoneSeedIndex) || o.EnemyLevel > 92)
-                {
-                    o.Biome = biomeManager.MakeChip();
-                    regularMonsters = monsterInfo;
-                    bossMonster = monsterInfo[monsterRandom.Next(monsterInfo.Count)];
-                }
-                else
-                {
-                    var biomeType = (BiomeType)(Math.Abs(zoneSeed) % (int)BiomeType.Max);
-                    o.Biome = biomeManager.GetBiome(biomeType);
-                    var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == biomeType).ToList();
-                    regularMonsters = biomeMonsters;
-                    bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
-                }
-
-                var elementalRandom = new Random(zoneSeed);
-                if (o.EnemyLevel > 14)
-                {
-                    attackElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-                }
-                if (o.EnemyLevel > 20)
-                {
-                    defendElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-                }
-
                 //Dumb test treasure
                 var treasures = new List<ITreasure>();
                 o.Treasure = treasures;
@@ -224,7 +269,7 @@ namespace Adventure.Exploration
                     new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel))
                 };
 
-                if(zoneBasis % 3 == 0)
+                if (zoneIndex % 3 == 0)
                 {
                     var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
 
