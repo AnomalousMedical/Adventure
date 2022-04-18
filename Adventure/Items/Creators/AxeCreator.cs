@@ -28,14 +28,14 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Axe", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Axe", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var axe = new Equipment
             {
                 Name = $"{name.Adjective} Axe",
                 Attack = equipmentCurve.GetAttack(name.Level),
@@ -45,14 +45,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(axe);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var axe = new Equipment
             {
                 Name = $"{name.Adjective} Epic Axe",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
@@ -62,14 +62,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(axe);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var axe = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Axe",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
@@ -79,12 +79,17 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(axe);
         }
 
         private IEnumerable<String> GetCureSpells(int level)
         {
             yield return nameof(Cure);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
         }
     }
 }

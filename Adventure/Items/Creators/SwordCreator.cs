@@ -26,10 +26,10 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Sword", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Sword", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -42,10 +42,10 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -58,10 +58,10 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -74,7 +74,12 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
         }
     }
 }

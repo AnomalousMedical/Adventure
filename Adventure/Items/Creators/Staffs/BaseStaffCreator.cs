@@ -31,10 +31,10 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} {this.typeName} Staff", name.Cost * 2, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} {this.typeName} Staff", name.Cost * 2, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -51,10 +51,10 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return staff;
+            return CreateInventoryItem(staff);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -71,10 +71,10 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return staff;
+            return CreateInventoryItem(staff);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -91,9 +91,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return staff;
+            return CreateInventoryItem(staff);
         }
 
         protected abstract IEnumerable<String> GetSpells(int level);
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
+        }
     }
 }

@@ -26,10 +26,10 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Shield", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
+            return new ShopEntry($"{name.Adjective} Shield", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -41,10 +41,10 @@ namespace Adventure.Items.Creators
                 Sprite = nameof(ShieldOfReflection)
             };
 
-            return shield;
+            return CreateInventoryItem(shield);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -56,10 +56,10 @@ namespace Adventure.Items.Creators
                 Sprite = nameof(ShieldOfReflection)
             };
 
-            return shield;
+            return CreateInventoryItem(shield);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -71,7 +71,12 @@ namespace Adventure.Items.Creators
                 Sprite = nameof(ShieldOfReflection)
             };
 
-            return shield;
+            return CreateInventoryItem(shield);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipOffHand));
         }
     }
 }

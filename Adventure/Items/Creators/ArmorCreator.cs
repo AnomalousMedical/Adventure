@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
+using Adventure.Items.Actions;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -19,46 +20,51 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var armor = new Equipment
             {
                 Name = $"{name.Adjective} Armor",
                 Defense = equipmentCurve.GetDefense(name.Level),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level)
             };
 
-            return sword;
+            return CreateInventoryItem(armor);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var armor = new Equipment
             {
                 Name = $"{name.Adjective} Epic Armor",
                 Defense = equipmentCurve.GetDefense(name.Level + 6),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level + 6)
             };
 
-            return sword;
+            return CreateInventoryItem(armor);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var armor = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Armor",
                 Defense = equipmentCurve.GetDefense(name.Level + 12),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level + 12)
             };
 
-            return sword;
+            return CreateInventoryItem(armor);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipBody));
         }
     }
 }

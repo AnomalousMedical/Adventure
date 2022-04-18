@@ -26,14 +26,14 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Spear", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Spear", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var spear = new Equipment
             {
                 Name = $"{name.Adjective} Spear",
                 Attack = equipmentCurve.GetAttack(name.Level),
@@ -42,14 +42,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Piercing }
             };
 
-            return sword;
+            return CreateInventoryItem(spear);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var spear = new Equipment
             {
                 Name = $"{name.Adjective} Epic Spear",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
@@ -58,14 +58,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Piercing }
             };
 
-            return sword;
+            return CreateInventoryItem(spear);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var spear = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Spear",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
@@ -74,7 +74,12 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Piercing }
             };
 
-            return sword;
+            return CreateInventoryItem(spear);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
         }
     }
 }

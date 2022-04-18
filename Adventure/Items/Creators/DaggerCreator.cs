@@ -27,10 +27,10 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Dagger", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipOffHand)));
+            return new ShopEntry($"{name.Adjective} Dagger", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -42,10 +42,10 @@ namespace Adventure.Items.Creators
                 Skills = GetSkills(level)
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -57,10 +57,10 @@ namespace Adventure.Items.Creators
                 Skills = GetSkills(level)
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
@@ -72,12 +72,17 @@ namespace Adventure.Items.Creators
                 Skills = GetSkills(level),
             };
 
-            return sword;
+            return CreateInventoryItem(sword);
         }
 
         private IEnumerable<String> GetSkills(int level)
         {
             yield return nameof(Steal);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipOffHand));
         }
     }
 }

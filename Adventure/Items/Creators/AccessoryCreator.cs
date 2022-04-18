@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
+using Adventure.Items.Actions;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -19,40 +20,45 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var accessory = new Equipment
             {
                 Name = $"{name.Adjective} Accessory"
             };
 
-            return sword;
+            return CreateInventoryItem(accessory);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var accessory = new Equipment
             {
                 Name = $"{name.Adjective} Epic Accessory"
             };
 
-            return sword;
+            return CreateInventoryItem(accessory);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var accessory = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Accessory"
             };
 
-            return sword;
+            return CreateInventoryItem(accessory);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipAccessory));
         }
     }
 }

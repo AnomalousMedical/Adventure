@@ -26,14 +26,14 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            return new ShopEntry($"{name.Adjective} Mace", name.Cost, () => new InventoryItem(CreateNormal(name.Level), nameof(EquipMainHand)));
+            return new ShopEntry($"{name.Adjective} Mace", name.Cost, () => CreateNormal(name.Level));
         }
 
-        public Equipment CreateNormal(int level)
+        public InventoryItem CreateNormal(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var mace = new Equipment
             {
                 Name = $"{name.Adjective} Mace",
                 Attack = equipmentCurve.GetAttack(name.Level),
@@ -42,14 +42,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return sword;
+            return CreateInventoryItem(mace);
         }
 
-        public Equipment CreateEpic(int level)
+        public InventoryItem CreateEpic(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var mace = new Equipment
             {
                 Name = $"{name.Adjective} Epic Mace",
                 Attack = equipmentCurve.GetAttack(name.Level + 6),
@@ -58,14 +58,14 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return sword;
+            return CreateInventoryItem(mace);
         }
 
-        public Equipment CreateLegendary(int level)
+        public InventoryItem CreateLegendary(int level)
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var sword = new Equipment
+            var mace = new Equipment
             {
                 Name = $"{name.Adjective} Legendary Mace",
                 Attack = equipmentCurve.GetAttack(name.Level + 12),
@@ -74,7 +74,12 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return sword;
+            return CreateInventoryItem(mace);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
         }
     }
 }

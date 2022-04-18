@@ -175,17 +175,11 @@ namespace Adventure.Exploration
                 var treasures = new List<ITreasure>();
                 o.Treasure = treasures;
 
-                InventoryItem weapon = null;
-                weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(fireStaffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(spearCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
-                weapon = new InventoryItem(maceCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
-                treasures.Add(new Treasure(weapon));
+                treasures.Add(new Treasure(swordCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(fireStaffCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(axeCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(spearCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(maceCreator.CreateNormal(o.EnemyLevel)));
 
                 treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
@@ -203,24 +197,14 @@ namespace Adventure.Exploration
                 var treasures = new List<ITreasure>();
                 o.Treasure = treasures;
 
-                var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
-                treasures.Add(new Treasure(shield));
-                
-                var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
-                treasures.Add(new Treasure(dagger));
+                treasures.Add(new Treasure(shieldCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(daggerCreator.CreateNormal(o.EnemyLevel)));
 
                 //Change some of these to the other armor types
-                var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-                treasures.Add(new Treasure(armor));
-
-                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-                treasures.Add(new Treasure(armor));
-
-                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-                treasures.Add(new Treasure(armor));
-
-                armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-                treasures.Add(new Treasure(armor));
+                treasures.Add(new Treasure(armorCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(armorCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(armorCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(armorCreator.CreateNormal(o.EnemyLevel)));
 
                 treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
@@ -229,7 +213,7 @@ namespace Adventure.Exploration
                 o.BossUniqueStealTreasure = new List<ITreasure>()
                 {
                     //This should be element based, so give out what is good in the next area
-                    new Treasure(new InventoryItem(swordCreator.CreateEpic(o.EnemyLevel), nameof(Items.Actions.EquipMainHand)))
+                    new Treasure(swordCreator.CreateEpic(o.EnemyLevel))
                 };
 
                 o.StealTreasure = new List<ITreasure>()
@@ -248,27 +232,25 @@ namespace Adventure.Exploration
                 switch (zoneIndex % 3)
                 {
                     case 0:
-                        weapon = new InventoryItem(swordCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        weapon = swordCreator.CreateNormal(o.EnemyLevel);
                         break;
                     case 1:
-                        weapon = new InventoryItem(fireStaffCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        weapon = fireStaffCreator.CreateNormal(o.EnemyLevel);
                         break;
                     case 2:
-                        weapon = new InventoryItem(axeCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipMainHand));
+                        weapon = axeCreator.CreateNormal(o.EnemyLevel);
                         break;
                 }
 
                 treasures.Add(new Treasure(weapon));
 
-                var shield = new InventoryItem(shieldCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
-                treasures.Add(new Treasure(shield));
+                treasures.Add(new Treasure(shieldCreator.CreateNormal(o.EnemyLevel)));
 
                 //These don't really do anything right now
                 //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));
                 //treasures.Add(new Treasure(acc));
 
-                var armor = new InventoryItem(armorCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipBody));
-                treasures.Add(new Treasure(armor));
+                treasures.Add(new Treasure(armorCreator.CreateNormal(o.EnemyLevel)));
 
                 treasures.Add(new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)));
                 treasures.Add(new Treasure(potionCreator.CreateHealthPotion(o.EnemyLevel)));
@@ -281,14 +263,34 @@ namespace Adventure.Exploration
                     new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel))
                 };
 
+                var uniqueStealTreasure = new List<ITreasure>();
+                o.UniqueStealTreasure = uniqueStealTreasure;
+
+                if (o.MakeBoss)
+                {
+                    var element = o.Biome.BossEnemy.Resistances.Where(i => 
+                       (i.Key == Element.Slashing 
+                     || i.Key == Element.Piercing
+                     || i.Key == Element.Bludgeoning) && i.Value == Resistance.Weak)
+                        .FirstOrDefault();
+
+                    switch (element.Key)
+                    {
+                        case Element.Slashing:
+                            uniqueStealTreasure.Add(new Treasure(swordCreator.CreateEpic(o.EnemyLevel)));
+                            break;
+                        case Element.Piercing:
+                            uniqueStealTreasure.Add(new Treasure(spearCreator.CreateEpic(o.EnemyLevel)));
+                            break;
+                        case Element.Bludgeoning:
+                            uniqueStealTreasure.Add(new Treasure(maceCreator.CreateEpic(o.EnemyLevel)));
+                            break;
+                    }
+                }
+
                 if (zoneIndex % 3 == 0)
                 {
-                    var dagger = new InventoryItem(daggerCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipOffHand));
-
-                    o.UniqueStealTreasure = new List<ITreasure>()
-                    {
-                        new Treasure(dagger)
-                    };
+                    uniqueStealTreasure.Add(new Treasure(daggerCreator.CreateNormal(o.EnemyLevel)));
                 }
             }
 
