@@ -14,7 +14,6 @@ using Adventure.Services;
 using System;
 using System.Globalization;
 using System.IO;
-using Adventure.Exploration.Menu.Asimov;
 using Adventure.Assets;
 using Adventure.Items;
 using Adventure.Items.Creators;
@@ -116,8 +115,8 @@ namespace Adventure
             services.AddScoped<Sky>();
             services.AddScoped<RTGui>();
             services.AddScoped<TargetCursor>();
-            services.AddScoped<Asimov>();
-            services.AddScoped<Asimov.Description>();
+            services.AddScoped<Philip>();
+            services.AddScoped<Philip.Description>();
             services.AddScoped<IBattleSkills, BattleSkills>();
             services.AddScoped<BattleItemMenu>();
             services.AddScoped<StealEffect>();
@@ -148,7 +147,7 @@ namespace Adventure
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
-            services.AddSingleton<AsimovRootMenu>();
+            services.AddSingleton<PhilipRootMenu>();
             services.AddSingleton<LevelUpMenu>();
             services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();

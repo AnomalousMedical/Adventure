@@ -119,7 +119,7 @@ namespace Adventure.Exploration
             IEnumerable<MonsterInfo> regularMonsters;
 
             o.EnemyLevel = zoneIndex / zoneLevelScaler * levelScale;
-            o.MakeAsimov = zoneIndex % zoneLevelScaler == 0;
+            o.MakePhilip = zoneIndex % zoneLevelScaler == 0;
             o.MakeRest = zoneIndex % zoneLevelScaler == 1;
             o.MakeBoss = zoneIndex % zoneLevelScaler == 1;
             o.MakeGate = zoneIndex % 4 == 3;
@@ -166,7 +166,7 @@ namespace Adventure.Exploration
             {
                 o.EnemyLevel = 1;
                 o.MaxMainCorridorBattles = 1;
-                o.MakeAsimov = false;
+                o.MakePhilip = false;
                 o.MakeRest = false;
                 o.MakeBoss = false;
                 o.MakeGate = false;
@@ -188,7 +188,7 @@ namespace Adventure.Exploration
             else if (zoneIndex == 1)
             {
                 o.EnemyLevel = 1;
-                o.MakeAsimov = false;
+                o.MakePhilip = false;
                 o.MakeRest = true;
                 o.MakeBoss = true;
                 o.MakeGate = false;
@@ -216,6 +216,7 @@ namespace Adventure.Exploration
                     new Treasure(swordCreator.CreateEpic(o.EnemyLevel))
                 };
 
+                //You get the dagger in this zone, so some of this is missable
                 o.StealTreasure = new List<ITreasure>()
                 {
                     new Treasure(potionCreator.CreateManaPotion(o.EnemyLevel)),
@@ -268,7 +269,7 @@ namespace Adventure.Exploration
 
                 if (o.MakeBoss)
                 {
-                    var element = o.Biome.BossEnemy.Resistances.Where(i =>
+                    var element = bossMonster.Resistances.Where(i =>
                        (i.Key == Element.Slashing
                      || i.Key == Element.Piercing
                      || i.Key == Element.Bludgeoning) && i.Value == Resistance.Weak)

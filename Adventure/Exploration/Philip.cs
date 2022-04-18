@@ -6,7 +6,6 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Adventure.Exploration.Menu;
-using Adventure.Exploration.Menu.Asimov;
 using Adventure.Services;
 using SharpGui;
 using System;
@@ -18,7 +17,7 @@ using Adventure.Assets.World;
 
 namespace Adventure
 {
-    class Asimov : IDisposable, IZonePlaceable
+    class Philip : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -39,7 +38,7 @@ namespace Adventure
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
         private readonly IExplorationMenu explorationMenu;
-        private readonly AsimovRootMenu rootMenu;
+        private readonly PhilipRootMenu rootMenu;
         private readonly IZoneManager zoneManager;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
@@ -56,7 +55,7 @@ namespace Adventure
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public Asimov(
+        public Philip(
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -67,7 +66,7 @@ namespace Adventure
             IContextMenu contextMenu,
             Persistence persistence,
             IExplorationMenu explorationMenu,
-            AsimovRootMenu rootMenu,
+            PhilipRootMenu rootMenu,
             IZoneManager zoneManager)
         {
             this.sprite = description.Sprite;

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Exploration.Menu.Asimov
+namespace Adventure.Exploration.Menu
 {
-    class AsimovRootMenu : IExplorationSubMenu
+    class PhilipRootMenu : IExplorationSubMenu
     {
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
@@ -22,7 +22,7 @@ namespace Adventure.Exploration.Menu.Asimov
         SharpButton rest = new SharpButton() { Text = "Rest" };
         SharpButton goodbye = new SharpButton() { Text = "Goodbye" };
 
-        public AsimovRootMenu
+        public PhilipRootMenu
         (
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,

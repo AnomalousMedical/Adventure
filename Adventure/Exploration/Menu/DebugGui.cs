@@ -1,5 +1,4 @@
-﻿using Adventure.Exploration.Menu.Asimov;
-using Adventure.Services;
+﻿using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
@@ -26,14 +25,14 @@ namespace Adventure.Exploration.Menu
         private readonly ICoroutineRunner coroutineRunner;
         private readonly Party party;
         private readonly ILevelCalculator levelCalculator;
-        private readonly AsimovRootMenu asimovRoot;
+        private readonly PhilipRootMenu philipRoot;
         private readonly FlyCameraManager flyCameraManager;
         SharpButton goNextLevel = new SharpButton() { Text = "Next Stage" };
         SharpButton goPreviousLevel = new SharpButton() { Text = "Previous Stage" };
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
         SharpButton goEnd = new SharpButton() { Text = "Go End" };
         SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
-        SharpButton asimov = new SharpButton() { Text = "Asimov" };
+        SharpButton philip = new SharpButton() { Text = "Philip" };
         SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
@@ -49,7 +48,7 @@ namespace Adventure.Exploration.Menu
             ICoroutineRunner coroutineRunner,
             Party party,
             ILevelCalculator levelCalculator,
-            AsimovRootMenu asimovRoot,
+            PhilipRootMenu philipRoot,
             FlyCameraManager flyCameraManager
         )
         {
@@ -61,7 +60,7 @@ namespace Adventure.Exploration.Menu
             this.coroutineRunner = coroutineRunner;
             this.party = party;
             this.levelCalculator = levelCalculator;
-            this.asimovRoot = asimovRoot;
+            this.philipRoot = philipRoot;
             this.flyCameraManager = flyCameraManager;
             currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
         }
@@ -75,36 +74,36 @@ namespace Adventure.Exploration.Menu
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(asimov), new RowLayout(goStart, goEnd), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip), new RowLayout(goStart, goEnd), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
             sharpGui.Text(averageLevel);
 
-            if (sharpGui.Button(battle, navUp: toggleCamera.Id, navDown: asimov.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
+            if (sharpGui.Button(battle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
             {
                 explorationGameState.RequestBattle();
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (sharpGui.Button(allowBattle, navUp: toggleCamera.Id, navDown: asimov.Id, navRight: battle.Id, navLeft: battle.Id))
+            if (sharpGui.Button(allowBattle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: battle.Id, navLeft: battle.Id))
             {
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
 
-            if (sharpGui.Button(asimov, navUp: battle.Id, navDown: goStart.Id))
+            if (sharpGui.Button(philip, navUp: battle.Id, navDown: goStart.Id))
             {
-                explorationMenu.RequestSubMenu(asimovRoot);
+                explorationMenu.RequestSubMenu(philipRoot);
             }
 
-            if(sharpGui.Button(goStart, navUp: asimov.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
+            if(sharpGui.Button(goStart, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null);
             }
 
-            if (sharpGui.Button(goEnd, navUp: asimov.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
+            if (sharpGui.Button(goEnd, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
             {
                 zoneManager.GoEndPoint();
                 explorationMenu.RequestSubMenu(null);

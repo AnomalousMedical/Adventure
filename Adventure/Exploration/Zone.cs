@@ -110,9 +110,9 @@ namespace Adventure
             public bool MakeRest { get; set; }
 
             /// <summary>
-            /// Set this to true to make Asimov in this zone.
+            /// Set this to true to make Philip in this zone.
             /// </summary>
-            public bool MakeAsimov { get; set; }
+            public bool MakePhilip { get; set; }
 
             public bool MakeBoss { get; set; }
 
@@ -174,7 +174,7 @@ namespace Adventure
         private int enemySeed;
         private int index;
         private bool makeRestArea;
-        private bool makeAsimov;
+        private bool makePhilip;
         private bool makeBoss;
         private bool makeGate;
         private int enemyLevel;
@@ -219,7 +219,7 @@ namespace Adventure
             this.index = description.Index;
             this.enemySeed = description.EnemySeed;
             this.makeRestArea = description.MakeRest;
-            this.makeAsimov = description.MakeAsimov;
+            this.makePhilip = description.MakePhilip;
             this.makeBoss = description.MakeBoss;
             this.makeGate = description.MakeGate;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
@@ -521,12 +521,12 @@ namespace Adventure
         private int treasureIndex;
         private int enemyIndex;
         private bool placeRestArea;
-        private bool placeAsimov;
+        private bool placePhilip;
         private bool placeBoss;
         private bool placeGate;
         private bool placeKey;
         private bool placeFirstChest;
-        private ushort asimovRoom = csMapbuilder.NullCell;
+        private ushort philipRoom = csMapbuilder.NullCell;
 
         private void ResetPlacementData()
         {
@@ -534,10 +534,10 @@ namespace Adventure
             treasureIndex = 0;
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
-            placeAsimov = this.makeAsimov;
+            placePhilip = this.makePhilip;
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
-            asimovRoom = csMapbuilder.NullCell;
+            philipRoom = csMapbuilder.NullCell;
             placeFirstChest = true;
         }
 
@@ -651,22 +651,22 @@ namespace Adventure
             var treasureChests = new List<TreasureTrigger>();
             treasureStack = new Stack<ITreasure>(this.treasure);
 
-            //Asimov gets a room always
-            if (placeAsimov)
+            //Philip gets a room always
+            if (placePhilip)
             {
-                asimovRoom = csMapbuilder.IsRoomCell(mapMesh.MapBuilder.WestConnectorRoom) ? mapMesh.MapBuilder.WestConnectorRoom : csMapbuilder.RoomCell;
-                var room = mapMesh.MapBuilder.Rooms[asimovRoom - csMapbuilder.RoomCell];
+                philipRoom = csMapbuilder.IsRoomCell(mapMesh.MapBuilder.WestConnectorRoom) ? mapMesh.MapBuilder.WestConnectorRoom : csMapbuilder.RoomCell;
+                var room = mapMesh.MapBuilder.Rooms[philipRoom - csMapbuilder.RoomCell];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
 
-                placeAsimov = false;
-                var asimov = objectResolver.Resolve<Asimov, Asimov.Description>(o =>
+                placePhilip = false;
+                var philip = objectResolver.Resolve<Philip, Philip.Description>(o =>
                 {
                     o.ZoneIndex = index;
                     o.MapOffset = mapLoc;
                     o.Translation = currentPosition + o.MapOffset;
                 });
-                this.placeables.Add(asimov);
+                this.placeables.Add(philip);
             }
 
             //The boss goes in the exit corridor, not the room
@@ -714,7 +714,7 @@ namespace Adventure
                 var tries = 0;
                 var triedRooms = new HashSet<int>();
                 var numRooms = mapMesh.MapBuilder.Rooms.Count;
-                triedRooms.Add(asimovRoom);
+                triedRooms.Add(philipRoom);
                 triedRooms.Add(mapMesh.MapBuilder.WestConnectorRoom);
                 triedRooms.Add(mapMesh.MapBuilder.EastConnectorRoom);
                 triedRooms.Add(mapMesh.MapBuilder.NorthConnectorRoom);
@@ -748,7 +748,7 @@ namespace Adventure
             foreach (var room in mapMesh.MapBuilder.Rooms.Where(i =>
             {
                 var ri = mapMesh.MapBuilder.map[i.Left, i.Top];
-                return ri != asimovRoom && ri != keyRoom;
+                return ri != philipRoom && ri != keyRoom;
             }))
             {
                 PopulateRoom(room, treasureStack, treasureChests);
