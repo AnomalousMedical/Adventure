@@ -12,7 +12,15 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
-    abstract class BaseStaffCreator
+    interface IStaffCreator
+    {
+        InventoryItem CreateEpic(int level);
+        InventoryItem CreateLegendary(int level);
+        InventoryItem CreateNormal(int level);
+        ShopEntry CreateShopEntry(int level);
+    }
+
+    abstract class BaseStaffCreator : IStaffCreator
     {
         private readonly string typeName;
         private readonly string sprite;

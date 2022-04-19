@@ -169,6 +169,7 @@ namespace Adventure
             services.AddSingleton<PotionCreator>();
             services.AddSingleton<AxeCreator>();
             services.AddSingleton<DaggerCreator>();
+            services.AddSingleton<ElementalStaffCreator>();
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
             services.AddSingleton<RestManager>();

@@ -12,7 +12,7 @@ namespace Adventure.Services
     interface IMonsterMaker
     {
         List<MonsterInfo> CreateBaseMonsters(Random random);
-        void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element attackElement, Element defendElement);
+        void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element weakElement, Element resistElement);
     }
 
     record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances, BiomeType NativeBiome)
@@ -89,20 +89,18 @@ namespace Adventure.Services
             return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element attackElement, Element defendElement)
+        public void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element weakElement, Element resistElement)
         {
-            //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
-
             foreach(var monster in regularEnemies)
             {
-                var enemy = CreateEnemy(monster, attackElement, defendElement);
+                var enemy = CreateEnemy(monster, weakElement, resistElement);
                 biome.RegularEnemies.Add(enemy);
             }
 
-            biome.BossEnemy = CreateEnemy(boss, attackElement, defendElement);
+            biome.BossEnemy = CreateEnemy(boss, weakElement, resistElement);
 
-            var elementColor = ElementColors.GetElementalHue(attackElement);
-            if (attackElement != Element.None)
+            var elementColor = ElementColors.GetElementalHue(weakElement);
+            if (weakElement != Element.None)
             {
 
                 foreach (var regularEnemy in biome.RegularEnemies)
@@ -111,7 +109,7 @@ namespace Adventure.Services
                 }
                 biome.BossEnemy.Asset.SetupSwap(elementColor, 100, 50);
             }
-            else if(defendElement != Element.None)
+            else if(resistElement != Element.None)
             {
                 foreach(var regularEnemy in biome.RegularEnemies)
                 {
@@ -121,16 +119,18 @@ namespace Adventure.Services
             }
         }
 
-        private BiomeEnemy CreateEnemy(MonsterInfo monster, Element attackElement, Element defendElement)
+        private BiomeEnemy CreateEnemy(MonsterInfo monster, Element weakElement, Element resistElement)
         {
+            //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
+
             var enemyResistances = new Dictionary<Element, Resistance>();
-            if (attackElement != Element.None)
+            if (weakElement != Element.None)
             {
-                enemyResistances[attackElement] = Resistance.Weak;
+                enemyResistances[weakElement] = Resistance.Weak;
             }
             else
             {
-                enemyResistances[defendElement] = Resistance.Resist;
+                enemyResistances[resistElement] = Resistance.Resist;
             }
 
             foreach (var resistance in monster.Resistances)

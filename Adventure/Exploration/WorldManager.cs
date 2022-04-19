@@ -29,6 +29,7 @@ namespace Adventure.Exploration
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly FireStaffCreator fireStaffCreator;
+        private readonly ElementalStaffCreator elementalStaffCreator;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
@@ -52,6 +53,7 @@ namespace Adventure.Exploration
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
             FireStaffCreator fireStaffCreator,
+            ElementalStaffCreator elementalStaffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
@@ -68,6 +70,7 @@ namespace Adventure.Exploration
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
             this.fireStaffCreator = fireStaffCreator;
+            this.elementalStaffCreator = elementalStaffCreator;
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
@@ -113,8 +116,8 @@ namespace Adventure.Exploration
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            var attackElement = Element.None;
-            var defendElement = Element.None;
+            var weakElement = Element.None;
+            var resistElement = Element.None;
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
 
@@ -155,11 +158,11 @@ namespace Adventure.Exploration
             var elementalRandom = new Random(zoneSeed);
             if (zoneSeedIndex >= numStartingZones)
             {
-                attackElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                weakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             }
             if (zoneSeedIndex > numStartingZones + 3)
             {
-                defendElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                resistElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             }
 
             if (zoneIndex == 0)
@@ -296,10 +299,53 @@ namespace Adventure.Exploration
                         switch (storageLoc)
                         {
                             case 0:
-                                uniqueStealTreasure.Add(bossWeaknessTreasure);
+                                treasures.Add(bossWeaknessTreasure);
                                 break;
                             case 1:
-                                treasures.Add(bossWeaknessTreasure);
+                                uniqueStealTreasure.Add(bossWeaknessTreasure);
+                                break;
+                        }
+                    }
+                }
+
+                //Elemental staff in first zone
+                //Good one
+                if(weakElement != Element.None && zoneIndex % zoneLevelScaler == 0)
+                {
+                    var staffCreator = elementalStaffCreator.GetStaffCreator(weakElement);
+
+                    if (staffCreator != null)
+                    {
+                        var elementalStaff = new Treasure(staffCreator.CreateEpic(o.EnemyLevel));
+                        var storageLoc = treasureRandom.Next(2);
+                        switch (storageLoc)
+                        {
+                            case 0:
+                                treasures.Add(elementalStaff);
+                                break;
+                            case 1:
+                                uniqueStealTreasure.Add(elementalStaff);
+                                break;
+                        }
+                    }
+                }
+
+                //Not good one, but it could end up good later
+                if (resistElement != Element.None && zoneIndex % zoneLevelScaler == 0)
+                {
+                    var staffCreator = elementalStaffCreator.GetStaffCreator(resistElement);
+
+                    if (staffCreator != null)
+                    {
+                        var elementalStaff = new Treasure(staffCreator.CreateEpic(o.EnemyLevel));
+                        var storageLoc = treasureRandom.Next(2);
+                        switch (storageLoc)
+                        {
+                            case 0:
+                                treasures.Add(elementalStaff);
+                                break;
+                            case 1:
+                                uniqueStealTreasure.Add(elementalStaff);
                                 break;
                         }
                     }
@@ -311,16 +357,16 @@ namespace Adventure.Exploration
                 }
             }
 
-            if (attackElement != Element.None && defendElement != Element.None && attackElement == defendElement)
+            if (weakElement != Element.None && resistElement != Element.None && weakElement == resistElement)
             {
-                defendElement += 1;
-                if (defendElement >= Element.MagicEnd)
+                resistElement += 1;
+                if (resistElement >= Element.MagicEnd)
                 {
-                    defendElement = Element.MagicStart;
+                    resistElement = Element.MagicStart;
                 }
             }
 
-            monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, attackElement, defendElement);
+            monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, weakElement, resistElement);
         }
 
         private int GetZoneSeed(int index)
