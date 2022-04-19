@@ -122,12 +122,11 @@ namespace Adventure.Services
                 }
             }
 
-            if (sharpGui.Button(discard, navUp: hasInventoryRoom ? take.Id : discard.Id, navDown: hasInventoryRoom ? take.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(discard, navUp: take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 currentTreasure.Pop();
             }
 
-            var bottomNavDown = hasInventoryRoom ? take.Id : discard.Id;
             if (sharpGui.Button(previous, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed())
             {
                 replacingItem = false;
