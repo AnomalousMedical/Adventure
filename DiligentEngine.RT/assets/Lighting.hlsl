@@ -128,7 +128,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
     ray.Direction = normalize(Norm);
     float3 emissive = GetNearbyEmissiveLighting(ray, Recursion);
 
-    for (int i = 0; i < NUM_LIGHTS; ++i)
+    for (int i = 0; i < g_ConstantsCB.NumActiveLights; ++i)
     {
         // Limit max ray length by distance to light source.
         ray.TMax = distance(g_ConstantsCB.LightPos[i].xyz, Pos) * 1.01;
@@ -151,7 +151,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         }
         col += Color * g_ConstantsCB.Darkness;
     }
-    Color = col * (1.0 / float(NUM_LIGHTS)) + g_ConstantsCB.AmbientColor.rgb + emissive;
+    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb + emissive;
 }
 
 void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm, uint Recursion, float4 physicalInfo)
@@ -170,7 +170,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
     ray.Direction = normalize(Norm);
     float3 emissive = GetNearbyEmissiveLighting(ray, Recursion);
 
-    for (int i = 0; i < NUM_LIGHTS; ++i)
+    for (int i = 0; i < g_ConstantsCB.NumActiveLights; ++i)
     {
         // Limit max ray length by distance to light source.
         ray.TMax = distance(g_ConstantsCB.LightPos[i].xyz, Pos) * 1.01;
@@ -192,7 +192,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         }
         col += Color * g_ConstantsCB.Darkness;
     }
-    Color = col * (1.0 / float(NUM_LIGHTS)) + g_ConstantsCB.AmbientColor.rgb + emissive;
+    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb + emissive;
 }
 
 float3 GetPerterbedNormal(

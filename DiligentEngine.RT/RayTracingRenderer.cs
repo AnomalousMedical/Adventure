@@ -394,14 +394,41 @@ namespace DiligentEngine.RT
                 GetPlaneIntersection(ViewFrustum.PLANE_IDX.TOP_PLANE_IDX, ViewFrustum.PLANE_IDX.RIGHT_PLANE_IDX, out m_Constants.FrustumRayRT);
 
                 m_Constants.CameraPos = new Vector4(CameraWorldPos.x, CameraWorldPos.y, CameraWorldPos.z, 1.0f);
-                m_Constants.LightPos_0 = cameraAndLight.Light1Pos * -1; //Need to invert going into the shader
-                m_Constants.LightPos_1 = cameraAndLight.Light2Pos * -1; //Need to invert going into the shader
-                var color = cameraAndLight.Light1Color;
-                m_Constants.LightColor_0 = new Vector4(color.r * cameraAndLight.NumLights, color.g * cameraAndLight.NumLights, color.b * cameraAndLight.NumLights, 0);
-                //m_Constants.LightColor_0 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.Light2Color;
-                m_Constants.LightColor_1 = new Vector4(color.r * cameraAndLight.NumLights, color.g * cameraAndLight.NumLights, color.b * cameraAndLight.NumLights, 0);
-                //m_Constants.LightColor_1 = new Vector4(color.r, color.g, color.b, 0);
+
+                //Need to invert going into the shader
+                m_Constants.LightPos_0 = cameraAndLight.LightPos[0] * -1;
+                m_Constants.LightPos_1 = cameraAndLight.LightPos[1] * -1;
+                m_Constants.LightPos_2 = cameraAndLight.LightPos[2] * -1;
+                m_Constants.LightPos_3 = cameraAndLight.LightPos[3] * -1;
+                m_Constants.LightPos_4 = cameraAndLight.LightPos[4] * -1;
+                m_Constants.LightPos_5 = cameraAndLight.LightPos[5] * -1;
+                m_Constants.LightPos_6 = cameraAndLight.LightPos[6] * -1;
+                m_Constants.LightPos_7 = cameraAndLight.LightPos[7] * -1;
+                m_Constants.LightPos_8 = cameraAndLight.LightPos[8] * -1;
+                m_Constants.LightPos_9 = cameraAndLight.LightPos[9] * -1;
+
+                var numLights = m_Constants.NumActiveLights = cameraAndLight.NumActiveLights;
+                Color color;
+                color = cameraAndLight.LightColor[0];
+                m_Constants.LightColor_0 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[1];
+                m_Constants.LightColor_1 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[2];
+                m_Constants.LightColor_2 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[3];
+                m_Constants.LightColor_3 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[4];
+                m_Constants.LightColor_4 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[5];
+                m_Constants.LightColor_5 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[6];
+                m_Constants.LightColor_6 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[7];
+                m_Constants.LightColor_7 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[8];
+                m_Constants.LightColor_8 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
+                color = cameraAndLight.LightColor[9];
+                m_Constants.LightColor_9 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, 0);
 
                 color = cameraAndLight.MissPallete[0]; m_Constants.Pallete_0 = new Vector4(color.r, color.g, color.b, 0);
                 color = cameraAndLight.MissPallete[1]; m_Constants.Pallete_1 = new Vector4(color.r, color.g, color.b, 0);

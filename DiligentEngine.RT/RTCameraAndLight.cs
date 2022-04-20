@@ -11,15 +11,22 @@ namespace DiligentEngine.RT
     {
         public Matrix4x4 CurrentViewProj { get; private set; }
 
-        public readonly int NumLights = 2;
+        private const int NUM_LIGHTS = 10;
 
-        public Vector4 Light1Pos;
+        public readonly int NumLights = NUM_LIGHTS;
 
-        public Vector4 Light2Pos;
+        public Vector4[] LightPos { get; } = new Vector4[NUM_LIGHTS];
 
-        public Color Light1Color = new Color(1.00f, +0.8f, +0.80f);
+        public Color[] LightColor { get; } = new Color[NUM_LIGHTS];
 
-        public Color Light2Color = new Color(0.2f, 0.2f, 0.4f);
+        public int NumActiveLights { get; set; } = 2;
+
+        public RTCameraAndLight()
+        {
+            LightColor[0] = new Color(1.00f, +0.8f, +0.80f);
+            LightColor[1] = new Color(0.2f, 0.2f, 0.4f);
+        }
+
 
         public Color[] MissPallete = new Color[6]
         {

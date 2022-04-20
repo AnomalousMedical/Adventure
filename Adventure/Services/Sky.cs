@@ -94,8 +94,8 @@ namespace Adventure
                 }
             }
 
-            cameraAndLight.Light1Pos = new Vector4(sunPosition.x, sunPosition.y, sunPosition.z, 0);
-            cameraAndLight.Light2Pos = new Vector4(moonPosition.x, moonPosition.y, moonPosition.z, 0);
+            cameraAndLight.LightPos[0] = new Vector4(sunPosition.x, sunPosition.y, sunPosition.z, 0);
+            cameraAndLight.LightPos[1] = new Vector4(moonPosition.x, moonPosition.y, moonPosition.z, 0);
         }
 
         private void SetPallet(Color[] src, Color[] dest)

@@ -42,7 +42,7 @@ namespace RTDungeonGeneratorTest
 
         public void Update(Clock clock)
         {
-            var lightPos = cameraAndLight.Light1Pos;
+            var lightPos = cameraAndLight.LightPos[0];
             int light = ToSlider(lightPos.x);
             if (sharpGui.Slider(lightPosX, ref light) || sharpGui.ActiveItem == lightPosX.Id)
             {
@@ -76,8 +76,8 @@ namespace RTDungeonGeneratorTest
             sharpGui.Text(lightPosText);
             sharpGui.Text(cameraPosText);
 
-            cameraAndLight.Light1Pos = lightPos;
-            cameraAndLight.Light2Pos = lightPos;
+            cameraAndLight.LightPos[0] = lightPos;
+            cameraAndLight.LightPos[1] = lightPos;
         }
 
         private int ToSlider(float pos)

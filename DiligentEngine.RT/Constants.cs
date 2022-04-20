@@ -43,14 +43,31 @@ namespace DiligentEngine.RT
         // Maximum ray recursion depth
         public uint MaxRecursion;
         public float Darkness;
-        public float Padding2;
+        public int NumActiveLights;
 
         // Light properties
         public float4 AmbientColor;
         public float4 LightPos_0;
         public float4 LightPos_1;
+        public float4 LightPos_2;
+        public float4 LightPos_3;
+        public float4 LightPos_4;
+        public float4 LightPos_5;
+        public float4 LightPos_6;
+        public float4 LightPos_7;
+        public float4 LightPos_8;
+        public float4 LightPos_9;
+
         public float4 LightColor_0;
         public float4 LightColor_1;
+        public float4 LightColor_2;
+        public float4 LightColor_3;
+        public float4 LightColor_4;
+        public float4 LightColor_5;
+        public float4 LightColor_6;
+        public float4 LightColor_7;
+        public float4 LightColor_8;
+        public float4 LightColor_9;
 
         public float4 Pallete_0;
         public float4 Pallete_1;
@@ -73,6 +90,7 @@ namespace DiligentEngine.RT
                 LightColor_0 = new Vector4(1.00f, +0.8f, +0.80f, 0f),
                 LightPos_1 = new Vector4(0.00f, -4.0f, -5.00f, 0f),
                 LightColor_1 = new Vector4(0.4f, +0.4f, +0.6f, 0f),
+                NumActiveLights = 2,
 
                 Pallete_0 = new float4(0.32f, 0.00f, 0.92f, 0f),
                 Pallete_1 = new float4(0.00f, 0.22f, 0.90f, 0f),

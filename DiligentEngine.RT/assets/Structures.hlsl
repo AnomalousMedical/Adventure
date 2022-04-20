@@ -58,7 +58,7 @@ struct Constants
     // Maximum ray recursion depth
     int      MaxRecursion;
     float    Darkness;
-    float1   Padding2;
+    int   NumActiveLights;
 
     // Light properties
     float4  AmbientColor;
