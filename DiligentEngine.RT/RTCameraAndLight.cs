@@ -19,12 +19,19 @@ namespace DiligentEngine.RT
 
         public Color[] LightColor { get; } = new Color[NUM_LIGHTS];
 
+        public float[] LightLength { get; } = new float[NUM_LIGHTS];
+
         public int NumActiveLights { get; set; } = 2;
 
         public RTCameraAndLight()
         {
             LightColor[0] = new Color(1.00f, +0.8f, +0.80f);
             LightColor[1] = new Color(0.2f, 0.2f, 0.4f);
+
+            for(int i = 0; i < NUM_LIGHTS; i++)
+            {
+                LightLength[i] = float.MaxValue;
+            }
         }
 
 

@@ -133,21 +133,25 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         // Limit max ray length by distance to light source.
         ray.TMax = distance(g_ConstantsCB.LightPos[i].xyz, Pos) * 1.01;
 
-        float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
-        float  NdotL = max(0.0, dot(pertbNorm, rayDir));
-
-        // Optimization - don't trace rays if NdotL is zero or negative
-        if (NdotL > 0.0)
+        //Only shoot ray if we are close enough to hit the light
+        if (ray.TMax < g_ConstantsCB.LightColor[i].a)
         {
-            // Cast multiple rays that are distributed within a cone.
-            ray.Direction = rayDir;
-            float shading = saturate(CastShadow(ray, Recursion).Shading);
+            float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
+            float  NdotL = max(0.0, dot(pertbNorm, rayDir));
 
-            col += Color * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
-            //These commented lines and the eyeDir above give crappy specular highlights
-            //float3 halfVec = normalize(eyeDir + rayDir);
-            //float specularLight = pow(saturate(dot(pertbNorm, halfVec)), 250);
-            //col += specularLight;
+            // Optimization - don't trace rays if NdotL is zero or negative
+            if (NdotL > 0.0)
+            {
+                // Cast multiple rays that are distributed within a cone.
+                ray.Direction = rayDir;
+                float shading = saturate(CastShadow(ray, Recursion).Shading);
+
+                col += Color * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
+                //These commented lines and the eyeDir above give crappy specular highlights
+                //float3 halfVec = normalize(eyeDir + rayDir);
+                //float specularLight = pow(saturate(dot(pertbNorm, halfVec)), 250);
+                //col += specularLight;
+            }
         }
         col += Color * g_ConstantsCB.Darkness;
     }
@@ -175,20 +179,24 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         // Limit max ray length by distance to light source.
         ray.TMax = distance(g_ConstantsCB.LightPos[i].xyz, Pos) * 1.01;
 
-        float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
-        float  NdotL;// = max(0.0, dot(pertbNorm, rayDir));
-        float3 SpecContrib;
-        BRDF(rayDir, pertbNorm, view, surfInfo,
-            SpecContrib, NdotL);
-
-        // Optimization - don't trace rays if NdotL is zero or negative
-        if (NdotL > 0.0)
+        //Only shoot ray if we are close enough to hit the light
+        if (ray.TMax < g_ConstantsCB.LightColor[i].a)
         {
-            // Cast multiple rays that are distributed within a cone.
-            ray.Direction = rayDir;
-            float shading = saturate(CastShadow(ray, Recursion).Shading);
+            float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
+            float  NdotL;// = max(0.0, dot(pertbNorm, rayDir));
+            float3 SpecContrib;
+            BRDF(rayDir, pertbNorm, view, surfInfo,
+                SpecContrib, NdotL);
 
-            col += (Color + SpecContrib) * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
+            // Optimization - don't trace rays if NdotL is zero or negative
+            if (NdotL > 0.0)
+            {
+                // Cast multiple rays that are distributed within a cone.
+                ray.Direction = rayDir;
+                float shading = saturate(CastShadow(ray, Recursion).Shading);
+
+                col += (Color + SpecContrib) * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
+            }
         }
         col += Color * g_ConstantsCB.Darkness;
     }

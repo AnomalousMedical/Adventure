@@ -58,6 +58,7 @@ namespace DiligentEngine.RT
         public float4 LightPos_8;
         public float4 LightPos_9;
 
+        //Light color stores length of the light in w
         public float4 LightColor_0;
         public float4 LightColor_1;
         public float4 LightColor_2;
@@ -87,9 +88,9 @@ namespace DiligentEngine.RT
                 AmbientColor = new Vector4(1f, 1f, 1f, 0f) * 0f,
                 Darkness = 0.125f,
                 LightPos_0 = new Vector4(8.00f, -8.0f, +0.00f, 0f),
-                LightColor_0 = new Vector4(1.00f, +0.8f, +0.80f, 0f),
+                LightColor_0 = new Vector4(1.00f, +0.8f, +0.80f, float.MaxValue),
                 LightPos_1 = new Vector4(0.00f, -4.0f, -5.00f, 0f),
-                LightColor_1 = new Vector4(0.4f, +0.4f, +0.6f, 0f),
+                LightColor_1 = new Vector4(0.4f, +0.4f, +0.6f, float.MaxValue),
                 NumActiveLights = 2,
 
                 Pallete_0 = new float4(0.32f, 0.00f, 0.92f, 0f),

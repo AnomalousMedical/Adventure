@@ -63,7 +63,7 @@ struct Constants
     // Light properties
     float4  AmbientColor;
     float4  LightPos[NUM_LIGHTS];
-    float4  LightColor[NUM_LIGHTS];
+    float4  LightColor[NUM_LIGHTS]; //Light color stores length of the light in a/w
 
     //Sky properties
     float4 Pallete[6];
