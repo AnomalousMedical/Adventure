@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Adventure.Battle.Skills
 {
-    class DarknessTempest : BaseTempest
+    class Gravity : Base
     {
-        public DarknessTempest()
-            : base("Darkness Tempest", Element.Darkness)
+        public Gravity()
+            :base("Gravity", Element.Gravity)
         {
 
         }

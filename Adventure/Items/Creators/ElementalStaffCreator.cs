@@ -10,7 +10,7 @@ namespace Adventure.Items.Creators
     class ElementalStaffCreator
     {
         private readonly AcidStaffCreator acidStaffCreator;
-        private readonly DarknessStaffCreator darknessStaffCreator;
+        private readonly GravityStaffCreator gravityStaffCreator;
         private readonly EarthStaffCreator earthStaffCreator;
         private readonly FireStaffCreator fireStaffCreator;
         private readonly IceStaffCreator iceStaffCreator;
@@ -19,7 +19,7 @@ namespace Adventure.Items.Creators
         public ElementalStaffCreator
         (
             AcidStaffCreator acidStaffCreator,
-            DarknessStaffCreator darknessStaffCreator,
+            GravityStaffCreator gravityStaffCreator,
             EarthStaffCreator earthStaffCreator,
             FireStaffCreator fireStaffCreator,
             IceStaffCreator iceStaffCreator,
@@ -27,7 +27,7 @@ namespace Adventure.Items.Creators
         )
         {
             this.acidStaffCreator = acidStaffCreator;
-            this.darknessStaffCreator = darknessStaffCreator;
+            this.gravityStaffCreator = gravityStaffCreator;
             this.earthStaffCreator = earthStaffCreator;
             this.fireStaffCreator = fireStaffCreator;
             this.iceStaffCreator = iceStaffCreator;
@@ -40,8 +40,8 @@ namespace Adventure.Items.Creators
             {
                 case Element.Acid:
                     return acidStaffCreator;
-                case Element.Darkness:
-                    return darknessStaffCreator;
+                case Element.Gravity:
+                    return gravityStaffCreator;
                 case Element.Earth:
                     return earthStaffCreator;
                 case Element.Fire:

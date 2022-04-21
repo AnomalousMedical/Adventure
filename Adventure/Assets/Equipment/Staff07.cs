@@ -93,13 +93,13 @@ namespace Adventure.Assets.Equipment
         }
     }
 
-    class DarknessStaff07 : Staff07
+    class GravityStaff07 : Staff07
     {
-        public DarknessStaff07()
+        public GravityStaff07()
         {
             PalletSwap = new Dictionary<uint, uint>
             {
-                { Staff07.Crystal, 0xff0c0c0c }
+                { Staff07.Crystal, ElementColors.Gravity }
             };
         }
     }

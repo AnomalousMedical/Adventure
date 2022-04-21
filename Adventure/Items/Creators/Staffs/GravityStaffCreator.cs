@@ -12,28 +12,28 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
-    class DarknessStaffCreator : BaseStaffCreator
+    class GravityStaffCreator : BaseStaffCreator
     {
-        public DarknessStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
-            :base("Darkness", nameof(DarknessStaff07), equipmentCurve, nameGenerator)
+        public GravityStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+            :base("Gravity", nameof(GravityStaff07), equipmentCurve, nameGenerator)
         {
             
         }
 
         protected override IEnumerable<String> GetSpells(int level)
         {
-            yield return nameof(Darkness);
+            yield return nameof(Gravity);
             if(level > 18)
             {
-                yield return nameof(DarknessBlast);
+                yield return nameof(GravityBlast);
             }
             if (level > 28)
             {
-                yield return nameof(DarknessLash);
+                yield return nameof(GravityLash);
             }
             if (level > 38)
             {
-                yield return nameof(DarknessTempest);
+                yield return nameof(GravityTempest);
             }
         }
     }

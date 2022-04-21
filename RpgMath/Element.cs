@@ -18,7 +18,7 @@ namespace RpgMath
         Ice,
         Electricity,
         Acid,
-        Darkness,
+        Gravity,
         Earth,
         
         //Healing

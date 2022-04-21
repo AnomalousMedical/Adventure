@@ -90,7 +90,7 @@ namespace Adventure.Exploration.Menu
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
         private readonly AcidStaffCreator acidStaffCreator;
-        private readonly DarknessStaffCreator darknessStaffCreator;
+        private readonly GravityStaffCreator gravityStaffCreator;
         private readonly EarthStaffCreator earthStaffCreator;
         private readonly FireStaffCreator fireStaffCreator;
         private readonly IceStaffCreator iceStaffCreator;
@@ -121,7 +121,7 @@ namespace Adventure.Exploration.Menu
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
             AcidStaffCreator acidStaffCreator,
-            DarknessStaffCreator darknessStaffCreator,
+            GravityStaffCreator gravityStaffCreator,
             EarthStaffCreator earthStaffCreator,
             FireStaffCreator fireStaffCreator,
             IceStaffCreator iceStaffCreator,
@@ -144,7 +144,7 @@ namespace Adventure.Exploration.Menu
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
             this.acidStaffCreator = acidStaffCreator;
-            this.darknessStaffCreator = darknessStaffCreator;
+            this.gravityStaffCreator = gravityStaffCreator;
             this.earthStaffCreator = earthStaffCreator;
             this.fireStaffCreator = fireStaffCreator;
             this.iceStaffCreator = iceStaffCreator;
@@ -358,7 +358,7 @@ Lck: {characterData.CharacterSheet.Luck}
             yield return shieldCreator.CreateShopEntry(level);
             
             yield return acidStaffCreator.CreateShopEntry(level);
-            yield return darknessStaffCreator.CreateShopEntry(level);
+            yield return gravityStaffCreator.CreateShopEntry(level);
             yield return earthStaffCreator.CreateShopEntry(level);
             yield return fireStaffCreator.CreateShopEntry(level);
             yield return iceStaffCreator.CreateShopEntry(level);
