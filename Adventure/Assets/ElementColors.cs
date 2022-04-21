@@ -24,6 +24,13 @@ namespace Adventure.Assets
         public static readonly HslColor DarknessHsl = new IntColor(Darkness).ToHsl();
         public static readonly HslColor EarthHsl = new IntColor(Earth).ToHsl();
 
+        public static readonly Color FireColor = Color.FromARGB(Fire);
+        public static readonly Color IceColor = Color.FromARGB(Ice);
+        public static readonly Color ElectricityColor = Color.FromARGB(Electricity);
+        public static readonly Color AcidColor = Color.FromARGB(Acid);
+        public static readonly Color DarknessColor = Color.FromARGB(Darkness);
+        public static readonly Color EarthColor = Color.FromARGB(Earth);
+
         public static float GetElementalHue(Element element)
         {
             switch (element)
@@ -43,6 +50,27 @@ namespace Adventure.Assets
             }
 
             return 120f;
+        }
+
+        public static Color GetElementalColor(Element element)
+        {
+            switch (element)
+            {
+                case Element.Fire:
+                    return FireColor;
+                case Element.Ice:
+                    return IceColor;
+                case Element.Electricity:
+                    return ElectricityColor;
+                case Element.Acid:
+                    return AcidColor;
+                case Element.Darkness:
+                    return DarknessColor;
+                case Element.Earth:
+                    return EarthColor;
+            }
+
+            return Color.Green;
         }
     }
 }

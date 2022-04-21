@@ -42,12 +42,13 @@ namespace Adventure.Services
             int i = 0;
             int lightIndex;
             int count = lights.Count;
-            while (cameraAndLight.CheckoutLight(out lightIndex) && i < count)
+            while (i < count && cameraAndLight.CheckoutLight(out lightIndex))
             {
                 var light = lights[i];
-                cameraAndLight.LightLength[i] = light.Length;
-                cameraAndLight.LightPos[i] = light.Position;
-                cameraAndLight.LightColor[i] = light.Color;
+                cameraAndLight.LightLength[lightIndex] = light.Length;
+                cameraAndLight.LightPos[lightIndex] = light.Position;
+                cameraAndLight.LightColor[lightIndex] = light.Color;
+                ++i;
             }
         }
     }

@@ -113,7 +113,6 @@ namespace Adventure
             services.AddScoped<LootDropTrigger>();
             services.AddScoped<LootDropTrigger.Description>();
             services.AddScoped<Sky>();
-            services.AddScoped<LightManager>();
             services.AddScoped<RTGui>();
             services.AddScoped<TargetCursor>();
             services.AddScoped<Philip>();
@@ -123,6 +122,7 @@ namespace Adventure
             services.AddScoped<StealEffect>();
             services.AddScoped<AttackEffect>();
             services.AddSingleton<TreasureMenu>();
+            services.AddSingleton<LightManager>();
             services.AddSingleton<IZoneManager, ZoneManager>();
             services.AddSingleton<IWorldManager, WorldManager>();
             services.AddSingleton<IBattleManager, BattleManager>();

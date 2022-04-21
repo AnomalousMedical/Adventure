@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Items;
+using Adventure.Services;
 
 namespace Adventure.Battle
 {
@@ -396,6 +397,8 @@ namespace Adventure.Battle
             }
         }
 
+        private static readonly Color CastColor = Color.FromARGB(0xff639cff);
+
         private void Cast(IBattleTarget target, ISkill skill)
         {
             castEffect?.RequestDestruction();
@@ -405,6 +408,12 @@ namespace Adventure.Battle
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = CastColor,
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
             });
 
             var swingEnd = Quaternion.Identity;

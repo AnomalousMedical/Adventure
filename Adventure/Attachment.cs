@@ -1,4 +1,5 @@
-﻿using DiligentEngine;
+﻿using Adventure.Services;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
@@ -17,6 +18,10 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; }
 
             public bool RenderShadow { get; set; } = true;
+
+            public Light Light { get; set; }
+
+            public Vector3 LightOffset { get; set; }
         }
 
         
@@ -25,8 +30,12 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly RTInstances<T> rtInstances;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
+        private readonly LightManager lightManager;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
+        private readonly Light light;
+        private readonly Vector3 lightOffset;
+        private bool dummyLight;
 
         private SpriteInstance spriteInstance;
         private bool disposed;
@@ -40,7 +49,8 @@ namespace Adventure
             RTInstances<T> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,
             IScopedCoroutine coroutine,
-            Description attachmentDescription
+            Description attachmentDescription,
+            LightManager lightManager
         )
         {
             this.orientation = attachmentDescription.Orientation;
@@ -48,6 +58,8 @@ namespace Adventure
             this.destructionRequest = destructionRequest;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
+            this.lightManager = lightManager;
+            this.lightOffset = attachmentDescription.LightOffset;
 
             this.tlasData = new TLASBuildInstanceData()
             {
@@ -55,6 +67,18 @@ namespace Adventure
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(Vector3.Zero, attachmentDescription.Orientation, sprite.BaseScale) //It might be worth it to skip this line
             };
+
+            if (attachmentDescription.Light != null)
+            {
+                light = attachmentDescription.Light;
+                lightManager.AddLight(light);
+                dummyLight = false;
+            }
+            else
+            {
+                light = new Light();
+                dummyLight = true;
+            }
 
             coroutine.RunTask(async () =>
             {
@@ -82,6 +106,10 @@ namespace Adventure
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
+            if (!dummyLight)
+            {
+                lightManager.RemoveLight(light);
+            }
         }
 
         public void RequestDestruction()
@@ -110,6 +138,8 @@ namespace Adventure
             var finalScale = scale;
 
             this.tlasData.Transform = new InstanceMatrix(finalPosition, finalOrientation, finalScale);
+
+            light.Position = (finalPosition + lightOffset).ToVector4();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
