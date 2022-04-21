@@ -113,6 +113,7 @@ namespace Adventure
             services.AddScoped<LootDropTrigger>();
             services.AddScoped<LootDropTrigger.Description>();
             services.AddScoped<Sky>();
+            services.AddScoped<LightManager>();
             services.AddScoped<RTGui>();
             services.AddScoped<TargetCursor>();
             services.AddScoped<Philip>();

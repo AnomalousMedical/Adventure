@@ -26,6 +26,8 @@ namespace Adventure
         private readonly Sky sky;
         private readonly FlyCameraManager flyCameraManager;
         private readonly CameraMover cameraMover;
+        private readonly RTCameraAndLight cameraAndLight;
+        private readonly LightManager lightManager;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -40,7 +42,9 @@ namespace Adventure
             ShaderPreloader shaderPreloader, //Need this injected to create it
             BackgroundMusicManager backgroundMusicManager, //Need this injected to create it
             FlyCameraManager flyCameraManager,
-            CameraMover cameraMover
+            CameraMover cameraMover,
+            RTCameraAndLight cameraAndLight,
+            LightManager lightManager
         )
         {
 
@@ -53,6 +57,8 @@ namespace Adventure
             this.sky = sky;
             this.flyCameraManager = flyCameraManager;
             this.cameraMover = cameraMover;
+            this.cameraAndLight = cameraAndLight;
+            this.lightManager = lightManager;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -82,6 +88,7 @@ namespace Adventure
 
             sharpGui.End();
             sky.UpdateLight(clock);
+            lightManager.UpdateLights(); //Sky then light manager ensures we always have the sun and moon
 
             flyCameraManager.Update(clock);
 
