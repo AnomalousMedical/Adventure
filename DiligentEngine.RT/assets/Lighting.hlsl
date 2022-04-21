@@ -138,6 +138,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         {
             float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
             float  NdotL = max(0.0, dot(pertbNorm, rayDir));
+            float attenuation = 1.0f - (ray.TMax / g_ConstantsCB.LightColor[i].a);
 
             // Optimization - don't trace rays if NdotL is zero or negative
             if (NdotL > 0.0)
@@ -146,7 +147,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
                 ray.Direction = rayDir;
                 float shading = saturate(CastShadow(ray, Recursion).Shading);
 
-                col += Color * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
+                col += Color * (g_ConstantsCB.LightColor[i].rgb * attenuation) * NdotL * shading;
                 //These commented lines and the eyeDir above give crappy specular highlights
                 //float3 halfVec = normalize(eyeDir + rayDir);
                 //float specularLight = pow(saturate(dot(pertbNorm, halfVec)), 250);
@@ -184,6 +185,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         {
             float3 rayDir = normalize(g_ConstantsCB.LightPos[i].xyz - Pos);
             float  NdotL;// = max(0.0, dot(pertbNorm, rayDir));
+            float attenuation = 1.0f - (ray.TMax / g_ConstantsCB.LightColor[i].a);
             float3 SpecContrib;
             BRDF(rayDir, pertbNorm, view, surfInfo,
                 SpecContrib, NdotL);
@@ -195,7 +197,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
                 ray.Direction = rayDir;
                 float shading = saturate(CastShadow(ray, Recursion).Shading);
 
-                col += (Color + SpecContrib) * g_ConstantsCB.LightColor[i].rgb * NdotL * shading;
+                col += (Color + SpecContrib) * (g_ConstantsCB.LightColor[i].rgb * attenuation) * NdotL * shading;
             }
         }
         col += Color * g_ConstantsCB.Darkness;
