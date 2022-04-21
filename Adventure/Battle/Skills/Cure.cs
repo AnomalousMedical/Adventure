@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RpgMath;
+using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -59,6 +60,12 @@ namespace Adventure.Battle.Skills
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = Color.FromARGB(0xff63c74c),
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
 
