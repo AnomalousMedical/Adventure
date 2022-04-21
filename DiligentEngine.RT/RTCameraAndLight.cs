@@ -15,13 +15,15 @@ namespace DiligentEngine.RT
 
         public readonly int NumLights = NUM_LIGHTS;
 
+        private int currentLight = 0;
+
         public Vector4[] LightPos { get; } = new Vector4[NUM_LIGHTS];
 
         public Color[] LightColor { get; } = new Color[NUM_LIGHTS];
 
         public float[] LightLength { get; } = new float[NUM_LIGHTS];
 
-        public int NumActiveLights { get; set; } = 2;
+        public int NumActiveLights => currentLight;
 
         public RTCameraAndLight()
         {
@@ -45,6 +47,35 @@ namespace DiligentEngine.RT
             new Color(1.00f, 1.00f, 1.00f),
 
         };
+
+        /// <summary>
+        /// Checkout a light index for this frame. Do not store the value. Returns true if you can use a light and
+        /// false if none are left.
+        /// </summary>
+        /// <param name="lightIndex"></param>
+        /// <returns></returns>
+        public bool CheckoutLight(out int lightIndex)
+        {
+            if (currentLight < NUM_LIGHTS)
+            {
+                lightIndex = currentLight;
+                ++currentLight;
+                return true;
+            }
+            else
+            {
+                lightIndex = -1;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Reset the lights for the next frame.
+        /// </summary>
+        internal void ResetLights()
+        {
+            currentLight = 0;
+        }
 
         public void GetCameraPosition(Vector3 position, Quaternion rotation, in Matrix4x4 preTransformMatrix, in Matrix4x4 CameraProj, out Vector3 CameraWorldPos, out Matrix4x4 CameraViewProj)
         {

@@ -441,6 +441,8 @@ namespace DiligentEngine.RT
                 {
                     m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 }
+
+                cameraAndLight.ResetLights();
             }
 
             //Trace rays
