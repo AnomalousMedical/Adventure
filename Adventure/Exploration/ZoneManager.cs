@@ -17,9 +17,10 @@ namespace Adventure
 
         bool ChangingZone { get; }
         Zone Current { get; }
-        bool IsPlayerMoving { get; }
         Task GoNext();
+        Task GoNext(Vector3 triggerLoc);
         Task GoPrevious();
+        Task GoPrevious(Vector3 triggerLoc);
         Task Restart();
         Task WaitForCurrent();
         Task WaitForNext();
@@ -39,6 +40,8 @@ namespace Adventure
         private Zone previousZone;
 
         private Player player;
+        private Player player2;
+
         private IObjectResolver objectResolver;
         private readonly Party party;
         private readonly IWorldManager worldManager;
@@ -49,8 +52,6 @@ namespace Adventure
         public bool ChangingZone => changingZone;
 
         public Zone Current => currentZone;
-
-        public bool IsPlayerMoving => player?.IsMoving == true;
 
         public ZoneManager(
             Party party,
@@ -114,11 +115,28 @@ namespace Adventure
                     var leader = party.ActiveCharacters.First();
                     c.PlayerSprite = leader.PlayerSprite;
                     c.CharacterSheet = leader.CharacterSheet;
+                    c.Gamepad = Engine.Platform.GamepadId.Pad1;
                 });
             }
             else
             {
                 player.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
+            }
+
+            if(player2 == null)
+            {
+                player2 = this.objectResolver.Resolve<Player, Player.Description>(c =>
+                {
+                    c.Translation = currentZone.StartPoint;
+                    var leader = party.ActiveCharacters.Skip(1).First();
+                    c.PlayerSprite = leader.PlayerSprite;
+                    c.CharacterSheet = leader.CharacterSheet;
+                    c.Gamepad = Engine.Platform.GamepadId.Pad2;
+                });
+            }
+            else
+            {
+                player2.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
             }
 
             ZoneChanged?.Invoke(this);
@@ -156,7 +174,12 @@ namespace Adventure
             return previousZone?.WaitForGeneration();
         }
 
-        public async Task GoNext()
+        public Task GoNext()
+        {
+            return GoNext(player.GetLocation());
+        }
+
+        public async Task GoNext(Vector3 triggerLoc)
         {
             if (changingZone)
             {
@@ -190,9 +213,10 @@ namespace Adventure
             currentZone.SetPosition(new Vector3(0, 0, 0));
             currentZone.SetupPhysics();
 
-            var playerLoc = player.GetLocation();
+            var playerLoc = triggerLoc;
             playerLoc += new Vector3(-150f, previousOffset.y, previousOffset.z);
             player.SetLocation(playerLoc);
+            player2?.SetLocation(playerLoc);
 
             ZoneChanged?.Invoke(this);
 
@@ -204,7 +228,12 @@ namespace Adventure
             nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
         }
 
-        public async Task GoPrevious()
+        public Task GoPrevious()
+        {
+            return GoPrevious(player.GetLocation());
+        }
+
+        public async Task GoPrevious(Vector3 triggerLoc)
         {
             if (changingZone)
             {
@@ -250,9 +279,10 @@ namespace Adventure
             currentZone.SetPosition(new Vector3(0, 0, 0));
             currentZone.SetupPhysics();
 
-            var playerLoc = player.GetLocation();
+            var playerLoc = triggerLoc;
             playerLoc += new Vector3(150f, nextOffset.y, nextOffset.z);
             player.SetLocation(playerLoc);
+            player2?.SetLocation(playerLoc);
 
             ZoneChanged?.Invoke(this);
 
@@ -279,16 +309,19 @@ namespace Adventure
         public void GoStartPoint()
         {
             player.SetLocation(currentZone.StartPoint);
+            player2?.SetLocation(currentZone.StartPoint);
         }
 
         public void GoEndPoint()
         {
             player.SetLocation(currentZone.EndPoint);
+            player2?.SetLocation(currentZone.EndPoint);
         }
 
         public void StopPlayer()
         {
             player.StopMovement();
+            player2?.StopMovement();
         }
 
         public Vector3 GetPlayerLoc() => player.GetLocation();
