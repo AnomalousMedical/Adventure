@@ -29,7 +29,7 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
         {
-            if (pickUpTreasureMenu.Update())
+            if (pickUpTreasureMenu.Update(gamepad))
             {
                 menu.RequestSubMenu(null, gamepad);
                 return;

@@ -1,6 +1,7 @@
 ﻿using Adventure.Items;
 using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace Adventure.Battle
             this.screenPositioner = screenPositioner;
         }
 
-        public bool UpdateGui(ISharpGui sharpGui, IBattleTarget user, Inventory inventory, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, InventoryItem> itemSelectedCb)
+        public bool UpdateGui(ISharpGui sharpGui, IBattleTarget user, Inventory inventory, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, InventoryItem> itemSelectedCb, GamepadId gamepadId)
         {
             var didSomething = false;
 
@@ -43,7 +44,8 @@ namespace Adventure.Battle
             var selectedItem = itemButtons.Show<InventoryItem>(sharpGui
                 , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i))
                 , inventory.Items.Count
-                , s => screenPositioner.GetTopRightRect(s));
+                , s => screenPositioner.GetTopRightRect(s)
+                , gamepadId);
 
             if(selectedItem != null)
             {
@@ -66,7 +68,7 @@ namespace Adventure.Battle
                 didSomething = true;
             }
 
-            if (!didSomething && sharpGui.IsStandardBackPressed())
+            if (!didSomething && sharpGui.IsStandardBackPressed(gamepadId))
             {
                 menuMode = BattlePlayer.MenuMode.Root;
             }

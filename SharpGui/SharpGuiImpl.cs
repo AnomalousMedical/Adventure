@@ -206,7 +206,7 @@ namespace SharpGui
             state.End();
         }
 
-        public bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1)
+        public bool Button(SharpButton button, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
         {
             return button.Process(state, buffer, renderer.Font, buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
@@ -216,12 +216,12 @@ namespace SharpGui
             return input.Process(state, buffer, renderer.Font, inputStyle, navUp, navDown, navLeft, navRight);
         }
 
-        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null, GamepadId gamepad = GamepadId.Pad1)
+        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null)
         {
             return slider.Process(ref value, state, buffer, sliderStyle, navUp, navDown, (int)gamepad);
         }
 
-        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1)
+        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null)
         {
             return slider.Process(ref value, state, buffer, sliderStyle, navLeft, navRight, (int)gamepad);
         }

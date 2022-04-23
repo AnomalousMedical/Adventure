@@ -41,7 +41,7 @@ namespace Adventure.Exploration.Menu
             this.screenPositioner = screenPositioner;
         }
 
-        public void Update(Persistence.CharacterData characterData)
+        public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
         {
             if(SelectedItem == null) { return; }
 
@@ -63,7 +63,7 @@ namespace Adventure.Exploration.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s));
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId);
                 if (action != null)
                 {
                     action.Invoke();
@@ -72,7 +72,7 @@ namespace Adventure.Exploration.Menu
                     return;
                 }
 
-                if (sharpGui.IsStandardBackPressed())
+                if (sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     characterChoices = null;
                 }
@@ -89,7 +89,7 @@ namespace Adventure.Exploration.Menu
 
             use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
 
-            if (sharpGui.Button(use, navUp: cancel.Id, navDown: transfer.Id))
+            if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
             {
                 if (!choosingCharacter)
                 {
@@ -109,7 +109,7 @@ namespace Adventure.Exploration.Menu
                     }
                 }
             }
-            if (sharpGui.Button(transfer, navUp: use.Id, navDown: discard.Id))
+            if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
             {
                 if (!choosingCharacter)
                 {
@@ -124,13 +124,13 @@ namespace Adventure.Exploration.Menu
                     .ToList();
                 }
             }
-            if(sharpGui.Button(discard, navUp: transfer.Id, navDown: cancel.Id))
+            if(sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id))
             {
                 //TODO: Add confirmation for this
                 characterData.RemoveItem(SelectedItem);
                 this.SelectedItem = null;
             }
-            if (sharpGui.Button(cancel, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 if (!choosingCharacter)
                 {
@@ -273,9 +273,9 @@ Lck: {characterData.CharacterSheet.Luck}
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            useItemMenu.Update(characterData);
+            useItemMenu.Update(characterData, gamepad);
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+            var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (allowChanges)
             {
                 useItemMenu.SelectedItem = newSelection;
@@ -283,7 +283,7 @@ Lck: {characterData.CharacterSheet.Luck}
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasItems ? itemButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasItems ? itemButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -294,7 +294,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -305,7 +305,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {

@@ -81,60 +81,60 @@ namespace Adventure.Exploration.Menu
 
             sharpGui.Text(averageLevel);
 
-            if (sharpGui.Button(battle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
+            if (sharpGui.Button(battle, gamepad, navUp: toggleCamera.Id, navDown: philip.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
             {
                 explorationGameState.RequestBattle();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(allowBattle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: battle.Id, navLeft: battle.Id))
+            if (sharpGui.Button(allowBattle, gamepad, navUp: toggleCamera.Id, navDown: philip.Id, navRight: battle.Id, navLeft: battle.Id))
             {
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
 
-            if (sharpGui.Button(philip, navUp: battle.Id, navDown: goStart.Id))
+            if (sharpGui.Button(philip, gamepad, navUp: battle.Id, navDown: goStart.Id))
             {
                 explorationMenu.RequestSubMenu(philipRoot, gamepad);
             }
 
-            if(sharpGui.Button(goStart, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
+            if(sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(goEnd, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
+            if (sharpGui.Button(goEnd, gamepad, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
             {
                 zoneManager.GoEndPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, gamepad, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoNext());
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
+            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, gamepad, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoPrevious());
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(toggleCamera, navUp: goNextLevel.Id, navDown: battle.Id))
+            if (sharpGui.Button(toggleCamera, gamepad, navUp: goNextLevel.Id, navDown: battle.Id))
             {
                 flyCameraManager.Enabled = !flyCameraManager.Enabled;
             }
 
             int currentTime = (int)(timeClock.CurrentTimeMicro * Clock.MicroToSeconds / (60 * 60));
-            if (sharpGui.Slider(currentHour, ref currentTime) || sharpGui.ActiveItem == currentHour.Id)
+            if (sharpGui.Slider(currentHour, ref currentTime, gamepad) || sharpGui.ActiveItem == currentHour.Id)
             {
                 timeClock.CurrentTimeMicro = (long)currentTime * 60L * 60L * Clock.SecondsToMicro;
             }
             var time = TimeSpan.FromMilliseconds(timeClock.CurrentTimeMicro * Clock.MicroToMilliseconds);
             sharpGui.Text(currentHour.Rect.Right, currentHour.Rect.Top, timeClock.IsDay ? Engine.Color.Black : Engine.Color.White, $"Time: {time}");
 
-            if (sharpGui.IsStandardBackPressed())
+            if (sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.RootMenu, gamepad);
             }

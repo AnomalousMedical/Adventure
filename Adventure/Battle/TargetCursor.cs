@@ -207,15 +207,15 @@ namespace Adventure.Battle
 
             battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton);
 
-            if (sharpGui.Button(selectTargetButton))
+            if (sharpGui.Button(selectTargetButton, activePlayer.GamepadId))
             {
                 SetTarget(target);
             }
-            else if (sharpGui.Button(nextTargetButton))
+            else if (sharpGui.Button(nextTargetButton, activePlayer.GamepadId))
             {
                 NextTarget();
             }
-            else if (sharpGui.Button(previousTargetButton))
+            else if (sharpGui.Button(previousTargetButton, activePlayer.GamepadId))
             {
                 PreviousTarget();
             }

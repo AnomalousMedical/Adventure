@@ -14,7 +14,7 @@ namespace Adventure.Battle
     {
         void Add(ISkill skill);
         void AddRange(IEnumerable<ISkill> skill);
-        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb);
+        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb, GamepadId gamepadId);
         void Clear();
     }
 
@@ -50,7 +50,7 @@ namespace Adventure.Battle
             skills.Clear();
         }
 
-        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb)
+        public bool UpdateGui(ISharpGui sharpGui, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, ISkill> skillSelectedCb, GamepadId gamepadId)
         {
             var didSomething = false;
 
@@ -59,7 +59,7 @@ namespace Adventure.Battle
             skillButtons.Margin = scaleHelper.Scaled(10);
             skillButtons.MaxWidth = scaleHelper.Scaled(900);
             skillButtons.Bottom = battleScreenLayout.DynamicButtonBottom;
-            var skill = skillButtons.Show(sharpGui, skills.Select(i => new ButtonColumnItem<ISkill>(i.Name, i)).Append(new ButtonColumnItem<ISkill>("Back", BackSkill)), skills.Count + 1, s => battleScreenLayout.DynamicButtonLocation(s));
+            var skill = skillButtons.Show(sharpGui, skills.Select(i => new ButtonColumnItem<ISkill>(i.Name, i)).Append(new ButtonColumnItem<ISkill>("Back", BackSkill)), skills.Count + 1, s => battleScreenLayout.DynamicButtonLocation(s), gamepadId);
             if (skill != null)
             {
                 if (skill == BackSkill)
@@ -81,7 +81,7 @@ namespace Adventure.Battle
                 }
             }
 
-            if (!didSomething && sharpGui.IsStandardBackPressed())
+            if (!didSomething && sharpGui.IsStandardBackPressed(gamepadId))
             {
                 menuMode = BattlePlayer.MenuMode.Root;
             }

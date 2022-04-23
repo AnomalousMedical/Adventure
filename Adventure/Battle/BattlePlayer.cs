@@ -300,10 +300,10 @@ namespace Adventure.Battle
                     didSomething = UpdateRootMenu(sharpGui, didSomething);
                     break;
                 case MenuMode.Magic:
-                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, UseSkill);
+                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, UseSkill, gamepadId);
                     break;
                 case MenuMode.Item:
-                    didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem);
+                    didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem, gamepadId);
                     break;
             }
 
@@ -339,7 +339,7 @@ namespace Adventure.Battle
         {
             battleScreenLayout.LayoutBattleMenu(attackButton, skillsButton, itemButton, defendButton);
 
-            if (sharpGui.Button(attackButton, navUp: defendButton.Id, navDown: skillsButton.Id))
+            if (sharpGui.Button(attackButton, gamepadId, navUp: defendButton.Id, navDown: skillsButton.Id))
             {
                 coroutine.RunTask(async () =>
                 {
@@ -352,19 +352,19 @@ namespace Adventure.Battle
                 didSomething = true;
             }
 
-            if (sharpGui.Button(skillsButton, navUp: attackButton.Id, navDown: itemButton.Id))
+            if (sharpGui.Button(skillsButton, gamepadId, navUp: attackButton.Id, navDown: itemButton.Id))
             {
                 currentMenuMode = MenuMode.Magic;
                 didSomething = true;
             }
 
-            if (sharpGui.Button(itemButton, navUp: skillsButton.Id, navDown: defendButton.Id))
+            if (sharpGui.Button(itemButton, gamepadId, navUp: skillsButton.Id, navDown: defendButton.Id))
             {
                 currentMenuMode = MenuMode.Item;
                 didSomething = true;
             }
 
-            if (sharpGui.Button(defendButton, navUp: itemButton.Id, navDown: attackButton.Id))
+            if (sharpGui.Button(defendButton, gamepadId, navUp: itemButton.Id, navDown: attackButton.Id))
             {
                 didSomething = true;
             }

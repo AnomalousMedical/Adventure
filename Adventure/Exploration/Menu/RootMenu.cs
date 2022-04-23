@@ -50,19 +50,19 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(skills, navDown: items.Id, navUp: debug.Id))
+            if (sharpGui.Button(skills, gamepad, navDown: items.Id, navUp: debug.Id))
             {
                 explorationMenu.RequestSubMenu(skillMenu, gamepad);
             }
-            else if (sharpGui.Button(items, navDown: debug.Id, navUp: skills.Id))
+            else if (sharpGui.Button(items, gamepad, navDown: debug.Id, navUp: skills.Id))
             {
                 explorationMenu.RequestSubMenu(itemMenu, gamepad);
             }
-            else if (sharpGui.Button(debug, navDown: skills.Id, navUp: items.Id))
+            else if (sharpGui.Button(debug, gamepad, navDown: skills.Id, navUp: items.Id))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
             }
-            else if (sharpGui.IsStandardBackPressed())
+            else if (sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(null, gamepad);
             }

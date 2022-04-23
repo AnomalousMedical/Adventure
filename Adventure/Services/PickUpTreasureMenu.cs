@@ -1,5 +1,6 @@
 ﻿using Adventure.Items;
 using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace Adventure.Services
             replacingItem = false;
         }
 
-        public bool Update()
+        public bool Update(GamepadId gamepadId)
         {
             if (currentTreasure == null || currentTreasure.Count == 0)
             {
@@ -108,7 +109,7 @@ namespace Adventure.Services
             sharpGui.Text(inventoryInfo);
             sharpGui.Text(itemInfo);
 
-            if (sharpGui.Button(take, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (hasInventoryRoom)
                 {
@@ -122,12 +123,12 @@ namespace Adventure.Services
                 }
             }
 
-            if (sharpGui.Button(discard, navUp: take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(discard, gamepadId, navUp: take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 currentTreasure.Pop();
             }
 
-            if (sharpGui.Button(previous, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
             {
                 replacingItem = false;
                 --currentSheet;
@@ -136,7 +137,7 @@ namespace Adventure.Services
                     currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
             {
                 replacingItem = false;
                 ++currentSheet;
@@ -152,7 +153,7 @@ namespace Adventure.Services
 
             if (replacingItem)
             {
-                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
                 if (removeItem != null)
                 {
                     replacingItem = false;
@@ -164,7 +165,7 @@ namespace Adventure.Services
                     }
                 }
 
-                if (sharpGui.IsStandardBackPressed())
+                if (sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     replacingItem = false;
                 }

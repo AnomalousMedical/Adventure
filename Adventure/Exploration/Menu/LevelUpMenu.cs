@@ -114,7 +114,7 @@ Lck: {sheet.CharacterSheet.Luck}";
 
             sharpGui.Text(info);
 
-            if (sharpGui.Button(levelFighter, navUp: levelMage.Id, navDown: levelMage.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(levelFighter, gamepad, navUp: levelMage.Id, navDown: levelMage.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
@@ -122,7 +122,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
-            if (sharpGui.Button(levelMage, navUp: levelFighter.Id, navDown: levelFighter.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(levelMage, gamepad, navUp: levelFighter.Id, navDown: levelFighter.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (levelUpCost == 0 || persistence.Current.Party.Gold - levelUpCost > 0)
                 {
@@ -130,7 +130,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     persistence.Current.Party.Gold -= levelUpCost;
                 }
             }
-            if (sharpGui.Button(previous, navLeft: next.Id, navRight: levelFighter.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, gamepad, navLeft: next.Id, navRight: levelFighter.Id) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -138,7 +138,7 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: levelFighter.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: levelFighter.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -146,11 +146,11 @@ Lck: {sheet.CharacterSheet.Luck}";
                     currentSheet = 0;
                 }
             }
-            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id))
+            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id))
             {
                 explorationMenu.RequestSubMenu(PreviousMenu, gamepad);
             }
-            else if (sharpGui.IsStandardBackPressed())
+            else if (sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(PreviousMenu, gamepad);
             }

@@ -41,7 +41,7 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null, GamepadId gamepad = GamepadId.Pad1);
+        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null);
 
         /// <summary>
         /// Draw a slider. Returns true if the passed in value changed.
@@ -49,7 +49,7 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1);
+        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navLeft = null, Guid? navRight = null);
 
         /// <summary>
         /// Draw a progress bar. Does not take input or foucs.
@@ -86,7 +86,7 @@ namespace SharpGui
         /// </summary>
         /// <param name="button"></param>
         /// <returns></returns>
-        bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1);
+        bool Button(SharpButton button, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null);
 
         /// <summary>
         /// Draw a text input.

@@ -75,7 +75,7 @@ namespace Adventure.Exploration.Menu
 
             contextMenuArgs.GamepadId = gamepadId;
 
-            if (sharpGui.Button(contextButton))
+            if (sharpGui.Button(contextButton, gamepadId))
             {
                 activatedCallback(contextMenuArgs);
             }

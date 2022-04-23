@@ -37,7 +37,7 @@ namespace Adventure.Exploration.Menu
             this.screenPositioner = screenPositioner;
         }
 
-        public void Update(Persistence.CharacterData characterData)
+        public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
         {
             if (SelectedItem == null) { return; }
 
@@ -58,7 +58,7 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
 
-            if (sharpGui.Button(buy, navUp: cancel.Id, navDown: cancel.Id))
+            if (sharpGui.Button(buy, gamepadId, navUp: cancel.Id, navDown: cancel.Id))
             {
                 if (persistence.Current.Party.Gold - SelectedItem.Cost > 0)
                 {
@@ -68,7 +68,7 @@ namespace Adventure.Exploration.Menu
                 }
                 this.SelectedItem = null;
             }
-            if (sharpGui.Button(cancel, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(cancel, gamepadId, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 this.SelectedItem = null;
             }
@@ -159,7 +159,7 @@ namespace Adventure.Exploration.Menu
 
         public IExplorationSubMenu PreviousMenu { get; set; }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 
@@ -230,18 +230,18 @@ Lck: {characterData.CharacterSheet.Luck}
             sharpGui.Text(info);
             sharpGui.Text(info2);
 
-            confirmBuyMenu.Update(characterData);
+            confirmBuyMenu.Update(characterData, gamepadId);
 
             var canBuy = characterData.HasRoom;
 
             var shopItems = ShopItems().Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i)).ToArray(); //TODO: Cache this somehow, don't keep making it
-            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
             if (canBuy && selectedItem != null)
             {
                 confirmBuyMenu.SelectedItem = selectedItem;
             }
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
             {
                 if (allowChanges)
                 {
@@ -252,7 +252,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
             {
                 if (allowChanges)
                 {
@@ -263,11 +263,11 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 if (allowChanges)
                 {
-                    menu.RequestSubMenu(PreviousMenu, gamepad);
+                    menu.RequestSubMenu(PreviousMenu, gamepadId);
                 }
             }
         }

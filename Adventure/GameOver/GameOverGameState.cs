@@ -94,7 +94,7 @@ namespace Adventure.GameOver
             layout.SetRect(rect);
 
             sharpGui.Text(gameOver);
-            if (sharpGui.Button(restart))
+            if (sharpGui.Button(restart, GamepadId.Pad1))
             {
 
                 coroutineRunner.RunTask(zoneManager.Restart());

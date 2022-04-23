@@ -64,7 +64,7 @@ namespace Adventure.Exploration.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s));
+                var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s), gamepad);
                 if (action != null)
                 {
                     action.Invoke();
@@ -72,7 +72,7 @@ namespace Adventure.Exploration.Menu
                     selectedSkill = null;
                 }
 
-                if (sharpGui.IsStandardBackPressed())
+                if (sharpGui.IsStandardBackPressed(gamepad))
                 {
                     characterChoices = null;
                 }
@@ -157,7 +157,7 @@ Lck: {characterData.CharacterSheet.Luck}
             skillButtons.Bottom = screenPositioner.ScreenSize.Height;
 
             var skillCount = characterData.CharacterSheet.Skills.Count();
-            var newSelection = skillButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), skillCount, p => screenPositioner.GetCenterTopRect(p), navLeft: previous.Id, navRight: next.Id);
+            var newSelection = skillButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (!choosingCharacter && newSelection != null)
             {
                 selectedSkill = newSelection;
@@ -171,7 +171,7 @@ Lck: {characterData.CharacterSheet.Luck}
 
             var hasSkills = skillCount > 0;
 
-            if (sharpGui.Button(previous, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed())
+            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (!choosingCharacter)
                 {
@@ -182,7 +182,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(next, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed())
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (!choosingCharacter)
                 {
@@ -193,7 +193,7 @@ Lck: {characterData.CharacterSheet.Luck}
                     }
                 }
             }
-            if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed())
+            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (!choosingCharacter)
                 {

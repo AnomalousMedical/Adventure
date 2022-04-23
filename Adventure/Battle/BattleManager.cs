@@ -298,7 +298,7 @@ namespace Adventure.Battle
 
                 sharpGui.Text(goldRewardText);
 
-                if (sharpGui.Button(endBattle))
+                if (sharpGui.Button(endBattle, GamepadId.Pad1))
                 {
                     party.Gold += goldReward;
 
