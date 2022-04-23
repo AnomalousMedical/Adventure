@@ -10,10 +10,10 @@ namespace Engine.Platform
     /// </summary>
     public enum GamepadId
     {
-        Pad1,
-        Pad2,
-        Pad3,
-        Pad4
+        Pad1 = 0,
+        Pad2 = 1,
+        Pad3 = 2,
+        Pad4 = 3
     }
 
     /// <summary>
