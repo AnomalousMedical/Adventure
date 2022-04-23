@@ -16,6 +16,8 @@ namespace Adventure
 {
     class SceneTestUpdateListener : UpdateListener
     {
+        private static readonly Color ClearColor = new Color(0f, 0f, 0f, 1.0f);
+
         private readonly RayTracingRenderer rayTracingRenderer;
         private readonly ITimeClock timeClock;
         private readonly ISharpGui sharpGui;
@@ -96,17 +98,16 @@ namespace Adventure
 
             rtInstances.UpdateSprites(clock);
 
-            rayTracingRenderer.Render(rtInstances, cameraMover.Position, cameraMover.Orientation);
-
             var pRTV = swapChain.GetCurrentBackBufferRTV();
             var pDSV = swapChain.GetDepthBufferDSV();
-            immediateContext.SetRenderTarget(pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-
-            //var ClearColor = new Color(0.350f, 0.350f, 0.350f, 1.0f);
 
             // Clear the back buffer
             // Let the engine perform required state transitions
-            //immediateContext.ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            immediateContext.ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            
+            rayTracingRenderer.Render(rtInstances, cameraMover.Position, cameraMover.Orientation);
+            immediateContext.SetRenderTarget(pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
             immediateContext.ClearDepthStencil(pDSV, CLEAR_DEPTH_STENCIL_FLAGS.CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             sharpGui.Render(immediateContext);
 
