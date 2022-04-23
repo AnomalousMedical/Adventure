@@ -31,6 +31,7 @@ namespace Adventure
         void GoEndPoint();
         void ResetPlaceables();
         Vector3 GetPlayerLoc();
+        void ManagePlayers();
     }
 
     class ZoneManager : IDisposable, IZoneManager
