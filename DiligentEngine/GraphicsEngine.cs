@@ -57,6 +57,17 @@ namespace DiligentEngine
             , swapChainDesc.DefaultStencilValue
             , swapChainDesc.IsPrimary
             );
+
+            if(result.m_pDevice == IntPtr.Zero)
+            {
+                var message = "Cannot create device.";
+                if (features.HasFlag(FeatureFlags.RayTracing))
+                {
+                    message += " This application requires ray tracing hardware for Vulkan 1.2 or above.";
+                }
+                throw new InvalidOperationException(message);
+            }
+
             this.RenderDevicePtr = new AutoPtr<IRenderDevice>(new IRenderDevice(result.m_pDevice), false);
             this.ImmediateContextPtr = new AutoPtr<IDeviceContext>(new IDeviceContext(result.m_pImmediateContext), false);
             this.SwapChainPtr = new AutoPtr<ISwapChain>(new ISwapChain(result.m_pSwapChain), false);

@@ -75,8 +75,11 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
 		pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &(result.m_pDevice), &(result.m_pImmediateContext));
 	}
 
-	Win32NativeWindow Window{ hWnd };
-	pFactoryVk->CreateSwapChainVk(result.m_pDevice, result.m_pImmediateContext, SCDesc, Window, &(result.m_pSwapChain));
+	if (result.m_pDevice != NULL)
+	{
+		Win32NativeWindow Window{ hWnd };
+		pFactoryVk->CreateSwapChainVk(result.m_pDevice, result.m_pImmediateContext, SCDesc, Window, &(result.m_pSwapChain));
+	}
 
 	return result;
 }
