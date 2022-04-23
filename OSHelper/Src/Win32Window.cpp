@@ -523,9 +523,6 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			case VK_SHIFT:
 				win->fireKeyDown(KC_LSHIFT, 0);
 				break;
-			case VK_F4: //Kind of sucks, do this without stealing f4.
-				win->toggleFullscreen();
-				break;
 			default:
 				win->fireKeyDown(virtualKeyToKeyboardButtonCode(wParam), getUtf32WithSpecial(wParam, (lParam & 0x01FF0000) >> 16));
 				break;
