@@ -48,7 +48,22 @@ namespace Adventure.Exploration.Menu
             }
             else
             {
-                if (sharpGui.GamepadButtonEntered == Engine.Platform.GamepadButtonCode.XInput_Y || sharpGui.KeyEntered == Engine.Platform.KeyboardButtonCode.KC_TAB)
+                if (sharpGui.GamepadButtonEntered[0] == Engine.Platform.GamepadButtonCode.XInput_Y || sharpGui.KeyEntered == Engine.Platform.KeyboardButtonCode.KC_TAB)
+                {
+                    RequestSubMenu(rootMenu);
+                    handled = true;
+                }
+                else if (sharpGui.GamepadButtonEntered[1] == Engine.Platform.GamepadButtonCode.XInput_Y)
+                {
+                    RequestSubMenu(rootMenu);
+                    handled = true;
+                }
+                else if (sharpGui.GamepadButtonEntered[2] == Engine.Platform.GamepadButtonCode.XInput_Y)
+                {
+                    RequestSubMenu(rootMenu);
+                    handled = true;
+                }
+                else if (sharpGui.GamepadButtonEntered[3] == Engine.Platform.GamepadButtonCode.XInput_Y)
                 {
                     RequestSubMenu(rootMenu);
                     handled = true;

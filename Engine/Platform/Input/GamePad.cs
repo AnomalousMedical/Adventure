@@ -136,5 +136,7 @@ namespace Engine.Platform.Input
         }
 
         public GamepadId Id { get; private set; }
+
+        public int IntId => (int)Id;
     }
 }

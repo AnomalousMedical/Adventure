@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace SharpGui
 {
     static class SharpButtonExtensions
     {
-        public static bool Process(this SharpButton button, SharpGuiState state, SharpGuiBuffer buffer, Font font, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight)
+        public static bool Process(this SharpButton button, SharpGuiState state, SharpGuiBuffer buffer, Font font, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight, int gamepad)
         {
             Guid id = button.Id;
 
@@ -81,7 +82,7 @@ namespace SharpGui
                         break;
                 }
 
-                switch (state.GamepadButtonEntered)
+                switch (state.GamepadButtonEntered[gamepad])
                 {
                     case Engine.Platform.GamepadButtonCode.XInput_A:
                         result = true;

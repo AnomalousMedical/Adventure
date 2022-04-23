@@ -20,14 +20,14 @@ namespace SharpGui
         public bool MouseDown { get; private set; }
         public Guid FocusedItem { get; private set; }
         public KeyboardButtonCode KeyEntered { get; private set; }
-        public GamepadButtonCode GamepadButtonEntered { get; private set; }
+        public GamepadButtonCode[] GamepadButtonEntered { get; private set; }
         public bool IsShift { get; private set; }
         public bool IsAlt { get; private set; }
         public bool IsCtrl { get; private set; }
         public Guid LastWidget { get; private set; }
         public uint LastKeyChar { get; private set; }
 
-        public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode lastGamepadKey)
+        public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
         {
             sawFocusedItem = false;
             this.LastKeyChar = lastKeyChar;
@@ -115,7 +115,10 @@ namespace SharpGui
         {
             FocusedItem = id;
             KeyEntered = KeyboardButtonCode.KC_UNASSIGNED;
-            GamepadButtonEntered = GamepadButtonCode.NUM_BUTTONS;
+            GamepadButtonEntered[0] = GamepadButtonCode.NUM_BUTTONS;
+            GamepadButtonEntered[1] = GamepadButtonCode.NUM_BUTTONS;
+            GamepadButtonEntered[2] = GamepadButtonCode.NUM_BUTTONS;
+            GamepadButtonEntered[3] = GamepadButtonCode.NUM_BUTTONS;
         }
 
         /// <summary>
@@ -124,7 +127,7 @@ namespace SharpGui
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool ProcessFocus(Guid id, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
+        public bool ProcessFocus(Guid id, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
         {
             bool callerHandlesInput = false;
             if (FocusedItem == id)
@@ -175,7 +178,7 @@ namespace SharpGui
                         break;
                 }
 
-                switch (GamepadButtonEntered)
+                switch (GamepadButtonEntered[(int)gamepad])
                 {
                     case GamepadButtonCode.XInput_DPadUp:
                         if (navUp != null)
@@ -211,7 +214,10 @@ namespace SharpGui
                 if (!callerHandlesInput)
                 {
                     KeyEntered = KeyboardButtonCode.KC_UNASSIGNED;
-                    GamepadButtonEntered = GamepadButtonCode.NUM_BUTTONS;
+                    GamepadButtonEntered[0] = GamepadButtonCode.NUM_BUTTONS;
+                    GamepadButtonEntered[1] = GamepadButtonCode.NUM_BUTTONS;
+                    GamepadButtonEntered[2] = GamepadButtonCode.NUM_BUTTONS;
+                    GamepadButtonEntered[3] = GamepadButtonCode.NUM_BUTTONS;
                 }
             }
             LastWidget = id;

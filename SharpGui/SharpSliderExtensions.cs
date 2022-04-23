@@ -9,7 +9,7 @@ namespace SharpGui
 {
     static class SharpSliderExtensions
     {
-        public static bool Process(this SharpSliderHorizontal slider, ref int value, SharpGuiState state, SharpGuiBuffer buffer, SharpStyle style, Guid? navUp, Guid? navDown)
+        public static bool Process(this SharpSliderHorizontal slider, ref int value, SharpGuiState state, SharpGuiBuffer buffer, SharpStyle style, Guid? navUp, Guid? navDown, int gamepadId)
         {
             Guid id = slider.Id;
             var rect = slider.Rect;
@@ -88,7 +88,7 @@ namespace SharpGui
                         break;
                 }
 
-                switch (state.GamepadButtonEntered)
+                switch (state.GamepadButtonEntered[gamepadId])
                 {
                     case Engine.Platform.GamepadButtonCode.XInput_DPadLeft:
                         --v;
@@ -122,7 +122,7 @@ namespace SharpGui
             return returnVal;
         }
 
-        public static bool Process(this SharpSliderVertical slider, ref int value, SharpGuiState state, SharpGuiBuffer buffer, SharpStyle style, Guid? navLeft, Guid? navRight)
+        public static bool Process(this SharpSliderVertical slider, ref int value, SharpGuiState state, SharpGuiBuffer buffer, SharpStyle style, Guid? navLeft, Guid? navRight, int gamepadId)
         {
             Guid id = slider.Id;
             var rect = slider.Rect;
@@ -202,7 +202,7 @@ namespace SharpGui
                         break;
                 }
 
-                switch (state.GamepadButtonEntered)
+                switch (state.GamepadButtonEntered[gamepadId])
                 {
                     case Engine.Platform.GamepadButtonCode.XInput_DPadDown:
                         --v;

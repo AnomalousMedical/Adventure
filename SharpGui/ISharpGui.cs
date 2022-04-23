@@ -33,7 +33,7 @@ namespace SharpGui
 
         KeyboardButtonCode KeyEntered { get; }
 
-        GamepadButtonCode GamepadButtonEntered { get; }
+        GamepadButtonCode[] GamepadButtonEntered { get; }
 
         /// <summary>
         /// Draw a slider. Returns true if the passed in value changed.
@@ -41,7 +41,7 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null);
+        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null, GamepadId gamepad = GamepadId.Pad1);
 
         /// <summary>
         /// Draw a slider. Returns true if the passed in value changed.
@@ -49,7 +49,7 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null);
+        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1);
 
         /// <summary>
         /// Draw a progress bar. Does not take input or foucs.
@@ -86,7 +86,7 @@ namespace SharpGui
         /// </summary>
         /// <param name="button"></param>
         /// <returns></returns>
-        bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null);
+        bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1);
 
         /// <summary>
         /// Draw a text input.
@@ -100,8 +100,8 @@ namespace SharpGui
         /// </summary>
         /// <param name="input"></param>
         void Panel(SharpPanel input);
-        bool IsStandardNextPressed();
-        bool IsStandardPreviousPressed();
+        bool IsStandardNextPressed(GamepadId gamepad = GamepadId.Pad1);
+        bool IsStandardPreviousPressed(GamepadId gamepad = GamepadId.Pad1);
 
         /// <summary>
         /// Measure the size of a button.
@@ -150,6 +150,6 @@ namespace SharpGui
         /// Determine if this input type's standardized back button is pressed.
         /// </summary>
         /// <returns></returns>
-        bool IsStandardBackPressed();
+        bool IsStandardBackPressed(GamepadId gamepad = GamepadId.Pad1);
     }
 }

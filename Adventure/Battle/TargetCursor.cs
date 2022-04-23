@@ -201,7 +201,7 @@ namespace Adventure.Battle
             }
         }
 
-        public void UpdateCursor(IBattleManager battleManager, IBattleTarget target, Vector3 enemyPos)
+        public void UpdateCursor(IBattleManager battleManager, IBattleTarget target, Vector3 enemyPos, BattlePlayer activePlayer)
         {
             SetPosition(enemyPos);
 
@@ -221,7 +221,7 @@ namespace Adventure.Battle
             }
             else
             {
-                switch (sharpGui.GamepadButtonEntered)
+                switch (sharpGui.GamepadButtonEntered[(int)activePlayer.GamepadId])
                 {
                     case GamepadButtonCode.XInput_A:
                         SetTarget(target);

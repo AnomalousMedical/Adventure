@@ -336,7 +336,7 @@ namespace Adventure.Battle
                         targetPos = target.CursorDisplayLocation;
                     }
                     
-                    cursor.UpdateCursor(this, target, targetPos);
+                    cursor.UpdateCursor(this, target, targetPos, activePlayer);
                 }
                 else
                 {

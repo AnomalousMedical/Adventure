@@ -11,6 +11,13 @@ namespace SharpGui
 {
     class SharpGuiImpl : ISharpGui, IDisposable
     {
+        class GamepadState
+        {
+            public GamepadButtonCode lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+            public GamepadButtonCode lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+            public int nextRepeatCountdown = 0;
+        }
+
         private const int StartRepeatMs = 300;
         private const int RepeatMs = 200;
 
@@ -22,8 +29,8 @@ namespace SharpGui
         private uint lastKeyCharPressed = uint.MaxValue;
         private uint immediateInjectChar = uint.MaxValue;
         private KeyboardButtonCode lastKeyReleased = KeyboardButtonCode.KC_UNASSIGNED;
-        private GamepadButtonCode lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
-        private GamepadButtonCode lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+        private GamepadState[] Gamepads = new []{ new GamepadState(), new GamepadState(), new GamepadState(), new GamepadState() };
+        
         private int nextRepeatCountdown = 0;
         private bool sentRepeat = false;
         private SharpStyle buttonStyle;
@@ -41,6 +48,12 @@ namespace SharpGui
 
             eventManager.Pad1.ButtonDown += Pad1_ButtonDown;
             eventManager.Pad1.ButtonUp += Pad1_ButtonUp;
+            eventManager.Pad2.ButtonDown += Pad1_ButtonDown;
+            eventManager.Pad2.ButtonUp += Pad1_ButtonUp;
+            eventManager.Pad3.ButtonDown += Pad1_ButtonDown;
+            eventManager.Pad3.ButtonUp += Pad1_ButtonUp;
+            eventManager.Pad4.ButtonDown += Pad1_ButtonDown;
+            eventManager.Pad4.ButtonUp += Pad1_ButtonUp;
 
             buttonStyle = SharpStyle.CreateComplete(scaleHelper);
             
@@ -60,16 +73,16 @@ namespace SharpGui
             nextRepeatCountdown = StartRepeatMs;
             lastKeyPressed = KeyboardButtonCode.KC_UNASSIGNED;
             immediateInjectChar = lastKeyCharPressed = uint.MaxValue;
-            lastGamepadPressed = buttonCode;
+            Gamepads[pad.IntId].lastGamepadPressed = buttonCode;
             sentRepeat = false;
         }
 
         private void Pad1_ButtonUp(Engine.Platform.Input.Gamepad pad, GamepadButtonCode buttonCode)
         {
-            lastGamepadReleased = buttonCode;
-            if (lastGamepadPressed == buttonCode)
+            Gamepads[pad.IntId].lastGamepadReleased = buttonCode;
+            if (Gamepads[pad.IntId].lastGamepadPressed == buttonCode)
             {
-                lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+                Gamepads[pad.IntId].lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
             }
         }
 
@@ -77,6 +90,12 @@ namespace SharpGui
         {
             eventManager.Pad1.ButtonDown -= Pad1_ButtonDown;
             eventManager.Pad1.ButtonUp -= Pad1_ButtonUp;
+            eventManager.Pad2.ButtonDown -= Pad1_ButtonDown;
+            eventManager.Pad2.ButtonUp -= Pad1_ButtonUp;
+            eventManager.Pad3.ButtonDown -= Pad1_ButtonDown;
+            eventManager.Pad3.ButtonUp -= Pad1_ButtonUp;
+            eventManager.Pad4.ButtonDown -= Pad1_ButtonDown;
+            eventManager.Pad4.ButtonUp -= Pad1_ButtonUp;
             eventManager.Keyboard.KeyPressed -= Keyboard_KeyPressed;
             eventManager.Keyboard.KeyReleased -= Keyboard_KeyReleased;
         }
@@ -92,7 +111,10 @@ namespace SharpGui
             nextRepeatCountdown = StartRepeatMs;
             lastKeyPressed = keyCode;
             immediateInjectChar = lastKeyCharPressed = keyChar;
-            lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[0].lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[1].lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[2].lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[3].lastGamepadPressed = GamepadButtonCode.NUM_BUTTONS;
             sentRepeat = false;
         }
 
@@ -138,20 +160,26 @@ namespace SharpGui
                 keyCharToSend = immediateInjectChar;
             }
 
-            var buttonToSend = lastGamepadReleased;
-            if (sentRepeat)
+            var buttonsToSend = new GamepadButtonCode[4];
+
+            for (int i = 0; i < buttonsToSend.Length; i++)
             {
-                buttonToSend = GamepadButtonCode.NUM_BUTTONS;
-            }
-            if(lastGamepadPressed != GamepadButtonCode.NUM_BUTTONS)
-            {
-                nextRepeatCountdown -= (int)(clock.DeltaTimeMicro * Clock.MicroToMilliseconds);
-                if (nextRepeatCountdown < 0)
+                var buttonToSend = Gamepads[i].lastGamepadReleased;
+                if (sentRepeat)
                 {
-                    nextRepeatCountdown = RepeatMs;
-                    buttonToSend = lastGamepadPressed;
-                    sentRepeat = true;
+                    buttonToSend = GamepadButtonCode.NUM_BUTTONS;
                 }
+                if (Gamepads[i].lastGamepadPressed != GamepadButtonCode.NUM_BUTTONS)
+                {
+                    nextRepeatCountdown -= (int)(clock.DeltaTimeMicro * Clock.MicroToMilliseconds);
+                    if (nextRepeatCountdown < 0)
+                    {
+                        nextRepeatCountdown = RepeatMs;
+                        buttonToSend = Gamepads[i].lastGamepadPressed;
+                        sentRepeat = true;
+                    }
+                }
+                buttonsToSend[i] = buttonToSend;
             }
 
             state.Begin(
@@ -162,10 +190,13 @@ namespace SharpGui
                 keyboard.isModifierDown(Modifier.Shift),
                 keyboard.isModifierDown(Modifier.Alt),
                 keyboard.isModifierDown(Modifier.Ctrl),
-                buttonToSend);
+                buttonsToSend);
 
             lastKeyReleased = KeyboardButtonCode.KC_UNASSIGNED;
-            lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[0].lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[1].lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[2].lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
+            Gamepads[3].lastGamepadReleased = GamepadButtonCode.NUM_BUTTONS;
             immediateInjectChar = uint.MaxValue;
             buffer.Begin();
         }
@@ -175,9 +206,9 @@ namespace SharpGui
             state.End();
         }
 
-        public bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
+        public bool Button(SharpButton button, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1)
         {
-            return button.Process(state, buffer, renderer.Font, buttonStyle, navUp, navDown, navLeft, navRight);
+            return button.Process(state, buffer, renderer.Font, buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
         public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
@@ -185,14 +216,14 @@ namespace SharpGui
             return input.Process(state, buffer, renderer.Font, inputStyle, navUp, navDown, navLeft, navRight);
         }
 
-        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null)
+        public bool Slider(SharpSliderHorizontal slider, ref int value, Guid? navUp = null, Guid? navDown = null, GamepadId gamepad = GamepadId.Pad1)
         {
-            return slider.Process(ref value, state, buffer, sliderStyle, navUp, navDown);
+            return slider.Process(ref value, state, buffer, sliderStyle, navUp, navDown, (int)gamepad);
         }
 
-        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null)
+        public bool Slider(SharpSliderVertical slider, ref int value, Guid? navLeft = null, Guid? navRight = null, GamepadId gamepad = GamepadId.Pad1)
         {
-            return slider.Process(ref value, state, buffer, sliderStyle, navLeft, navRight);
+            return slider.Process(ref value, state, buffer, sliderStyle, navLeft, navRight, (int)gamepad);
         }
 
         public void Progress(SharpProgressHorizontal progress, float percent)
@@ -255,19 +286,19 @@ namespace SharpGui
             state.StealFocus(id);
         }
 
-        public bool IsStandardNextPressed()
+        public bool IsStandardNextPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered == GamepadButtonCode.XInput_RTrigger || KeyEntered == KeyboardButtonCode.KC_PGUP;
+            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_RTrigger || KeyEntered == KeyboardButtonCode.KC_PGUP;
         }
 
-        public bool IsStandardPreviousPressed()
+        public bool IsStandardPreviousPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered == GamepadButtonCode.XInput_LTrigger || KeyEntered == KeyboardButtonCode.KC_PGDOWN;
+            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_LTrigger || KeyEntered == KeyboardButtonCode.KC_PGDOWN;
         }
 
-        public bool IsStandardBackPressed()
+        public bool IsStandardBackPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered == GamepadButtonCode.XInput_B || KeyEntered == KeyboardButtonCode.KC_ESCAPE;
+            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_B || KeyEntered == KeyboardButtonCode.KC_ESCAPE;
         }
 
         public Guid ActiveItem => state.ActiveItem;
@@ -278,6 +309,6 @@ namespace SharpGui
 
         public KeyboardButtonCode KeyEntered => state.KeyEntered;
 
-        public GamepadButtonCode GamepadButtonEntered => state.GamepadButtonEntered;
+        public GamepadButtonCode[] GamepadButtonEntered => state.GamepadButtonEntered;
     }
 }

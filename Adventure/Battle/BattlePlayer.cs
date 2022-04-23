@@ -82,6 +82,8 @@ namespace Adventure.Battle
 
         public bool IsDead => characterSheet.CurrentHp == 0;
 
+        public GamepadId GamepadId => gamepadId;
+
         public int BaseDexterity { get; internal set; }
 
         private Vector3 startPosition;
@@ -307,7 +309,7 @@ namespace Adventure.Battle
 
             if (!didSomething)
             {
-                switch (sharpGui.GamepadButtonEntered)
+                switch (sharpGui.GamepadButtonEntered[(int)gamepadId])
                 {
                     case GamepadButtonCode.XInput_Y:
                         SwitchPlayer();
