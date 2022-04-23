@@ -27,7 +27,7 @@ namespace Anomalous.OSPlatform
             services.TryAddSingleton<IScaleHelper, ScaleHelper>(); //Can add this now that the window is known
 
             mainWindow.ExclusiveFullscreen = options.Fullscreen;
-            mainWindow.Maximized = options.Maximized;
+            mainWindow.Maximized = !options.Fullscreen && options.Maximized;
 
             mainWindow.show();
 

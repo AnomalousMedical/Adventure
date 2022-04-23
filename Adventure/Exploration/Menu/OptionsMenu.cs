@@ -74,6 +74,10 @@ namespace Adventure.Exploration.Menu
             {
                 options.Fullscreen = !options.Fullscreen;
                 nativeOSWindow.toggleFullscreen();
+                if (!options.Fullscreen)
+                {
+                    nativeOSWindow.Maximized = true;
+                }
             }
 
             if (sharpGui.Button(exitGame, gamepadId, navUp: toggleFullscreen.Id, navDown: back.Id))
