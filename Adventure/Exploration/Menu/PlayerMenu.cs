@@ -19,7 +19,7 @@ namespace Adventure.Exploration.Menu
         private readonly IZoneManager zoneManager;
         private readonly SharpButton[] buttons = new[] { new SharpButton(), new SharpButton(), new SharpButton(), new SharpButton() };
 
-        private readonly SharpButton close = new SharpButton() { Text = "Close" };
+        private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
         private const int NoSelectedCharacter = -1;
         private int selectedCharacter = NoSelectedCharacter;
@@ -40,6 +40,8 @@ namespace Adventure.Exploration.Menu
             this.zoneManager = zoneManager;
         }
 
+        public IExplorationSubMenu PreviousMenu { get; set; }
+
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
             ILayoutItem layout;
@@ -50,18 +52,17 @@ namespace Adventure.Exploration.Menu
             {
                 for (var i = 0; i < buttons.Length; i++)
                 {
-                    var character = persistence.Current.Party.Members[i];
-                    buttons[i].Text = $"Player {character.Player + 1}";
+                    buttons[i].Text = $"Pad {i + 1}";
                 }
 
                 layout =
                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                    new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(buttons.Append(close)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                   new ColumnLayout(buttons.Append(back)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
                 ));
                 layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
-                if (sharpGui.Button(buttons[0], gamepadId, navUp: close.Id, navDown: buttons[1].Id))
+                if (sharpGui.Button(buttons[0], gamepadId, navUp: back.Id, navDown: buttons[1].Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 0;
                     selectedCharacter = NoSelectedCharacter;
@@ -82,7 +83,7 @@ namespace Adventure.Exploration.Menu
                     zoneManager.ManagePlayers();
                 }
 
-                if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: close.Id))
+                if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: back.Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 3;
                     selectedCharacter = NoSelectedCharacter;
@@ -97,17 +98,17 @@ namespace Adventure.Exploration.Menu
                 for(var i = 0; i < buttons.Length; i++)
                 {
                     var character = persistence.Current.Party.Members[i];
-                    buttons[i].Text = $"{character.CharacterSheet.Name}: Player {character.Player + 1}";
+                    buttons[i].Text = $"{character.CharacterSheet.Name}: Pad {character.Player + 1}";
                 }
 
                 layout =
                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                    new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(buttons.Append(close)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                   new ColumnLayout(buttons.Append(back)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
                 ));
                 layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
-                if (sharpGui.Button(buttons[0], gamepadId, navUp: close.Id, navDown: buttons[1].Id) && selectedCharacter == NoSelectedCharacter)
+                if (sharpGui.Button(buttons[0], gamepadId, navUp: back.Id, navDown: buttons[1].Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 0;
                 }
@@ -122,7 +123,7 @@ namespace Adventure.Exploration.Menu
                     selectedCharacter = 2;
                 }
 
-                if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: close.Id) && selectedCharacter == NoSelectedCharacter)
+                if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: back.Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 3;
                 }
@@ -131,7 +132,7 @@ namespace Adventure.Exploration.Menu
                 closeNavDown = buttons[0].Id;
             }
 
-            if (sharpGui.Button(close, gamepadId, navUp: closeNavUp, navDown: closeNavDown) || sharpGui.IsStandardBackPressed(gamepadId))
+            if (sharpGui.Button(back, gamepadId, navUp: closeNavUp, navDown: closeNavDown) || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 if (selectedCharacter != NoSelectedCharacter)
                 {
@@ -139,7 +140,7 @@ namespace Adventure.Exploration.Menu
                 }
                 else
                 {
-                    menu.RequestSubMenu(null, gamepadId);
+                    menu.RequestSubMenu(PreviousMenu, gamepadId);
                 }
             }
         }
