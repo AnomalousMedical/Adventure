@@ -127,7 +127,7 @@ namespace SharpGui
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool ProcessFocus(Guid id, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
+        public bool ProcessFocus(Guid id, int gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
         {
             bool callerHandlesInput = false;
             if (FocusedItem == id)
@@ -178,7 +178,7 @@ namespace SharpGui
                         break;
                 }
 
-                switch (GamepadButtonEntered[(int)gamepad])
+                switch (GamepadButtonEntered[gamepad])
                 {
                     case GamepadButtonCode.XInput_DPadUp:
                         if (navUp != null)

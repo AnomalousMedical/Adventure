@@ -85,7 +85,7 @@ namespace SharpGui
                 state.StealFocus(id);
             }
             
-            if (state.ProcessFocus(id, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
+            if (state.ProcessFocus(id, 0, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
                 switch (state.KeyEntered)
                 {

@@ -73,7 +73,7 @@ namespace SharpGui
                 result = true;
             }
             
-            if (state.ProcessFocus(id, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
+            if (state.ProcessFocus(id, gamepad, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
                 switch (state.KeyEntered)
                 {

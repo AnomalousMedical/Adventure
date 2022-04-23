@@ -76,7 +76,7 @@ namespace SharpGui
                 stealFocus = true;
             }
 
-            if (state.ProcessFocus(id, navUp: navUp, navDown: navDown))
+            if (state.ProcessFocus(id, gamepadId, navUp: navUp, navDown: navDown))
             {
                 switch (state.KeyEntered)
                 {
@@ -190,7 +190,7 @@ namespace SharpGui
                 stealFocus = true;
             }
 
-            if (state.ProcessFocus(id, navLeft: navLeft, navRight: navRight))
+            if (state.ProcessFocus(id, gamepadId, navLeft: navLeft, navRight: navRight))
             {
                 switch (state.KeyEntered)
                 {
