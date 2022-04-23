@@ -47,9 +47,9 @@ namespace Adventure.Exploration.Menu
             this.nativeOSWindow = nativeOSWindow;
             this.app = app;
             this.playerMenu = playerMenu;
-
-            playerMenu.PreviousMenu = this;
         }
+
+        public IExplorationSubMenu PreviousMenu { get; set; }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
@@ -64,12 +64,13 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(players, gamepadId, navDown: back.Id, navUp: toggleFullscreen.Id))
+            if (sharpGui.Button(players, gamepadId, navDown: toggleFullscreen.Id, navUp: back.Id))
             {
+                playerMenu.PreviousMenu = this;
                 menu.RequestSubMenu(playerMenu, gamepadId);
             }
 
-            if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: toggleFullscreen.Id, navDown: exitGame.Id))
+            if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: players.Id, navDown: exitGame.Id))
             {
                 options.Fullscreen = !options.Fullscreen;
                 nativeOSWindow.toggleFullscreen();
@@ -88,7 +89,7 @@ namespace Adventure.Exploration.Menu
                 }
                 else
                 {
-                    menu.RequestSubMenu(null, gamepadId);
+                    menu.RequestSubMenu(PreviousMenu, gamepadId);
                 }
             }
         }

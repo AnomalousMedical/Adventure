@@ -68,6 +68,7 @@ namespace Adventure.Exploration.Menu
             }
             else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: items.Id))
             {
+                optionsMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(optionsMenu, gamepad);
             }
             else if (sharpGui.Button(debug, gamepad, navDown: skills.Id, navUp: options.Id))
