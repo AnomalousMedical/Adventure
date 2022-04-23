@@ -26,15 +26,9 @@ namespace Anomalous.OSPlatform
             services.TryAddSingleton<NativeOSWindow>(mainWindow); //This is externally owned
             services.TryAddSingleton<IScaleHelper, ScaleHelper>(); //Can add this now that the window is known
 
-            if (options.Fullscreen)
-            {
-                mainWindow.setSize(options.FullScreenSize.Width, options.FullScreenSize.Height);
-                mainWindow.ExclusiveFullscreen = true;
-            }
-            else
-            {
-                mainWindow.Maximized = options.Maximized;
-            }
+            mainWindow.ExclusiveFullscreen = options.Fullscreen;
+            mainWindow.Maximized = options.Maximized;
+
             mainWindow.show();
 
             mainWindow.Closed += w =>

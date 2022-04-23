@@ -13,8 +13,6 @@ namespace Anomalous.OSPlatform
 
         public IntSize2 Size { get; set; } = new IntSize2(1920, 1080);
 
-        public IntSize2 FullScreenSize { get; set; } = new IntSize2(1920, 1080);
-
         public bool Fullscreen { get; set; }
 
         public bool Maximized { get; set; } = true;
