@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Platform;
 
 namespace Adventure
 {
@@ -39,8 +40,7 @@ namespace Adventure
         private Zone nextZone;
         private Zone previousZone;
 
-        private Player player;
-        private Player player2;
+        private Player[] players = new Player[4];
 
         private IObjectResolver objectResolver;
         private readonly Party party;
@@ -107,36 +107,11 @@ namespace Adventure
 
             currentZone.SetupPhysics();
 
-            if (player == null)
-            {
-                player = this.objectResolver.Resolve<Player, Player.Description>(c =>
-                {
-                    c.Translation = currentZone.StartPoint;
-                    var leader = party.ActiveCharacters.First();
-                    c.PlayerSprite = leader.PlayerSprite;
-                    c.CharacterSheet = leader.CharacterSheet;
-                    c.Gamepad = Engine.Platform.GamepadId.Pad1;
-                });
-            }
-            else
-            {
-                player.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
-            }
+            ManagePlayers();
 
-            if(player2 == null)
+            foreach(var player in players)
             {
-                player2 = this.objectResolver.Resolve<Player, Player.Description>(c =>
-                {
-                    c.Translation = currentZone.StartPoint;
-                    var leader = party.ActiveCharacters.Skip(1).First();
-                    c.PlayerSprite = leader.PlayerSprite;
-                    c.CharacterSheet = leader.CharacterSheet;
-                    c.Gamepad = Engine.Platform.GamepadId.Pad2;
-                });
-            }
-            else
-            {
-                player2.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
+                player?.SetLocation(persistence.Current.Player.Position ?? currentZone.StartPoint);
             }
 
             ZoneChanged?.Invoke(this);
@@ -176,7 +151,7 @@ namespace Adventure
 
         public Task GoNext()
         {
-            return GoNext(player.GetLocation());
+            return GoNext(players[0].GetLocation());
         }
 
         public async Task GoNext(Vector3 triggerLoc)
@@ -215,8 +190,10 @@ namespace Adventure
 
             var playerLoc = triggerLoc;
             playerLoc += new Vector3(-150f, previousOffset.y, previousOffset.z);
-            player.SetLocation(playerLoc);
-            player2?.SetLocation(playerLoc);
+            foreach(var player in players)
+            {
+                player?.SetLocation(playerLoc);
+            }
 
             ZoneChanged?.Invoke(this);
 
@@ -230,7 +207,7 @@ namespace Adventure
 
         public Task GoPrevious()
         {
-            return GoPrevious(player.GetLocation());
+            return GoPrevious(players[0].GetLocation());
         }
 
         public async Task GoPrevious(Vector3 triggerLoc)
@@ -281,8 +258,10 @@ namespace Adventure
 
             var playerLoc = triggerLoc;
             playerLoc += new Vector3(150f, nextOffset.y, nextOffset.z);
-            player.SetLocation(playerLoc);
-            player2?.SetLocation(playerLoc);
+            foreach (var player in players)
+            {
+                player?.SetLocation(playerLoc);
+            }
 
             ZoneChanged?.Invoke(this);
 
@@ -308,23 +287,29 @@ namespace Adventure
 
         public void GoStartPoint()
         {
-            player.SetLocation(currentZone.StartPoint);
-            player2?.SetLocation(currentZone.StartPoint);
+            foreach (var player in players)
+            {
+                player?.SetLocation(currentZone.StartPoint);
+            }
         }
 
         public void GoEndPoint()
         {
-            player.SetLocation(currentZone.EndPoint);
-            player2?.SetLocation(currentZone.EndPoint);
+            foreach (var player in players)
+            {
+                player?.SetLocation(currentZone.EndPoint);
+            }
         }
 
         public void StopPlayer()
         {
-            player.StopMovement();
-            player2?.StopMovement();
+            foreach (var player in players)
+            {
+                player?.StopMovement();
+            }
         }
 
-        public Vector3 GetPlayerLoc() => player.GetLocation();
+        public Vector3 GetPlayerLoc() => players[0].GetLocation();
 
         public void ResetPlaceables()
         {
@@ -333,6 +318,35 @@ namespace Adventure
             nextZone?.ResetPlaceables();
             currentZone.DestroyPhysics();
             currentZone.SetupPhysics();
+        }
+
+        public void ManagePlayers()
+        {
+            for(int i = 0; i < players.Length; i++)
+            {
+                var playerCharacter = party.ActiveCharacters.Where(c => c.Player == i).FirstOrDefault();
+                if (playerCharacter != null)
+                {
+                    if (players[i] == null)
+                    {
+                        players[i] = this.objectResolver.Resolve<Player, Player.Description>(c =>
+                        {
+                            c.Translation = currentZone.StartPoint;
+                            c.PlayerSprite = playerCharacter.PlayerSprite;
+                            c.CharacterSheet = playerCharacter.CharacterSheet;
+                            c.Gamepad = (GamepadId)i;
+                        });
+                    }
+                }
+                else
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].RequestDestruction();
+                        players[i] = null;
+                    }
+                }
+            }
         }
     }
 }

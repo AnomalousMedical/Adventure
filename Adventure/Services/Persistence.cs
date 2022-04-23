@@ -120,6 +120,8 @@ namespace Adventure.Services
 
             public String PlayerSprite { get; set; }
 
+            public int Player { get; set; }
+
             public void RemoveItem(InventoryItem item)
             {
                 if (item.Equipment != null)
