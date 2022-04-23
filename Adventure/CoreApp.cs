@@ -23,16 +23,18 @@ namespace Adventure
 {
     public class CoreApp : App
     {
+        private OptionsWriter optionsWriter = new OptionsWriter();
         private NativeOSWindow mainWindow;
         private UpdateTimer mainTimer;
 
         public CoreApp()
         {
-
+            
         }
 
         public override void Dispose()
         {
+            optionsWriter.Dispose();
             PerformanceMonitor.destroyEnabledState();
 
             base.DisposeGlobalScope();
@@ -42,9 +44,12 @@ namespace Adventure
 
         public override bool OnInit(IServiceCollection services, PluginManager pluginManager)
         {
+            var options = optionsWriter.Load();
+
             mainWindow = EasyNativeWindow.Create(services, this, o =>
             {
                 o.Title = "Anomalous Adventure";
+                o.Fullscreen = options.Fullscreen;
             });
 
             services.AddLogging(o =>
@@ -75,6 +80,7 @@ namespace Adventure
             services.AddRpgMath();
 
             //Add this app's services
+            services.AddSingleton<Options>(options);
             services.AddSingleton<FlyCameraManager>();
             services.AddSingleton<SceneTestUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();
@@ -175,6 +181,8 @@ namespace Adventure
             services.AddSingleton<ConfirmBuyMenu>();
             services.AddSingleton<RestManager>();
             services.AddSingleton<PickUpTreasureMenu>();
+            services.AddSingleton<OptionsMenu>();
+            services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>(s =>
             {
                 var writer = s.GetRequiredService<IPersistenceWriter>();

@@ -22,10 +22,12 @@ namespace Adventure.Exploration.Menu
         private readonly ItemMenu itemMenu;
         private readonly SkillMenu skillMenu;
         private readonly PlayerMenu playerMenu;
+        private readonly OptionsMenu optionsMenu;
 
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
         SharpButton players = new SharpButton() { Text = "Players" };
+        SharpButton options = new SharpButton() { Text = "Options" };
         SharpButton debug = new SharpButton() { Text = "Debug" };
 
         public RootMenu(
@@ -34,7 +36,8 @@ namespace Adventure.Exploration.Menu
             IScreenPositioner screenPositioner,
             ItemMenu itemMenu,
             SkillMenu skillMenu,
-            PlayerMenu playerMenu)
+            PlayerMenu playerMenu,
+            OptionsMenu optionsMenu)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
@@ -42,6 +45,7 @@ namespace Adventure.Exploration.Menu
             this.itemMenu = itemMenu;
             this.skillMenu = skillMenu;
             this.playerMenu = playerMenu;
+            this.optionsMenu = optionsMenu;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
@@ -49,7 +53,7 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(skills, items, players, debug) { Margin = new IntPad(10) }
+               new ColumnLayout(skills, items, players, options, debug) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -63,11 +67,15 @@ namespace Adventure.Exploration.Menu
             {
                 explorationMenu.RequestSubMenu(itemMenu, gamepad);
             }
-            else if (sharpGui.Button(players, gamepad, navDown: debug.Id, navUp: skills.Id))
+            else if (sharpGui.Button(players, gamepad, navDown: options.Id, navUp: items.Id))
             {
                 explorationMenu.RequestSubMenu(playerMenu, gamepad);
             }
-            else if (sharpGui.Button(debug, gamepad, navDown: skills.Id, navUp: players.Id))
+            else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: players.Id))
+            {
+                explorationMenu.RequestSubMenu(optionsMenu, gamepad);
+            }
+            else if (sharpGui.Button(debug, gamepad, navDown: skills.Id, navUp: options.Id))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
             }
