@@ -173,9 +173,13 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            if (!state.Taken)
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+             || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Take", Take);
+                if (!state.Taken)
+                {
+                    contextMenu.HandleContext("Take", Take, player.GamepadId);
+                }
             }
         }
 
@@ -184,7 +188,7 @@ namespace Adventure
             contextMenu.ClearContext(Take);
         }
 
-        private void Take()
+        private void Take(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Take);
             state.Taken = true;

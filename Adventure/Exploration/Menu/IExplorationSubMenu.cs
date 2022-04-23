@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine.Platform;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Adventure.Exploration.Menu
 {
    interface IExplorationSubMenu
     {
-        void Update(IExplorationGameState explorationGameState, IExplorationMenu menu);
+        void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad);
     }
 }

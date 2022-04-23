@@ -162,7 +162,11 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            contextMenu.HandleContext("Speak", Speak);
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+                || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            {
+                contextMenu.HandleContext("Speak", Speak, player.GamepadId);
+            }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
@@ -170,14 +174,14 @@ namespace Adventure
             contextMenu.ClearContext(Speak);
         }
 
-        private void Speak()
+        private void Speak(ContextMenuArgs args)
         {
             persistence.Current.Player.RespawnZone = zoneIndex;
             persistence.Current.Player.RespawnPosition = zoneManager.GetPlayerLoc();
             persistence.Current.BattleTriggers.ClearData();
 
             contextMenu.ClearContext(Speak);
-            explorationMenu.RequestSubMenu(rootMenu);
+            explorationMenu.RequestSubMenu(rootMenu, args.GamepadId);
             zoneManager.ResetPlaceables();
         }
 

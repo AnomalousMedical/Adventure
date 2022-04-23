@@ -152,7 +152,11 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            contextMenu.HandleContext("Take", Take);
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+             || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            {
+                contextMenu.HandleContext("Take", Take, player.GamepadId);
+            }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
@@ -160,7 +164,7 @@ namespace Adventure
             contextMenu.ClearContext(Take);
         }
 
-        private void Take()
+        private void Take(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Take);
             persistence.Current.Party.Gold += persistence.Current.Player.LootDropGold;

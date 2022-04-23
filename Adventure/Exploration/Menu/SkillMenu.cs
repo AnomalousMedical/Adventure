@@ -2,6 +2,7 @@
 using Adventure.Items;
 using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using RpgMath;
 using SharpGui;
 using System;
@@ -52,7 +53,7 @@ namespace Adventure.Exploration.Menu
             this.damageCalculator = damageCalculator;
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
         {
             var choosingCharacter = characterChoices != null;
 
@@ -196,7 +197,7 @@ Lck: {characterData.CharacterSheet.Luck}
             {
                 if (!choosingCharacter)
                 {
-                    menu.RequestSubMenu(menu.RootMenu);
+                    menu.RequestSubMenu(menu.RootMenu, gamepad);
                 }
             }
         }

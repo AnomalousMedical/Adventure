@@ -2,6 +2,7 @@
 using Adventure.Items.Creators;
 using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -158,7 +159,7 @@ namespace Adventure.Exploration.Menu
 
         public IExplorationSubMenu PreviousMenu { get; set; }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 
@@ -266,7 +267,7 @@ Lck: {characterData.CharacterSheet.Luck}
             {
                 if (allowChanges)
                 {
-                    menu.RequestSubMenu(PreviousMenu);
+                    menu.RequestSubMenu(PreviousMenu, gamepad);
                 }
             }
         }

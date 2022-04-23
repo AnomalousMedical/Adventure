@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,15 @@ namespace Adventure.Exploration.Menu
 {
     interface IContextMenu
     {
-        void ClearContext(Action activatedCallback);
-        void HandleContext(String title, Action activatedCallback);
+        void ClearContext(Action<ContextMenuArgs> activatedCallback);
+        void HandleContext(String title, Action<ContextMenuArgs> activatedCallback, GamepadId gamepadId);
 
         void Update();
+    }
+
+    class ContextMenuArgs
+    {
+        public GamepadId GamepadId { get; set; }
     }
 
     class ContextMenu : IContextMenu
@@ -22,7 +28,9 @@ namespace Adventure.Exploration.Menu
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         SharpButton contextButton = new SharpButton();
-        private Action activatedCallback;
+        private Action<ContextMenuArgs> activatedCallback;
+        private GamepadId gamepadId;
+        private ContextMenuArgs contextMenuArgs = new ContextMenuArgs();
 
         public ContextMenu(
             ISharpGui sharpGui,
@@ -34,13 +42,14 @@ namespace Adventure.Exploration.Menu
             this.screenPositioner = screenPositioner;
         }
 
-        public void HandleContext(String title, Action activatedCallback)
+        public void HandleContext(String title, Action<ContextMenuArgs> activatedCallback, GamepadId gamepadId)
         {
             contextButton.Text = title;
             this.activatedCallback = activatedCallback;
+            this.gamepadId = gamepadId;
         }
 
-        public void ClearContext(Action activatedCallback)
+        public void ClearContext(Action<ContextMenuArgs> activatedCallback)
         {
             if (this.activatedCallback == activatedCallback)
             {
@@ -64,9 +73,11 @@ namespace Adventure.Exploration.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
+            contextMenuArgs.GamepadId = gamepadId;
+
             if (sharpGui.Button(contextButton))
             {
-                activatedCallback();
+                activatedCallback(contextMenuArgs);
             }
         }
     }

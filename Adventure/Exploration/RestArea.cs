@@ -38,6 +38,7 @@ namespace Adventure
         private readonly IContextMenu contextMenu;
         private readonly RestManager restManager;
         private readonly IExplorationGameState explorationGameState;
+        private readonly ICollidableTypeIdentifier collidableIdentifier;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASBuildInstanceData tlasData;
@@ -63,7 +64,8 @@ namespace Adventure
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             RestManager restManager,
-            IExplorationGameState explorationGameState
+            IExplorationGameState explorationGameState,
+            ICollidableTypeIdentifier collidableIdentifier
         )
         {
             this.sprite = description.Sprite;
@@ -76,6 +78,7 @@ namespace Adventure
             this.contextMenu = contextMenu;
             this.restManager = restManager;
             this.explorationGameState = explorationGameState;
+            this.collidableIdentifier = collidableIdentifier;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -157,7 +160,11 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            contextMenu.HandleContext("Rest", Rest);
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+             || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            {
+                contextMenu.HandleContext("Rest", Rest, player.GamepadId);
+            }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
@@ -165,7 +172,7 @@ namespace Adventure
             contextMenu.ClearContext(Rest);
         }
 
-        private void Rest()
+        private void Rest(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Rest);
             restManager.Rest(explorationGameState);

@@ -1,4 +1,5 @@
-﻿using SharpGui;
+﻿using Engine.Platform;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Adventure.Exploration.Menu
         IDebugGui DebugGui { get; }
         IRootMenu RootMenu { get; }
 
-        void RequestSubMenu(IExplorationSubMenu subMenu);
+        void RequestSubMenu(IExplorationSubMenu subMenu, GamepadId gamepad);
         bool Update(ExplorationGameState explorationGameState);
     }
 
@@ -23,6 +24,7 @@ namespace Adventure.Exploration.Menu
         private readonly IRootMenu rootMenu;
         
         private IExplorationSubMenu currentMenu = null;
+        private GamepadId currentGamepad;
 
         public IDebugGui DebugGui => debugGui;
         public IRootMenu RootMenu => rootMenu;
@@ -44,37 +46,38 @@ namespace Adventure.Exploration.Menu
             if (currentMenu != null)
             {
                 handled = true;
-                currentMenu.Update(explorationGameState, this);
+                currentMenu.Update(explorationGameState, this, currentGamepad);
             }
             else
             {
                 if (sharpGui.GamepadButtonEntered[0] == Engine.Platform.GamepadButtonCode.XInput_Y || sharpGui.KeyEntered == Engine.Platform.KeyboardButtonCode.KC_TAB)
                 {
-                    RequestSubMenu(rootMenu);
+                    RequestSubMenu(rootMenu, GamepadId.Pad1);
                     handled = true;
                 }
                 else if (sharpGui.GamepadButtonEntered[1] == Engine.Platform.GamepadButtonCode.XInput_Y)
                 {
-                    RequestSubMenu(rootMenu);
+                    RequestSubMenu(rootMenu, GamepadId.Pad2);
                     handled = true;
                 }
                 else if (sharpGui.GamepadButtonEntered[2] == Engine.Platform.GamepadButtonCode.XInput_Y)
                 {
-                    RequestSubMenu(rootMenu);
+                    RequestSubMenu(rootMenu, GamepadId.Pad3);
                     handled = true;
                 }
                 else if (sharpGui.GamepadButtonEntered[3] == Engine.Platform.GamepadButtonCode.XInput_Y)
                 {
-                    RequestSubMenu(rootMenu);
+                    RequestSubMenu(rootMenu, GamepadId.Pad4);
                     handled = true;
                 }
             }
             return handled;
         }
 
-        public void RequestSubMenu(IExplorationSubMenu subMenu)
+        public void RequestSubMenu(IExplorationSubMenu subMenu, GamepadId gamepad)
         {
             currentMenu = subMenu;
+            currentGamepad = gamepad;
         }
     }
 }

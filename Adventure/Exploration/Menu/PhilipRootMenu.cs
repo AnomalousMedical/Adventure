@@ -1,5 +1,6 @@
 ﻿using Adventure.Exploration.Menu;
 using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Adventure.Exploration.Menu
             buyMenu.PreviousMenu = this;
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -55,12 +56,12 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(levelUp, navUp: goodbye.Id, navDown: buy.Id))
             {
-                explorationMenu.RequestSubMenu(levelUpMenu);
+                explorationMenu.RequestSubMenu(levelUpMenu, gamepad);
             }
 
             if (sharpGui.Button(buy, navUp: levelUp.Id, navDown: rest.Id))
             {
-                explorationMenu.RequestSubMenu(buyMenu);
+                explorationMenu.RequestSubMenu(buyMenu, gamepad);
             }
 
             if (sharpGui.Button(rest, navUp: buy.Id, navDown: goodbye.Id))
@@ -70,7 +71,7 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(goodbye, navUp: rest.Id, navDown: levelUp.Id) || sharpGui.IsStandardBackPressed())
             {
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
         }
     }

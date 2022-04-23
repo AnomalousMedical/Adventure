@@ -178,9 +178,13 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            if (!state.Open)
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+               || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Open", Open);
+                if (!state.Open)
+                {
+                    contextMenu.HandleContext("Open", Open, player.GamepadId);
+                }
             }
         }
 
@@ -189,7 +193,7 @@ namespace Adventure
             contextMenu.ClearContext(Open);
         }
 
-        private void Open()
+        private void Open(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Open);
             sprite.SetAnimation("open");
@@ -198,7 +202,7 @@ namespace Adventure
             state.Open = true;
             persistence.Current.TreasureTriggers.SetData(zoneIndex, instanceId, state);
             treasureMenu.GatherTreasures(treasure);
-            explorationMenu.RequestSubMenu(treasureMenu);
+            explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

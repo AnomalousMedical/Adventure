@@ -1,5 +1,6 @@
 ﻿using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using RpgMath;
 using SharpGui;
 using System;
@@ -44,7 +45,7 @@ namespace Adventure.Exploration.Menu
 
         public IExplorationSubMenu PreviousMenu { get; set; }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
             if (currentSheet > persistence.Current.Party.Members.Count)
             {
@@ -147,11 +148,11 @@ Lck: {sheet.CharacterSheet.Luck}";
             }
             if (sharpGui.Button(back, navUp: next.Id, navDown: next.Id))
             {
-                explorationMenu.RequestSubMenu(PreviousMenu);
+                explorationMenu.RequestSubMenu(PreviousMenu, gamepad);
             }
             else if (sharpGui.IsStandardBackPressed())
             {
-                explorationMenu.RequestSubMenu(PreviousMenu);
+                explorationMenu.RequestSubMenu(PreviousMenu, gamepad);
             }
         }
     }

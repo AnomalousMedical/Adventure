@@ -1,5 +1,6 @@
 ﻿using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,11 @@ namespace Adventure.Exploration.Menu
             pickUpTreasureMenu.GatherTreasures(treasure);
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
         {
             if (pickUpTreasureMenu.Update())
             {
-                menu.RequestSubMenu(null);
+                menu.RequestSubMenu(null, gamepad);
                 return;
             }
         }

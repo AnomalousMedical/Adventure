@@ -187,16 +187,20 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            this.state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
-            if (!state.GateOpened)
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+             || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
-                if (state.Taken)
+                this.state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
+                if (!state.GateOpened)
                 {
-                    contextMenu.HandleContext("Open", Open);
-                }
-                else
-                {
-                    contextMenu.HandleContext("Need Key", Open);
+                    if (state.Taken)
+                    {
+                        contextMenu.HandleContext("Open", Open, player.GamepadId);
+                    }
+                    else
+                    {
+                        contextMenu.HandleContext("Need Key", Open, player.GamepadId);
+                    }
                 }
             }
         }
@@ -206,7 +210,7 @@ namespace Adventure
             contextMenu.ClearContext(Open);
         }
 
-        private void Open()
+        private void Open(ContextMenuArgs args)
         {
             if (state.Taken)
             {

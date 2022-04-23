@@ -78,6 +78,8 @@ namespace Adventure
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
+        public GamepadId GamepadId => gamepadId;
+
         private System.Numerics.Vector2 movementDir;
         private const float MovingBoundary = 0.001f;
         public bool IsMoving => !(movementDir.X < MovingBoundary && movementDir.X > -MovingBoundary

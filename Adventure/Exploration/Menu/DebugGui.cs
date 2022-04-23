@@ -65,7 +65,7 @@ namespace Adventure.Exploration.Menu
             currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
             averageLevel.Text = $"Level: {party.GetAverageLevel()} Zone: {zoneManager.Current.EnemyLevel}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";
@@ -84,7 +84,7 @@ namespace Adventure.Exploration.Menu
             if (sharpGui.Button(battle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
             {
                 explorationGameState.RequestBattle();
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (sharpGui.Button(allowBattle, navUp: toggleCamera.Id, navDown: philip.Id, navRight: battle.Id, navLeft: battle.Id))
@@ -94,31 +94,31 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(philip, navUp: battle.Id, navDown: goStart.Id))
             {
-                explorationMenu.RequestSubMenu(philipRoot);
+                explorationMenu.RequestSubMenu(philipRoot, gamepad);
             }
 
             if(sharpGui.Button(goStart, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goEnd.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (sharpGui.Button(goEnd, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goStart.Id))
             {
                 zoneManager.GoEndPoint();
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoNext());
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
                 coroutineRunner.RunTask(zoneManager.GoPrevious());
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (sharpGui.Button(toggleCamera, navUp: goNextLevel.Id, navDown: battle.Id))
@@ -136,7 +136,7 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.IsStandardBackPressed())
             {
-                explorationMenu.RequestSubMenu(explorationMenu.RootMenu);
+                explorationMenu.RequestSubMenu(explorationMenu.RootMenu, gamepad);
             }
         }
     }

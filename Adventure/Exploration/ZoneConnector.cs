@@ -76,13 +76,11 @@ namespace Adventure
             Console.WriteLine(evt.EventSource);
             //Don't want to do this during the physics update. Trigger to run later.
 
-            Player playerPairB = null;
-            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var playerPairA)
-                || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out playerPairB))
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+                || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
                 coroutineRunner.RunTask(async () =>
                 {
-                    var player = playerPairA ?? playerPairB;
                     var playerLoc = player.GetLocation();
 
                     if (this.goPrevious)

@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace Adventure.Exploration.Menu
             this.skillMenu = skillMenu;
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu)
+        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -51,19 +52,19 @@ namespace Adventure.Exploration.Menu
 
             if (sharpGui.Button(skills, navDown: items.Id, navUp: debug.Id))
             {
-                explorationMenu.RequestSubMenu(skillMenu);
+                explorationMenu.RequestSubMenu(skillMenu, gamepad);
             }
             else if (sharpGui.Button(items, navDown: debug.Id, navUp: skills.Id))
             {
-                explorationMenu.RequestSubMenu(itemMenu);
+                explorationMenu.RequestSubMenu(itemMenu, gamepad);
             }
             else if (sharpGui.Button(debug, navDown: skills.Id, navUp: items.Id))
             {
-                explorationMenu.RequestSubMenu(explorationMenu.DebugGui);
+                explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
             }
             else if (sharpGui.IsStandardBackPressed())
             {
-                explorationMenu.RequestSubMenu(null);
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
         }
     }
