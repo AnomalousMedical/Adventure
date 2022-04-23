@@ -162,6 +162,7 @@ namespace Adventure.Battle
                     c.CharacterSheet = character.CharacterSheet;
                     c.Inventory = character.Inventory;
                     c.PlayerSprite = character.PlayerSprite;
+                    c.Gamepad = (GamepadId)character.Player;
                 }));
 
                 currentZ -= 2;
