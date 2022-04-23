@@ -371,6 +371,26 @@ namespace Adventure
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
         }
 
+        /// <summary>
+        /// Restoring the location from persistence is a special case.
+        /// If there is nothing in the persistence the safetyPosition is used.
+        /// </summary>
+        /// <param name="safetyPosition"></param>
+        public void RestorePersistedLocation(in Vector3 safetyPosition)
+        {
+            var location = persistence.Current.Player.Position;
+            if (location == null)
+            {
+                SetLocation(safetyPosition);
+            }
+            else
+            {
+                bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
+                this.characterMover.SetLocation(location.Value.ToSystemNumerics());
+                bepuScene.AddToInterpolation(characterMover.BodyHandle);
+            }
+        }
+
         public Vector3 GetLocation()
         {
             return this.currentPosition - new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
