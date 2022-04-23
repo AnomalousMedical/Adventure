@@ -300,7 +300,8 @@ namespace Adventure.Battle
 
                 sharpGui.Text(goldRewardText);
 
-                if (sharpGui.Button(endBattle, GamepadId.Pad1))
+                //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
+                if (sharpGui.Button(endBattle, GamepadId.Pad1) || sharpGui.Button(endBattle, GamepadId.Pad2) || sharpGui.Button(endBattle, GamepadId.Pad3) || sharpGui.Button(endBattle, GamepadId.Pad4))
                 {
                     party.Gold += goldReward;
 

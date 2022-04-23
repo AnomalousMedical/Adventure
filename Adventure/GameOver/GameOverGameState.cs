@@ -94,9 +94,10 @@ namespace Adventure.GameOver
             layout.SetRect(rect);
 
             sharpGui.Text(gameOver);
-            if (sharpGui.Button(restart, GamepadId.Pad1))
-            {
 
+            //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
+            if (sharpGui.Button(restart, GamepadId.Pad1) || sharpGui.Button(restart, GamepadId.Pad2) || sharpGui.Button(restart, GamepadId.Pad3) || sharpGui.Button(restart, GamepadId.Pad4))
+            {
                 coroutineRunner.RunTask(zoneManager.Restart());
                 nextState = this.nextState;
             }
