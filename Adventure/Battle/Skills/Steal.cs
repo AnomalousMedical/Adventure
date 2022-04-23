@@ -44,7 +44,8 @@ namespace Adventure.Battle.Skills
 
         public void Update(Clock clock)
         {
-            if (pickUpTreasureMenu.Update(GamepadId.Pad1)) //TODO: Make this the owner of the thief
+            var padId = battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
+            if (pickUpTreasureMenu.Update(padId))
             {
                 battleManager.AllowActivePlayerGui = true;
                 Finished = true;

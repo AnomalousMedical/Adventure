@@ -68,6 +68,7 @@ namespace Adventure.Battle
 
         public IEnumerable<ITreasure> Steal();
         IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target);
+        BattlePlayer GetActivePlayer();
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -391,7 +392,7 @@ namespace Adventure.Battle
             activePlayers.Enqueue(activePlayer);
         }
 
-        private BattlePlayer GetActivePlayer()
+        public BattlePlayer GetActivePlayer()
         {
             if(activePlayers.Count == 0)
             {
