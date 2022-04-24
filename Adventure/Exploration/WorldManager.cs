@@ -121,7 +121,7 @@ namespace Adventure.Exploration
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
 
-            o.EnemyLevel = zoneIndex / zoneLevelScaler * levelScale;
+            o.EnemyLevel = zoneIndex / zoneLevelScaler * levelScale + levelScale;
             o.MakePhilip = zoneIndex % zoneLevelScaler == 0;
             o.MakeRest = zoneIndex % zoneLevelScaler == 1;
             o.MakeBoss = zoneIndex % zoneLevelScaler == 1;
