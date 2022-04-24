@@ -190,7 +190,7 @@ namespace Adventure.Exploration
             }
             else if (zoneIndex == 1)
             {
-                o.EnemyLevel = 1;
+                o.EnemyLevel = levelScale;
                 o.MakePhilip = false;
                 o.MakeRest = true;
                 o.MakeBoss = true;
