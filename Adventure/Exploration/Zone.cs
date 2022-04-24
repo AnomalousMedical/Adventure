@@ -824,7 +824,7 @@ namespace Adventure
             var mapLoc = mapMesh.PointToVector(point.x, point.y);
             var key = objectResolver.Resolve<Key, Key.Description>(o =>
             {
-                o.InstanceId = treasureIndex++;
+                o.InstanceId = 0;
                 o.ZoneIndex = index;
                 o.MapOffset = mapLoc;
                 o.Translation = currentPosition + o.MapOffset;
