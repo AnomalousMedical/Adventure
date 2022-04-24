@@ -433,6 +433,7 @@ namespace Adventure.Battle
             {
                 if (IsDead)
                 {
+                    DestroyCastEffect();
                     return true;
                 }
 
@@ -620,6 +621,7 @@ namespace Adventure.Battle
             {
                 if (IsDead)
                 {
+                    DestroyCastEffect();
                     return true;
                 }
 
