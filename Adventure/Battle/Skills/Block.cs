@@ -22,6 +22,8 @@ namespace Adventure.Battle.Skills
 
         public string Name => "Block";
 
+        public bool NeedsTarget => false;
+
         public long MpCost => 0;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;

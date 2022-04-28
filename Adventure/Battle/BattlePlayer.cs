@@ -388,6 +388,10 @@ namespace Adventure.Battle
 
         private void UseSkill(IBattleTarget target, ISkill skill)
         {
+            if(target == null)
+            {
+                target = this;
+            }
             switch (skill.AttackStyle)
             {
                 case SkillAttackStyle.Cast:

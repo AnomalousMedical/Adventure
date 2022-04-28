@@ -23,6 +23,11 @@ namespace Adventure.Battle
 
         bool DefaultTargetPlayers => false;
 
+        /// <summary>
+        /// If this is false a skill will auto target the current player.
+        /// </summary>
+        bool NeedsTarget => true;
+
         string Name { get; }
 
         long MpCost { get; }

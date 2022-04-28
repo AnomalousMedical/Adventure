@@ -68,14 +68,21 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    coroutine.RunTask(async () =>
+                    if (skill.NeedsTarget)
                     {
-                        var target = await battleManager.GetTarget(skill.DefaultTargetPlayers);
-                        if (target != null)
+                        coroutine.RunTask(async () =>
                         {
-                            skillSelectedCb(target, skill);
-                        }
-                    });
+                            var target = await battleManager.GetTarget(skill.DefaultTargetPlayers);
+                            if (target != null)
+                            {
+                                skillSelectedCb(target, skill);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        skillSelectedCb(null, skill);
+                    }
                     menuMode = BattlePlayer.MenuMode.Root;
                     didSomething = true;
                 }
