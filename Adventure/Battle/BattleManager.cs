@@ -24,6 +24,7 @@ namespace Adventure.Battle
 
         void AddToActivePlayers(BattlePlayer player);
         void Attack(IBattleTarget attacker, IBattleTarget target);
+        void ChangeBlockingStatus(IBattleTarget blocker);
         Task<IBattleTarget> GetTarget(bool targetPlayers);
 
         /// <summary>
@@ -69,6 +70,7 @@ namespace Adventure.Battle
         public IEnumerable<ITreasure> Steal();
         IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target);
         BattlePlayer GetActivePlayer();
+        IBattleTarget GetBlocker(IBattleTarget attacker, IBattleTarget target);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -107,7 +109,7 @@ namespace Adventure.Battle
         private String backgroundMusic;
         private Func<IEnumerable<ITreasure>> stealCb;
 
-        private readonly List<BattlePlayer> blockingPlayers = new List<BattlePlayer>();
+        private readonly List<IBattleTarget> blockingPlayers = new List<IBattleTarget>();
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
@@ -535,6 +537,10 @@ namespace Adventure.Battle
                         backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                     }
                 }
+                else if (target.BattleTargetType == BattleTargetType.Player)
+                {
+                    blockingPlayers.Remove(target);
+                }
             }
         }
 
@@ -620,6 +626,7 @@ namespace Adventure.Battle
             cursor.Cancel();
             turnQueue.Clear();
             activePlayers.Clear();
+            blockingPlayers.Clear();
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;
@@ -627,6 +634,25 @@ namespace Adventure.Battle
         public IEnumerable<ITreasure> Steal()
         {
             return stealCb?.Invoke() ?? Enumerable.Empty<ITreasure>();
+        }
+
+        public void ChangeBlockingStatus(IBattleTarget blocker)
+        {
+            switch (blocker.BattleTargetType)
+            {
+                case BattleTargetType.Player:
+                    if (blockingPlayers.Contains(blocker))
+                    {
+                        blockingPlayers.Remove(blocker);
+                    }
+                    else
+                    {
+                        blockingPlayers.Add(blocker);
+                    }
+                    break;
+                case BattleTargetType.Enemy:
+                    break;
+            }
         }
     }
 }

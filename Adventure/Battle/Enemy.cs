@@ -120,6 +120,8 @@ namespace Adventure.Battle
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
             var target = battleManager.GetRandomPlayer();
+            IBattleTarget blocker = null;
+            bool findBlocker = true;
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -132,6 +134,17 @@ namespace Adventure.Battle
                 Vector3 start;
                 Vector3 end;
                 float interpolate;
+
+                if (findBlocker)
+                {
+                    findBlocker = false;
+                    blocker = battleManager.GetBlocker(this, target);
+                    if (blocker != null)
+                    {
+                        blocker.MoveToBlock(target.MeleeAttackLocation);
+                        target = blocker;
+                    }
+                }
 
                 if (remainingTime > standStartTime)
                 {
@@ -172,6 +185,7 @@ namespace Adventure.Battle
                 {
                     sprite.SetAnimation("stand-left");
                     TurnComplete();
+                    blocker?.MoveToStart();
                     done = true;
                 }
 
@@ -233,6 +247,18 @@ namespace Adventure.Battle
             {
                 currentMp = Stats.Mp;
             }
+        }
+
+        public void MoveToBlock(in Vector3 position)
+        {
+            this.currentPosition = position;
+            this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+        }
+
+        public void MoveToStart()
+        {
+            this.currentPosition = this.startPosition;
+            this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
         }
 
         public Vector3 DamageDisplayLocation => currentPosition + new Vector3(0.5f * currentScale.x, 0.5f * currentScale.y, 0f);

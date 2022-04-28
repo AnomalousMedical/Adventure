@@ -38,7 +38,9 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Shield",
                 Defense = equipmentCurve.GetDefense(name.Level),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level),
-                Sprite = nameof(ShieldOfReflection)
+                Sprite = nameof(ShieldOfReflection),
+                Skills = new[] { "Block" },
+                BlockPercent = 80, //TODO: Figure out how to give out block percent
             };
 
             return CreateInventoryItem(shield);
@@ -53,7 +55,9 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Epic Shield",
                 Defense = equipmentCurve.GetDefense(name.Level + 6),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level + 6),
-                Sprite = nameof(ShieldOfReflection)
+                Sprite = nameof(ShieldOfReflection),
+                Skills = new[] { "Block" },
+                BlockPercent = 80, //TODO: Figure out how to give out block percent
             };
 
             return CreateInventoryItem(shield);
@@ -68,7 +72,9 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Legendary Shield",
                 Defense = equipmentCurve.GetDefense(name.Level + 12),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level + 12),
-                Sprite = nameof(ShieldOfReflection)
+                Sprite = nameof(ShieldOfReflection),
+                Skills = new[] { "Block" },
+                BlockPercent = 80, //TODO: Figure out how to give out block percent
             };
 
             return CreateInventoryItem(shield);

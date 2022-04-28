@@ -31,5 +31,9 @@ namespace Adventure.Battle
         void Resurrect(IDamageCalculator damageCalculator, long damage);
 
         void TakeMp(long mp);
+
+        void MoveToBlock(in Vector3 position);
+        
+        void MoveToStart();
     }
 }

@@ -794,6 +794,18 @@ namespace Adventure.Battle
             currentMp.UpdateText(GetCurrentMpText());
         }
 
+        public void MoveToBlock(in Vector3 position)
+        {
+            this.currentPosition = position;
+            Sprite_FrameChanged(sprite);
+        }
+
+        public void MoveToStart()
+        {
+            this.currentPosition = this.startPosition;
+            Sprite_FrameChanged(sprite);
+        }
+
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
