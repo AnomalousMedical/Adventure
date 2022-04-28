@@ -42,6 +42,8 @@ namespace RpgMath
 
         public long CritChance { get; set; }
 
+        public long BlockPercent { get; set; }
+
         public bool TwoHanded { get; set; }
 
         public int InventorySlots { get; set; }

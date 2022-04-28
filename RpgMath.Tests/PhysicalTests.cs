@@ -212,6 +212,58 @@ namespace RpgMath.Tests
         }
 
         [Fact]
+        public void PhysicalDamageBlock()
+        {
+            var calc = new DamageCalculator();
+
+            var result = calc.Block(Characters.level10, Characters.level10);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level20, Characters.level20);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level30, Characters.level30);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level40, Characters.level40);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level50, Characters.level50);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level60, Characters.level60);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level70, Characters.level70);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level80, Characters.level80);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level90, Characters.level90);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level99, Characters.level99);
+            output.WriteLine(result.ToString());
+
+            result = calc.Block(Characters.level99, Characters.level10);
+            output.WriteLine(result.ToString());
+
+            //Make sure it can fail
+            output.WriteLine("---Start fail test---");
+            bool hit = true;
+            int sanity = 0;
+            const int sanityMax = 10000;
+            while (hit)
+            {
+                hit = calc.Block(Characters.level99, Characters.level10) && ++sanity < sanityMax; //Some kind of sanity check
+            }
+            output.WriteLine($"{hit.ToString()} took {sanity} tries");
+
+            Assert.NotEqual(sanity, sanityMax);
+        }
+
+        [Fact]
         public void PhysicalDamageRandom()
         {
             var calc = new DamageCalculator();

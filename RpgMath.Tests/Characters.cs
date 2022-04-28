@@ -19,7 +19,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 13,
             Luck = 19,
-            Level = 10
+            Level = 10,
+            BlockPercent = 60,
         };
 
         public static readonly IBattleStats level20 = new BattleStats()
@@ -34,7 +35,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 22,
             Luck = 20,
-            Level = 20
+            Level = 20,
+            BlockPercent = 60,
         };
 
         public static readonly IBattleStats level30 = new BattleStats()
@@ -49,7 +51,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 30,
             Luck = 21,
-            Level = 30
+            Level = 30,
+            BlockPercent = 60,
         };
 
         public static readonly IBattleStats level40 = new BattleStats()
@@ -64,7 +67,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 38,
             Luck = 22,
-            Level = 40
+            Level = 40,
+            BlockPercent = 80,
         };
 
         public static readonly IBattleStats level50 = new BattleStats()
@@ -79,7 +83,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 46,
             Luck = 23,
-            Level = 50
+            Level = 50,
+            BlockPercent = 80,
         };
 
         public static readonly IBattleStats level60 = new BattleStats()
@@ -94,7 +99,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 51,
             Luck = 23,
-            Level = 60
+            Level = 60,
+            BlockPercent = 80,
         };
 
         public static readonly IBattleStats level70 = new BattleStats()
@@ -109,7 +115,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 53,
             Luck = 24,
-            Level = 70
+            Level = 70,
+            BlockPercent = 100,
         };
 
         public static readonly IBattleStats level80 = new BattleStats()
@@ -124,7 +131,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 55,
             Luck = 25,
-            Level = 80
+            Level = 80,
+            BlockPercent = 100,
         };
 
         public static readonly IBattleStats level90 = new BattleStats()
@@ -139,7 +147,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 57,
             Luck = 26,
-            Level = 90
+            Level = 90,
+            BlockPercent = 100,
         };
 
         public static readonly IBattleStats level99 = new BattleStats()
@@ -154,7 +163,8 @@ namespace RpgMath.Tests
             AllowLuckyEvade = true,
             Dexterity = 59,
             Luck = 26,
-            Level = 99
+            Level = 99,
+            BlockPercent = 100,
         };
     }
 }

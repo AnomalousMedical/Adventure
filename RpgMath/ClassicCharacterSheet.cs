@@ -101,6 +101,8 @@ namespace RpgMath
 
         public long Luck => Archetype.BaseLuck + Archetype.BonusLuck + EquippedItems().Sum(i => i.Luck);
 
+        public long BlockPercent => EquippedItems().Sum(i => i.BlockPercent);
+
         public bool AllowLuckyEvade => true;
 
         public long CurrentXp { get; set; }

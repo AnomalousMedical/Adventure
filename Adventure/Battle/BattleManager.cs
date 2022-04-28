@@ -107,6 +107,8 @@ namespace Adventure.Battle
         private String backgroundMusic;
         private Func<IEnumerable<ITreasure>> stealCb;
 
+        private readonly List<BattlePlayer> blockingPlayers = new List<BattlePlayer>();
+
         public bool AllowActivePlayerGui { get; set; } = true;
 
         public BattleManager(EventManager eventManager,
@@ -457,6 +459,29 @@ namespace Adventure.Battle
             }
 
             return false;
+        }
+
+        public IBattleTarget GetBlocker(IBattleTarget attacker, IBattleTarget target)
+        {
+            IBattleTarget blocker = null;
+            var blockers = Enumerable.Empty<IBattleTarget>();
+            switch (target.BattleTargetType)
+            {
+                case BattleTargetType.Enemy:
+                    break;
+                case BattleTargetType.Player:
+                    blockers = blockingPlayers;
+                    break;
+            }
+
+            if (!blockers.Contains(target))
+            {
+                blocker = blockers
+                    .Where(i => damageCalculator.Block(attacker.Stats, i.Stats))
+                    .FirstOrDefault();
+            }
+
+            return blocker;
         }
 
         public void Attack(IBattleTarget attacker, IBattleTarget target)
