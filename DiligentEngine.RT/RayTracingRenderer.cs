@@ -338,7 +338,10 @@ namespace DiligentEngine.RT
             return m_pTLAS;
         }
 
-        public unsafe void Render(RTInstances activeInstances, Vector3 cameraPos, Quaternion cameraRot)
+        /// <summary>
+        /// Render. Returns false if no other rending is needed. True if the rt scene is not ready and rendering should be handled by the caller
+        /// </summary>
+        public unsafe bool Render(RTInstances activeInstances, Vector3 cameraPos, Quaternion cameraRot)
         {
             var swapChain = graphicsEngine.SwapChain;
             var m_pImmediateContext = graphicsEngine.ImmediateContext;
@@ -348,7 +351,8 @@ namespace DiligentEngine.RT
             using var tlas = UpdateTLAS(activeInstances);
             if (tlas == null)
             {
-                return;
+                //Client needs to render
+                return true;
             }
 
             // Update constants
@@ -462,6 +466,9 @@ namespace DiligentEngine.RT
 
             // Blit to swapchain image
             imageBlitter.Blit();
+
+            //Client does not need to render
+            return false;
         }
 
         public void RequestRebind()

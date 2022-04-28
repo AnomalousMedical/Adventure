@@ -100,13 +100,16 @@ namespace Adventure
 
             var pRTV = swapChain.GetCurrentBackBufferRTV();
             var pDSV = swapChain.GetDepthBufferDSV();
-
-            // Clear the back buffer
-            // Let the engine perform required state transitions
-            immediateContext.ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             
-            rayTracingRenderer.Render(rtInstances, cameraMover.Position, cameraMover.Orientation);
+            bool clearRenderTarget = rayTracingRenderer.Render(rtInstances, cameraMover.Position, cameraMover.Orientation);
             immediateContext.SetRenderTarget(pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+            if (clearRenderTarget)
+            {
+                // Clear the back buffer
+                // Let the engine perform required state transitions
+                immediateContext.ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            }
 
             immediateContext.ClearDepthStencil(pDSV, CLEAR_DEPTH_STENCIL_FLAGS.CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             sharpGui.Render(immediateContext);
