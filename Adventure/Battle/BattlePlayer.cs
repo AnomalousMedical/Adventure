@@ -70,6 +70,8 @@ namespace Adventure.Battle
 
         public Vector3 DamageDisplayLocation => this.currentPosition;
 
+        private Vector3 ActivePosition => this.startPosition + new Vector3(-1f, 0f, 0f);
+
         public Vector3 CursorDisplayLocation => this.currentPosition + new Vector3(-0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
         public Vector3 MeleeAttackLocation => this.currentPosition - new Vector3(sprite.BaseScale.x * 0.5f, 0, 0);
@@ -229,7 +231,7 @@ namespace Adventure.Battle
                 guiActive = active;
                 if (guiActive)
                 {
-                    this.currentPosition = this.startPosition + new Vector3(-1f, 0f, 0f);
+                    this.currentPosition = ActivePosition;
                     name.Color = Color.LightBlue;
                 }
                 else
@@ -806,7 +808,14 @@ namespace Adventure.Battle
 
         public void MoveToStart()
         {
-            this.currentPosition = this.startPosition;
+            if(battleManager.GetActivePlayer() == this)
+            {
+                this.currentPosition = this.ActivePosition;
+            }
+            else
+            {
+                this.currentPosition = this.startPosition;
+            }
             Sprite_FrameChanged(sprite);
         }
 
