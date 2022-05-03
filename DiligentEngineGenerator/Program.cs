@@ -337,7 +337,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ShaderResourceVariableDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 73, 85);
+                var ShaderResourceVariableDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 115, 130);
                 codeTypeInfo.Structs[nameof(ShaderResourceVariableDesc)] = ShaderResourceVariableDesc;
                 codeWriter.AddWriter(new StructCsWriter(ShaderResourceVariableDesc), Path.Combine(baseStructDir, $"{nameof(ShaderResourceVariableDesc)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(ShaderResourceVariableDesc), Path.Combine(baseStructDir, $"{nameof(ShaderResourceVariableDesc)}.PassStruct.cs"));
@@ -345,7 +345,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var TraceRaysAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1222, 1232);
+                var TraceRaysAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1596, 1604);
                 codeTypeInfo.Structs[nameof(TraceRaysAttribs)] = TraceRaysAttribs;
                 codeWriter.AddWriter(new StructCsWriter(TraceRaysAttribs), Path.Combine(baseStructDir, $"{nameof(TraceRaysAttribs)}.cs"));
             }
@@ -368,7 +368,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var TextureSubResData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 163, 185);
+                var TextureSubResData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 259, 282);
                 codeTypeInfo.Structs[nameof(TextureSubResData)] = TextureSubResData;
                 codeWriter.AddWriter(new StructCsWriter(TextureSubResData), Path.Combine(baseStructDir, $"{nameof(TextureSubResData)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(TextureSubResData), Path.Combine(baseStructDir, $"{nameof(TextureSubResData)}.PassStruct.cs"));
@@ -382,19 +382,19 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var DeviceObjectAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1150, 1159);
+                var DeviceObjectAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1262, 1270);
                 codeTypeInfo.Structs[nameof(DeviceObjectAttribs)] = DeviceObjectAttribs;
                 codeWriter.AddWriter(new StructCsWriter(DeviceObjectAttribs), Path.Combine(baseStructDir, $"{nameof(DeviceObjectAttribs)}.cs"));
             }
 
             {
-                var BufferDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 72, 108);
+                var BufferDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 85, 132);
                 codeTypeInfo.Structs[nameof(BufferDesc)] = BufferDesc;
                 codeWriter.AddWriter(new StructCsWriter(BufferDesc), Path.Combine(baseStructDir, $"{nameof(BufferDesc)}.cs"));
             }
 
             {
-                var SwapChainDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1301, 1345);
+                var SwapChainDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1417, 1460);
                 codeTypeInfo.Structs[nameof(SwapChainDesc)] = SwapChainDesc;
 
                 SwapChainDesc.Properties.First(i => i.Name == "DefaultDepthValue").DefaultValue = SwapChainDesc.Properties.First(i => i.Name == "DefaultDepthValue").DefaultValue.Replace(".f", "f");
@@ -403,19 +403,13 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BufferDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 72, 108);
-                codeTypeInfo.Structs[nameof(BufferDesc)] = BufferDesc;
-                codeWriter.AddWriter(new StructCsWriter(BufferDesc), Path.Combine(baseStructDir, $"{nameof(BufferDesc)}.cs"));
-            }
-
-            {
-                var ShaderDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 131, 138);
+                var ShaderDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 116, 121);
                 codeTypeInfo.Structs[nameof(ShaderDesc)] = ShaderDesc;
                 codeWriter.AddWriter(new StructCsWriter(ShaderDesc), Path.Combine(baseStructDir, $"{nameof(ShaderDesc)}.cs"));
             }
 
             {
-                var ImmutableSamplerDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 100, 115);
+                var ImmutableSamplerDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineResourceSignature.h", 46, 62);
                 codeTypeInfo.Structs[nameof(ImmutableSamplerDesc)] = ImmutableSamplerDesc;
 
                 {
@@ -429,7 +423,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var SamplerDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Sampler.h", 46, 112);
+                var SamplerDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Sampler.h", 64, 143);
                 codeTypeInfo.Structs[nameof(SamplerDesc)] = SamplerDesc;
                 codeWriter.AddWriter(new StructCsWriter(SamplerDesc), Path.Combine(baseStructDir, $"{nameof(SamplerDesc)}.cs"));
             }
@@ -446,7 +440,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var LayoutElement = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/InputLayout.h", 61, 109);
+                var LayoutElement = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/InputLayout.h", 61, 107);
                 codeTypeInfo.Structs[nameof(LayoutElement)] = LayoutElement;
                 codeWriter.AddWriter(new StructCsWriter(LayoutElement), Path.Combine(baseStructDir, $"{nameof(LayoutElement)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(LayoutElement), Path.Combine(baseStructDir, $"{nameof(LayoutElement)}.PassStruct.cs"));
@@ -454,7 +448,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var PipelineResourceLayoutDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 129, 149);
+                var PipelineResourceLayoutDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 181, 214);
                 codeTypeInfo.Structs[nameof(PipelineResourceLayoutDesc)] = PipelineResourceLayoutDesc;
 
                 {
@@ -482,7 +476,7 @@ namespace DiligentEngineGenerator
 
 
             {
-                var BlendStateDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 372, 387);
+                var BlendStateDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 373, 389);
                 codeTypeInfo.Structs[nameof(BlendStateDesc)] = BlendStateDesc;
 
                 {
