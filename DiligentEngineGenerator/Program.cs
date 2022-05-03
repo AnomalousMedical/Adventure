@@ -85,61 +85,65 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var SHADER_SOURCE_LANGUAGE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 67, 92);
+                var SHADER_SOURCE_LANGUAGE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 48, 74);
                 codeTypeInfo.Enums[nameof(SHADER_SOURCE_LANGUAGE)] = SHADER_SOURCE_LANGUAGE;
                 EnumWriter.Write(SHADER_SOURCE_LANGUAGE, Path.Combine(baseEnumDir, $"{nameof(SHADER_SOURCE_LANGUAGE)}.cs"));
             }
 
             {
-                var SHADER_COMPILER = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 94, 117);
+                var SHADER_COMPILER = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 78, 101);
                 codeTypeInfo.Enums[nameof(SHADER_COMPILER)] = SHADER_COMPILER;
                 EnumWriter.Write(SHADER_COMPILER, Path.Combine(baseEnumDir, $"{nameof(SHADER_COMPILER)}.cs"));
             }
 
             {
-                var PRIMITIVE_TOPOLOGY = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 943, 1100);
+                var PRIMITIVE_TOPOLOGY = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1018, 1173);
                 codeTypeInfo.Enums[nameof(PRIMITIVE_TOPOLOGY)] = PRIMITIVE_TOPOLOGY;
                 EnumWriter.Write(PRIMITIVE_TOPOLOGY, Path.Combine(baseEnumDir, $"{nameof(PRIMITIVE_TOPOLOGY)}.cs"));
             }
 
             {
-                var HIT_GROUP_BINDING_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", 70, 97);
+                var HIT_GROUP_BINDING_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", 80, 105);
                 codeTypeInfo.Enums[nameof(HIT_GROUP_BINDING_MODE)] = HIT_GROUP_BINDING_MODE;
                 EnumWriter.Write(HIT_GROUP_BINDING_MODE, Path.Combine(baseEnumDir, $"{nameof(HIT_GROUP_BINDING_MODE)}.cs"));
             }
 
             {
-                var TEXTURE_FORMAT = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 277, 814);
+                var TEXTURE_FORMAT = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 371, 900);
                 codeTypeInfo.Enums[nameof(TEXTURE_FORMAT)] = TEXTURE_FORMAT;
                 EnumWriter.Write(TEXTURE_FORMAT, Path.Combine(baseEnumDir, $"{nameof(TEXTURE_FORMAT)}.cs"));
             }
 
             {
-                var BLEND_FACTOR = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 42, 126);
+                var BLEND_FACTOR = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 51, 127);
                 codeTypeInfo.Enums[nameof(BLEND_FACTOR)] = BLEND_FACTOR;
                 EnumWriter.Write(BLEND_FACTOR, Path.Combine(baseEnumDir, $"{nameof(BLEND_FACTOR)}.cs"));
             }
 
             {
-                var BLEND_OPERATION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 130, 165);
+                var BLEND_OPERATION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 139, 166);
                 codeTypeInfo.Enums[nameof(BLEND_OPERATION)] = BLEND_OPERATION;
                 EnumWriter.Write(BLEND_OPERATION, Path.Combine(baseEnumDir, $"{nameof(BLEND_OPERATION)}.cs"));
             }
 
             {
-                var COLOR_MASK = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 169, 191);
+                var COLOR_MASK = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 173, 192);
                 codeTypeInfo.Enums[nameof(COLOR_MASK)] = COLOR_MASK;
+                foreach(var prop in COLOR_MASK.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
                 EnumWriter.Write(COLOR_MASK, Path.Combine(baseEnumDir, $"{nameof(COLOR_MASK)}.cs"));
             }
 
             {
-                var LOGIC_OPERATION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 195, 269);
+                var LOGIC_OPERATION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 203, 271);
                 codeTypeInfo.Enums[nameof(LOGIC_OPERATION)] = LOGIC_OPERATION;
                 EnumWriter.Write(LOGIC_OPERATION, Path.Combine(baseEnumDir, $"{nameof(LOGIC_OPERATION)}.cs"));
             }
 
             {
-                var COMPARISON_FUNCTION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 880, 926);
+                var COMPARISON_FUNCTION = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 974, 1013);
                 codeTypeInfo.Enums[nameof(COMPARISON_FUNCTION)] = COMPARISON_FUNCTION;
                 EnumWriter.Write(COMPARISON_FUNCTION, Path.Combine(baseEnumDir, $"{nameof(COMPARISON_FUNCTION)}.cs"));
             }
@@ -151,8 +155,12 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var PSO_CREATE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 365, 388);
+                var PSO_CREATE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 576, 603);
                 codeTypeInfo.Enums[nameof(PSO_CREATE_FLAGS)] = PSO_CREATE_FLAGS;
+                foreach (var prop in PSO_CREATE_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
                 EnumWriter.Write(PSO_CREATE_FLAGS, Path.Combine(baseEnumDir, $"{nameof(PSO_CREATE_FLAGS)}.cs"));
             }
 
@@ -169,25 +177,25 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var PIPELINE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 318, 336);
+                var PIPELINE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 496, 521);
                 codeTypeInfo.Enums[nameof(PIPELINE_TYPE)] = PIPELINE_TYPE;
                 EnumWriter.Write(PIPELINE_TYPE, Path.Combine(baseEnumDir, $"{nameof(PIPELINE_TYPE)}.cs"));
             }
 
             {
-                var SHADER_RESOURCE_VARIABLE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceVariable.h", 46, 66);
+                var SHADER_RESOURCE_VARIABLE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceVariable.h", 47, 67);
                 codeTypeInfo.Enums[nameof(SHADER_RESOURCE_VARIABLE_TYPE)] = SHADER_RESOURCE_VARIABLE_TYPE;
                 EnumWriter.Write(SHADER_RESOURCE_VARIABLE_TYPE, Path.Combine(baseEnumDir, $"{nameof(SHADER_RESOURCE_VARIABLE_TYPE)}.cs"));
             }
 
             {
-                var DRAW_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 66, 128);
+                var DRAW_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 150, 222);
                 codeTypeInfo.Enums[nameof(DRAW_FLAGS)] = DRAW_FLAGS;
                 EnumWriter.Write(DRAW_FLAGS, Path.Combine(baseEnumDir, $"{nameof(DRAW_FLAGS)}.cs"));
             }
 
             {
-                var SWAP_CHAIN_USAGE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1249, 1266);
+                var SWAP_CHAIN_USAGE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1364, 1380);
                 codeTypeInfo.Enums[nameof(SWAP_CHAIN_USAGE_FLAGS)] = SWAP_CHAIN_USAGE_FLAGS;
 
                 foreach (var prop in SWAP_CHAIN_USAGE_FLAGS.Properties)
@@ -202,7 +210,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var VALUE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 45, 62);
+                var VALUE_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 48, 64);
                 codeTypeInfo.Enums[nameof(VALUE_TYPE)] = VALUE_TYPE;
                 EnumWriter.Write(VALUE_TYPE, Path.Combine(baseEnumDir, $"{nameof(VALUE_TYPE)}.cs"));
             }
@@ -214,25 +222,25 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var MAP_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 156, 175);
+                var MAP_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 245, 258);
                 codeTypeInfo.Enums[nameof(MAP_TYPE)] = MAP_TYPE;
                 EnumWriter.Write(MAP_TYPE, Path.Combine(baseEnumDir, $"{nameof(MAP_TYPE)}.cs"));
             }
 
             {
-                var MAP_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 178, 204);
+                var MAP_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 266, 287);
                 codeTypeInfo.Enums[nameof(MAP_FLAGS)] = MAP_FLAGS;
                 EnumWriter.Write(MAP_FLAGS, Path.Combine(baseEnumDir, $"{nameof(MAP_FLAGS)}.cs"));
             }
 
             {
-                var SET_VERTEX_BUFFERS_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 533, 544);
+                var SET_VERTEX_BUFFERS_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 804, 812);
                 codeTypeInfo.Enums[nameof(SET_VERTEX_BUFFERS_FLAGS)] = SET_VERTEX_BUFFERS_FLAGS;
                 EnumWriter.Write(SET_VERTEX_BUFFERS_FLAGS, Path.Combine(baseEnumDir, $"{nameof(SET_VERTEX_BUFFERS_FLAGS)}.cs"));
             }
 
             {
-                var FILTER_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 816, 836);
+                var FILTER_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 907, 923);
                 codeTypeInfo.Enums[nameof(FILTER_TYPE)] = FILTER_TYPE;
                 EnumWriter.Write(FILTER_TYPE, Path.Combine(baseEnumDir, $"{nameof(FILTER_TYPE)}.cs"));
             }
