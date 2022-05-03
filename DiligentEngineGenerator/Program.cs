@@ -21,65 +21,65 @@ namespace DiligentEngineGenerator
             var baseEnumDir = Path.Combine(baseCSharpOutDir, "Enums");
 
             {
-                var BUFFER_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 46, 71);
+                var BUFFER_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 48, 71);
                 codeTypeInfo.Enums[nameof(BUFFER_MODE)] = BUFFER_MODE;
                 EnumWriter.Write(BUFFER_MODE, Path.Combine(baseEnumDir, $"{nameof(BUFFER_MODE)}.cs"));
             }
 
             {
-                var BIND_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 64, 90);
+                var BIND_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 122, 169);
                 codeTypeInfo.Enums[nameof(BIND_FLAGS)] = BIND_FLAGS;
                 foreach (var val in BIND_FLAGS.Properties)
                 {
-                    val.Value = val.Value.TrimEnd('L');
+                    val.Value = val.Value?.TrimEnd('L');
                 }
                 EnumWriter.Write(BIND_FLAGS, Path.Combine(baseEnumDir, $"{nameof(BIND_FLAGS)}.cs"));
             }
 
             {
-                var RAYTRACING_INSTANCE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 722, 745);
+                var RAYTRACING_INSTANCE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1037, 1058);
                 codeTypeInfo.Enums[nameof(RAYTRACING_INSTANCE_FLAGS)] = RAYTRACING_INSTANCE_FLAGS;
                 EnumWriter.Write(RAYTRACING_INSTANCE_FLAGS, Path.Combine(baseEnumDir, $"{nameof(RAYTRACING_INSTANCE_FLAGS)}.cs"));
             }
 
             {
-                var USAGE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 93, 140);
+                var USAGE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 179, 222);
                 codeTypeInfo.Enums[nameof(USAGE)] = USAGE;
                 EnumWriter.Write(USAGE, Path.Combine(baseEnumDir, $"{nameof(USAGE)}.cs"));
             }
 
             {
-                var CPU_ACCESS_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 142, 153);
+                var CPU_ACCESS_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 230, 235);
                 codeTypeInfo.Enums[nameof(CPU_ACCESS_FLAGS)] = CPU_ACCESS_FLAGS;
                 EnumWriter.Write(CPU_ACCESS_FLAGS, Path.Combine(baseEnumDir, $"{nameof(CPU_ACCESS_FLAGS)}.cs"));
             }
 
             {
-                var SURFACE_TRANSFORM = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1269, 1300);
+                var SURFACE_TRANSFORM = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1385, 1412);
                 codeTypeInfo.Enums[nameof(SURFACE_TRANSFORM)] = SURFACE_TRANSFORM;
                 EnumWriter.Write(SURFACE_TRANSFORM, Path.Combine(baseEnumDir, $"{nameof(SURFACE_TRANSFORM)}.cs"));
             }
 
             {
-                var RESOURCE_STATE_TRANSITION_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 133, 164);
+                var RESOURCE_STATE_TRANSITION_MODE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 230, 260);
                 codeTypeInfo.Enums[nameof(RESOURCE_STATE_TRANSITION_MODE)] = RESOURCE_STATE_TRANSITION_MODE;
                 EnumWriter.Write(RESOURCE_STATE_TRANSITION_MODE, Path.Combine(baseEnumDir, $"{nameof(RESOURCE_STATE_TRANSITION_MODE)}.cs"));
             }
 
             {
-                var RESOURCE_STATE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 2708, 2775); //This is set short to skip RESOURCE_STATE_MAX_BIT
+                var RESOURCE_STATE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 4235, 4330); //This is set short to skip RESOURCE_STATE_MAX_BIT
                 codeTypeInfo.Enums[nameof(RESOURCE_STATE)] = RESOURCE_STATE;
                 EnumWriter.Write(RESOURCE_STATE, Path.Combine(baseEnumDir, $"{nameof(RESOURCE_STATE)}.cs"));
             }
 
             {
-                var CLEAR_DEPTH_STENCIL_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 438, 450);
+                var CLEAR_DEPTH_STENCIL_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 635, 645);
                 codeTypeInfo.Enums[nameof(CLEAR_DEPTH_STENCIL_FLAGS)] = CLEAR_DEPTH_STENCIL_FLAGS;
                 EnumWriter.Write(CLEAR_DEPTH_STENCIL_FLAGS, Path.Combine(baseEnumDir, $"{nameof(CLEAR_DEPTH_STENCIL_FLAGS)}.cs"));
             }
 
             {
-                var SHADER_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 44, 64);
+                var SHADER_TYPE = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 68, 87);
                 codeTypeInfo.Enums[nameof(SHADER_TYPE)] = SHADER_TYPE;
                 EnumWriter.Write(SHADER_TYPE, Path.Combine(baseEnumDir, $"{nameof(SHADER_TYPE)}.cs"));
             }
@@ -307,7 +307,7 @@ namespace DiligentEngineGenerator
             var baseStructDir = Path.Combine(baseCSharpOutDir, "Structs");
 
             {
-                var TLASBuildInstanceData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 995, 1025);
+                var TLASBuildInstanceData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1318, 1351);
                 codeTypeInfo.Structs[nameof(TLASBuildInstanceData)] = TLASBuildInstanceData;
 
                 {
@@ -339,7 +339,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var TextureData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 219, 232);
+                var TextureData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 317, 337);
                 codeTypeInfo.Structs[nameof(TextureData)] = TextureData;
 
                 {
