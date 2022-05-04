@@ -39,5 +39,48 @@ namespace DiligentEngineGenerator
                 }
             }
         }
+
+        public record LineBlock(int Start, int End);
+
+        public static LineBlock FindBlock(IEnumerable<String> inputLines, string startContains, string endContains)
+        {
+            bool lookStart = true;
+            var start = -1;
+            var end = -1;
+
+            var lineNumber = 0;
+            foreach (var line in inputLines)
+            {
+                if (lookStart)
+                {
+                    if (line.Contains(startContains))
+                    {
+                        start = lineNumber;
+                        lookStart = false;
+                    }
+                }
+                else
+                {
+                    if (line.Contains(endContains))
+                    {
+                        end = lineNumber;
+                        break;
+                    }
+                }
+                ++lineNumber;
+            }
+
+            if (start == -1)
+            {
+                throw new InvalidOperationException($"Cannot find start line that contains the string '{startContains}'.");
+            }
+
+            if(end == -1)
+            {
+                throw new InvalidOperationException($"Cannot find end line that contains the string '{endContains}'.");
+            }
+
+            return new LineBlock(start, end);
+        }
     }
 }

@@ -504,13 +504,13 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var DrawAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 167, 188);
+                var DrawAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct DrawAttribs", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(DrawAttribs)] = DrawAttribs;
                 codeWriter.AddWriter(new StructCsWriter(DrawAttribs), Path.Combine(baseStructDir, $"{nameof(DrawAttribs)}.cs"));
             }
 
             {
-                var InputLayoutDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/InputLayout.h", 201, 209);
+                var InputLayoutDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/InputLayout.h", "struct InputLayoutDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(InputLayoutDesc)] = InputLayoutDesc;
 
                 {
@@ -528,7 +528,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var RenderTargetBlendDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", 273, 319);
+                var RenderTargetBlendDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", "struct RenderTargetBlendDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RenderTargetBlendDesc)] = RenderTargetBlendDesc;
                 var RenderTargetWriteMask = RenderTargetBlendDesc.Properties.First(i => i.Name == "RenderTargetWriteMask");
                 RenderTargetWriteMask.DefaultValue = "(Uint8)COLOR_MASK.COLOR_MASK_ALL";
@@ -540,7 +540,7 @@ namespace DiligentEngineGenerator
 
             //StartRT
             {
-                var RayTracingPipelineDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 303, 316);
+                var RayTracingPipelineDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct RayTracingPipelineDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RayTracingPipelineDesc)] = RayTracingPipelineDesc;
                 var skip = new List<String> { };
                 RayTracingPipelineDesc.Properties = RayTracingPipelineDesc.Properties
@@ -549,7 +549,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var RayTracingGeneralShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 217, 226);
+                var RayTracingGeneralShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct RayTracingGeneralShaderGroup", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RayTracingGeneralShaderGroup)] = RayTracingGeneralShaderGroup;
                 var skip = new List<String> { };
                 RayTracingGeneralShaderGroup.Properties = RayTracingGeneralShaderGroup.Properties
@@ -560,7 +560,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var RayTracingTriangleHitShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 239, 253);
+                var RayTracingTriangleHitShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct RayTracingTriangleHitShaderGroup", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RayTracingTriangleHitShaderGroup)] = RayTracingTriangleHitShaderGroup;
                 var skip = new List<String> { };
                 RayTracingTriangleHitShaderGroup.Properties = RayTracingTriangleHitShaderGroup.Properties
@@ -571,7 +571,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var TopLevelASDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", 47, 63);
+                var TopLevelASDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", "struct TopLevelASDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(TopLevelASDesc)] = TopLevelASDesc;
                 var skip = new List<String> { };
                 TopLevelASDesc.Properties = TopLevelASDesc.Properties
@@ -580,7 +580,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var RayTracingProceduralHitShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 268, 286);
+                var RayTracingProceduralHitShaderGroup = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct RayTracingProceduralHitShaderGroup", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RayTracingProceduralHitShaderGroup)] = RayTracingProceduralHitShaderGroup;
                 var skip = new List<String> { };
                 RayTracingProceduralHitShaderGroup.Properties = RayTracingProceduralHitShaderGroup.Properties
@@ -591,7 +591,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BLASTriangleDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", 51, 85);
+                var BLASTriangleDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", "struct BLASTriangleDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(BLASTriangleDesc)] = BLASTriangleDesc;
                 var skip = new List<String> {  };
                 BLASTriangleDesc.Properties = BLASTriangleDesc.Properties
@@ -602,7 +602,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BLASBoundingBoxDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", 96, 105);
+                var BLASBoundingBoxDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", "struct BLASBoundingBoxDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(BLASBoundingBoxDesc)] = BLASBoundingBoxDesc;
                 var skip = new List<String> { };
                 BLASBoundingBoxDesc.Properties = BLASBoundingBoxDesc.Properties
@@ -613,7 +613,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BottomLevelASDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", 143, 168);
+                var BottomLevelASDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", "struct BottomLevelASDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(BottomLevelASDesc)] = BottomLevelASDesc;
                 var skip = new List<String> {  };
                 BottomLevelASDesc.Properties = BottomLevelASDesc.Properties
@@ -645,7 +645,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var RayTracingPipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 448, 487);
+                var RayTracingPipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct RayTracingPipelineStateCreateInfo", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RayTracingPipelineStateCreateInfo)] = RayTracingPipelineStateCreateInfo;
                 var skip = new List<String> { };
                 RayTracingPipelineStateCreateInfo.Properties = RayTracingPipelineStateCreateInfo.Properties
@@ -694,7 +694,9 @@ namespace DiligentEngineGenerator
             //End RT
 
             {
-                var ShaderVersion = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 198, 207);
+                //This is really just a typedef of version, so load that and modify it
+                var ShaderVersion = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", "struct Version", "#if DILIGENT_CPP_INTERFACE");
+                ShaderVersion.Name = nameof(ShaderVersion);
                 codeTypeInfo.Structs[nameof(ShaderVersion)] = ShaderVersion;
                 var skip = new List<String> { };
                 ShaderVersion.Properties = ShaderVersion.Properties
@@ -703,7 +705,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ShaderCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 223, 331);
+                var ShaderCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 230, 362, Sequence(277, 278).Concat(Sequence(287, 292)));
                 codeTypeInfo.Structs[nameof(ShaderCreateInfo)] = ShaderCreateInfo;
                 var skip = new List<String> { "pShaderSourceStreamFactory", "ppConversionStream", "ByteCode", "ByteCodeSize", "Macros", "GLSLVersion", "GLESSLVersion", "ppCompilerOutput" };
                 ShaderCreateInfo.Properties = ShaderCreateInfo.Properties
@@ -712,13 +714,13 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var PipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 390, 400);
+                var PipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct PipelineStateCreateInfo", "#ifdef DILIGENT_PLATFORM_32");
                 codeTypeInfo.Structs[nameof(PipelineStateCreateInfo)] = PipelineStateCreateInfo;
                 codeWriter.AddWriter(new StructCsWriter(PipelineStateCreateInfo), Path.Combine(baseStructDir, $"{nameof(PipelineStateCreateInfo)}.cs"));
             }
 
             {
-                var GraphicsPipelineDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 154, 214);
+                var GraphicsPipelineDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct GraphicsPipelineDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(GraphicsPipelineDesc)] = GraphicsPipelineDesc;
 
                 var remove = new List<String>() { "pRenderPass" };
@@ -728,31 +730,31 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var GraphicsPipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 402, 430);
+                var GraphicsPipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct GraphicsPipelineStateCreateInfo", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(GraphicsPipelineStateCreateInfo)] = GraphicsPipelineStateCreateInfo;
                 codeWriter.AddWriter(new StructCsWriter(GraphicsPipelineStateCreateInfo), Path.Combine(baseStructDir, $"{nameof(GraphicsPipelineStateCreateInfo)}.cs"));
             }
 
             {
-                var StencilOpDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DepthStencilState.h", 92, 115);
+                var StencilOpDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DepthStencilState.h", "struct StencilOpDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(StencilOpDesc)] = StencilOpDesc;
                 codeWriter.AddWriter(new StructCsWriter(StencilOpDesc), Path.Combine(baseStructDir, $"{nameof(StencilOpDesc)}.cs"));
             }
 
             {
-                var PipelineStateDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 338, 356);
+                var PipelineStateDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct PipelineStateDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(PipelineStateDesc)] = PipelineStateDesc;
                 codeWriter.AddWriter(new StructCsWriter(PipelineStateDesc), Path.Combine(baseStructDir, $"{nameof(PipelineStateDesc)}.cs"));
             }
 
             {
-                var SampleDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 52, 61);
+                var SampleDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct SampleDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(SampleDesc)] = SampleDesc;
                 codeWriter.AddWriter(new StructCsWriter(SampleDesc), Path.Combine(baseStructDir, $"{nameof(SampleDesc)}.cs"));
             }
 
             {
-                var StateTransitionDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1242, 1282);
+                var StateTransitionDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct StateTransitionDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(StateTransitionDesc)] = StateTransitionDesc;
                 codeWriter.AddWriter(new StructCsWriter(StateTransitionDesc), Path.Combine(baseStructDir, $"{nameof(StateTransitionDesc)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(StateTransitionDesc), Path.Combine(baseStructDir, $"{nameof(StateTransitionDesc)}.PassStruct.cs"));
@@ -760,31 +762,31 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BufferData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 153, 162);
+                var BufferData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", "struct BufferData", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(BufferData)] = BufferData;
                 codeWriter.AddWriter(new StructCsWriter(BufferData), Path.Combine(baseStructDir, $"{nameof(BufferData)}.cs"));
             }
 
             {
-                var DrawIndexedAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 222, 250);
+                var DrawIndexedAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct DrawIndexedAttribs", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(DrawIndexedAttribs)] = DrawIndexedAttribs;
                 codeWriter.AddWriter(new StructCsWriter(DrawIndexedAttribs), Path.Combine(baseStructDir, $"{nameof(DrawIndexedAttribs)}.cs"));
             }
 
             {
-                var TextureDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 45, 100, skipLines: Sequence(58, 59).Concat(Sequence(62, 66)));
+                var TextureDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 79, 140, skipLines: Sequence(91, 92).Concat(Sequence(96, 98)));
                 codeTypeInfo.Structs[nameof(TextureDesc)] = TextureDesc;
                 codeWriter.AddWriter(new StructCsWriter(TextureDesc), Path.Combine(baseStructDir, $"{nameof(TextureDesc)}.cs"));
             }
 
             {
-                var OptimizedClearValue = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1122, 1134);
+                var OptimizedClearValue = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", "struct OptimizedClearValue", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(OptimizedClearValue)] = OptimizedClearValue;
                 codeWriter.AddWriter(new StructCsWriter(OptimizedClearValue), Path.Combine(baseStructDir, $"{nameof(OptimizedClearValue)}.cs"));
             }
 
             {
-                var BLASBuildTriangleData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 784, 840);
+                var BLASBuildTriangleData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct BLASBuildTriangleData", "typedef struct BLASBuildTriangleData BLASBuildTriangleData;");
                 codeTypeInfo.Structs[nameof(BLASBuildTriangleData)] = BLASBuildTriangleData;
                 codeWriter.AddWriter(new StructCsWriter(BLASBuildTriangleData), Path.Combine(baseStructDir, $"{nameof(BLASBuildTriangleData)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(BLASBuildTriangleData), Path.Combine(baseStructDir, $"{nameof(BLASBuildTriangleData)}.PassStruct.cs"));
@@ -792,7 +794,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BLASBuildBoundingBoxData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 847, 873);
+                var BLASBuildBoundingBoxData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct BLASBuildBoundingBoxData", "typedef struct BLASBuildBoundingBoxData BLASBuildBoundingBoxData;");
                 codeTypeInfo.Structs[nameof(BLASBuildBoundingBoxData)] = BLASBuildBoundingBoxData;
                 codeWriter.AddWriter(new StructCsWriter(BLASBuildBoundingBoxData), Path.Combine(baseStructDir, $"{nameof(BLASBuildBoundingBoxData)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(BLASBuildBoundingBoxData), Path.Combine(baseStructDir, $"{nameof(BLASBuildBoundingBoxData)}.PassStruct.cs"));
@@ -800,7 +802,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BuildTLASAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1037, 1107);
+                var BuildTLASAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct BuildTLASAttribs", "typedef struct BuildTLASAttribs BuildTLASAttribs;");
                 codeTypeInfo.Structs[nameof(BuildTLASAttribs)] = BuildTLASAttribs;
 
                 {
@@ -818,7 +820,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var BuildBLASAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 880, 934);
+                var BuildBLASAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "struct BuildBLASAttribs", "typedef struct BuildBLASAttribs BuildBLASAttribs;");
                 codeTypeInfo.Structs[nameof(BuildBLASAttribs)] = BuildBLASAttribs;
 
                 {
@@ -847,7 +849,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var DepthStencilClearValue = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1102, 1110);
+                var DepthStencilClearValue = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", "struct DepthStencilClearValue", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(DepthStencilClearValue)] = DepthStencilClearValue;
 
                 DepthStencilClearValue.Properties.First(i => i.Name == "Depth").DefaultValue = DepthStencilClearValue.Properties.First(i => i.Name == "Depth").DefaultValue.Replace(".f", "f");
@@ -856,7 +858,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var NDCAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", 1811, 1816);
+                var NDCAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", "struct NDCAttribs", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(NDCAttribs)] = NDCAttribs;
                 codeWriter.AddWriter(new StructCsWriter(NDCAttribs), Path.Combine(baseStructDir, $"{nameof(NDCAttribs)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(NDCAttribs), Path.Combine(baseStructDir, $"{nameof(NDCAttribs)}.PassStruct.cs"));
