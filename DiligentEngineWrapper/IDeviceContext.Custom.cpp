@@ -33,15 +33,16 @@ extern "C" _AnomalousExport void IDeviceContext_TransitionResourceStates(
 	StateTransitionDesc* nativeArray = new StateTransitionDesc[BarrierCount];
 	for (Uint32 i = 0; i < BarrierCount; ++i) 
 	{
-		nativeArray[i].ArraySliceCount = pResourceBarriers[i].ArraySliceCount;
-		nativeArray[i].FirstArraySlice = pResourceBarriers[i].FirstArraySlice;
+		nativeArray[i].pResourceBefore = pResourceBarriers[i].pResourceBefore;
+		nativeArray[i].pResource = pResourceBarriers[i].pResource;
 		nativeArray[i].FirstMipLevel = pResourceBarriers[i].FirstMipLevel;
 		nativeArray[i].MipLevelsCount = pResourceBarriers[i].MipLevelsCount;
-		nativeArray[i].NewState = pResourceBarriers[i].NewState;
+		nativeArray[i].FirstArraySlice = pResourceBarriers[i].FirstArraySlice;
+		nativeArray[i].ArraySliceCount = pResourceBarriers[i].ArraySliceCount;
 		nativeArray[i].OldState = pResourceBarriers[i].OldState;
-		nativeArray[i].pResource = pResourceBarriers[i].pResource;
+		nativeArray[i].NewState = pResourceBarriers[i].NewState;
 		nativeArray[i].TransitionType = pResourceBarriers[i].TransitionType;
-		nativeArray[i].UpdateResourceState = pResourceBarriers[i].UpdateResourceState;
+		nativeArray[i].Flags = pResourceBarriers[i].Flags;
 	}
 	objPtr->TransitionResourceStates(
 		BarrierCount
