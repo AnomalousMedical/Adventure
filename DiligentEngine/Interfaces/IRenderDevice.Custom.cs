@@ -20,13 +20,14 @@ namespace DiligentEngine
         {
             return new AutoPtr<IBuffer>(new IBuffer(IRenderDevice_CreateBuffer_Null_Data(
                 this.objPtr
-                , BuffDesc.uiSizeInBytes
+                , BuffDesc.Size
                 , BuffDesc.BindFlags
                 , BuffDesc.Usage
                 , BuffDesc.CPUAccessFlags
                 , BuffDesc.Mode
+                , BuffDesc.MiscFlags
                 , BuffDesc.ElementByteStride
-                , BuffDesc.CommandQueueMask
+                , BuffDesc.ImmediateContextMask
                 , BuffDesc.Name
             )), false);
         }
@@ -34,13 +35,14 @@ namespace DiligentEngine
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateBuffer_Null_Data(
             IntPtr objPtr
-            , Uint32 BuffDesc_uiSizeInBytes
+            , Uint64 BuffDesc_Size
             , BIND_FLAGS BuffDesc_BindFlags
             , USAGE BuffDesc_Usage
             , CPU_ACCESS_FLAGS BuffDesc_CPUAccessFlags
             , BUFFER_MODE BuffDesc_Mode
+            , MISC_BUFFER_FLAGS BuffDesc_MiscFlags
             , Uint32 BuffDesc_ElementByteStride
-            , Uint64 BuffDesc_CommandQueueMask
+            , Uint64 BuffDesc_ImmediateContextMask
             , String BuffDesc_Name
         );
 
@@ -69,6 +71,9 @@ namespace DiligentEngine
                 , ShaderCI.ShaderCompiler
                 , ShaderCI.HLSLVersion.Major
                 , ShaderCI.HLSLVersion.Minor
+                , ShaderCI.MSLVersion.Major
+                , ShaderCI.MSLVersion.Minor
+                , ShaderCI.CompileFlags
                 , macrosArray
                 , (Uint32)macrosArray.Length
             );
@@ -86,8 +91,11 @@ namespace DiligentEngine
             , String ShaderCI_Desc_Name
             , SHADER_SOURCE_LANGUAGE ShaderCI_SourceLanguage
             , SHADER_COMPILER ShaderCI_ShaderCompiler
-            , Uint8 ShaderCI_HLSLVersion_Major
-            , Uint8 ShaderCI_HLSLVersion_Minor
+            , Uint32 ShaderCI_HLSLVersion_Major
+            , Uint32 ShaderCI_HLSLVersion_Minor
+            , Uint32 ShaderCI_MSLVersion_Major
+            , Uint32 ShaderCI_MSLVersion_Minor
+            , SHADER_COMPILE_FLAGS ShaderCI_CompileFlags
             , MacroPassStruct[] macros
             , Uint32 macrosCount
         );
