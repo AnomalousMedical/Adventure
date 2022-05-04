@@ -18,17 +18,20 @@ namespace Adventure
             }
             catch (Exception e)
             {
-                //Logging.Log.Default.printException(e);
                 if (app != null)
                 {
                     //app.saveCrashLog();
                 }
+#if DETAILED_MESSAGES
                 String errorMessage = e.Message + "\n" + e.StackTrace;
                 while (e.InnerException != null)
                 {
                     e = e.InnerException;
                     errorMessage += "\n" + e.Message + "\n" + e.StackTrace;
                 }
+#else
+                String errorMessage = e.Message;
+#endif
                 MessageDialog.showErrorDialog(errorMessage, "Exception");
             }
             finally
