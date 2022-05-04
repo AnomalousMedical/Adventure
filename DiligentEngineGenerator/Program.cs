@@ -591,7 +591,6 @@ namespace DiligentEngineGenerator
                 var RenderTargetBlendDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", "struct RenderTargetBlendDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RenderTargetBlendDesc)] = RenderTargetBlendDesc;
                 var RenderTargetWriteMask = RenderTargetBlendDesc.Properties.First(i => i.Name == "RenderTargetWriteMask");
-                //RenderTargetWriteMask.DefaultValue = "(Uint8)COLOR_MASK.COLOR_MASK_ALL";
 
                 codeWriter.AddWriter(new StructCsWriter(RenderTargetBlendDesc), Path.Combine(baseStructDir, $"{nameof(RenderTargetBlendDesc)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(RenderTargetBlendDesc), Path.Combine(baseStructDir, $"{nameof(RenderTargetBlendDesc)}.PassStruct.cs"));
@@ -776,6 +775,11 @@ namespace DiligentEngineGenerator
             {
                 var PipelineStateCreateInfo = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "struct PipelineStateCreateInfo", "#ifdef DILIGENT_PLATFORM_32");
                 codeTypeInfo.Structs[nameof(PipelineStateCreateInfo)] = PipelineStateCreateInfo;
+                var remove = new List<String>() { 
+                    "pPSOCache", "ppResourceSignatures", "ResourceSignaturesCount", //TODO: These are what enable the shader caching and should be added eventually
+                    "pInternalData", //This you never want
+                };
+                PipelineStateCreateInfo.Properties = PipelineStateCreateInfo.Properties.Where(i => !remove.Contains(i.Name)).ToList();
                 codeWriter.AddWriter(new StructCsWriter(PipelineStateCreateInfo), Path.Combine(baseStructDir, $"{nameof(PipelineStateCreateInfo)}.cs"));
             }
 
