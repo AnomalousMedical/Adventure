@@ -790,6 +790,11 @@ namespace DiligentEngineGenerator
                 var remove = new List<String>() { "pRenderPass" };
                 GraphicsPipelineDesc.Properties = GraphicsPipelineDesc.Properties.Where(i => !remove.Contains(i.Name)).ToList();
 
+                {
+                    var RTVFormats = GraphicsPipelineDesc.Properties.Where(i => i.Name == "RTVFormats").First();
+                    RTVFormats.ArrayLen = "8"; //Hardcoded to replace DILIGENT_MAX_RENDER_TARGETS
+                }
+
                 codeWriter.AddWriter(new StructCsWriter(GraphicsPipelineDesc), Path.Combine(baseStructDir, $"{nameof(GraphicsPipelineDesc)}.cs"));
             }
 

@@ -36,6 +36,14 @@ namespace DiligentEngine
         public Uint8 NumRenderTargets { get; set; } = 0;
         public Uint8 SubpassIndex { get; set; } = 0;
         public PIPELINE_SHADING_RATE_FLAGS ShadingRateFlags { get; set; } = PIPELINE_SHADING_RATE_FLAGS.PIPELINE_SHADING_RATE_FLAG_NONE;
+        public TEXTURE_FORMAT RTVFormats_0 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_1 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_2 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_3 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_4 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_5 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_6 { get; set; }
+        public TEXTURE_FORMAT RTVFormats_7 { get; set; }
         public TEXTURE_FORMAT DSVFormat { get; set; } = TEXTURE_FORMAT.TEX_FORMAT_UNKNOWN;
         public SampleDesc SmplDesc { get; set; } = new SampleDesc();
         public Uint32 NodeMask { get; set; } = 0;

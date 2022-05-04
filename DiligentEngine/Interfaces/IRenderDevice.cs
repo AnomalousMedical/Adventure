@@ -236,6 +236,14 @@ namespace DiligentEngine
                 , PSOCreateInfo.GraphicsPipeline.NumRenderTargets
                 , PSOCreateInfo.GraphicsPipeline.SubpassIndex
                 , PSOCreateInfo.GraphicsPipeline.ShadingRateFlags
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_0
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_1
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_2
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_3
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_4
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_5
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_6
+                , PSOCreateInfo.GraphicsPipeline.RTVFormats_7
                 , PSOCreateInfo.GraphicsPipeline.DSVFormat
                 , PSOCreateInfo.GraphicsPipeline.SmplDesc.Count
                 , PSOCreateInfo.GraphicsPipeline.SmplDesc.Quality
@@ -484,6 +492,14 @@ namespace DiligentEngine
             , Uint8 PSOCreateInfo_GraphicsPipeline_NumRenderTargets
             , Uint8 PSOCreateInfo_GraphicsPipeline_SubpassIndex
             , PIPELINE_SHADING_RATE_FLAGS PSOCreateInfo_GraphicsPipeline_ShadingRateFlags
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_0
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_1
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_2
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_3
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_4
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_5
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_6
+            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_7
             , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_DSVFormat
             , Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Count
             , Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Quality
