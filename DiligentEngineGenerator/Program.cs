@@ -924,6 +924,10 @@ namespace DiligentEngineGenerator
             {
                 var NDCAttribs = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/GraphicsTypes.h", "struct NDCAttribs", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(NDCAttribs)] = NDCAttribs;
+                foreach(var prop in NDCAttribs.Properties)
+                {
+                    prop.DefaultValue = prop.DefaultValue.Replace("0.f", "0.0f");
+                }
                 codeWriter.AddWriter(new StructCsWriter(NDCAttribs), Path.Combine(baseStructDir, $"{nameof(NDCAttribs)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(NDCAttribs), Path.Combine(baseStructDir, $"{nameof(NDCAttribs)}.PassStruct.cs"));
                 codeWriter.AddWriter(new StructCppPassStructWriter(NDCAttribs), Path.Combine(baseCPlusPlusOutDir, $"{nameof(NDCAttribs)}.PassStruct.h"));
