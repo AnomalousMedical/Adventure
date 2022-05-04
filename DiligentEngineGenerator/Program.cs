@@ -294,6 +294,10 @@ namespace DiligentEngineGenerator
             {
                 var TEXTURE_VIEW_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TextureView.h", 64, 75);
                 codeTypeInfo.Enums[nameof(TEXTURE_VIEW_FLAGS)] = TEXTURE_VIEW_FLAGS;
+                foreach (var prop in TEXTURE_VIEW_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
                 EnumWriter.Write(TEXTURE_VIEW_FLAGS, Path.Combine(baseEnumDir, $"{nameof(TEXTURE_VIEW_FLAGS)}.cs"));
             }
 
@@ -313,6 +317,62 @@ namespace DiligentEngineGenerator
                 var RAYTRACING_GEOMETRY_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1081, 1094);
                 codeTypeInfo.Enums[nameof(RAYTRACING_GEOMETRY_FLAGS)] = RAYTRACING_GEOMETRY_FLAGS;
                 EnumWriter.Write(RAYTRACING_GEOMETRY_FLAGS, Path.Combine(baseEnumDir, $"{nameof(RAYTRACING_GEOMETRY_FLAGS)}.cs"));
+            }
+
+            {
+                var MISC_BUFFER_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", "DILIGENT_TYPED_ENUM(MISC_BUFFER_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(MISC_BUFFER_FLAGS)");
+                codeTypeInfo.Enums[nameof(MISC_BUFFER_FLAGS)] = MISC_BUFFER_FLAGS;
+                foreach (var prop in MISC_BUFFER_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
+                EnumWriter.Write(MISC_BUFFER_FLAGS, Path.Combine(baseEnumDir, $"{nameof(MISC_BUFFER_FLAGS)}.cs"));
+            }
+
+            {
+                var SHADER_COMPILE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", "DILIGENT_TYPED_ENUM(SHADER_COMPILE_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(SHADER_COMPILE_FLAGS)");
+                codeTypeInfo.Enums[nameof(SHADER_COMPILE_FLAGS)] = SHADER_COMPILE_FLAGS;
+                EnumWriter.Write(SHADER_COMPILE_FLAGS, Path.Combine(baseEnumDir, $"{nameof(SHADER_COMPILE_FLAGS)}.cs"));
+            }
+
+            {
+                var SAMPLER_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Sampler.h", "DILIGENT_TYPED_ENUM(SAMPLER_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(SAMPLER_FLAGS)");
+                codeTypeInfo.Enums[nameof(SAMPLER_FLAGS)] = SAMPLER_FLAGS;
+                foreach (var prop in SAMPLER_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
+                EnumWriter.Write(SAMPLER_FLAGS, Path.Combine(baseEnumDir, $"{nameof(SAMPLER_FLAGS)}.cs"));
+            }
+
+            {
+                var PIPELINE_SHADING_RATE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "DILIGENT_TYPED_ENUM(PIPELINE_SHADING_RATE_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(PIPELINE_SHADING_RATE_FLAGS)");
+                codeTypeInfo.Enums[nameof(PIPELINE_SHADING_RATE_FLAGS)] = PIPELINE_SHADING_RATE_FLAGS;
+                foreach (var prop in PIPELINE_SHADING_RATE_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
+                EnumWriter.Write(PIPELINE_SHADING_RATE_FLAGS, Path.Combine(baseEnumDir, $"{nameof(PIPELINE_SHADING_RATE_FLAGS)}.cs"));
+            }
+
+            {
+                var SHADER_VARIABLE_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "DILIGENT_TYPED_ENUM(SHADER_VARIABLE_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(SHADER_VARIABLE_FLAGS)");
+                codeTypeInfo.Enums[nameof(SHADER_VARIABLE_FLAGS)] = SHADER_VARIABLE_FLAGS;
+                foreach (var prop in SHADER_VARIABLE_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
+                EnumWriter.Write(SHADER_VARIABLE_FLAGS, Path.Combine(baseEnumDir, $"{nameof(SHADER_VARIABLE_FLAGS)}.cs"));
+            }
+
+            {
+                var STATE_TRANSITION_FLAGS = CodeEnum.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "DILIGENT_TYPED_ENUM(STATE_TRANSITION_FLAGS,", "DEFINE_FLAG_ENUM_OPERATORS(STATE_TRANSITION_FLAGS)");
+                codeTypeInfo.Enums[nameof(STATE_TRANSITION_FLAGS)] = STATE_TRANSITION_FLAGS;
+                foreach (var prop in STATE_TRANSITION_FLAGS.Properties)
+                {
+                    prop.Value = prop.Value.Replace("u", "");
+                }
+                EnumWriter.Write(STATE_TRANSITION_FLAGS, Path.Combine(baseEnumDir, $"{nameof(STATE_TRANSITION_FLAGS)}.cs"));
             }
 
             //////////// Structs
@@ -531,7 +591,7 @@ namespace DiligentEngineGenerator
                 var RenderTargetBlendDesc = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BlendState.h", "struct RenderTargetBlendDesc", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Structs[nameof(RenderTargetBlendDesc)] = RenderTargetBlendDesc;
                 var RenderTargetWriteMask = RenderTargetBlendDesc.Properties.First(i => i.Name == "RenderTargetWriteMask");
-                RenderTargetWriteMask.DefaultValue = "(Uint8)COLOR_MASK.COLOR_MASK_ALL";
+                //RenderTargetWriteMask.DefaultValue = "(Uint8)COLOR_MASK.COLOR_MASK_ALL";
 
                 codeWriter.AddWriter(new StructCsWriter(RenderTargetBlendDesc), Path.Combine(baseStructDir, $"{nameof(RenderTargetBlendDesc)}.cs"));
                 codeWriter.AddWriter(new StructCsPassStructWriter(RenderTargetBlendDesc), Path.Combine(baseStructDir, $"{nameof(RenderTargetBlendDesc)}.PassStruct.cs"));

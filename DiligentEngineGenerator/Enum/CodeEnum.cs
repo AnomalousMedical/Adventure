@@ -14,8 +14,17 @@ namespace DiligentEngineGenerator
 
         public IEnumerable<String> Comment { get; set; }
 
-        public List<EnumProperty> Properties { get; set; } = new List<EnumProperty>(); 
-        
+        public List<EnumProperty> Properties { get; set; } = new List<EnumProperty>();
+
+        public static CodeEnum Find(String file, string startLineContains, string endLineContains)
+        {
+            //This reads the file twice, but perf is not the primary concern here
+            using var reader = new StreamReader(File.OpenRead(file));
+            var block = LineReader.FindBlock(reader.ReadLines(), startLineContains, endLineContains);
+
+            return Find(file, block.Start, block.End);
+        }
+
         public static CodeEnum Find(String file, int startLine, int endLine, IEnumerable<int> skipLines = null)
         {
             var comment = new List<String>();
