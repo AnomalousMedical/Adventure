@@ -19,9 +19,9 @@ using BOOL = System.Boolean;
 
 namespace DiligentEngine
 {
-    public enum TEXTURE_VIEW_FLAGS :  Uint8
+    public enum MISC_BUFFER_FLAGS :  Uint8
     {
-        TEXTURE_VIEW_FLAG_NONE = 0,
-        TEXTURE_VIEW_FLAG_ALLOW_MIP_MAP_GENERATION = 1 << 0,
+        MISC_BUFFER_FLAG_NONE = 0,
+        MISC_BUFFER_FLAG_SPARSE_ALIASING = 1 << 0,
     }
 }

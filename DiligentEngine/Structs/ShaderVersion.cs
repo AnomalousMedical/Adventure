@@ -26,8 +26,8 @@ namespace DiligentEngine
         {
             
         }
-        public Uint8 Major { get; set; } = 0;
-        public Uint8 Minor { get; set; } = 0;
+        public Uint32 Major { get; set; } = 0;
+        public Uint32 Minor { get; set; } = 0;
 
 
     }

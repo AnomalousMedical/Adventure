@@ -31,6 +31,8 @@ namespace DiligentEngine
         public TEXTURE_ADDRESS_MODE Desc_AddressU;
         public TEXTURE_ADDRESS_MODE Desc_AddressV;
         public TEXTURE_ADDRESS_MODE Desc_AddressW;
+        public SAMPLER_FLAGS Desc_Flags;
+        public Uint32 Desc_UnnormalizedCoords;
         public Float32 Desc_MipLODBias;
         public Uint32 Desc_MaxAnisotropy;
         public COMPARISON_FUNCTION Desc_ComparisonFunc;
@@ -57,6 +59,8 @@ namespace DiligentEngine
                 Desc_AddressU = i.Desc.AddressU,
                 Desc_AddressV = i.Desc.AddressV,
                 Desc_AddressW = i.Desc.AddressW,
+                Desc_Flags = i.Desc.Flags,
+                Desc_UnnormalizedCoords = Convert.ToUInt32(i.Desc.UnnormalizedCoords),
                 Desc_MipLODBias = i.Desc.MipLODBias,
                 Desc_MaxAnisotropy = i.Desc.MaxAnisotropy,
                 Desc_ComparisonFunc = i.Desc.ComparisonFunc,

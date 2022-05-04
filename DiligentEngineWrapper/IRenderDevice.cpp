@@ -14,30 +14,34 @@
 using namespace Diligent;
 extern "C" _AnomalousExport IBuffer* IRenderDevice_CreateBuffer(
 	IRenderDevice* objPtr
-	, Uint32 BuffDesc_uiSizeInBytes
+	, Uint64 BuffDesc_Size
 	, BIND_FLAGS BuffDesc_BindFlags
 	, USAGE BuffDesc_Usage
 	, CPU_ACCESS_FLAGS BuffDesc_CPUAccessFlags
 	, BUFFER_MODE BuffDesc_Mode
+	, MISC_BUFFER_FLAGS BuffDesc_MiscFlags
 	, Uint32 BuffDesc_ElementByteStride
-	, Uint64 BuffDesc_CommandQueueMask
+	, Uint64 BuffDesc_ImmediateContextMask
 	, Char* BuffDesc_Name
 	, void* pBuffData_pData
-	, Uint32 pBuffData_DataSize
+	, Uint64 pBuffData_DataSize
+	, IDeviceContext* pBuffData_pContext
 )
 {
 	BufferDesc BuffDesc;
-	BuffDesc.uiSizeInBytes = BuffDesc_uiSizeInBytes;
+	BuffDesc.Size = BuffDesc_Size;
 	BuffDesc.BindFlags = BuffDesc_BindFlags;
 	BuffDesc.Usage = BuffDesc_Usage;
 	BuffDesc.CPUAccessFlags = BuffDesc_CPUAccessFlags;
 	BuffDesc.Mode = BuffDesc_Mode;
+	BuffDesc.MiscFlags = BuffDesc_MiscFlags;
 	BuffDesc.ElementByteStride = BuffDesc_ElementByteStride;
-	BuffDesc.CommandQueueMask = BuffDesc_CommandQueueMask;
+	BuffDesc.ImmediateContextMask = BuffDesc_ImmediateContextMask;
 	BuffDesc.Name = BuffDesc_Name;
 	BufferData pBuffData;
 	pBuffData.pData = pBuffData_pData;
 	pBuffData.DataSize = pBuffData_DataSize;
+	pBuffData.pContext = pBuffData_pContext;
 	IBuffer* theReturnValue = nullptr;
 	objPtr->CreateBuffer(
 		BuffDesc
@@ -57,8 +61,11 @@ extern "C" _AnomalousExport IShader* IRenderDevice_CreateShader(
 	, Char* ShaderCI_Desc_Name
 	, SHADER_SOURCE_LANGUAGE ShaderCI_SourceLanguage
 	, SHADER_COMPILER ShaderCI_ShaderCompiler
-	, Uint8 ShaderCI_HLSLVersion_Major
-	, Uint8 ShaderCI_HLSLVersion_Minor
+	, Uint32 ShaderCI_HLSLVersion_Major
+	, Uint32 ShaderCI_HLSLVersion_Minor
+	, Uint32 ShaderCI_MSLVersion_Major
+	, Uint32 ShaderCI_MSLVersion_Minor
+	, SHADER_COMPILE_FLAGS ShaderCI_CompileFlags
 )
 {
 	ShaderCreateInfo ShaderCI;
@@ -73,6 +80,9 @@ extern "C" _AnomalousExport IShader* IRenderDevice_CreateShader(
 	ShaderCI.ShaderCompiler = ShaderCI_ShaderCompiler;
 	ShaderCI.HLSLVersion.Major = ShaderCI_HLSLVersion_Major;
 	ShaderCI.HLSLVersion.Minor = ShaderCI_HLSLVersion_Minor;
+	ShaderCI.MSLVersion.Major = ShaderCI_MSLVersion_Major;
+	ShaderCI.MSLVersion.Minor = ShaderCI_MSLVersion_Minor;
+	ShaderCI.CompileFlags = ShaderCI_CompileFlags;
 	IShader* theReturnValue = nullptr;
 	objPtr->CreateShader(
 		ShaderCI
@@ -89,8 +99,8 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 	, TEXTURE_FORMAT TexDesc_Format
 	, Uint32 TexDesc_MipLevels
 	, Uint32 TexDesc_SampleCount
-	, USAGE TexDesc_Usage
 	, BIND_FLAGS TexDesc_BindFlags
+	, USAGE TexDesc_Usage
 	, CPU_ACCESS_FLAGS TexDesc_CPUAccessFlags
 	, MISC_TEXTURE_FLAGS TexDesc_MiscFlags
 	, TEXTURE_FORMAT TexDesc_ClearValue_Format
@@ -100,10 +110,11 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 	, Float32 TexDesc_ClearValue_Color_3
 	, Float32 TexDesc_ClearValue_DepthStencil_Depth
 	, Uint8 TexDesc_ClearValue_DepthStencil_Stencil
-	, Uint64 TexDesc_CommandQueueMask
+	, Uint64 TexDesc_ImmediateContextMask
 	, Char* TexDesc_Name
 	, TextureSubResDataPassStruct* pData_pSubResources
 	, Uint32 pData_NumSubresources
+	, IDeviceContext* pData_pContext
 )
 {
 	TextureDesc TexDesc;
@@ -114,8 +125,8 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 	TexDesc.Format = TexDesc_Format;
 	TexDesc.MipLevels = TexDesc_MipLevels;
 	TexDesc.SampleCount = TexDesc_SampleCount;
-	TexDesc.Usage = TexDesc_Usage;
 	TexDesc.BindFlags = TexDesc_BindFlags;
+	TexDesc.Usage = TexDesc_Usage;
 	TexDesc.CPUAccessFlags = TexDesc_CPUAccessFlags;
 	TexDesc.MiscFlags = TexDesc_MiscFlags;
 	TexDesc.ClearValue.Format = TexDesc_ClearValue_Format;
@@ -125,7 +136,7 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 	TexDesc.ClearValue.Color[3] = TexDesc_ClearValue_Color_3;
 	TexDesc.ClearValue.DepthStencil.Depth = TexDesc_ClearValue_DepthStencil_Depth;
 	TexDesc.ClearValue.DepthStencil.Stencil = TexDesc_ClearValue_DepthStencil_Stencil;
-	TexDesc.CommandQueueMask = TexDesc_CommandQueueMask;
+	TexDesc.ImmediateContextMask = TexDesc_ImmediateContextMask;
 	TexDesc.Name = TexDesc_Name;
 	TextureData pData;
 	TextureSubResData* pData_pSubResources_Native_Array = new TextureSubResData[pData_NumSubresources];
@@ -142,6 +153,7 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 		pData.pSubResources = pData_pSubResources_Native_Array;  
 	}
 	pData.NumSubresources = pData_NumSubresources;
+	pData.pContext = pData_pContext;
 	ITexture* theReturnValue = nullptr;
 	objPtr->CreateTexture(
 		TexDesc
@@ -159,6 +171,8 @@ extern "C" _AnomalousExport ISampler* IRenderDevice_CreateSampler(
 	, TEXTURE_ADDRESS_MODE SamDesc_AddressU
 	, TEXTURE_ADDRESS_MODE SamDesc_AddressV
 	, TEXTURE_ADDRESS_MODE SamDesc_AddressW
+	, SAMPLER_FLAGS SamDesc_Flags
+	, Bool SamDesc_UnnormalizedCoords
 	, Float32 SamDesc_MipLODBias
 	, Uint32 SamDesc_MaxAnisotropy
 	, COMPARISON_FUNCTION SamDesc_ComparisonFunc
@@ -178,6 +192,8 @@ extern "C" _AnomalousExport ISampler* IRenderDevice_CreateSampler(
 	SamDesc.AddressU = SamDesc_AddressU;
 	SamDesc.AddressV = SamDesc_AddressV;
 	SamDesc.AddressW = SamDesc_AddressW;
+	SamDesc.Flags = SamDesc_Flags;
+	SamDesc.UnnormalizedCoords = SamDesc_UnnormalizedCoords;
 	SamDesc.MipLODBias = SamDesc_MipLODBias;
 	SamDesc.MaxAnisotropy = SamDesc_MaxAnisotropy;
 	SamDesc.ComparisonFunc = SamDesc_ComparisonFunc;
@@ -230,14 +246,7 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	, Uint8 PSOCreateInfo_GraphicsPipeline_NumViewports
 	, Uint8 PSOCreateInfo_GraphicsPipeline_NumRenderTargets
 	, Uint8 PSOCreateInfo_GraphicsPipeline_SubpassIndex
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_0
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_1
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_2
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_3
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_4
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_5
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_6
-	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_7
+	, PIPELINE_SHADING_RATE_FLAGS PSOCreateInfo_GraphicsPipeline_ShadingRateFlags
 	, TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_DSVFormat
 	, Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Count
 	, Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Quality
@@ -251,8 +260,9 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	, IShader* PSOCreateInfo_pMS
 	, PIPELINE_TYPE PSOCreateInfo_PSODesc_PipelineType
 	, Uint32 PSOCreateInfo_PSODesc_SRBAllocationGranularity
-	, Uint64 PSOCreateInfo_PSODesc_CommandQueueMask
+	, Uint64 PSOCreateInfo_PSODesc_ImmediateContextMask
 	, SHADER_RESOURCE_VARIABLE_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType
+	, SHADER_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages
 	, Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumVariables
 	, ShaderResourceVariableDescPassStruct* PSOCreateInfo_PSODesc_ResourceLayout_Variables
 	, Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumImmutableSamplers
@@ -324,14 +334,7 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	PSOCreateInfo.GraphicsPipeline.NumViewports = PSOCreateInfo_GraphicsPipeline_NumViewports;
 	PSOCreateInfo.GraphicsPipeline.NumRenderTargets = PSOCreateInfo_GraphicsPipeline_NumRenderTargets;
 	PSOCreateInfo.GraphicsPipeline.SubpassIndex = PSOCreateInfo_GraphicsPipeline_SubpassIndex;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = PSOCreateInfo_GraphicsPipeline_RTVFormats_0;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[1] = PSOCreateInfo_GraphicsPipeline_RTVFormats_1;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[2] = PSOCreateInfo_GraphicsPipeline_RTVFormats_2;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[3] = PSOCreateInfo_GraphicsPipeline_RTVFormats_3;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[4] = PSOCreateInfo_GraphicsPipeline_RTVFormats_4;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[5] = PSOCreateInfo_GraphicsPipeline_RTVFormats_5;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[6] = PSOCreateInfo_GraphicsPipeline_RTVFormats_6;
-	PSOCreateInfo.GraphicsPipeline.RTVFormats[7] = PSOCreateInfo_GraphicsPipeline_RTVFormats_7;
+	PSOCreateInfo.GraphicsPipeline.ShadingRateFlags = PSOCreateInfo_GraphicsPipeline_ShadingRateFlags;
 	PSOCreateInfo.GraphicsPipeline.DSVFormat = PSOCreateInfo_GraphicsPipeline_DSVFormat;
 	PSOCreateInfo.GraphicsPipeline.SmplDesc.Count = PSOCreateInfo_GraphicsPipeline_SmplDesc_Count;
 	PSOCreateInfo.GraphicsPipeline.SmplDesc.Quality = PSOCreateInfo_GraphicsPipeline_SmplDesc_Quality;
@@ -345,8 +348,9 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	PSOCreateInfo.pMS = PSOCreateInfo_pMS;
 	PSOCreateInfo.PSODesc.PipelineType = PSOCreateInfo_PSODesc_PipelineType;
 	PSOCreateInfo.PSODesc.SRBAllocationGranularity = PSOCreateInfo_PSODesc_SRBAllocationGranularity;
-	PSOCreateInfo.PSODesc.CommandQueueMask = PSOCreateInfo_PSODesc_CommandQueueMask;
+	PSOCreateInfo.PSODesc.ImmediateContextMask = PSOCreateInfo_PSODesc_ImmediateContextMask;
 	PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType = PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType;
+	PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableMergeStages = PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages;
 	PSOCreateInfo.PSODesc.ResourceLayout.NumVariables = PSOCreateInfo_PSODesc_ResourceLayout_NumVariables;
 	ShaderResourceVariableDesc* PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array = new ShaderResourceVariableDesc[PSOCreateInfo_PSODesc_ResourceLayout_NumVariables];
 	if(PSOCreateInfo_PSODesc_ResourceLayout_NumVariables > 0)
@@ -356,6 +360,7 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].ShaderStages = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].ShaderStages;
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Name = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Name;
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Type = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Type;
+	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Flags = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Flags;
 		}
 		PSOCreateInfo.PSODesc.ResourceLayout.Variables = PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array;  
 	}
@@ -373,6 +378,8 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateGraphicsPipeline
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressU = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressU;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressV = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressV;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressW = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressW;
+	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.Flags = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_Flags;
+	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.UnnormalizedCoords = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_UnnormalizedCoords;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.MipLODBias = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_MipLODBias;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.MaxAnisotropy = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_MaxAnisotropy;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.ComparisonFunc = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_ComparisonFunc;
@@ -412,8 +419,9 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateRayTracingPipeli
 	, Uint32 PSOCreateInfo_MaxPayloadSize
 	, PIPELINE_TYPE PSOCreateInfo_PSODesc_PipelineType
 	, Uint32 PSOCreateInfo_PSODesc_SRBAllocationGranularity
-	, Uint64 PSOCreateInfo_PSODesc_CommandQueueMask
+	, Uint64 PSOCreateInfo_PSODesc_ImmediateContextMask
 	, SHADER_RESOURCE_VARIABLE_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType
+	, SHADER_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages
 	, Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumVariables
 	, ShaderResourceVariableDescPassStruct* PSOCreateInfo_PSODesc_ResourceLayout_Variables
 	, Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumImmutableSamplers
@@ -466,8 +474,9 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateRayTracingPipeli
 	PSOCreateInfo.MaxPayloadSize = PSOCreateInfo_MaxPayloadSize;
 	PSOCreateInfo.PSODesc.PipelineType = PSOCreateInfo_PSODesc_PipelineType;
 	PSOCreateInfo.PSODesc.SRBAllocationGranularity = PSOCreateInfo_PSODesc_SRBAllocationGranularity;
-	PSOCreateInfo.PSODesc.CommandQueueMask = PSOCreateInfo_PSODesc_CommandQueueMask;
+	PSOCreateInfo.PSODesc.ImmediateContextMask = PSOCreateInfo_PSODesc_ImmediateContextMask;
 	PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType = PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType;
+	PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableMergeStages = PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages;
 	PSOCreateInfo.PSODesc.ResourceLayout.NumVariables = PSOCreateInfo_PSODesc_ResourceLayout_NumVariables;
 	ShaderResourceVariableDesc* PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array = new ShaderResourceVariableDesc[PSOCreateInfo_PSODesc_ResourceLayout_NumVariables];
 	if(PSOCreateInfo_PSODesc_ResourceLayout_NumVariables > 0)
@@ -477,6 +486,7 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateRayTracingPipeli
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].ShaderStages = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].ShaderStages;
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Name = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Name;
 	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Type = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Type;
+	    PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array[i].Flags = PSOCreateInfo_PSODesc_ResourceLayout_Variables[i].Flags;
 		}
 		PSOCreateInfo.PSODesc.ResourceLayout.Variables = PSOCreateInfo_PSODesc_ResourceLayout_Variables_Native_Array;  
 	}
@@ -494,6 +504,8 @@ extern "C" _AnomalousExport IPipelineState* IRenderDevice_CreateRayTracingPipeli
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressU = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressU;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressV = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressV;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.AddressW = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_AddressW;
+	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.Flags = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_Flags;
+	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.UnnormalizedCoords = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_UnnormalizedCoords;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.MipLODBias = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_MipLODBias;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.MaxAnisotropy = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_MaxAnisotropy;
 	    PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers_Native_Array[i].Desc.ComparisonFunc = PSOCreateInfo_PSODesc_ResourceLayout_ImmutableSamplers[i].Desc_ComparisonFunc;
@@ -527,8 +539,8 @@ extern "C" _AnomalousExport IBottomLevelAS* IRenderDevice_CreateBLAS(
 	, BLASBoundingBoxDescPassStruct* Desc_pBoxes
 	, Uint32 Desc_BoxCount
 	, RAYTRACING_BUILD_AS_FLAGS Desc_Flags
-	, Uint32 Desc_CompactedSize
-	, Uint64 Desc_CommandQueueMask
+	, Uint64 Desc_CompactedSize
+	, Uint64 Desc_ImmediateContextMask
 	, Char* Desc_Name
 )
 {
@@ -562,7 +574,7 @@ extern "C" _AnomalousExport IBottomLevelAS* IRenderDevice_CreateBLAS(
 	Desc.BoxCount = Desc_BoxCount;
 	Desc.Flags = Desc_Flags;
 	Desc.CompactedSize = Desc_CompactedSize;
-	Desc.CommandQueueMask = Desc_CommandQueueMask;
+	Desc.ImmediateContextMask = Desc_ImmediateContextMask;
 	Desc.Name = Desc_Name;
 	IBottomLevelAS* theReturnValue = nullptr;
 	objPtr->CreateBLAS(
@@ -577,8 +589,8 @@ extern "C" _AnomalousExport ITopLevelAS* IRenderDevice_CreateTLAS(
 	IRenderDevice* objPtr
 	, Uint32 Desc_MaxInstanceCount
 	, RAYTRACING_BUILD_AS_FLAGS Desc_Flags
-	, Uint32 Desc_CompactedSize
-	, Uint64 Desc_CommandQueueMask
+	, Uint64 Desc_CompactedSize
+	, Uint64 Desc_ImmediateContextMask
 	, Char* Desc_Name
 )
 {
@@ -586,7 +598,7 @@ extern "C" _AnomalousExport ITopLevelAS* IRenderDevice_CreateTLAS(
 	Desc.MaxInstanceCount = Desc_MaxInstanceCount;
 	Desc.Flags = Desc_Flags;
 	Desc.CompactedSize = Desc_CompactedSize;
-	Desc.CommandQueueMask = Desc_CommandQueueMask;
+	Desc.ImmediateContextMask = Desc_ImmediateContextMask;
 	Desc.Name = Desc_Name;
 	ITopLevelAS* theReturnValue = nullptr;
 	objPtr->CreateTLAS(

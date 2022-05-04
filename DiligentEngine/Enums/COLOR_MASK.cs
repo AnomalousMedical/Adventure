@@ -19,13 +19,13 @@ using BOOL = System.Boolean;
 
 namespace DiligentEngine
 {
-    public enum COLOR_MASK :  Int8
+    public enum COLOR_MASK :  Uint8
     {
         COLOR_MASK_NONE = 0,
-        COLOR_MASK_RED = 1,
-        COLOR_MASK_GREEN = 2,
-        COLOR_MASK_BLUE = 4,
-        COLOR_MASK_ALPHA = 8,
+        COLOR_MASK_RED = 1 << 0,
+        COLOR_MASK_GREEN = 1 << 1,
+        COLOR_MASK_BLUE = 1 << 2,
+        COLOR_MASK_ALPHA = 1 << 3,
         COLOR_MASK_ALL = (((COLOR_MASK_RED | COLOR_MASK_GREEN) | COLOR_MASK_BLUE) | COLOR_MASK_ALPHA),
     }
 }

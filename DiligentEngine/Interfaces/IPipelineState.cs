@@ -35,11 +35,17 @@ namespace DiligentEngine
         /// <summary>
         /// Returns static shader resource variable. If the variable is not found,
         /// returns nullptr.
-        /// \param [in] ShaderType - Type of the shader to look up the variable.
+        /// \param [in] ShaderType - The type of the shader to look up the variable.
         /// Must be one of Diligent::SHADER_TYPE.
-        /// \param [in] Name - Name of the variable.
-        /// \remark The method does not increment the reference counter
+        /// \param [in] Name       - Name of the variable.
+        /// 
+        /// \remarks    The method does not increment the reference counter
         /// of the returned interface.
+        /// 
+        /// This method is only allowed for pipelines that use implicit resource signature
+        /// (e.g. shader resources are defined through ResourceLayout member of the pipeline desc).
+        /// For pipelines that use explicit resource signatures, use
+        /// IPipelineResourceSignature::GetStaticVariableByName() method.
         /// </summary>
         public IShaderResourceVariable GetStaticVariableByName(SHADER_TYPE ShaderType, String Name)
         {
@@ -52,12 +58,17 @@ namespace DiligentEngine
             return theReturnValue != IntPtr.Zero ? new IShaderResourceVariable(theReturnValue) : null;
         }
         /// <summary>
-        /// Creates a shader resource binding object
-        /// \param [out] ppShaderResourceBinding - memory location where pointer to the new shader resource
+        /// Creates a shader resource binding object.
+        /// \param [out] ppShaderResourceBinding - Memory location where pointer to the new shader resource
         /// binding object is written.
-        /// \param [in] InitStaticResources      - if set to true, the method will initialize static resources in
+        /// \param [in] InitStaticResources      - If set to true, the method will initialize static resources in
         /// the created object, which has the exact same effect as calling
-        /// IShaderResourceBinding::InitializeStaticResources().
+        /// IPipelineState::InitializeStaticSRBResources().
+        /// 
+        /// \remarks    This method is only allowed for pipelines that use implicit resource signature
+        /// (e.g. shader resources are defined through ResourceLayout member of the pipeline desc).
+        /// For pipelines that use explicit resource signatures, use
+        /// IPipelineResourceSignature::CreateShaderResourceBinding() method.
         /// </summary>
         public AutoPtr<IShaderResourceBinding> CreateShaderResourceBinding(bool InitStaticResources)
         {

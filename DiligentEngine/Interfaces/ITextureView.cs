@@ -22,11 +22,6 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     /// <summary>
-    /// \remarks
-    /// To create a texture view, call ITexture::CreateView().
-    /// Texture view holds strong references to the texture. The texture
-    /// will not be destroyed until all views are released.
-    /// The texture view will also keep a strong reference to the texture sampler,
     /// if any is set.
     /// </summary>
     public partial class ITextureView :  IDeviceObject
@@ -52,7 +47,7 @@ namespace DiligentEngine
         }
         /// <summary>
         /// Returns the pointer to the referenced texture object.
-        /// The method does *NOT* call AddRef() on the returned interface,
+        /// The method does *NOT* increment the reference counter of the returned object,
         /// so Release() must not be called.
         /// </summary>
         public  ITexture GetTexture()

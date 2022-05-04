@@ -22,9 +22,6 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     /// <summary>
-    /// To create a buffer view, call IBuffer::CreateView().
-    /// \remarks
-    /// Buffer view holds strong references to the buffer. The buffer
     /// will not be destroyed until all views are released.
     /// </summary>
     public partial class IBufferView :  IDeviceObject

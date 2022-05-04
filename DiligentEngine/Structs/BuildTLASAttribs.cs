@@ -31,13 +31,13 @@ namespace DiligentEngine
         public RESOURCE_STATE_TRANSITION_MODE BLASTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public List<TLASBuildInstanceData> pInstances { get; set; }
         public IBuffer pInstanceBuffer { get; set; }
-        public Uint32 InstanceBufferOffset { get; set; } = 0;
+        public Uint64 InstanceBufferOffset { get; set; } = 0;
         public RESOURCE_STATE_TRANSITION_MODE InstanceBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public Uint32 HitGroupStride { get; set; } = 1;
         public Uint32 BaseContributionToHitGroupIndex { get; set; } = 0;
         public HIT_GROUP_BINDING_MODE BindingMode { get; set; } = HIT_GROUP_BINDING_MODE.HIT_GROUP_BINDING_MODE_PER_GEOMETRY;
         public IBuffer pScratchBuffer { get; set; }
-        public Uint32 ScratchBufferOffset { get; set; } = 0;
+        public Uint64 ScratchBufferOffset { get; set; } = 0;
         public RESOURCE_STATE_TRANSITION_MODE ScratchBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public Bool Update { get; set; } = false;
 

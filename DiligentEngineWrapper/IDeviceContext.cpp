@@ -24,7 +24,7 @@ extern "C" _AnomalousExport void IDeviceContext_CommitShaderResources(
 }
 extern "C" _AnomalousExport void IDeviceContext_SetVertexBuffers(
 	IDeviceContext* objPtr
-, Uint32 StartSlot, Uint32 NumBuffersSet, IBuffer** ppBuffers, Uint32* pOffsets, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode, SET_VERTEX_BUFFERS_FLAGS Flags)
+, Uint32 StartSlot, Uint32 NumBuffersSet, IBuffer** ppBuffers, Uint64* pOffsets, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode, SET_VERTEX_BUFFERS_FLAGS Flags)
 {
 	objPtr->SetVertexBuffers(
 		StartSlot
@@ -37,7 +37,7 @@ extern "C" _AnomalousExport void IDeviceContext_SetVertexBuffers(
 }
 extern "C" _AnomalousExport void IDeviceContext_SetIndexBuffer(
 	IDeviceContext* objPtr
-, IBuffer* pIndexBuffer, Uint32 ByteOffset, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
+, IBuffer* pIndexBuffer, Uint64 ByteOffset, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
 {
 	objPtr->SetIndexBuffer(
 		pIndexBuffer
@@ -118,7 +118,7 @@ extern "C" _AnomalousExport void IDeviceContext_Flush(
 }
 extern "C" _AnomalousExport void IDeviceContext_UpdateBuffer(
 	IDeviceContext* objPtr
-, IBuffer* pBuffer, Uint32 Offset, Uint32 Size, void* pData, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
+, IBuffer* pBuffer, Uint64 Offset, Uint64 Size, void* pData, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
 {
 	objPtr->UpdateBuffer(
 		pBuffer
@@ -160,7 +160,7 @@ extern "C" _AnomalousExport void IDeviceContext_BuildBLAS(
 	, BLASBuildBoundingBoxDataPassStruct* Attribs_pBoxData
 	, Uint32 Attribs_BoxDataCount
 	, IBuffer* Attribs_pScratchBuffer
-	, Uint32 Attribs_ScratchBufferOffset
+	, Uint64 Attribs_ScratchBufferOffset
 	, RESOURCE_STATE_TRANSITION_MODE Attribs_ScratchBufferTransitionMode
 	, Bool Attribs_Update
 )
@@ -225,13 +225,13 @@ extern "C" _AnomalousExport void IDeviceContext_BuildTLAS(
 	, TLASBuildInstanceDataPassStruct* Attribs_pInstances
 	, Uint32 Attribs_InstanceCount
 	, IBuffer* Attribs_pInstanceBuffer
-	, Uint32 Attribs_InstanceBufferOffset
+	, Uint64 Attribs_InstanceBufferOffset
 	, RESOURCE_STATE_TRANSITION_MODE Attribs_InstanceBufferTransitionMode
 	, Uint32 Attribs_HitGroupStride
 	, Uint32 Attribs_BaseContributionToHitGroupIndex
 	, HIT_GROUP_BINDING_MODE Attribs_BindingMode
 	, IBuffer* Attribs_pScratchBuffer
-	, Uint32 Attribs_ScratchBufferOffset
+	, Uint64 Attribs_ScratchBufferOffset
 	, RESOURCE_STATE_TRANSITION_MODE Attribs_ScratchBufferTransitionMode
 	, Bool Attribs_Update
 )

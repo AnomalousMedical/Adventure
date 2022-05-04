@@ -19,9 +19,11 @@ using BOOL = System.Boolean;
 
 namespace DiligentEngine
 {
-    public enum TEXTURE_VIEW_FLAGS :  Uint8
+    public enum STATE_TRANSITION_FLAGS :  Uint8
     {
-        TEXTURE_VIEW_FLAG_NONE = 0,
-        TEXTURE_VIEW_FLAG_ALLOW_MIP_MAP_GENERATION = 1 << 0,
+        STATE_TRANSITION_FLAG_NONE = 0,
+        STATE_TRANSITION_FLAG_UPDATE_STATE = 1 << 0,
+        STATE_TRANSITION_FLAG_DISCARD_CONTENT = 1 << 1,
+        STATE_TRANSITION_FLAG_ALIASING = 1 << 2,
     }
 }

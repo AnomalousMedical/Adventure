@@ -8,7 +8,7 @@ struct BLASBuildBoundingBoxDataPassStruct
 {
         char* GeometryName;
         IBuffer* pBoxBuffer;
-        Uint32 BoxOffset;
+        Uint64 BoxOffset;
         Uint32 BoxStride;
         Uint32 BoxCount;
         RAYTRACING_GEOMETRY_FLAGS Flags;

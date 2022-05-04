@@ -27,6 +27,7 @@ namespace DiligentEngine
             
         }
         public SHADER_RESOURCE_VARIABLE_TYPE DefaultVariableType { get; set; } = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
+        public SHADER_TYPE DefaultVariableMergeStages { get; set; } = SHADER_TYPE.SHADER_TYPE_UNKNOWN;
         public List<ShaderResourceVariableDesc> Variables { get; set; }
         public List<ImmutableSamplerDesc> ImmutableSamplers { get; set; }
 

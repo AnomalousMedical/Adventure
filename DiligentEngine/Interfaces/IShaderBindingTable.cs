@@ -40,6 +40,8 @@ namespace DiligentEngine
         /// \param [in] DataSize         - Shader record data size, should be equal to RayTracingPipelineDesc::ShaderRecordSize.
         /// 
         /// \note Access to the SBT must be externally synchronized.
+        /// The function does not modify the data used by IDeviceContext::TraceRays() and
+        /// IDeviceContext::TraceRaysIndirect() commands, so they can run in parallel.
         /// </summary>
         public void BindRayGenShader(String pShaderGroupName, IntPtr pData, Uint32 DataSize)
         {
@@ -61,6 +63,8 @@ namespace DiligentEngine
         /// \param [in] DataSize         - Shader record data size, should be equal to RayTracingPipelineDesc::ShaderRecordSize.
         /// 
         /// \note Access to the SBT must be externally synchronized.
+        /// The function does not modify the data used by IDeviceContext::TraceRays() and
+        /// IDeviceContext::TraceRaysIndirect() commands, so they can run in parallel.
         /// </summary>
         public void BindMissShader(String pShaderGroupName, Uint32 MissIndex, IntPtr pData, Uint32 DataSize)
         {
@@ -87,8 +91,9 @@ namespace DiligentEngine
         /// \param [in] pData                    - Shader record data, can be null.
         /// \param [in] DataSize                 - Shader record data size, should be equal to RayTracingPipelineDesc::ShaderRecordSize.
         /// 
-        /// \note Access to the SBT must be externally synchronized.
-        /// Access to the TLAS must be externally synchronized.
+        /// \note Access to the SBT and TLAS must be externally synchronized.
+        /// The function does not modify the data used by IDeviceContext::TraceRays() and
+        /// IDeviceContext::TraceRaysIndirect() commands, so they can run in parallel.
         /// </summary>
         public void BindHitGroupForInstance(ITopLevelAS pTLAS, String pInstanceName, Uint32 RayOffsetInHitGroupIndex, String pShaderGroupName, IntPtr pData, Uint32 DataSize)
         {
@@ -115,8 +120,9 @@ namespace DiligentEngine
         /// \param [in] pData                    - Shader record data, can be null.
         /// \param [in] DataSize                 - Shader record data size, should be equal to RayTracingPipelineDesc::ShaderRecordSize.
         /// 
-        /// \note Access to the SBT must be externally synchronized.
-        /// Access to the TLAS must be externally synchronized.
+        /// \note Access to the SBT and TLAS must be externally synchronized.
+        /// The function does not modify the data used by IDeviceContext::TraceRays() and
+        /// IDeviceContext::TraceRaysIndirect() commands, so they can run in parallel.
         /// </summary>
         public void BindHitGroupForTLAS(ITopLevelAS pTLAS, Uint32 RayOffsetInHitGroupIndex, String pShaderGroupName, IntPtr pData, Uint32 DataSize)
         {

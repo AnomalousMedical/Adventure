@@ -32,7 +32,7 @@ namespace DiligentEngine
         public BLEND_FACTOR DestBlendAlpha;
         public BLEND_OPERATION BlendOpAlpha;
         public LOGIC_OPERATION LogicOp;
-        public Uint8 RenderTargetWriteMask;
+        public COLOR_MASK RenderTargetWriteMask;
         public static RenderTargetBlendDescPassStruct[] ToStruct(IEnumerable<RenderTargetBlendDesc> vals)
         {
             if(vals == null)

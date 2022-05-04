@@ -31,6 +31,8 @@ namespace DiligentEngine
         public TEXTURE_ADDRESS_MODE AddressU { get; set; } = TEXTURE_ADDRESS_MODE.TEXTURE_ADDRESS_CLAMP;
         public TEXTURE_ADDRESS_MODE AddressV { get; set; } = TEXTURE_ADDRESS_MODE.TEXTURE_ADDRESS_CLAMP;
         public TEXTURE_ADDRESS_MODE AddressW { get; set; } = TEXTURE_ADDRESS_MODE.TEXTURE_ADDRESS_CLAMP;
+        public SAMPLER_FLAGS Flags { get; set; } = SAMPLER_FLAGS.SAMPLER_FLAG_NONE;
+        public Bool UnnormalizedCoords { get; set; } = false;
         public Float32 MipLODBias { get; set; } = 0;
         public Uint32 MaxAnisotropy { get; set; } = 0;
         public COMPARISON_FUNCTION ComparisonFunc { get; set; } = COMPARISON_FUNCTION.COMPARISON_FUNC_NEVER;

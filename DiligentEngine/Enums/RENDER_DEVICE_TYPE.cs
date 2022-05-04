@@ -28,5 +28,6 @@ namespace DiligentEngine
         RENDER_DEVICE_TYPE_GLES,
         RENDER_DEVICE_TYPE_VULKAN,
         RENDER_DEVICE_TYPE_METAL,
+        RENDER_DEVICE_TYPE_COUNT,
     }
 }

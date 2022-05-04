@@ -6,6 +6,7 @@ namespace Diligent
 {
 struct StateTransitionDescPassStruct
 {
+        IDeviceObject* pResourceBefore;
         IDeviceObject* pResource;
         Uint32 FirstMipLevel;
         Uint32 MipLevelsCount;
@@ -14,6 +15,6 @@ struct StateTransitionDescPassStruct
         RESOURCE_STATE OldState;
         RESOURCE_STATE NewState;
         STATE_TRANSITION_TYPE TransitionType;
-        Uint32 UpdateResourceState;
+        STATE_TRANSITION_FLAGS Flags;
 };
 }

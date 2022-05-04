@@ -22,9 +22,6 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     /// <summary>
-    /// Texture sampler interface.
-    /// The interface holds the sampler state that can be used to perform texture filtering.
-    /// To create a sampler, call IRenderDevice::CreateSampler(). To use a sampler,
     /// call ITextureView::SetSampler().
     /// </summary>
     public partial class ISampler :  IDeviceObject

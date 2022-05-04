@@ -28,17 +28,17 @@ namespace DiligentEngine
         }
         public String GeometryName { get; set; }
         public IBuffer pVertexBuffer { get; set; }
-        public Uint32 VertexOffset { get; set; } = 0;
+        public Uint64 VertexOffset { get; set; } = 0;
         public Uint32 VertexStride { get; set; } = 0;
         public Uint32 VertexCount { get; set; } = 0;
         public VALUE_TYPE VertexValueType { get; set; } = VALUE_TYPE.VT_UNDEFINED;
         public Uint8 VertexComponentCount { get; set; } = 0;
         public Uint32 PrimitiveCount { get; set; } = 0;
         public IBuffer pIndexBuffer { get; set; }
-        public Uint32 IndexOffset { get; set; } = 0;
+        public Uint64 IndexOffset { get; set; } = 0;
         public VALUE_TYPE IndexType { get; set; } = VALUE_TYPE.VT_UNDEFINED;
         public IBuffer pTransformBuffer { get; set; }
-        public Uint32 TransformBufferOffset { get; set; } = 0;
+        public Uint64 TransformBufferOffset { get; set; } = 0;
         public RAYTRACING_GEOMETRY_FLAGS Flags { get; set; } = RAYTRACING_GEOMETRY_FLAGS.RAYTRACING_GEOMETRY_FLAG_NONE;
 
 

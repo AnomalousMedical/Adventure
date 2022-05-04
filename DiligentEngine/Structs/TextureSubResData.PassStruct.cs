@@ -25,9 +25,9 @@ namespace DiligentEngine
     {
         public IntPtr pData;
         public IntPtr pSrcBuffer;
-        public Uint32 SrcOffset;
-        public Uint32 Stride;
-        public Uint32 DepthStride;
+        public Uint64 SrcOffset;
+        public Uint64 Stride;
+        public Uint64 DepthStride;
         public static TextureSubResDataPassStruct[] ToStruct(IEnumerable<TextureSubResData> vals)
         {
             if(vals == null)

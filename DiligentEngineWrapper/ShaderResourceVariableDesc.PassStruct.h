@@ -9,5 +9,6 @@ struct ShaderResourceVariableDescPassStruct
         SHADER_TYPE ShaderStages;
         Char* Name;
         SHADER_RESOURCE_VARIABLE_TYPE Type;
+        SHADER_VARIABLE_FLAGS Flags;
 };
 }

@@ -8,17 +8,17 @@ struct BLASBuildTriangleDataPassStruct
 {
         char* GeometryName;
         IBuffer* pVertexBuffer;
-        Uint32 VertexOffset;
+        Uint64 VertexOffset;
         Uint32 VertexStride;
         Uint32 VertexCount;
         VALUE_TYPE VertexValueType;
         Uint8 VertexComponentCount;
         Uint32 PrimitiveCount;
         IBuffer* pIndexBuffer;
-        Uint32 IndexOffset;
+        Uint64 IndexOffset;
         VALUE_TYPE IndexType;
         IBuffer* pTransformBuffer;
-        Uint32 TransformBufferOffset;
+        Uint64 TransformBufferOffset;
         RAYTRACING_GEOMETRY_FLAGS Flags;
 };
 }

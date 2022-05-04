@@ -22,7 +22,7 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     /// <summary>
-    /// Texture inteface
+    /// Texture interface
     /// </summary>
     public partial class ITexture :  IDeviceObject
     {

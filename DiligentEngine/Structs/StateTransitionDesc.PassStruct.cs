@@ -23,6 +23,7 @@ namespace DiligentEngine
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     struct StateTransitionDescPassStruct
     {
+        public IntPtr pResourceBefore;
         public IntPtr pResource;
         public Uint32 FirstMipLevel;
         public Uint32 MipLevelsCount;
@@ -31,7 +32,7 @@ namespace DiligentEngine
         public RESOURCE_STATE OldState;
         public RESOURCE_STATE NewState;
         public STATE_TRANSITION_TYPE TransitionType;
-        public Uint32 UpdateResourceState;
+        public STATE_TRANSITION_FLAGS Flags;
         public static StateTransitionDescPassStruct[] ToStruct(IEnumerable<StateTransitionDesc> vals)
         {
             if(vals == null)
@@ -41,6 +42,7 @@ namespace DiligentEngine
 
             return vals.Select(i => new StateTransitionDescPassStruct
             {
+                pResourceBefore = i.pResourceBefore == null ? IntPtr.Zero : i.pResourceBefore.objPtr,
                 pResource = i.pResource == null ? IntPtr.Zero : i.pResource.objPtr,
                 FirstMipLevel = i.FirstMipLevel,
                 MipLevelsCount = i.MipLevelsCount,
@@ -49,7 +51,7 @@ namespace DiligentEngine
                 OldState = i.OldState,
                 NewState = i.NewState,
                 TransitionType = i.TransitionType,
-                UpdateResourceState = Convert.ToUInt32(i.UpdateResourceState),
+                Flags = i.Flags,
             }).ToArray();
         }
     }

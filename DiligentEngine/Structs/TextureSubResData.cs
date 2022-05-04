@@ -28,9 +28,9 @@ namespace DiligentEngine
         }
         public IntPtr pData { get; set; }
         public IBuffer pSrcBuffer { get; set; }
-        public Uint32 SrcOffset { get; set; } = 0;
-        public Uint32 Stride { get; set; } = 0;
-        public Uint32 DepthStride { get; set; } = 0;
+        public Uint64 SrcOffset { get; set; } = 0;
+        public Uint64 Stride { get; set; } = 0;
+        public Uint64 DepthStride { get; set; } = 0;
 
 
     }

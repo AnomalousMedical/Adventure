@@ -21,18 +21,19 @@ namespace DiligentEngine
 {
     public enum BIND_FLAGS :  Uint32
     {
-        BIND_NONE = 0x0,
-        BIND_VERTEX_BUFFER = 0x1,
-        BIND_INDEX_BUFFER = 0x2,
-        BIND_UNIFORM_BUFFER = 0x4,
-        BIND_SHADER_RESOURCE = 0x8,
-        BIND_STREAM_OUTPUT = 0x10,
-        BIND_RENDER_TARGET = 0x20,
-        BIND_DEPTH_STENCIL = 0x40,
-        BIND_UNORDERED_ACCESS = 0x80,
-        BIND_INDIRECT_DRAW_ARGS = 0x100,
-        BIND_INPUT_ATTACHMENT = 0x200,
-        BIND_RAY_TRACING = 0x400,
-        BIND_FLAGS_LAST = 0x400,
+        BIND_NONE = 0,
+        BIND_VERTEX_BUFFER = 1 << 0,
+        BIND_INDEX_BUFFER = 1 << 1,
+        BIND_UNIFORM_BUFFER = 1 << 2,
+        BIND_SHADER_RESOURCE = 1 << 3,
+        BIND_STREAM_OUTPUT = 1 << 4,
+        BIND_RENDER_TARGET = 1 << 5,
+        BIND_DEPTH_STENCIL = 1 << 6,
+        BIND_UNORDERED_ACCESS = 1 << 7,
+        BIND_INDIRECT_DRAW_ARGS = 1 << 8,
+        BIND_INPUT_ATTACHMENT = 1 << 9,
+        BIND_RAY_TRACING = 1 << 10,
+        BIND_SHADING_RATE = 1 << 11,
+        BIND_FLAGS_LAST = BIND_SHADING_RATE,
     }
 }

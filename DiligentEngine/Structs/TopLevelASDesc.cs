@@ -27,8 +27,8 @@ namespace DiligentEngine
         }
         public Uint32 MaxInstanceCount { get; set; } = 0;
         public RAYTRACING_BUILD_AS_FLAGS Flags { get; set; } = RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_NONE;
-        public Uint32 CompactedSize { get; set; } = 0;
-        public Uint64 CommandQueueMask { get; set; } = 1;
+        public Uint64 CompactedSize { get; set; } = 0;
+        public Uint64 ImmediateContextMask { get; set; } = 1;
 
 
     }

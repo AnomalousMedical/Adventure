@@ -25,17 +25,17 @@ namespace DiligentEngine
     {
         public String GeometryName;
         public IntPtr pVertexBuffer;
-        public Uint32 VertexOffset;
+        public Uint64 VertexOffset;
         public Uint32 VertexStride;
         public Uint32 VertexCount;
         public VALUE_TYPE VertexValueType;
         public Uint8 VertexComponentCount;
         public Uint32 PrimitiveCount;
         public IntPtr pIndexBuffer;
-        public Uint32 IndexOffset;
+        public Uint64 IndexOffset;
         public VALUE_TYPE IndexType;
         public IntPtr pTransformBuffer;
-        public Uint32 TransformBufferOffset;
+        public Uint64 TransformBufferOffset;
         public RAYTRACING_GEOMETRY_FLAGS Flags;
         public static BLASBuildTriangleDataPassStruct[] ToStruct(IEnumerable<BLASBuildTriangleData> vals)
         {

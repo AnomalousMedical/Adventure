@@ -15,6 +15,6 @@ struct RenderTargetBlendDescPassStruct
         BLEND_FACTOR DestBlendAlpha;
         BLEND_OPERATION BlendOpAlpha;
         LOGIC_OPERATION LogicOp;
-        Uint8 RenderTargetWriteMask;
+        COLOR_MASK RenderTargetWriteMask;
 };
 }

@@ -27,7 +27,8 @@ namespace DiligentEngine
             
         }
         public IntPtr pData { get; set; }
-        public Uint32 DataSize { get; set; } = 0;
+        public Uint64 DataSize { get; set; } = 0;
+        public IDeviceContext pContext { get; set; }
 
 
     }

@@ -28,7 +28,7 @@ namespace DiligentEngine
         }
         public String GeometryName { get; set; }
         public IBuffer pBoxBuffer { get; set; }
-        public Uint32 BoxOffset { get; set; } = 0;
+        public Uint64 BoxOffset { get; set; } = 0;
         public Uint32 BoxStride { get; set; } = 0;
         public Uint32 BoxCount { get; set; } = 0;
         public RAYTRACING_GEOMETRY_FLAGS Flags { get; set; } = RAYTRACING_GEOMETRY_FLAGS.RAYTRACING_GEOMETRY_FLAG_NONE;

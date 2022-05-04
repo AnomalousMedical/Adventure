@@ -25,7 +25,7 @@ namespace DiligentEngine
     {
         public String GeometryName;
         public IntPtr pBoxBuffer;
-        public Uint32 BoxOffset;
+        public Uint64 BoxOffset;
         public Uint32 BoxStride;
         public Uint32 BoxCount;
         public RAYTRACING_GEOMETRY_FLAGS Flags;

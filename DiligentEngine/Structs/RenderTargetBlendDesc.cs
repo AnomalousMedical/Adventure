@@ -35,7 +35,7 @@ namespace DiligentEngine
         public BLEND_FACTOR DestBlendAlpha { get; set; } = BLEND_FACTOR.BLEND_FACTOR_ZERO;
         public BLEND_OPERATION BlendOpAlpha { get; set; } = BLEND_OPERATION.BLEND_OPERATION_ADD;
         public LOGIC_OPERATION LogicOp { get; set; } = LOGIC_OPERATION.LOGIC_OP_NOOP;
-        public Uint8 RenderTargetWriteMask { get; set; } = (Uint8)COLOR_MASK.COLOR_MASK_ALL;
+        public COLOR_MASK RenderTargetWriteMask { get; set; } = COLOR_MASK.COLOR_MASK_ALL;
 
 
     }

@@ -27,7 +27,7 @@ namespace DiligentEngine
         }
         public PIPELINE_TYPE PipelineType { get; set; } = PIPELINE_TYPE.PIPELINE_TYPE_GRAPHICS;
         public Uint32 SRBAllocationGranularity { get; set; } = 1;
-        public Uint64 CommandQueueMask { get; set; } = 1;
+        public Uint64 ImmediateContextMask { get; set; } = 1;
         public PipelineResourceLayoutDesc ResourceLayout { get; set; } = new PipelineResourceLayoutDesc();
 
 

@@ -38,9 +38,9 @@ namespace DiligentEngine
         /// \param [in] pBuffData  - Pointer to Diligent::BufferData structure that describes
         /// initial buffer data or nullptr if no data is provided.
         /// Immutable buffers (USAGE_IMMUTABLE) must be initialized at creation time.
-        /// \param [out] ppBuffer  - Address of the memory location where the pointer to the
-        /// buffer interface will be stored. The function calls AddRef(),
-        /// so that the new buffer will contain one reference and must be
+        /// \param [out] ppBuffer  - Address of the memory location where a pointer to the
+        /// buffer interface will be written. The function calls AddRef(),
+        /// so that the new buffer will have one reference and must be
         /// released by a call to Release().
         /// 
         /// \remarks
@@ -53,25 +53,27 @@ namespace DiligentEngine
             var theReturnValue = 
             IRenderDevice_CreateBuffer(
                 this.objPtr
-                , BuffDesc.uiSizeInBytes
+                , BuffDesc.Size
                 , BuffDesc.BindFlags
                 , BuffDesc.Usage
                 , BuffDesc.CPUAccessFlags
                 , BuffDesc.Mode
+                , BuffDesc.MiscFlags
                 , BuffDesc.ElementByteStride
-                , BuffDesc.CommandQueueMask
+                , BuffDesc.ImmediateContextMask
                 , BuffDesc.Name
                 , pBuffData.pData
                 , pBuffData.DataSize
+                , pBuffData.pContext?.objPtr ?? IntPtr.Zero
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<IBuffer>(new IBuffer(theReturnValue), false) : null;
         }
         /// <summary>
         /// Creates a new shader object
         /// \param [in] ShaderCI  - Shader create info, see Diligent::ShaderCreateInfo for details.
-        /// \param [out] ppShader - Address of the memory location where the pointer to the
-        /// shader interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppShader - Address of the memory location where a pointer to the
+        /// shader interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<IShader> CreateShader(ShaderCreateInfo ShaderCI)
@@ -90,6 +92,9 @@ namespace DiligentEngine
                 , ShaderCI.ShaderCompiler
                 , ShaderCI.HLSLVersion.Major
                 , ShaderCI.HLSLVersion.Minor
+                , ShaderCI.MSLVersion.Major
+                , ShaderCI.MSLVersion.Minor
+                , ShaderCI.CompileFlags
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<IShader>(new IShader(theReturnValue), false) : null;
         }
@@ -100,13 +105,13 @@ namespace DiligentEngine
         /// initial texture data or nullptr if no data is provided.
         /// Immutable textures (USAGE_IMMUTABLE) must be initialized at creation time.
         /// 
-        /// \param [out] ppTexture - Address of the memory location where the pointer to the
-        /// texture interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppTexture - Address of the memory location where a pointer to the
+        /// texture interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// \remarks
         /// To create all mip levels, set the TexDesc.MipLevels to zero.\n
-        /// Multisampled resources cannot be initialzed with data when they are created. \n
+        /// Multisampled resources cannot be initialized with data when they are created. \n
         /// If initial data is provided, number of subresources must exactly match the number
         /// of subresources in the texture (which is the number of mip levels times the number of array slices.
         /// For a 3D texture, this is just the number of mip levels).
@@ -128,8 +133,8 @@ namespace DiligentEngine
                 , TexDesc.Format
                 , TexDesc.MipLevels
                 , TexDesc.SampleCount
-                , TexDesc.Usage
                 , TexDesc.BindFlags
+                , TexDesc.Usage
                 , TexDesc.CPUAccessFlags
                 , TexDesc.MiscFlags
                 , TexDesc.ClearValue.Format
@@ -139,19 +144,20 @@ namespace DiligentEngine
                 , TexDesc.ClearValue.Color_3
                 , TexDesc.ClearValue.DepthStencil.Depth
                 , TexDesc.ClearValue.DepthStencil.Stencil
-                , TexDesc.CommandQueueMask
+                , TexDesc.ImmediateContextMask
                 , TexDesc.Name
                 , TextureSubResDataPassStruct.ToStruct(pData?.pSubResources)
                 , pData?.pSubResources != null ? (Uint32)pData.pSubResources.Count : 0
+                , pData.pContext?.objPtr ?? IntPtr.Zero
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<ITexture>(new ITexture(theReturnValue), false) : null;
         }
         /// <summary>
         /// Creates a new sampler object
         /// \param [in]  SamDesc   - Sampler description, see Diligent::SamplerDesc for details.
-        /// \param [out] ppSampler - Address of the memory location where the pointer to the
-        /// sampler interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppSampler - Address of the memory location where a pointer to the
+        /// sampler interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// \remark If an application attempts to create a sampler interface with the same attributes
         /// as an existing interface, the same interface will be returned.
@@ -168,6 +174,8 @@ namespace DiligentEngine
                 , SamDesc.AddressU
                 , SamDesc.AddressV
                 , SamDesc.AddressW
+                , SamDesc.Flags
+                , SamDesc.UnnormalizedCoords
                 , SamDesc.MipLODBias
                 , SamDesc.MaxAnisotropy
                 , SamDesc.ComparisonFunc
@@ -184,9 +192,9 @@ namespace DiligentEngine
         /// <summary>
         /// Creates a new graphics pipeline state object
         /// \param [in]  PSOCreateInfo   - Graphics pipeline state create info, see Diligent::GraphicsPipelineStateCreateInfo for details.
-        /// \param [out] ppPipelineState - Address of the memory location where the pointer to the
-        /// pipeline state interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppPipelineState - Address of the memory location where a pointer to the
+        /// pipeline state interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<IPipelineState> CreateGraphicsPipelineState(GraphicsPipelineStateCreateInfo PSOCreateInfo)
@@ -227,14 +235,7 @@ namespace DiligentEngine
                 , PSOCreateInfo.GraphicsPipeline.NumViewports
                 , PSOCreateInfo.GraphicsPipeline.NumRenderTargets
                 , PSOCreateInfo.GraphicsPipeline.SubpassIndex
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_0
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_1
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_2
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_3
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_4
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_5
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_6
-                , PSOCreateInfo.GraphicsPipeline.RTVFormats_7
+                , PSOCreateInfo.GraphicsPipeline.ShadingRateFlags
                 , PSOCreateInfo.GraphicsPipeline.DSVFormat
                 , PSOCreateInfo.GraphicsPipeline.SmplDesc.Count
                 , PSOCreateInfo.GraphicsPipeline.SmplDesc.Quality
@@ -248,8 +249,9 @@ namespace DiligentEngine
                 , PSOCreateInfo.pMS?.objPtr ?? IntPtr.Zero
                 , PSOCreateInfo.PSODesc.PipelineType
                 , PSOCreateInfo.PSODesc.SRBAllocationGranularity
-                , PSOCreateInfo.PSODesc.CommandQueueMask
+                , PSOCreateInfo.PSODesc.ImmediateContextMask
                 , PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType
+                , PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableMergeStages
                 , PSOCreateInfo.PSODesc.ResourceLayout?.Variables != null ? (Uint32)PSOCreateInfo.PSODesc.ResourceLayout.Variables.Count : 0
                 , ShaderResourceVariableDescPassStruct.ToStruct(PSOCreateInfo.PSODesc.ResourceLayout?.Variables)
                 , PSOCreateInfo.PSODesc.ResourceLayout?.ImmutableSamplers != null ? (Uint32)PSOCreateInfo.PSODesc.ResourceLayout.ImmutableSamplers.Count : 0
@@ -262,9 +264,9 @@ namespace DiligentEngine
         /// <summary>
         /// Creates a new ray tracing pipeline state object
         /// \param [in]  PSOCreateInfo   - Ray tracing pipeline state create info, see Diligent::RayTracingPipelineStateCreateInfo for details.
-        /// \param [out] ppPipelineState - Address of the memory location where the pointer to the
-        /// pipeline state interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppPipelineState - Address of the memory location where a pointer to the
+        /// pipeline state interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<IPipelineState> CreateRayTracingPipelineState(RayTracingPipelineStateCreateInfo PSOCreateInfo)
@@ -285,8 +287,9 @@ namespace DiligentEngine
                 , PSOCreateInfo.MaxPayloadSize
                 , PSOCreateInfo.PSODesc.PipelineType
                 , PSOCreateInfo.PSODesc.SRBAllocationGranularity
-                , PSOCreateInfo.PSODesc.CommandQueueMask
+                , PSOCreateInfo.PSODesc.ImmediateContextMask
                 , PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType
+                , PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableMergeStages
                 , PSOCreateInfo.PSODesc.ResourceLayout?.Variables != null ? (Uint32)PSOCreateInfo.PSODesc.ResourceLayout.Variables.Count : 0
                 , ShaderResourceVariableDescPassStruct.ToStruct(PSOCreateInfo.PSODesc.ResourceLayout?.Variables)
                 , PSOCreateInfo.PSODesc.ResourceLayout?.ImmutableSamplers != null ? (Uint32)PSOCreateInfo.PSODesc.ResourceLayout.ImmutableSamplers.Count : 0
@@ -299,9 +302,9 @@ namespace DiligentEngine
         /// <summary>
         /// Creates a bottom-level acceleration structure object (BLAS).
         /// \param [in]  Desc    - BLAS description, see Diligent::BottomLevelASDesc for details.
-        /// \param [out] ppBLAS  - Address of the memory location where the pointer to the
-        /// BLAS interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppBLAS  - Address of the memory location where a pointer to the
+        /// BLAS interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<IBottomLevelAS> CreateBLAS(BottomLevelASDesc Desc)
@@ -315,7 +318,7 @@ namespace DiligentEngine
                 , Desc?.pBoxes != null ? (Uint32)Desc.pBoxes.Count : 0
                 , Desc.Flags
                 , Desc.CompactedSize
-                , Desc.CommandQueueMask
+                , Desc.ImmediateContextMask
                 , Desc.Name
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<IBottomLevelAS>(new IBottomLevelAS(theReturnValue), false) : null;
@@ -323,9 +326,9 @@ namespace DiligentEngine
         /// <summary>
         /// Creates a top-level acceleration structure object (TLAS).
         /// \param [in]  Desc    - TLAS description, see Diligent::TopLevelASDesc for details.
-        /// \param [out] ppTLAS  - Address of the memory location where the pointer to the
-        /// TLAS interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppTLAS  - Address of the memory location where a pointer to the
+        /// TLAS interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<ITopLevelAS> CreateTLAS(TopLevelASDesc Desc)
@@ -336,7 +339,7 @@ namespace DiligentEngine
                 , Desc.MaxInstanceCount
                 , Desc.Flags
                 , Desc.CompactedSize
-                , Desc.CommandQueueMask
+                , Desc.ImmediateContextMask
                 , Desc.Name
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<ITopLevelAS>(new ITopLevelAS(theReturnValue), false) : null;
@@ -344,9 +347,9 @@ namespace DiligentEngine
         /// <summary>
         /// Creates a shader resource binding table object (SBT).
         /// \param [in]  Desc    - SBT description, see Diligent::ShaderBindingTableDesc for details.
-        /// \param [out] ppSBT   - Address of the memory location where the pointer to the
-        /// SBT interface will be stored.
-        /// The function calls AddRef(), so that the new object will contain
+        /// \param [out] ppSBT   - Address of the memory location where a pointer to the
+        /// SBT interface will be written.
+        /// The function calls AddRef(), so that the new object will have
         /// one reference.
         /// </summary>
         public AutoPtr<IShaderBindingTable> CreateSBT(ShaderBindingTableDesc Desc)
@@ -364,16 +367,18 @@ namespace DiligentEngine
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateBuffer(
             IntPtr objPtr
-            , Uint32 BuffDesc_uiSizeInBytes
+            , Uint64 BuffDesc_Size
             , BIND_FLAGS BuffDesc_BindFlags
             , USAGE BuffDesc_Usage
             , CPU_ACCESS_FLAGS BuffDesc_CPUAccessFlags
             , BUFFER_MODE BuffDesc_Mode
+            , MISC_BUFFER_FLAGS BuffDesc_MiscFlags
             , Uint32 BuffDesc_ElementByteStride
-            , Uint64 BuffDesc_CommandQueueMask
+            , Uint64 BuffDesc_ImmediateContextMask
             , String BuffDesc_Name
             , IntPtr pBuffData_pData
-            , Uint32 pBuffData_DataSize
+            , Uint64 pBuffData_DataSize
+            , IntPtr pBuffData_pContext
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateShader(
@@ -387,8 +392,11 @@ namespace DiligentEngine
             , String ShaderCI_Desc_Name
             , SHADER_SOURCE_LANGUAGE ShaderCI_SourceLanguage
             , SHADER_COMPILER ShaderCI_ShaderCompiler
-            , Uint8 ShaderCI_HLSLVersion_Major
-            , Uint8 ShaderCI_HLSLVersion_Minor
+            , Uint32 ShaderCI_HLSLVersion_Major
+            , Uint32 ShaderCI_HLSLVersion_Minor
+            , Uint32 ShaderCI_MSLVersion_Major
+            , Uint32 ShaderCI_MSLVersion_Minor
+            , SHADER_COMPILE_FLAGS ShaderCI_CompileFlags
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateTexture(
@@ -400,8 +408,8 @@ namespace DiligentEngine
             , TEXTURE_FORMAT TexDesc_Format
             , Uint32 TexDesc_MipLevels
             , Uint32 TexDesc_SampleCount
-            , USAGE TexDesc_Usage
             , BIND_FLAGS TexDesc_BindFlags
+            , USAGE TexDesc_Usage
             , CPU_ACCESS_FLAGS TexDesc_CPUAccessFlags
             , MISC_TEXTURE_FLAGS TexDesc_MiscFlags
             , TEXTURE_FORMAT TexDesc_ClearValue_Format
@@ -411,10 +419,11 @@ namespace DiligentEngine
             , Float32 TexDesc_ClearValue_Color_3
             , Float32 TexDesc_ClearValue_DepthStencil_Depth
             , Uint8 TexDesc_ClearValue_DepthStencil_Stencil
-            , Uint64 TexDesc_CommandQueueMask
+            , Uint64 TexDesc_ImmediateContextMask
             , String TexDesc_Name
             , TextureSubResDataPassStruct[] pData_pSubResources
             , Uint32 pData_NumSubresources
+            , IntPtr pData_pContext
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateSampler(
@@ -425,6 +434,8 @@ namespace DiligentEngine
             , TEXTURE_ADDRESS_MODE SamDesc_AddressU
             , TEXTURE_ADDRESS_MODE SamDesc_AddressV
             , TEXTURE_ADDRESS_MODE SamDesc_AddressW
+            , SAMPLER_FLAGS SamDesc_Flags
+            , [MarshalAs(UnmanagedType.I1)]Bool SamDesc_UnnormalizedCoords
             , Float32 SamDesc_MipLODBias
             , Uint32 SamDesc_MaxAnisotropy
             , COMPARISON_FUNCTION SamDesc_ComparisonFunc
@@ -472,14 +483,7 @@ namespace DiligentEngine
             , Uint8 PSOCreateInfo_GraphicsPipeline_NumViewports
             , Uint8 PSOCreateInfo_GraphicsPipeline_NumRenderTargets
             , Uint8 PSOCreateInfo_GraphicsPipeline_SubpassIndex
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_0
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_1
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_2
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_3
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_4
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_5
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_6
-            , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_RTVFormats_7
+            , PIPELINE_SHADING_RATE_FLAGS PSOCreateInfo_GraphicsPipeline_ShadingRateFlags
             , TEXTURE_FORMAT PSOCreateInfo_GraphicsPipeline_DSVFormat
             , Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Count
             , Uint8 PSOCreateInfo_GraphicsPipeline_SmplDesc_Quality
@@ -493,8 +497,9 @@ namespace DiligentEngine
             , IntPtr PSOCreateInfo_pMS
             , PIPELINE_TYPE PSOCreateInfo_PSODesc_PipelineType
             , Uint32 PSOCreateInfo_PSODesc_SRBAllocationGranularity
-            , Uint64 PSOCreateInfo_PSODesc_CommandQueueMask
+            , Uint64 PSOCreateInfo_PSODesc_ImmediateContextMask
             , SHADER_RESOURCE_VARIABLE_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType
+            , SHADER_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages
             , Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumVariables
             , ShaderResourceVariableDescPassStruct[] PSOCreateInfo_PSODesc_ResourceLayout_Variables
             , Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumImmutableSamplers
@@ -518,8 +523,9 @@ namespace DiligentEngine
             , Uint32 PSOCreateInfo_MaxPayloadSize
             , PIPELINE_TYPE PSOCreateInfo_PSODesc_PipelineType
             , Uint32 PSOCreateInfo_PSODesc_SRBAllocationGranularity
-            , Uint64 PSOCreateInfo_PSODesc_CommandQueueMask
+            , Uint64 PSOCreateInfo_PSODesc_ImmediateContextMask
             , SHADER_RESOURCE_VARIABLE_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableType
+            , SHADER_TYPE PSOCreateInfo_PSODesc_ResourceLayout_DefaultVariableMergeStages
             , Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumVariables
             , ShaderResourceVariableDescPassStruct[] PSOCreateInfo_PSODesc_ResourceLayout_Variables
             , Uint32 PSOCreateInfo_PSODesc_ResourceLayout_NumImmutableSamplers
@@ -535,8 +541,8 @@ namespace DiligentEngine
             , BLASBoundingBoxDescPassStruct[] Desc_pBoxes
             , Uint32 Desc_BoxCount
             , RAYTRACING_BUILD_AS_FLAGS Desc_Flags
-            , Uint32 Desc_CompactedSize
-            , Uint64 Desc_CommandQueueMask
+            , Uint64 Desc_CompactedSize
+            , Uint64 Desc_ImmediateContextMask
             , String Desc_Name
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -544,8 +550,8 @@ namespace DiligentEngine
             IntPtr objPtr
             , Uint32 Desc_MaxInstanceCount
             , RAYTRACING_BUILD_AS_FLAGS Desc_Flags
-            , Uint32 Desc_CompactedSize
-            , Uint64 Desc_CommandQueueMask
+            , Uint64 Desc_CompactedSize
+            , Uint64 Desc_ImmediateContextMask
             , String Desc_Name
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]

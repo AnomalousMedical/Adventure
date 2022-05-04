@@ -26,6 +26,7 @@ namespace DiligentEngine
         USAGE_DYNAMIC,
         USAGE_STAGING,
         USAGE_UNIFIED,
+        USAGE_SPARSE,
         USAGE_NUM_USAGES,
     }
 }

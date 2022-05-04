@@ -8,8 +8,8 @@ struct TextureSubResDataPassStruct
 {
         void* pData;
         IBuffer* pSrcBuffer;
-        Uint32 SrcOffset;
-        Uint32 Stride;
-        Uint32 DepthStride;
+        Uint64 SrcOffset;
+        Uint64 Stride;
+        Uint64 DepthStride;
 };
 }

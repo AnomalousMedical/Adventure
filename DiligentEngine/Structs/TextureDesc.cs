@@ -32,12 +32,12 @@ namespace DiligentEngine
         public TEXTURE_FORMAT Format { get; set; } = TEXTURE_FORMAT.TEX_FORMAT_UNKNOWN;
         public Uint32 MipLevels { get; set; } = 1;
         public Uint32 SampleCount { get; set; } = 1;
-        public USAGE Usage { get; set; } = USAGE.USAGE_DEFAULT;
         public BIND_FLAGS BindFlags { get; set; } = BIND_FLAGS.BIND_NONE;
+        public USAGE Usage { get; set; } = USAGE.USAGE_DEFAULT;
         public CPU_ACCESS_FLAGS CPUAccessFlags { get; set; } = CPU_ACCESS_FLAGS.CPU_ACCESS_NONE;
         public MISC_TEXTURE_FLAGS MiscFlags { get; set; } = MISC_TEXTURE_FLAGS.MISC_TEXTURE_FLAG_NONE;
         public OptimizedClearValue ClearValue { get; set; } = new OptimizedClearValue();
-        public Uint64 CommandQueueMask { get; set; } = 1;
+        public Uint64 ImmediateContextMask { get; set; } = 1;
 
 
     }

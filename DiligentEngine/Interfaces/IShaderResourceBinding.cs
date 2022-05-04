@@ -33,10 +33,10 @@ namespace DiligentEngine
         }
         partial void _ConstructorCalled();
         /// <summary>
-        /// Returns variable
+        /// Returns the variable by its name.
         /// \param [in] ShaderType - Type of the shader to look up the variable.
         /// Must be one of Diligent::SHADER_TYPE.
-        /// \param [in] Name       - Variable name
+        /// \param [in] Name       - Variable name.
         /// 
         /// \note  This operation may potentially be expensive. If the variable will be used often, it is
         /// recommended to store and reuse the pointer as it never changes.

@@ -70,7 +70,7 @@ namespace DiligentEngine
         }
         /// <summary>
         /// Returns depth-stencil view of the depth buffer
-        /// The method does *NOT* call AddRef() on the returned interface,
+        /// The method does *NOT* increment the reference counter of the returned object,
         /// so Release() must not be called.
         /// </summary>
         private ITextureView _GetDepthBufferDSV;

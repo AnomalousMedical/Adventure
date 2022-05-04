@@ -26,6 +26,7 @@ namespace DiligentEngine
         public SHADER_TYPE ShaderStages;
         public String Name;
         public SHADER_RESOURCE_VARIABLE_TYPE Type;
+        public SHADER_VARIABLE_FLAGS Flags;
         public static ShaderResourceVariableDescPassStruct[] ToStruct(IEnumerable<ShaderResourceVariableDesc> vals)
         {
             if(vals == null)
@@ -38,6 +39,7 @@ namespace DiligentEngine
                 ShaderStages = i.ShaderStages,
                 Name = i.Name,
                 Type = i.Type,
+                Flags = i.Flags,
             }).ToArray();
         }
     }

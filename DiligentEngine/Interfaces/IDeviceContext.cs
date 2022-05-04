@@ -22,9 +22,6 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     /// <summary>
-    /// \remarks Device context keeps strong references to all objects currently bound to
-    /// the pipeline: buffers, states, samplers, shaders, etc.
-    /// The context also keeps strong reference to the device and
     /// the swap chain.
     /// </summary>
     public partial class IDeviceContext :  IObject
@@ -38,6 +35,9 @@ namespace DiligentEngine
         /// <summary>
         /// Sets the pipeline state.
         /// \param [in] pPipelineState - Pointer to IPipelineState interface to bind to the context.
+        /// 
+        /// \remarks Supported contexts for graphics and mesh pipeline:        graphics.
+        /// Supported contexts for compute and ray tracing pipeline:  graphics and compute.
         /// </summary>
         public void SetPipelineState(IPipelineState pPipelineState)
         {
@@ -53,10 +53,7 @@ namespace DiligentEngine
         /// can be null.
         /// \param [in] StateTransitionMode    - State transition mode (see Diligent::RESOURCE_STATE_TRANSITION_MODE).
         /// 
-        /// \remarks Pipeline state object that was used to create the shader resource binding must be bound
-        /// to the pipeline when CommitShaderResources() is called. If no pipeline state object is bound
-        /// or the pipeline state object does not match the shader resource binding, the method will fail.\n
-        /// If Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION mode is used,
+        /// \remarks If Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION mode is used,
         /// the engine will also transition all shader resources to required states. If the flag
         /// is not set, it is assumed that all resources are already in correct states.\n
         /// Resources can be explicitly transitioned to required states by calling
@@ -122,8 +119,10 @@ namespace DiligentEngine
         /// explicitly manage the states using IDeviceContext::TransitionResourceStates() method.
         /// Refer to http://diligentgraphics.com/2018/12/09/resource-state-management/ for detailed explanation
         /// of resource state management in Diligent Engine.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
-        public void SetVertexBuffers(Uint32 StartSlot, Uint32 NumBuffersSet, IBuffer[] ppBuffers, Uint32[] pOffsets, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode, SET_VERTEX_BUFFERS_FLAGS Flags)
+        public void SetVertexBuffers(Uint32 StartSlot, Uint32 NumBuffersSet, IBuffer[] ppBuffers, Uint64[] pOffsets, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode, SET_VERTEX_BUFFERS_FLAGS Flags)
         {
             IDeviceContext_SetVertexBuffers(
                 this.objPtr
@@ -141,7 +140,7 @@ namespace DiligentEngine
         /// with the Diligent::BIND_INDEX_BUFFER flag.
         /// \param [in] ByteOffset          - Offset from the beginning of the buffer to
         /// the start of index data.
-        /// \param [in] StateTransitionMode - State transiton mode for the index buffer to bind (see Diligent::RESOURCE_STATE_TRANSITION_MODE).
+        /// \param [in] StateTransitionMode - State transition mode for the index buffer to bind (see Diligent::RESOURCE_STATE_TRANSITION_MODE).
         /// 
         /// \remarks The device context keeps strong reference to the index buffer.
         /// Thus an index buffer object cannot be released until it is unbound
@@ -156,8 +155,10 @@ namespace DiligentEngine
         /// explicitly manage the states using IDeviceContext::TransitionResourceStates() method.
         /// Refer to http://diligentgraphics.com/2018/12/09/resource-state-management/ for detailed explanation
         /// of resource state management in Diligent Engine.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
-        public void SetIndexBuffer(IBuffer pIndexBuffer, Uint32 ByteOffset, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
+        public void SetIndexBuffer(IBuffer pIndexBuffer, Uint64 ByteOffset, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
         {
             IDeviceContext_SetIndexBuffer(
                 this.objPtr
@@ -176,6 +177,8 @@ namespace DiligentEngine
         /// 
         /// If the application intends to use the same resources in other threads simultaneously, it needs to
         /// explicitly manage the states using IDeviceContext::TransitionResourceStates() method.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
         public void Draw(DrawAttribs Attribs)
         {
@@ -198,6 +201,8 @@ namespace DiligentEngine
         /// 
         /// If the application intends to use the same resources in other threads simultaneously, it needs to
         /// explicitly manage the states using IDeviceContext::TransitionResourceStates() method.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
         public void DrawIndexed(DrawIndexedAttribs Attribs)
         {
@@ -217,7 +222,7 @@ namespace DiligentEngine
         /// \param [in] pView               - Pointer to ITextureView interface to clear. The view type must be
         /// Diligent::TEXTURE_VIEW_DEPTH_STENCIL.
         /// \param [in] StateTransitionMode - state transition mode of the depth-stencil buffer to clear.
-        /// \param [in] ClearFlags          - Idicates which parts of the buffer to clear, see Diligent::CLEAR_DEPTH_STENCIL_FLAGS.
+        /// \param [in] ClearFlags          - Indicates which parts of the buffer to clear, see Diligent::CLEAR_DEPTH_STENCIL_FLAGS.
         /// \param [in] fDepth              - Value to clear depth part of the view with.
         /// \param [in] Stencil             - Value to clear stencil part of the view with.
         /// 
@@ -226,13 +231,15 @@ namespace DiligentEngine
         /// 
         /// \remarks When StateTransitionMode is Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, the method will
         /// transition the state of the texture to the state required by clear operation.
-        /// In Direct3D12, this satate is always Diligent::RESOURCE_STATE_DEPTH_WRITE, however in Vulkan
+        /// In Direct3D12, this state is always Diligent::RESOURCE_STATE_DEPTH_WRITE, however in Vulkan
         /// the state depends on whether the depth buffer is bound to the pipeline.
         /// 
         /// Resource state transitioning is not thread safe, so no other thread is allowed to read or write
         /// the state of resources used by the command.
         /// Refer to http://diligentgraphics.com/2018/12/09/resource-state-management/ for detailed explanation
         /// of resource state management in Diligent Engine.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
         public void ClearDepthStencil(ITextureView pView, CLEAR_DEPTH_STENCIL_FLAGS ClearFlags, float fDepth, Uint8 Stencil, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
         {
@@ -270,6 +277,8 @@ namespace DiligentEngine
         /// Diligent::RESOURCE_STATE_COPY_DEST state. Inside a render pass it must be in Diligent::RESOURCE_STATE_RENDER_TARGET
         /// state. When using Diligent::RESOURCE_STATE_TRANSITION_TRANSITION mode, the engine takes care of proper
         /// resource state transition, otherwise it is the responsibility of the application.
+        /// 
+        /// \remarks Supported contexts: graphics.
         /// </summary>
         public void ClearRenderTarget(ITextureView pView, Color RGBA, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
         {
@@ -298,13 +307,15 @@ namespace DiligentEngine
         }
         /// <summary>
         /// Updates the data in the buffer.
-        /// \param [in] pBuffer             - Pointer to the buffer to updates.
+        /// \param [in] pBuffer             - Pointer to the buffer to update.
         /// \param [in] Offset              - Offset in bytes from the beginning of the buffer to the update region.
         /// \param [in] Size                - Size in bytes of the data region to update.
         /// \param [in] pData               - Pointer to the data to write to the buffer.
         /// \param [in] StateTransitionMode - Buffer state transition mode (see Diligent::RESOURCE_STATE_TRANSITION_MODE)
+        /// 
+        /// \remarks Supported contexts: graphics, compute, transfer.
         /// </summary>
-        public void UpdateBuffer(IBuffer pBuffer, Uint32 Offset, Uint32 Size, IntPtr pData, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
+        public void UpdateBuffer(IBuffer pBuffer, Uint64 Offset, Uint64 Size, IntPtr pData, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
         {
             IDeviceContext_UpdateBuffer(
                 this.objPtr
@@ -321,6 +332,8 @@ namespace DiligentEngine
         /// \param [in] MapType      - Type of the map operation. See Diligent::MAP_TYPE.
         /// \param [in] MapFlags     - Special map flags. See Diligent::MAP_FLAGS.
         /// \param [out] pMappedData - Reference to the void pointer to store the address of the mapped region.
+        /// 
+        /// \remarks Supported contexts: graphics, compute, transfer.
         /// </summary>
         public PVoid MapBuffer(IBuffer pBuffer, MAP_TYPE MapType, MAP_FLAGS MapFlags)
         {
@@ -337,6 +350,8 @@ namespace DiligentEngine
         /// \param [in] pBuffer - Pointer to the buffer to unmap.
         /// \param [in] MapType - Type of the map operation. This parameter must match the type that was
         /// provided to the Map() method.
+        /// 
+        /// \remarks Supported contexts: graphics, compute, transfer.
         /// </summary>
         public void UnmapBuffer(IBuffer pBuffer, MAP_TYPE MapType)
         {
@@ -352,6 +367,8 @@ namespace DiligentEngine
         /// 
         /// \note Don't call build or copy operation on the same BLAS in a different contexts, because BLAS has CPU-side data
         /// that will not match with GPU-side, so shader binding were incorrect.
+        /// 
+        /// \remarks Supported contexts: graphics, compute.
         /// </summary>
         public void BuildBLAS(BuildBLASAttribs Attribs)
         {
@@ -376,6 +393,8 @@ namespace DiligentEngine
         /// 
         /// \note Don't call build or copy operation on the same TLAS in a different contexts, because TLAS has CPU-side data
         /// that will not match with GPU-side, so shader binding were incorrect.
+        /// 
+        /// \remarks Supported contexts: graphics, compute.
         /// </summary>
         public void BuildTLAS(BuildTLASAttribs Attribs)
         {
@@ -403,7 +422,11 @@ namespace DiligentEngine
         /// \param [in] Attribs - Trace rays command attributes, see Diligent::TraceRaysAttribs for details.
         /// 
         /// \remarks  The method is not thread-safe. An application must externally synchronize the access
-        /// to the shader binding table passed as an argument to the function.
+        /// to the shader binding table (SBT) passed as an argument to the function.
+        /// The function does not modify the state of the SBT and can be executed in parallel with other
+        /// functions that don't modify the SBT (e.g. TraceRaysIndirect).
+        /// 
+        /// \remarks Supported contexts: graphics, compute.
         /// </summary>
         public void TraceRays(TraceRaysAttribs Attribs)
         {
@@ -434,7 +457,7 @@ namespace DiligentEngine
             , Uint32 StartSlot
             , Uint32 NumBuffersSet
             , IntPtr[] ppBuffers
-            , Uint32[] pOffsets
+            , Uint64[] pOffsets
             , RESOURCE_STATE_TRANSITION_MODE StateTransitionMode
             , SET_VERTEX_BUFFERS_FLAGS Flags
         );
@@ -442,7 +465,7 @@ namespace DiligentEngine
         private static extern void IDeviceContext_SetIndexBuffer(
             IntPtr objPtr
             , IntPtr pIndexBuffer
-            , Uint32 ByteOffset
+            , Uint64 ByteOffset
             , RESOURCE_STATE_TRANSITION_MODE StateTransitionMode
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -489,8 +512,8 @@ namespace DiligentEngine
         private static extern void IDeviceContext_UpdateBuffer(
             IntPtr objPtr
             , IntPtr pBuffer
-            , Uint32 Offset
-            , Uint32 Size
+            , Uint64 Offset
+            , Uint64 Size
             , IntPtr pData
             , RESOURCE_STATE_TRANSITION_MODE StateTransitionMode
         );
@@ -518,7 +541,7 @@ namespace DiligentEngine
             , BLASBuildBoundingBoxDataPassStruct[] Attribs_pBoxData
             , Uint32 Attribs_BoxDataCount
             , IntPtr Attribs_pScratchBuffer
-            , Uint32 Attribs_ScratchBufferOffset
+            , Uint64 Attribs_ScratchBufferOffset
             , RESOURCE_STATE_TRANSITION_MODE Attribs_ScratchBufferTransitionMode
             , [MarshalAs(UnmanagedType.I1)]Bool Attribs_Update
         );
@@ -531,13 +554,13 @@ namespace DiligentEngine
             , TLASBuildInstanceDataPassStruct[] Attribs_pInstances
             , Uint32 Attribs_InstanceCount
             , IntPtr Attribs_pInstanceBuffer
-            , Uint32 Attribs_InstanceBufferOffset
+            , Uint64 Attribs_InstanceBufferOffset
             , RESOURCE_STATE_TRANSITION_MODE Attribs_InstanceBufferTransitionMode
             , Uint32 Attribs_HitGroupStride
             , Uint32 Attribs_BaseContributionToHitGroupIndex
             , HIT_GROUP_BINDING_MODE Attribs_BindingMode
             , IntPtr Attribs_pScratchBuffer
-            , Uint32 Attribs_ScratchBufferOffset
+            , Uint64 Attribs_ScratchBufferOffset
             , RESOURCE_STATE_TRANSITION_MODE Attribs_ScratchBufferTransitionMode
             , [MarshalAs(UnmanagedType.I1)]Bool Attribs_Update
         );

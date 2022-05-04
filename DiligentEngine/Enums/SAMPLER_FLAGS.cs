@@ -19,9 +19,11 @@ using BOOL = System.Boolean;
 
 namespace DiligentEngine
 {
-    public enum TEXTURE_VIEW_FLAGS :  Uint8
+    public enum SAMPLER_FLAGS :  Uint8
     {
-        TEXTURE_VIEW_FLAG_NONE = 0,
-        TEXTURE_VIEW_FLAG_ALLOW_MIP_MAP_GENERATION = 1 << 0,
+        SAMPLER_FLAG_NONE = 0,
+        SAMPLER_FLAG_SUBSAMPLED = 1 << 0,
+        SAMPLER_FLAG_SUBSAMPLED_COARSE_RECONSTRUCTION = 1 << 1,
+        SAMPLER_FLAG_LAST = SAMPLER_FLAG_SUBSAMPLED_COARSE_RECONSTRUCTION,
     }
 }

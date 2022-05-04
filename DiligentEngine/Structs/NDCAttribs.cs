@@ -26,9 +26,9 @@ namespace DiligentEngine
         {
             
         }
-        public float MinZ { get; set; }
-        public float ZtoDepthScale { get; set; }
-        public float YtoVScale { get; set; }
+        public float MinZ { get; set; } = 0.0f;
+        public float ZtoDepthScale { get; set; } = 0.0f;
+        public float YtoVScale { get; set; } = 0.0f;
 
 
     }

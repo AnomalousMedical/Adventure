@@ -26,6 +26,7 @@ namespace DiligentEngine
         {
             
         }
+        public IDeviceObject pResourceBefore { get; set; }
         public IDeviceObject pResource { get; set; }
         public Uint32 FirstMipLevel { get; set; } = 0;
         public Uint32 MipLevelsCount { get; set; } = REMAINING_MIP_LEVELS;
@@ -34,7 +35,7 @@ namespace DiligentEngine
         public RESOURCE_STATE OldState { get; set; } = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN;
         public RESOURCE_STATE NewState { get; set; } = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN;
         public STATE_TRANSITION_TYPE TransitionType { get; set; } = STATE_TRANSITION_TYPE.STATE_TRANSITION_TYPE_IMMEDIATE;
-        public bool UpdateResourceState { get; set; } = false;
+        public STATE_TRANSITION_FLAGS Flags { get; set; } = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_NONE;
 
 
     }

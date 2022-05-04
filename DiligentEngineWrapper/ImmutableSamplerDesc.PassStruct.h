@@ -14,6 +14,8 @@ struct ImmutableSamplerDescPassStruct
         TEXTURE_ADDRESS_MODE Desc_AddressU;
         TEXTURE_ADDRESS_MODE Desc_AddressV;
         TEXTURE_ADDRESS_MODE Desc_AddressW;
+        SAMPLER_FLAGS Desc_Flags;
+        Uint32 Desc_UnnormalizedCoords;
         Float32 Desc_MipLODBias;
         Uint32 Desc_MaxAnisotropy;
         COMPARISON_FUNCTION Desc_ComparisonFunc;
