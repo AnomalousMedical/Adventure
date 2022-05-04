@@ -885,7 +885,7 @@ namespace DiligentEngineGenerator
             var baseCSharpInterfaceDir = Path.Combine(baseCSharpOutDir, "Interfaces");
 
             {
-                var IRenderDevice = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/RenderDevice.h", 72, 330);
+                var IRenderDevice = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/RenderDevice.h", "DILIGENT_BEGIN_INTERFACE(IRenderDevice,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IRenderDevice)] = IRenderDevice;
                 
                 {
@@ -1014,7 +1014,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IDeviceContext = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", 1366, 2203);
+                var IDeviceContext = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceContext.h", "DILIGENT_BEGIN_INTERFACE(IDeviceContext,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IDeviceContext)] = IDeviceContext;
 
                 {
@@ -1067,7 +1067,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IDeviceObject = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceObject.h", 50, 96);
+                var IDeviceObject = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/DeviceObject.h", "DILIGENT_BEGIN_INTERFACE(IDeviceObject,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IDeviceObject)] = IDeviceObject;
                 var allowedMethods = new List<String> { "Resize" };
                 IDeviceObject.Methods = IDeviceObject.Methods
@@ -1081,7 +1081,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ISwapChain = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/SwapChain.h", 54, 119);
+                var ISwapChain = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/SwapChain.h", "DILIGENT_BEGIN_INTERFACE(ISwapChain,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(ISwapChain)] = ISwapChain;
 
                 {
@@ -1102,7 +1102,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ITextureView = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TextureView.h", 195, 227);
+                var ITextureView = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TextureView.h", "DILIGENT_BEGIN_INTERFACE(ITextureView,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(ITextureView)] = ITextureView;
 
                 {
@@ -1129,7 +1129,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IShader = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", 406, 423);
+                var IShader = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Shader.h", "DILIGENT_BEGIN_INTERFACE(IShader,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IShader)] = IShader;
                 var allowedMethods = new List<String> { };
                 IShader.Methods = IShader.Methods
@@ -1143,7 +1143,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ITexture = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 271, 333);
+                var ITexture = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", "DILIGENT_BEGIN_INTERFACE(ITexture,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(ITexture)] = ITexture;
                 var allowedMethods = new List<String> { "GetDefaultView", "CreateView" };
                 ITexture.Methods = ITexture.Methods
@@ -1167,7 +1167,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ISampler = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Sampler.h", 186, 193);
+                var ISampler = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Sampler.h", "DILIGENT_BEGIN_INTERFACE(ISampler,", "#if DILIGENT_CPP_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(ISampler)] = ISampler;
                 var allowedMethods = new List<String> { "GetDefaultView" };
                 ISampler.Methods = ISampler.Methods
@@ -1181,7 +1181,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IPipelineState = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", 510, 604);
+                var IPipelineState = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/PipelineState.h", "DILIGENT_BEGIN_INTERFACE(IPipelineState,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IPipelineState)] = IPipelineState;
 
                 {
@@ -1205,7 +1205,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IBuffer = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", 185, 241);
+                var IBuffer = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Buffer.h", "DILIGENT_BEGIN_INTERFACE(IBuffer,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IBuffer)] = IBuffer;
                 var allowedMethods = new List<String> { "GetDefaultView" };
                 IBuffer.Methods = IBuffer.Methods
@@ -1219,7 +1219,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IShaderResourceVariable = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceVariable.h", 115, 158);
+                var IShaderResourceVariable = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceVariable.h", "DILIGENT_BEGIN_INTERFACE(IShaderResourceVariable,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IShaderResourceVariable)] = IShaderResourceVariable;
                 var allowedMethods = new List<String> { "Set" };
                 IShaderResourceVariable.Methods = IShaderResourceVariable.Methods
@@ -1233,7 +1233,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IShaderResourceBinding = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceBinding.h", 55, 132);
+                var IShaderResourceBinding = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderResourceBinding.h", "DILIGENT_BEGIN_INTERFACE(IShaderResourceBinding,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IShaderResourceBinding)] = IShaderResourceBinding;
                 var allowedMethods = new List<String> { "GetVariableByName" };
                 IShaderResourceBinding.Methods = IShaderResourceBinding.Methods
@@ -1247,7 +1247,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IBottomLevelAS = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", 205, 269, Sequence(209, 213));
+                var IBottomLevelAS = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BottomLevelAS.h", "DILIGENT_BEGIN_INTERFACE(IBottomLevelAS,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IBottomLevelAS)] = IBottomLevelAS;
                 var allowedMethods = new List<String> {  };
                 IBottomLevelAS.Methods = IBottomLevelAS.Methods
@@ -1261,7 +1261,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var ITopLevelAS = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", 149, 204, Sequence(153, 156));
+                var ITopLevelAS = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/TopLevelAS.h", "DILIGENT_BEGIN_INTERFACE(ITopLevelAS,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(ITopLevelAS)] = ITopLevelAS;
                 var allowedMethods = new List<String> { };
                 ITopLevelAS.Methods = ITopLevelAS.Methods
@@ -1275,7 +1275,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IBufferView = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BufferView.h", 150, 167, Sequence(157, 160));
+                var IBufferView = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/BufferView.h", "DILIGENT_BEGIN_INTERFACE(IBufferView,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IBufferView)] = IBufferView;
                 var allowedMethods = new List<String> { };
                 IBufferView.Methods = IBufferView.Methods
@@ -1289,7 +1289,7 @@ namespace DiligentEngineGenerator
             }
 
             {
-                var IShaderBindingTable = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderBindingTable.h", 91, 273, Sequence(95, 98));
+                var IShaderBindingTable = CodeInterface.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/ShaderBindingTable.h", "DILIGENT_BEGIN_INTERFACE(IShaderBindingTable,", "DILIGENT_END_INTERFACE");
                 codeTypeInfo.Interfaces[nameof(IShaderBindingTable)] = IShaderBindingTable;
 
                 var allowedMethods = new List<String> { "BindRayGenShader", "BindMissShader", "BindHitGroupForInstance", "BindHitGroupForTLAS" };

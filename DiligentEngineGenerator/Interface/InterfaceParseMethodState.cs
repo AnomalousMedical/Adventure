@@ -27,7 +27,7 @@ namespace DiligentEngineGenerator
                 {
                     propertyParse = propertyParse.Substring(0, parenIndex);
                 }
-                if (!String.IsNullOrWhiteSpace(propertyParse))
+                if (!String.IsNullOrWhiteSpace(propertyParse) && propertyParse != "THIS_")
                 {
                     propertyParse = propertyParse.Replace("const", "");
                     propertyParse = propertyParse.Replace("REF", "");

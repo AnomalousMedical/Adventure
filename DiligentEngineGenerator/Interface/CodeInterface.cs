@@ -14,8 +14,17 @@ namespace DiligentEngineGenerator
 
         public IEnumerable<String> Comment { get; set; }
 
-        public List<InterfaceMethod> Methods { get; set; } = new List<InterfaceMethod>(); 
-        
+        public List<InterfaceMethod> Methods { get; set; } = new List<InterfaceMethod>();
+
+        public static CodeInterface Find(String file, string startLineContains, string endLineContains)
+        {
+            //This reads the file twice, but perf is not the primary concern here
+            using var reader = new StreamReader(File.OpenRead(file));
+            var block = LineReader.FindBlock(reader.ReadLines(), startLineContains, endLineContains);
+
+            return Find(file, block.Start, block.End);
+        }
+
         public static CodeInterface Find(String file, int startLine, int endLine, IEnumerable<int> skipLines = null)
         {
             var comments = new List<String>();
