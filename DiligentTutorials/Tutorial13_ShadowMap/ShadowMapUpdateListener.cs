@@ -124,13 +124,13 @@ namespace Tutorial13_ShadowMap
             {
                 BufferDesc CBDesc = new BufferDesc();
                 CBDesc.Name = "VS constants CB";
-                CBDesc.uiSizeInBytes = (uint)(sizeof(float4x4) * 2 + sizeof(float4));
+                CBDesc.Size = (uint)(sizeof(float4x4) * 2 + sizeof(float4));
                 CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                 CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                 CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
 
                 m_VSConstants = m_pDevice.CreateBuffer(CBDesc);
-                Barriers.Add(new StateTransitionDesc(){pResource = m_VSConstants.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true });
+                Barriers.Add(new StateTransitionDesc(){pResource = m_VSConstants.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             }
 
             CreateCubePSO();
@@ -144,15 +144,15 @@ namespace Tutorial13_ShadowMap
             // Load index buffer
             m_CubeIndexBuffer = CreateIndexBuffer(m_pDevice);
             // Explicitly transition vertex and index buffers to required states
-            Barriers.Add(new StateTransitionDesc() { pResource = m_CubeVertexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_VERTEX_BUFFER, UpdateResourceState = true });
-            Barriers.Add(new StateTransitionDesc() { pResource = m_CubeIndexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_INDEX_BUFFER, UpdateResourceState = true });
+            Barriers.Add(new StateTransitionDesc() { pResource = m_CubeVertexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_VERTEX_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+            Barriers.Add(new StateTransitionDesc() { pResource = m_CubeIndexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_INDEX_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             // Load texture
             using var textureStream = virtualFileSystem.openStream("AnomalousEngine.png", FileMode.Open);
             using var CubeTexture = textureLoader.LoadTexture(textureStream, "Cube Texture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
             //auto CubeTexture = TexturedCube::LoadTexture(m_pDevice, "DGLogo.png");
             m_CubeSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").Set(CubeTexture.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
             // Transition the texture to shader resource state
-            Barriers.Add(new StateTransitionDesc() { pResource = CubeTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+            Barriers.Add(new StateTransitionDesc() { pResource = CubeTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
             CreateShadowMap();
 
@@ -531,7 +531,7 @@ namespace Tutorial13_ShadowMap
             VertBuffDesc.Name          = "Cube vertex buffer";
             VertBuffDesc.Usage         = USAGE.USAGE_IMMUTABLE;
             VertBuffDesc.BindFlags     = BIND_FLAGS.BIND_VERTEX_BUFFER;
-            VertBuffDesc.uiSizeInBytes = (uint)(sizeof(Vertex) * CubeVerts.Length);
+            VertBuffDesc.Size = (uint)(sizeof(Vertex) * CubeVerts.Length);
             fixed (Vertex* vertices = CubeVerts)
             {
                 var VBData = new BufferData();
@@ -559,7 +559,7 @@ namespace Tutorial13_ShadowMap
             IndBuffDesc.Name = "Cube index buffer";
             IndBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             IndBuffDesc.BindFlags = BIND_FLAGS.BIND_INDEX_BUFFER;
-            IndBuffDesc.uiSizeInBytes = (uint)(sizeof(UInt32) * Indices.Length);
+            IndBuffDesc.Size = (uint)(sizeof(UInt32) * Indices.Length);
             BufferData IBData = new BufferData();
             fixed (UInt32* pIndices = Indices)
             {

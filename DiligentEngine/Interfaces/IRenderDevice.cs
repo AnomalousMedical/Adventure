@@ -148,7 +148,6 @@ namespace DiligentEngine
                 , TexDesc.Name
                 , TextureSubResDataPassStruct.ToStruct(pData?.pSubResources)
                 , pData?.pSubResources != null ? (Uint32)pData.pSubResources.Count : 0
-                , pData.pContext?.objPtr ?? IntPtr.Zero
             );
             return theReturnValue != IntPtr.Zero ? new AutoPtr<ITexture>(new ITexture(theReturnValue), false) : null;
         }
@@ -431,7 +430,6 @@ namespace DiligentEngine
             , String TexDesc_Name
             , TextureSubResDataPassStruct[] pData_pSubResources
             , Uint32 pData_NumSubresources
-            , IntPtr pData_pContext
         );
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr IRenderDevice_CreateSampler(

@@ -414,6 +414,10 @@ namespace DiligentEngineGenerator
                 var TextureData = CodeStruct.Find(baseDir + "/DiligentCore/Graphics/GraphicsEngine/interface/Texture.h", 317, 337);
                 codeTypeInfo.Structs[nameof(TextureData)] = TextureData;
 
+                var skip = new List<String> { "pContext" };
+                TextureData.Properties = TextureData.Properties
+                    .Where(i => !skip.Contains(i.Name)).ToList();
+
                 {
                     var pSubResources = TextureData.Properties.First(i => i.Name == "pSubResources");
                     pSubResources.IsArray = true;

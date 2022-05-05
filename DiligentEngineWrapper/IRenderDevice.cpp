@@ -114,7 +114,6 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 	, Char* TexDesc_Name
 	, TextureSubResDataPassStruct* pData_pSubResources
 	, Uint32 pData_NumSubresources
-	, IDeviceContext* pData_pContext
 )
 {
 	TextureDesc TexDesc;
@@ -153,7 +152,6 @@ extern "C" _AnomalousExport ITexture* IRenderDevice_CreateTexture(
 		pData.pSubResources = pData_pSubResources_Native_Array;  
 	}
 	pData.NumSubresources = pData_NumSubresources;
-	pData.pContext = pData_pContext;
 	ITexture* theReturnValue = nullptr;
 	objPtr->CreateTexture(
 		TexDesc

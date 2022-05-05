@@ -27,7 +27,6 @@ namespace DiligentEngine
             
         }
         public List<TextureSubResData> pSubResources { get; set; }
-        public IDeviceContext pContext { get; set; }
 
 
     }
