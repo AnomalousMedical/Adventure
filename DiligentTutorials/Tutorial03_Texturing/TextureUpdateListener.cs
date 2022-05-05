@@ -92,7 +92,7 @@ namespace DiligentEngineCube
 
             BufferDesc CBDesc = new BufferDesc();
             CBDesc.Name = "VS constants CB";
-            CBDesc.uiSizeInBytes = (uint)sizeof(Matrix4x4);
+            CBDesc.Size = (uint)sizeof(Matrix4x4);
             CBDesc.Usage = USAGE.USAGE_DYNAMIC;
             CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
             CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -242,7 +242,7 @@ namespace DiligentEngineCube
             VertBuffDesc.Name = "Cube vertex buffer";
             VertBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             VertBuffDesc.BindFlags = BIND_FLAGS.BIND_VERTEX_BUFFER;
-            VertBuffDesc.uiSizeInBytes = (uint)(sizeof(Vertex) * CubeVerts.Length);
+            VertBuffDesc.Size = (uint)(sizeof(Vertex) * CubeVerts.Length);
             BufferData VBData = new BufferData();
             fixed (Vertex* vertices = CubeVerts)
             {
@@ -272,7 +272,7 @@ namespace DiligentEngineCube
             IndBuffDesc.Name = "Cube index buffer";
             IndBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             IndBuffDesc.BindFlags = BIND_FLAGS.BIND_INDEX_BUFFER;
-            IndBuffDesc.uiSizeInBytes = (uint)(sizeof(UInt32) * Indices.Length);
+            IndBuffDesc.Size = (uint)(sizeof(UInt32) * Indices.Length);
             BufferData IBData = new BufferData();
             fixed (UInt32* pIndices = Indices)
             {
@@ -355,7 +355,7 @@ namespace DiligentEngineCube
             }
 
             // Bind vertex and index buffers
-            UInt32[] offset = new UInt32[] { 0 };
+            UInt64[] offset = new UInt64[] { 0 };
             IBuffer[] pBuffs = new IBuffer[] { m_CubeVertexBuffer.Obj };
             m_pImmediateContext.SetVertexBuffers(0, 1, pBuffs, offset, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAGS.SET_VERTEX_BUFFERS_FLAG_RESET);
             m_pImmediateContext.SetIndexBuffer(m_CubeIndexBuffer.Obj, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
