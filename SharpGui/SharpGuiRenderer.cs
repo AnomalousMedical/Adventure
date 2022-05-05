@@ -371,7 +371,7 @@ namespace SharpGui
             VertBuffDesc.Usage = USAGE.USAGE_DYNAMIC;
             VertBuffDesc.BindFlags = BIND_FLAGS.BIND_VERTEX_BUFFER;
             VertBuffDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
-            VertBuffDesc.uiSizeInBytes = vertexSize * maxNumberOfQuads * 4;
+            VertBuffDesc.Size = vertexSize * maxNumberOfQuads * 4;
             
             return device.CreateBuffer(VertBuffDesc);
             
@@ -399,7 +399,7 @@ namespace SharpGui
             IndBuffDesc.Name = name;
             IndBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             IndBuffDesc.BindFlags = BIND_FLAGS.BIND_INDEX_BUFFER;
-            IndBuffDesc.uiSizeInBytes = (uint)(sizeof(UInt32) * Indices.Length);
+            IndBuffDesc.Size = (uint)(sizeof(UInt32) * Indices.Length);
             BufferData IBData = new BufferData();
             fixed (UInt32* pIndices = Indices)
             {
