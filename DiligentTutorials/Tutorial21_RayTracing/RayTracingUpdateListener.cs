@@ -80,7 +80,7 @@ namespace DiligentEngineRayTracing
             // Create a buffer with shared constants.
             BufferDesc BuffDesc = new BufferDesc();
             BuffDesc.Name = "Constant buffer";
-            BuffDesc.uiSizeInBytes = (uint)sizeof(Constants);
+            BuffDesc.Size = (uint)sizeof(Constants);
             BuffDesc.Usage = USAGE.USAGE_DEFAULT;
             BuffDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
 
@@ -461,7 +461,7 @@ namespace DiligentEngineRayTracing
                     // Get shader resource view from the texture
                     var pTextureSRV = pTex[tex].Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
                     pTexSRVs.Add(pTextureSRV);
-                    Barriers.Add(new StateTransitionDesc { pResource = pTex[tex].Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                    Barriers.Add(new StateTransitionDesc { pResource = pTex[tex].Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                 }
                 m_pImmediateContext.TransitionResourceStates(Barriers);
 
@@ -572,7 +572,7 @@ namespace DiligentEngineRayTracing
                 BuffDesc.Name = "Cube Attribs";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
-                BuffDesc.uiSizeInBytes = BufData.DataSize;
+                BuffDesc.Size = BufData.DataSize;
 
                 m_CubeAttribsCB = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 //VERIFY_EXPR(m_CubeAttribsCB != nullptr);
@@ -591,7 +591,7 @@ namespace DiligentEngineRayTracing
                 fixed (Vector3* vertices = CubePos)
                 {
                     BufData.pData = new IntPtr(vertices);
-                    BufData.DataSize = BuffDesc.uiSizeInBytes = (uint)(sizeof(Vector3) * CubePos.Length);
+                    BufData.DataSize = BuffDesc.Size = (uint)(sizeof(Vector3) * CubePos.Length);
                     pCubeVertexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 
@@ -609,7 +609,7 @@ namespace DiligentEngineRayTracing
                 fixed (uint* vertices = Indices)
                 {
                     BufData.pData = new IntPtr(vertices);
-                    BufData.DataSize = BuffDesc.uiSizeInBytes = (uint)(sizeof(uint) * Indices.Length);
+                    BufData.DataSize = BuffDesc.Size = (uint)(sizeof(uint) * Indices.Length);
                     pCubeIndexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 
@@ -643,7 +643,7 @@ namespace DiligentEngineRayTracing
                     Name = "BLAS Scratch Buffer",
                     Usage = USAGE.USAGE_DEFAULT,
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
-                    uiSizeInBytes = m_pCubeBLAS.Obj.ScratchBufferSizes_Build,
+                    Size = m_pCubeBLAS.Obj.ScratchBufferSizes_Build,
                 }, new BufferData());
 
                 // Build BLAS
@@ -692,7 +692,7 @@ namespace DiligentEngineRayTracing
                 BuffDesc.Name = "AABB Buffer";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
-                BuffDesc.uiSizeInBytes = BufData.DataSize;
+                BuffDesc.Size = BufData.DataSize;
                 BuffDesc.ElementByteStride = (uint)sizeof(BoxAttribs);
                 BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
 
@@ -725,7 +725,7 @@ namespace DiligentEngineRayTracing
                     Name = "BLAS Scratch Buffer",
                     Usage = USAGE.USAGE_DEFAULT,
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
-                    uiSizeInBytes = m_pProceduralBLAS.Obj.ScratchBufferSizes_Build,
+                    Size = m_pProceduralBLAS.Obj.ScratchBufferSizes_Build,
                 }, new BufferData());
 
                 // Build BLAS
@@ -787,7 +787,7 @@ namespace DiligentEngineRayTracing
                     Name = "TLAS Scratch Buffer",
                     Usage = USAGE.USAGE_DEFAULT,
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
-                    uiSizeInBytes = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
+                    Size = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
                 }, new BufferData());
             }
 
@@ -798,7 +798,7 @@ namespace DiligentEngineRayTracing
                 BuffDesc.Name = "TLAS Instance Buffer";
                 BuffDesc.Usage = USAGE.USAGE_DEFAULT;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING;
-                BuffDesc.uiSizeInBytes = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * NumInstances;
+                BuffDesc.Size = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * NumInstances;
 
                 m_InstanceBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData());
                 //VERIFY_EXPR(m_InstanceBuffer != nullptr);
@@ -985,6 +985,8 @@ namespace DiligentEngineRayTracing
 
             // We must specify the intersection shader for procedural geometry.
             m_pSBT.Obj.BindHitGroupForInstance(m_pTLAS.Obj, "Sphere Instance", RtStructures.SHADOW_RAY_INDEX, "SphereShadowHit", IntPtr.Zero, 0);
+
+            m_pImmediateContext.UpdateSBT(m_pSBT.Obj);
         }
 
         public void Dispose()

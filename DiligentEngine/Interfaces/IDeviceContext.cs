@@ -438,6 +438,32 @@ namespace DiligentEngine
                 , Attribs.DimensionZ
             );
         }
+        /// <summary>
+        /// Updates SBT with the pending data that were recorded in IShaderBindingTable::Bind*** calls.
+        /// \param [in] pSBT                         - Shader binding table that will be updated if there are pending data.
+        /// \param [in] pUpdateIndirectBufferAttribs - Indirect ray tracing attributes buffer update attributes (optional, may be null).
+        /// 
+        /// \note  When pUpdateIndirectBufferAttribs is not null, the indirect ray tracing attributes will be written to the pAttribsBuffer buffer
+        /// specified by the structure and can be used by IDeviceContext::TraceRaysIndirect() command.
+        /// In Direct3D12 backend, the pAttribsBuffer buffer will be initialized with D3D12_DISPATCH_RAYS_DESC structure that contains
+        /// GPU addresses of the ray tracing shaders in the first 88 bytes and 12 bytes for dimension
+        /// (see IDeviceContext::TraceRaysIndirect() description).
+        /// In Vulkan backend, the pAttribsBuffer buffer will not be modified, because the SBT is used directly
+        /// in IDeviceContext::TraceRaysIndirect().
+        /// 
+        /// \remarks  The method is not thread-safe. An application must externally synchronize the access
+        /// to the shader binding table (SBT) passed as an argument to the function.
+        /// The function modifies the data in the SBT and must not run in parallel with any other command that uses the same SBT.
+        /// 
+        /// \remarks Supported contexts: graphics, compute, transfer.
+        /// </summary>
+        public void UpdateSBT(IShaderBindingTable pSBT)
+        {
+            IDeviceContext_UpdateSBT(
+                this.objPtr
+                , pSBT.objPtr
+            );
+        }
 
 
         [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -571,6 +597,11 @@ namespace DiligentEngine
             , Uint32 Attribs_DimensionX
             , Uint32 Attribs_DimensionY
             , Uint32 Attribs_DimensionZ
+        );
+        [DllImport(LibraryInfo.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void IDeviceContext_UpdateSBT(
+            IntPtr objPtr
+            , IntPtr pSBT
         );
     }
 }

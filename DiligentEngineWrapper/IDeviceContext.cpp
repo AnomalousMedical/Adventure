@@ -288,3 +288,11 @@ extern "C" _AnomalousExport void IDeviceContext_TraceRays(
 		Attribs
 	);
 }
+extern "C" _AnomalousExport void IDeviceContext_UpdateSBT(
+	IDeviceContext* objPtr
+, IShaderBindingTable* pSBT)
+{
+	objPtr->UpdateSBT(
+		pSBT
+	);
+}

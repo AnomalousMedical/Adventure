@@ -1123,7 +1123,15 @@ namespace DiligentEngineGenerator
                     }
                 }
 
-                var allowedMethods = new List<String> { "TraceRays", "UpdateBuffer", "BuildTLAS", "BuildBLAS", "DrawIndexed", "CommitShaderResources", "SetIndexBuffer", "Flush", "ClearRenderTarget", "ClearDepthStencil", "Draw", "SetPipelineState", "MapBuffer", "UnmapBuffer", "SetVertexBuffers" };
+                {
+                    var UpdateSBT = IDeviceContext.Methods.First(i => i.Name == "UpdateSBT");
+                    {
+                        var ppRenderTargets = UpdateSBT.Args.First(i => i.Name == "pUpdateIndirectBufferAttribs");
+                        UpdateSBT.Args.Remove(ppRenderTargets);
+                    }
+                }
+
+                var allowedMethods = new List<String> { "UpdateSBT", "TraceRays", "UpdateBuffer", "BuildTLAS", "BuildBLAS", "DrawIndexed", "CommitShaderResources", "SetIndexBuffer", "Flush", "ClearRenderTarget", "ClearDepthStencil", "Draw", "SetPipelineState", "MapBuffer", "UnmapBuffer", "SetVertexBuffers" };
                 //The following have custom implementations: "SetRenderTargets"
                 IDeviceContext.Methods = IDeviceContext.Methods
                     .Where(i => allowedMethods.Contains(i.Name)).ToList();
