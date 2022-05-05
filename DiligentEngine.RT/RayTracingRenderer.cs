@@ -155,7 +155,7 @@ namespace DiligentEngine.RT
             // Create a buffer with shared constants.
             BufferDesc BuffDesc = new BufferDesc();
             BuffDesc.Name = "Constant buffer";
-            BuffDesc.uiSizeInBytes = (uint)sizeof(Constants);
+            BuffDesc.Size = (uint)sizeof(Constants);
             BuffDesc.Usage = USAGE.USAGE_DEFAULT;
             BuffDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
 
@@ -283,7 +283,7 @@ namespace DiligentEngine.RT
                     Name = "TLAS Scratch Buffer",
                     Usage = USAGE.USAGE_DEFAULT,
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
-                    uiSizeInBytes = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
+                    Size = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
                 }, new BufferData());
             }
 
@@ -294,7 +294,7 @@ namespace DiligentEngine.RT
                 BuffDesc.Name = "TLAS Instance Buffer";
                 BuffDesc.Usage = USAGE.USAGE_DEFAULT;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING;
-                BuffDesc.uiSizeInBytes = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * numInstances;
+                BuffDesc.Size = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * numInstances;
 
                 m_InstanceBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData());
                 //VERIFY_EXPR(m_InstanceBuffer != nullptr);

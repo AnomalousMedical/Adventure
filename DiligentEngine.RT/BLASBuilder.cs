@@ -205,7 +205,7 @@ namespace DiligentEngine.RT
                         fixed (Vector3* vertices = blasMeshDesc.CubePos)
                         {
                             BufData.pData = new IntPtr(vertices);
-                            BufData.DataSize = BuffDesc.uiSizeInBytes = (uint)(sizeof(Vector3) * blasMeshDesc.CubePos.Length);
+                            BufData.DataSize = BuffDesc.Size = (uint)(sizeof(Vector3) * blasMeshDesc.CubePos.Length);
                             result.VertexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                         }
 
@@ -226,7 +226,7 @@ namespace DiligentEngine.RT
                         fixed (uint* p_indices = Indices)
                         {
                             BufData.pData = new IntPtr(p_indices);
-                            BufData.DataSize = BuffDesc.uiSizeInBytes = BuffDesc.ElementByteStride * (uint)Indices.Length;
+                            BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)Indices.Length;
                             result.IndexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                         }
 
@@ -261,7 +261,7 @@ namespace DiligentEngine.RT
                             Name = $"{blasMeshDesc.Name} BLAS Scratch Buffer",
                             Usage = USAGE.USAGE_DEFAULT,
                             BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
-                            uiSizeInBytes = result.BLAS.Obj.ScratchBufferSizes_Build,
+                            Size = result.BLAS.Obj.ScratchBufferSizes_Build,
                         }, new BufferData());
 
                         // Build BLAS
@@ -377,7 +377,7 @@ namespace DiligentEngine.RT
                 fixed (CubeAttribVertex* p_vertices = attrVertices)
                 {
                     BufData.pData = new IntPtr(p_vertices);
-                    BufData.DataSize = BuffDesc.uiSizeInBytes = BuffDesc.ElementByteStride * (uint)attrVertices.Length;
+                    BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)attrVertices.Length;
                     attrBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 
@@ -404,7 +404,7 @@ namespace DiligentEngine.RT
                 fixed (uint* p_indices = Indices)
                 {
                     BufData.pData = new IntPtr(p_indices);
-                    BufData.DataSize = BuffDesc.uiSizeInBytes = BuffDesc.ElementByteStride * (uint)Indices.Length;
+                    BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)Indices.Length;
                     indexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 

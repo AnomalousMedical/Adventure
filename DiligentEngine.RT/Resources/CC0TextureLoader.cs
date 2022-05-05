@@ -74,7 +74,7 @@ namespace DiligentEngine.RT.Resources
                         }
                         var baseColorMap = textureLoader.CreateTextureFromImage(bmp, 0, "baseColorMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
                         result.SetBaseColorMap(baseColorMap, hasOpacity, reflective);
-                        Barriers.Add(new StateTransitionDesc { pResource = baseColorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                        Barriers.Add(new StateTransitionDesc { pResource = baseColorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
                 }
 
@@ -86,7 +86,7 @@ namespace DiligentEngine.RT.Resources
 
                         var normalMap = textureLoader.CreateTextureFromImage(map, 0, "normalTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         result.SetNormalMap(normalMap);
-                        Barriers.Add(new StateTransitionDesc { pResource = normalMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                        Barriers.Add(new StateTransitionDesc { pResource = normalMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
                 }
 
@@ -148,7 +148,7 @@ namespace DiligentEngine.RT.Resources
 
                             var physicalDescriptorMap = textureLoader.CreateTextureFromImage(physicalDescriptorBmp, 0, "physicalDescriptorMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                             result.SetPhysicalDescriptorMap(physicalDescriptorMap);
-                            Barriers.Add(new StateTransitionDesc { pResource = physicalDescriptorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                            Barriers.Add(new StateTransitionDesc { pResource = physicalDescriptorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                         }
                     }
                     finally
@@ -165,7 +165,7 @@ namespace DiligentEngine.RT.Resources
                     {
                         var map = textureLoader.LoadTexture(stream, "ambientOcclusionMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         result.SetAmbientOcclusionMap(map);
-                        Barriers.Add(new StateTransitionDesc { pResource = map.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                        Barriers.Add(new StateTransitionDesc { pResource = map.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
                 }
 
@@ -175,7 +175,7 @@ namespace DiligentEngine.RT.Resources
                     {
                         var map = textureLoader.LoadTexture(stream, "emissiveMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         result.SetEmissiveMap(map);
-                        Barriers.Add(new StateTransitionDesc { pResource = map.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true });
+                        Barriers.Add(new StateTransitionDesc { pResource = map.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
                 }
             });
