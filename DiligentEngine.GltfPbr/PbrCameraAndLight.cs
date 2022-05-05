@@ -23,7 +23,7 @@ namespace DiligentEngine.GltfPbr
             {
                 BufferDesc CBDesc = new BufferDesc();
                 CBDesc.Name = "Camera attribs buffer";
-                CBDesc.uiSizeInBytes = (uint)sizeof(CameraAttribs);
+                CBDesc.Size = (uint)sizeof(CameraAttribs);
                 CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                 CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                 CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -34,7 +34,7 @@ namespace DiligentEngine.GltfPbr
             {
                 BufferDesc CBDesc = new BufferDesc();
                 CBDesc.Name = "Light attribs buffer";
-                CBDesc.uiSizeInBytes = (uint)sizeof(LightAttribs);
+                CBDesc.Size = (uint)sizeof(LightAttribs);
                 CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                 CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                 CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -45,7 +45,7 @@ namespace DiligentEngine.GltfPbr
             {
                 BufferDesc CBDesc = new BufferDesc();
                 CBDesc.Name = "Env map render attribs buffer";
-                CBDesc.uiSizeInBytes = (uint)sizeof(EnvMapRenderAttribs);
+                CBDesc.Size = (uint)sizeof(EnvMapRenderAttribs);
                 CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                 CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                 CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -55,9 +55,9 @@ namespace DiligentEngine.GltfPbr
 
             var Barriers = new List<StateTransitionDesc>
             {
-                new StateTransitionDesc{pResource = m_CameraAttribsCB.Obj,        OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
-                new StateTransitionDesc{pResource = m_LightAttribsCB.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
-                new StateTransitionDesc{pResource = m_EnvMapRenderAttribsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
+                new StateTransitionDesc{pResource = m_CameraAttribsCB.Obj,        OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                new StateTransitionDesc{pResource = m_LightAttribsCB.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                new StateTransitionDesc{pResource = m_EnvMapRenderAttribsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
             };
             m_pImmediateContext.TransitionResourceStates(Barriers);
         }

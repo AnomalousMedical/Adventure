@@ -53,7 +53,7 @@ namespace DiligentEngine.GltfPbr
             {
                 BufferDesc CBDesc = new BufferDesc();
                 CBDesc.Name = "GLTF shadow transform CB";
-                CBDesc.uiSizeInBytes = (uint)sizeof(GLTFShadowTransform);
+                CBDesc.Size = (uint)sizeof(GLTFShadowTransform);
                 CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                 CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                 CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -63,7 +63,7 @@ namespace DiligentEngine.GltfPbr
 
             var Barriers = new List<StateTransitionDesc>
             {
-                new StateTransitionDesc{pResource = m_ShadowTransformsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true}
+                new StateTransitionDesc{pResource = m_ShadowTransformsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE}
             };
             pCtx.TransitionResourceStates(Barriers);
 

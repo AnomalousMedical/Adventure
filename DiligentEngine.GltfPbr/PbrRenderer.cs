@@ -144,10 +144,10 @@ namespace DiligentEngine.GltfPbr
 
                 var Barriers = new List<StateTransitionDesc>
                 {
-                    new StateTransitionDesc{pResource = pWhiteTex.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true},
-                    new StateTransitionDesc{pResource = pBlackTex.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true},
-                    new StateTransitionDesc{pResource = pDefaultNormalMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true},
-                    new StateTransitionDesc{pResource = pDefaultPhysDesc.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true}
+                    new StateTransitionDesc{pResource = pWhiteTex.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                    new StateTransitionDesc{pResource = pBlackTex.Obj,         OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                    new StateTransitionDesc{pResource = pDefaultNormalMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                    new StateTransitionDesc{pResource = pDefaultPhysDesc.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE}
                 };
 
                 pCtx.TransitionResourceStates(Barriers);
@@ -165,7 +165,7 @@ namespace DiligentEngine.GltfPbr
                     {
                         BufferDesc CBDesc = new BufferDesc();
                         CBDesc.Name = "GLTF node transforms CB";
-                        CBDesc.uiSizeInBytes = (uint)sizeof(GLTFNodeShaderTransforms);
+                        CBDesc.Size = (uint)sizeof(GLTFNodeShaderTransforms);
                         CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                         CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                         CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -176,7 +176,7 @@ namespace DiligentEngine.GltfPbr
                     {
                         BufferDesc CBDesc = new BufferDesc();
                         CBDesc.Name = "GLTF attribs CB";
-                        CBDesc.uiSizeInBytes = (uint)(sizeof(GLTFAttribs));
+                        CBDesc.Size = (uint)(sizeof(GLTFAttribs));
                         CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                         CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                         CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -187,7 +187,7 @@ namespace DiligentEngine.GltfPbr
                     {
                         BufferDesc CBDesc = new BufferDesc();
                         CBDesc.Name = "GLTF joint tranforms";
-                        CBDesc.uiSizeInBytes = (uint)sizeof(float4x4) * m_Settings.MaxJointCount;
+                        CBDesc.Size = (uint)sizeof(float4x4) * m_Settings.MaxJointCount;
                         CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                         CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                         CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -197,9 +197,9 @@ namespace DiligentEngine.GltfPbr
 
                     var Barriers = new List<StateTransitionDesc>
                     {
-                        new StateTransitionDesc{pResource = m_TransformsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
-                        new StateTransitionDesc{pResource = m_GLTFAttribsCB.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
-                        new StateTransitionDesc{pResource = m_JointsBuffer.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, UpdateResourceState = true},
+                        new StateTransitionDesc{pResource = m_TransformsCB.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                        new StateTransitionDesc{pResource = m_GLTFAttribsCB.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
+                        new StateTransitionDesc{pResource = m_JointsBuffer.Obj,  OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE},
                     };
                     pCtx.TransitionResourceStates(Barriers);
 
@@ -291,7 +291,7 @@ namespace DiligentEngine.GltfPbr
 
             var Barriers = new List<StateTransitionDesc>()
             {
-                new StateTransitionDesc{pResource = pBRDF_LUT.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true}
+                new StateTransitionDesc{pResource = pBRDF_LUT.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE}
             };
             pCtx.TransitionResourceStates(Barriers);
         }
@@ -579,7 +579,7 @@ namespace DiligentEngine.GltfPbr
                 {
                     BufferDesc CBDesc = new BufferDesc();
                     CBDesc.Name = "Precompute env map attribs CB";
-                    CBDesc.uiSizeInBytes = (uint)sizeof(PrecomputeEnvMapAttribs);
+                    CBDesc.Size = (uint)sizeof(PrecomputeEnvMapAttribs);
                     CBDesc.Usage = USAGE.USAGE_DYNAMIC;
                     CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
                     CBDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
@@ -784,8 +784,8 @@ namespace DiligentEngine.GltfPbr
 
             var Barriers = new List<StateTransitionDesc>
             {
-                new StateTransitionDesc{pResource = m_pPrefilteredEnvMapSRV.Obj.GetTexture(), OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true },
-                new StateTransitionDesc{pResource = m_pIrradianceCubeSRV.Obj.GetTexture(),    OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, UpdateResourceState = true}
+                new StateTransitionDesc{pResource = m_pPrefilteredEnvMapSRV.Obj.GetTexture(), OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE },
+                new StateTransitionDesc{pResource = m_pIrradianceCubeSRV.Obj.GetTexture(),    OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE}
             };
             pCtx.TransitionResourceStates(Barriers);
         }

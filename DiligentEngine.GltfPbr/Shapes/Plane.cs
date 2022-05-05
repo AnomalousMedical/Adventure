@@ -52,7 +52,7 @@ namespace DiligentEngine.GltfPbr.Shapes
                 VertBuffDesc.Name = "Cube vertex buffer";
                 VertBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                 VertBuffDesc.BindFlags = BIND_FLAGS.BIND_VERTEX_BUFFER;
-                VertBuffDesc.uiSizeInBytes = (uint)(sizeof(GLTFVertex) * CubeVerts.Length);
+                VertBuffDesc.Size = (uint)(sizeof(GLTFVertex) * CubeVerts.Length);
                 BufferData VBData = new BufferData();
                 fixed (GLTFVertex* vertices = CubeVerts)
                 {
@@ -80,7 +80,7 @@ namespace DiligentEngine.GltfPbr.Shapes
             VertBuffDesc.Name = "Cube skin vertex buffer";
             VertBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             VertBuffDesc.BindFlags = BIND_FLAGS.BIND_VERTEX_BUFFER;
-            VertBuffDesc.uiSizeInBytes = (uint)(sizeof(GLTFVertexSkinAttribs) * CubeSkinVerts.Length);
+            VertBuffDesc.Size = (uint)(sizeof(GLTFVertexSkinAttribs) * CubeSkinVerts.Length);
             BufferData VBData = new BufferData();
             fixed (GLTFVertexSkinAttribs* vertices = CubeSkinVerts)
             {
@@ -101,7 +101,7 @@ namespace DiligentEngine.GltfPbr.Shapes
             IndBuffDesc.Name = "Cube index buffer";
             IndBuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
             IndBuffDesc.BindFlags = BIND_FLAGS.BIND_INDEX_BUFFER;
-            IndBuffDesc.uiSizeInBytes = (uint)(sizeof(UInt32) * Indices.Length);
+            IndBuffDesc.Size = (uint)(sizeof(UInt32) * Indices.Length);
             BufferData IBData = new BufferData();
             fixed (UInt32* pIndices = Indices)
             {
