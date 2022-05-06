@@ -1,4 +1,4 @@
-Texture2D    g_textures[$$(NUM_TEXTURES)];
+Texture2D    $$(G_TEXTURES)[$$(NUM_TEXTURES)];
 SamplerState g_SamLinearWrap;
 
 int GetMip()
@@ -12,10 +12,10 @@ int GetMip()
 
 float3 GetSampledNormal(in int mip, in float2 uv)
 {
-	return g_textures[instanceData.normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
+	return $$(G_TEXTURES)[instanceData.normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
 float4 GetPhysical(in int mip, in float2 uv)
 {
-	return g_textures[instanceData.physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
+	return $$(G_TEXTURES)[instanceData.physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
 }

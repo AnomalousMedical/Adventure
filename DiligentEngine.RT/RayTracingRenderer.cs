@@ -335,6 +335,8 @@ namespace DiligentEngine.RT
             // null means no shaders are bound and hit shader invocation will be skipped.
             m_pSBT.Obj.BindHitGroupForTLAS(m_pTLAS.Obj, RtStructures.SHADOW_RAY_INDEX, null, IntPtr.Zero, 0);
 
+            m_pImmediateContext.UpdateSBT(m_pSBT.Obj);
+
             return m_pTLAS;
         }
 

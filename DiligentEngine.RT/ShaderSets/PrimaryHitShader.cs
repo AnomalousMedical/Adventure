@@ -119,9 +119,9 @@ namespace DiligentEngine.RT.ShaderSets
         private ShaderResourceVariableDesc texturesDesc;
         private int numTextures;
 
-        public const String TextureVarName = "g_textures";
-        public const String VerticesVarName = "g_vertices";
-        public const String IndicesVarName = "g_indices";
+        private String TextureVarName = "g_textures";
+        private String VerticesVarName = "g_vertices";
+        private String IndicesVarName = "g_indices";
 
         private readonly ActiveTextures activeTextures;
         private String shaderGroupName;
@@ -136,6 +136,12 @@ namespace DiligentEngine.RT.ShaderSets
 
         private async Task SetupShaders(Desc desc, GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader, RTCameraAndLight cameraAndLight)
         {
+            var id = RTId.CreateId("PrimaryHitShaderVariable").Replace("-", "");
+
+            TextureVarName = TextureVarName + id;
+            VerticesVarName = VerticesVarName + id;
+            IndicesVarName = IndicesVarName + id;
+
             this.numTextures = activeTextures.MaxTextures;
 
             await Task.Run(() =>
@@ -177,6 +183,9 @@ namespace DiligentEngine.RT.ShaderSets
                 var shaderVars = new Dictionary<string, string>()
                 {
                     { "NUM_TEXTURES", numTextures.ToString() },
+                    { "G_TEXTURES", TextureVarName },
+                    { "G_VERTICES", VerticesVarName },
+                    { "G_INDICES", IndicesVarName },
                 };
 
                 // Create closest hit shaders.

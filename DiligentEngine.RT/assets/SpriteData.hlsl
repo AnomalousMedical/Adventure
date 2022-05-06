@@ -1,5 +1,5 @@
-StructuredBuffer<CubeAttribVertex> g_vertices;
-StructuredBuffer<uint> g_indices;
+StructuredBuffer<CubeAttribVertex> $$(G_VERTICES);
+StructuredBuffer<uint> $$(G_INDICES);
 
 [[vk::shader_record_ext]]
 ConstantBuffer<BlasInstanceData> instanceData;
@@ -18,13 +18,13 @@ void GetInstanceData
 
     uint vertId = 3 * PrimitiveIndex() + instanceData.indexOffset;
 
-    posX = g_vertices[g_indices[vertId + 0] + instanceData.vertexOffset];
-    posY = g_vertices[g_indices[vertId + 1] + instanceData.vertexOffset];
-    posZ = g_vertices[g_indices[vertId + 2] + instanceData.vertexOffset];
+    posX = $$(G_VERTICES)[$$(G_INDICES)[vertId + 0] + instanceData.vertexOffset];
+    posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
+    posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
-    float2 frameVertX = instanceData.uvs[g_indices[vertId + 0]];
-    float2 frameVertY = instanceData.uvs[g_indices[vertId + 1]];
-    float2 frameVertZ = instanceData.uvs[g_indices[vertId + 2]];
+    float2 frameVertX = instanceData.uvs[$$(G_INDICES)[vertId + 0]];
+    float2 frameVertY = instanceData.uvs[$$(G_INDICES)[vertId + 1]];
+    float2 frameVertZ = instanceData.uvs[$$(G_INDICES)[vertId + 2]];
 
     uv = frameVertX.xy * barycentrics.x +
          frameVertY.xy * barycentrics.y +
