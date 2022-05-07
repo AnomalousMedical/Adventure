@@ -351,126 +351,124 @@ namespace DiligentEngine.RT
             //TODO: Might be able to avoid recreating this like the other buffers, this also seems ok
             //So really need more info about behavior to decide here
             using var tlas = UpdateTLAS(activeInstances);
-            if (tlas == null)
+            var render = tlas != null;
+
+            if (render)
             {
-                //Client needs to render
-                return true;
-            }
-
-            // Update constants
-            {
-                var pDSV = swapChain.GetDepthBufferDSV();
-                var preTransform = swapChain.GetDesc_PreTransform;
-
-                //= new Vector3(0f, 0f, -15f);
-                var preTransformMatrix = CameraHelpers.GetSurfacePretransformMatrix(new Vector3(0, 0, 1), preTransform);
-                var cameraProj = CameraHelpers.GetAdjustedProjectionMatrix(YFov, ZNear, ZFar, imageBlitter.Width, imageBlitter.Height, preTransform);
-                cameraAndLight.GetCameraPosition(cameraPos, cameraRot, preTransformMatrix, cameraProj, out var CameraWorldPos, out var CameraViewProj);
-
-                var Frustum = new ViewFrustum();
-                cameraAndLight.ExtractViewFrustumPlanesFromMatrix(CameraViewProj, Frustum, false);
-
-                // Normalize frustum planes.
-                for (ViewFrustum.PLANE_IDX i = 0; i < ViewFrustum.PLANE_IDX.NUM_PLANES; ++i)
+                // Update constants
                 {
-                    Plane3D plane = Frustum.GetPlane(i);
-                    float invlen = 1.0f / plane.Normal.length();
-                    plane.Normal *= invlen;
-                    plane.Distance *= invlen;
+                    var pDSV = swapChain.GetDepthBufferDSV();
+                    var preTransform = swapChain.GetDesc_PreTransform;
+
+                    //= new Vector3(0f, 0f, -15f);
+                    var preTransformMatrix = CameraHelpers.GetSurfacePretransformMatrix(new Vector3(0, 0, 1), preTransform);
+                    var cameraProj = CameraHelpers.GetAdjustedProjectionMatrix(YFov, ZNear, ZFar, imageBlitter.Width, imageBlitter.Height, preTransform);
+                    cameraAndLight.GetCameraPosition(cameraPos, cameraRot, preTransformMatrix, cameraProj, out var CameraWorldPos, out var CameraViewProj);
+
+                    var Frustum = new ViewFrustum();
+                    cameraAndLight.ExtractViewFrustumPlanesFromMatrix(CameraViewProj, Frustum, false);
+
+                    // Normalize frustum planes.
+                    for (ViewFrustum.PLANE_IDX i = 0; i < ViewFrustum.PLANE_IDX.NUM_PLANES; ++i)
+                    {
+                        Plane3D plane = Frustum.GetPlane(i);
+                        float invlen = 1.0f / plane.Normal.length();
+                        plane.Normal *= invlen;
+                        plane.Distance *= invlen;
+                    }
+
+                    // Calculate ray formed by the intersection two planes.
+                    void GetPlaneIntersection(ViewFrustum.PLANE_IDX lhs, ViewFrustum.PLANE_IDX rhs, out Vector4 result)
+                    {
+                        var lp = Frustum.GetPlane(lhs);
+                        var rp = Frustum.GetPlane(rhs);
+
+                        Vector3 dir = lp.Normal.cross(rp.Normal);
+                        float len = dir.length2();
+
+                        //VERIFY_EXPR(len > 1.0e-5);
+
+                        var v3result = dir * (1.0f / MathF.Sqrt(len));
+                        result = new Vector4(v3result.x, v3result.y, v3result.z, 0);
+                    };
+
+                    GetPlaneIntersection(ViewFrustum.PLANE_IDX.BOTTOM_PLANE_IDX, ViewFrustum.PLANE_IDX.LEFT_PLANE_IDX, out m_Constants.FrustumRayLB);
+                    GetPlaneIntersection(ViewFrustum.PLANE_IDX.LEFT_PLANE_IDX, ViewFrustum.PLANE_IDX.TOP_PLANE_IDX, out m_Constants.FrustumRayLT);
+                    GetPlaneIntersection(ViewFrustum.PLANE_IDX.RIGHT_PLANE_IDX, ViewFrustum.PLANE_IDX.BOTTOM_PLANE_IDX, out m_Constants.FrustumRayRB);
+                    GetPlaneIntersection(ViewFrustum.PLANE_IDX.TOP_PLANE_IDX, ViewFrustum.PLANE_IDX.RIGHT_PLANE_IDX, out m_Constants.FrustumRayRT);
+
+                    m_Constants.CameraPos = new Vector4(CameraWorldPos.x, CameraWorldPos.y, CameraWorldPos.z, 1.0f);
+
+                    //Need to invert going into the shader
+                    m_Constants.LightPos_0 = cameraAndLight.LightPos[0] * -1;
+                    m_Constants.LightPos_1 = cameraAndLight.LightPos[1] * -1;
+                    m_Constants.LightPos_2 = cameraAndLight.LightPos[2] * -1;
+                    m_Constants.LightPos_3 = cameraAndLight.LightPos[3] * -1;
+                    m_Constants.LightPos_4 = cameraAndLight.LightPos[4] * -1;
+                    m_Constants.LightPos_5 = cameraAndLight.LightPos[5] * -1;
+                    m_Constants.LightPos_6 = cameraAndLight.LightPos[6] * -1;
+                    m_Constants.LightPos_7 = cameraAndLight.LightPos[7] * -1;
+                    m_Constants.LightPos_8 = cameraAndLight.LightPos[8] * -1;
+                    m_Constants.LightPos_9 = cameraAndLight.LightPos[9] * -1;
+
+                    var numLights = m_Constants.NumActiveLights = cameraAndLight.NumActiveLights;
+                    Color color;
+                    color = cameraAndLight.LightColor[0];
+                    m_Constants.LightColor_0 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[0]);
+                    color = cameraAndLight.LightColor[1];
+                    m_Constants.LightColor_1 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[1]);
+                    color = cameraAndLight.LightColor[2];
+                    m_Constants.LightColor_2 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[2]);
+                    color = cameraAndLight.LightColor[3];
+                    m_Constants.LightColor_3 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[3]);
+                    color = cameraAndLight.LightColor[4];
+                    m_Constants.LightColor_4 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[4]);
+                    color = cameraAndLight.LightColor[5];
+                    m_Constants.LightColor_5 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[5]);
+                    color = cameraAndLight.LightColor[6];
+                    m_Constants.LightColor_6 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[6]);
+                    color = cameraAndLight.LightColor[7];
+                    m_Constants.LightColor_7 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[7]);
+                    color = cameraAndLight.LightColor[8];
+                    m_Constants.LightColor_8 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[8]);
+                    color = cameraAndLight.LightColor[9];
+                    m_Constants.LightColor_9 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[9]);
+
+                    color = cameraAndLight.MissPallete[0]; m_Constants.Pallete_0 = new Vector4(color.r, color.g, color.b, 0);
+                    color = cameraAndLight.MissPallete[1]; m_Constants.Pallete_1 = new Vector4(color.r, color.g, color.b, 0);
+                    color = cameraAndLight.MissPallete[2]; m_Constants.Pallete_2 = new Vector4(color.r, color.g, color.b, 0);
+                    color = cameraAndLight.MissPallete[3]; m_Constants.Pallete_3 = new Vector4(color.r, color.g, color.b, 0);
+                    color = cameraAndLight.MissPallete[4]; m_Constants.Pallete_4 = new Vector4(color.r, color.g, color.b, 0);
+                    color = cameraAndLight.MissPallete[5]; m_Constants.Pallete_5 = new Vector4(color.r, color.g, color.b, 0);
+
+                    fixed (Constants* constantsPtr = &m_Constants)
+                    {
+                        m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                    }
                 }
 
-                // Calculate ray formed by the intersection two planes.
-                void GetPlaneIntersection(ViewFrustum.PLANE_IDX lhs, ViewFrustum.PLANE_IDX rhs, out Vector4 result)
+                //Trace rays
                 {
-                    var lp = Frustum.GetPlane(lhs);
-                    var rp = Frustum.GetPlane(rhs);
+                    m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ColorBuffer").Set(imageBlitter.TextureView);
 
-                    Vector3 dir = lp.Normal.cross(rp.Normal);
-                    float len = dir.length2();
+                    m_pImmediateContext.SetPipelineState(m_pRayTracingPSO.Obj);
+                    m_pImmediateContext.CommitShaderResources(m_pRayTracingSRB.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-                    //VERIFY_EXPR(len > 1.0e-5);
+                    var Attribs = new TraceRaysAttribs();
+                    Attribs.DimensionX = imageBlitter.Width;
+                    Attribs.DimensionY = imageBlitter.Height;
+                    Attribs.pSBT = m_pSBT.Obj;
 
-                    var v3result = dir * (1.0f / MathF.Sqrt(len));
-                    result = new Vector4(v3result.x, v3result.y, v3result.z, 0);
-                };
-
-                GetPlaneIntersection(ViewFrustum.PLANE_IDX.BOTTOM_PLANE_IDX, ViewFrustum.PLANE_IDX.LEFT_PLANE_IDX, out m_Constants.FrustumRayLB);
-                GetPlaneIntersection(ViewFrustum.PLANE_IDX.LEFT_PLANE_IDX, ViewFrustum.PLANE_IDX.TOP_PLANE_IDX, out m_Constants.FrustumRayLT);
-                GetPlaneIntersection(ViewFrustum.PLANE_IDX.RIGHT_PLANE_IDX, ViewFrustum.PLANE_IDX.BOTTOM_PLANE_IDX, out m_Constants.FrustumRayRB);
-                GetPlaneIntersection(ViewFrustum.PLANE_IDX.TOP_PLANE_IDX, ViewFrustum.PLANE_IDX.RIGHT_PLANE_IDX, out m_Constants.FrustumRayRT);
-
-                m_Constants.CameraPos = new Vector4(CameraWorldPos.x, CameraWorldPos.y, CameraWorldPos.z, 1.0f);
-
-                //Need to invert going into the shader
-                m_Constants.LightPos_0 = cameraAndLight.LightPos[0] * -1;
-                m_Constants.LightPos_1 = cameraAndLight.LightPos[1] * -1;
-                m_Constants.LightPos_2 = cameraAndLight.LightPos[2] * -1;
-                m_Constants.LightPos_3 = cameraAndLight.LightPos[3] * -1;
-                m_Constants.LightPos_4 = cameraAndLight.LightPos[4] * -1;
-                m_Constants.LightPos_5 = cameraAndLight.LightPos[5] * -1;
-                m_Constants.LightPos_6 = cameraAndLight.LightPos[6] * -1;
-                m_Constants.LightPos_7 = cameraAndLight.LightPos[7] * -1;
-                m_Constants.LightPos_8 = cameraAndLight.LightPos[8] * -1;
-                m_Constants.LightPos_9 = cameraAndLight.LightPos[9] * -1;
-
-                var numLights = m_Constants.NumActiveLights = cameraAndLight.NumActiveLights;
-                Color color;
-                color = cameraAndLight.LightColor[0];
-                m_Constants.LightColor_0 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[0]);
-                color = cameraAndLight.LightColor[1];
-                m_Constants.LightColor_1 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[1]);
-                color = cameraAndLight.LightColor[2];
-                m_Constants.LightColor_2 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[2]);
-                color = cameraAndLight.LightColor[3];
-                m_Constants.LightColor_3 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[3]);
-                color = cameraAndLight.LightColor[4];
-                m_Constants.LightColor_4 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[4]);
-                color = cameraAndLight.LightColor[5];
-                m_Constants.LightColor_5 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[5]);
-                color = cameraAndLight.LightColor[6];
-                m_Constants.LightColor_6 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[6]);
-                color = cameraAndLight.LightColor[7];
-                m_Constants.LightColor_7 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[7]);
-                color = cameraAndLight.LightColor[8];
-                m_Constants.LightColor_8 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[8]);
-                color = cameraAndLight.LightColor[9];
-                m_Constants.LightColor_9 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[9]);
-
-                color = cameraAndLight.MissPallete[0]; m_Constants.Pallete_0 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.MissPallete[1]; m_Constants.Pallete_1 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.MissPallete[2]; m_Constants.Pallete_2 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.MissPallete[3]; m_Constants.Pallete_3 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.MissPallete[4]; m_Constants.Pallete_4 = new Vector4(color.r, color.g, color.b, 0);
-                color = cameraAndLight.MissPallete[5]; m_Constants.Pallete_5 = new Vector4(color.r, color.g, color.b, 0);
-
-                fixed (Constants* constantsPtr = &m_Constants)
-                {
-                    m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                    m_pImmediateContext.TraceRays(Attribs);
                 }
 
-                cameraAndLight.ResetLights();
+                // Blit to swapchain image
+                imageBlitter.Blit();
             }
 
-            //Trace rays
-            {
-                m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ColorBuffer").Set(imageBlitter.TextureView);
+            cameraAndLight.ResetLights();
 
-                m_pImmediateContext.SetPipelineState(m_pRayTracingPSO.Obj);
-                m_pImmediateContext.CommitShaderResources(m_pRayTracingSRB.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-
-                var Attribs = new TraceRaysAttribs();
-                Attribs.DimensionX = imageBlitter.Width;
-                Attribs.DimensionY = imageBlitter.Height;
-                Attribs.pSBT = m_pSBT.Obj;
-
-                m_pImmediateContext.TraceRays(Attribs);
-            }
-
-            // Blit to swapchain image
-            imageBlitter.Blit();
-
-            //Client does not need to render
-            return false;
+            return !render;
         }
 
         public void RequestRebind()

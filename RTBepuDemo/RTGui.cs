@@ -23,6 +23,7 @@ namespace RTBepuDemo
         private readonly RTCameraAndLight cameraAndLight;
         private SharpText lightPosText = new SharpText() { Text = "" };
         private SharpText cameraPosText = new SharpText() { Text = "" };
+        private Vector4 lightPos = new Vector4(0, 21, -31, 0);
 
         SharpSliderHorizontal lightPosX;
         SharpSliderHorizontal lightPosY;
@@ -42,7 +43,6 @@ namespace RTBepuDemo
 
         public void Update(Clock clock)
         {
-            var lightPos = cameraAndLight.LightPos[0];
             int light = ToSlider(lightPos.x);
             if (sharpGui.Slider(lightPosX, ref light) || sharpGui.ActiveItem == lightPosX.Id)
             {
@@ -76,8 +76,10 @@ namespace RTBepuDemo
             sharpGui.Text(lightPosText);
             sharpGui.Text(cameraPosText);
 
-            cameraAndLight.LightPos[0] = lightPos;
-            cameraAndLight.LightPos[1] = lightPos;
+            cameraAndLight.CheckoutLight(out var lightIndex);
+            cameraAndLight.LightPos[lightIndex] = lightPos;
+            cameraAndLight.LightColor[lightIndex] = new Color(1.00f, +0.8f, +0.80f);
+            cameraAndLight.LightLength[lightIndex] = float.MaxValue;
         }
 
         private int ToSlider(float pos)
