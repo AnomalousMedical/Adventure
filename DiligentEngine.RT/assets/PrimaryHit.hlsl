@@ -1,15 +1,7 @@
 #include "Structures.hlsl"
 #include "RayUtils.hlsl"
 #include "Lighting.hlsl"
-#if DATA_TYPE_MESH
-#include "MeshData.hlsl"
-#include "MeshTextures.hlsl"
-#endif
-
-#if DATA_TYPE_SPRITE
-#include "SpriteData.hlsl"
-#include "SpriteTextures.hlsl"
-#endif
+#include "Data.hlsl"
 
 [shader("closesthit")]
 void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
@@ -27,7 +19,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
         posX, posY, posZ
 
 #if HAS_BASE_COLOR
-        ,GetBaseColor(mip, uv)
+        ,GetBaseColor(mip, uv, g_SamPointWrap)
 #endif
 
 #if HAS_NORMAL_MAP
@@ -40,6 +32,6 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     );
 
 #if HAS_EMISSIVE_MAP
-    payload.Color += GetEmissive(mip, uv);
+    payload.Color += GetEmissive(mip, uv, g_SamPointWrap);
 #endif
 }

@@ -39,6 +39,7 @@ namespace DiligentEngine.RT.Sprites
             this.spriteMaterialManager = spriteMaterialManager;
             this.activeTextures = activeTextures;
             blasInstanceData = this.activeTextures.AddActiveTexture(spriteMaterial);
+            blasInstanceData.dataType = HLSL.BlasInstanceDataConstants.SpriteData;
         }
 
         public void Dispose()

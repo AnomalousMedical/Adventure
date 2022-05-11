@@ -1,14 +1,6 @@
 #include "Structures.hlsl"
 #include "RayUtils.hlsl"
-#if DATA_TYPE_MESH
-#include "MeshData.hlsl"
-#include "MeshTextures.hlsl"
-#endif
-
-#if DATA_TYPE_SPRITE
-#include "SpriteData.hlsl"
-#include "SpriteTextures.hlsl"
-#endif
+#include "Data.hlsl"
 
 [shader("anyhit")]
 void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
@@ -20,5 +12,5 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
     int mip = GetMip();
 
-    AnyHitOpacityTest(GetOpacity(mip, uv));
+    AnyHitOpacityTest(GetOpacity(mip, uv, g_SamPointWrap));
 }

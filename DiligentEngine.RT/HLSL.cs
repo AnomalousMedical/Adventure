@@ -61,7 +61,13 @@ namespace DiligentEngine.RT.HLSL
         public int emissiveTexture;
         public uint indexOffset;
         public uint vertexOffset;
-        public float pad3;
-        public float pad4;
+        public uint dataType;
+        public uint lightingType;
     };
+
+    public static class BlasInstanceDataConstants
+    {
+        public const uint MeshData = 0;
+        public const uint SpriteData = 1;
+    }
 }

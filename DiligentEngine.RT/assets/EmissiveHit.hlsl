@@ -1,13 +1,5 @@
 #include "Structures.hlsl"
-#if DATA_TYPE_MESH
-#include "MeshData.hlsl"
-#include "MeshTextures.hlsl"
-#endif
-
-#if DATA_TYPE_SPRITE
-#include "SpriteData.hlsl"
-#include "SpriteTextures.hlsl"
-#endif
+#include "Data.hlsl"
 
 [shader("closesthit")]
 void main(inout EmissiveRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
@@ -19,5 +11,5 @@ void main(inout EmissiveRayPayload payload, in BuiltInTriangleIntersectionAttrib
 
     int mip = GetMip();
 
-    payload.Color = GetEmissive(mip, uv);
+    payload.Color = GetEmissive(mip, uv, g_SamLinearWrap);
 }

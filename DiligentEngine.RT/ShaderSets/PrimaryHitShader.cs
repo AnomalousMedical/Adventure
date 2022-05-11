@@ -186,6 +186,8 @@ namespace DiligentEngine.RT.ShaderSets
                     { "G_TEXTURES", TextureVarName },
                     { "G_VERTICES", VerticesVarName },
                     { "G_INDICES", IndicesVarName },
+                    { "MESH_DATA_TYPE", HLSL.BlasInstanceDataConstants.MeshData.ToString() },
+                    { "SPRITE_DATA_TYPE", HLSL.BlasInstanceDataConstants.SpriteData.ToString() },
                 };
 
                 // Create closest hit shaders.

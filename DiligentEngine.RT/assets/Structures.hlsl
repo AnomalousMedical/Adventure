@@ -7,8 +7,8 @@ struct BlasInstanceData
     int emissiveTexture;
     uint indexOffset;
     uint vertexOffset;
-    float pad3;
-    float pad4;
+    uint dataType;
+    uint lightingType;
 };
 
 struct CubeAttribVertex {

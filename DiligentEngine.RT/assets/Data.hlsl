@@ -4,6 +4,12 @@ StructuredBuffer<uint> $$(G_INDICES);
 [[vk::shader_record_ext]]
 ConstantBuffer<BlasInstanceData> instanceData;
 
+Texture2D    $$(G_TEXTURES)[$$(NUM_TEXTURES)];
+SamplerState g_SamLinearWrap;
+SamplerState g_SamPointWrap;
+
+#include "Textures.hlsl"
+
 void GetInstanceData
 (
     in BuiltInTriangleIntersectionAttributes attr,
@@ -22,11 +28,25 @@ void GetInstanceData
     posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
     posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
-    float2 frameVertX = instanceData.uvs[$$(G_INDICES)[vertId + 0]];
-    float2 frameVertY = instanceData.uvs[$$(G_INDICES)[vertId + 1]];
-    float2 frameVertZ = instanceData.uvs[$$(G_INDICES)[vertId + 2]];
+    [forcecase] switch (instanceData.dataType) {
 
-    uv = frameVertX.xy * barycentrics.x +
-         frameVertY.xy * barycentrics.y +
-         frameVertZ.xy * barycentrics.z;
+        case $$(MESH_DATA_TYPE):
+            uv = posX.uv.xy * barycentrics.x +
+                posY.uv.xy * barycentrics.y +
+                posZ.uv.xy * barycentrics.z;
+
+            break;
+
+
+        case $$(SPRITE_DATA_TYPE):
+            float2 frameVertX = instanceData.uvs[$$(G_INDICES)[vertId + 0]];
+            float2 frameVertY = instanceData.uvs[$$(G_INDICES)[vertId + 1]];
+            float2 frameVertZ = instanceData.uvs[$$(G_INDICES)[vertId + 2]];
+
+            uv = frameVertX.xy * barycentrics.x +
+                frameVertY.xy * barycentrics.y +
+                frameVertZ.xy * barycentrics.z;
+
+            break;
+    }
 }
