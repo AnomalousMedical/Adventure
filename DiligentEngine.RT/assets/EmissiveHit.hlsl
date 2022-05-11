@@ -9,17 +9,17 @@ void main(inout EmissiveRayPayload payload, in BuiltInTriangleIntersectionAttrib
     float2 uv;
     int mip = GetMip();
 
-    [forcecase] switch (instanceData.dataType) {
-
+    [forcecase] switch (instanceData.dataType) 
+    {
         case $$(MESH_DATA_TYPE):
             GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            payload.Color = GetEmissive(mip, uv, g_SamLinearWrap);
             break;
 
 
         case $$(SPRITE_DATA_TYPE):
             GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
+            payload.Color = GetEmissive(mip, uv, g_SamPointWrap);
             break;
     }
-
-    payload.Color = GetEmissive(mip, uv, g_SamLinearWrap);
 }

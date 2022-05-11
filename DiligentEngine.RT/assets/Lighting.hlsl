@@ -349,3 +349,63 @@ void LightAndShadeBaseNormalPhysicalReflective
 
     payload.Depth = RayTCurrent();
 }
+
+void LightMesh
+(
+    inout PrimaryRayPayload payload, float3 barycentrics,
+    CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ,
+    int mip, float2 uv
+)
+{
+    $$(LIGHTING_FUNCTION)
+    (
+    payload, barycentrics,
+    posX, posY, posZ
+
+    #if HAS_BASE_COLOR
+    ,GetBaseColor(mip, uv, g_SamLinearWrap)
+    #endif
+
+    #if HAS_NORMAL_MAP
+    ,GetSampledNormal(mip, uv)
+    #endif
+
+    #if HAS_PHYSICAL_MAP
+    ,GetPhysical(mip, uv)
+    #endif
+    );
+
+    #if HAS_EMISSIVE_MAP
+    payload.Color += GetEmissive(mip, uv, g_SamLinearWrap);
+    #endif
+}
+
+void LightSprite
+(
+    inout PrimaryRayPayload payload, float3 barycentrics,
+    CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ,
+    int mip, float2 uv
+) 
+{
+    $$(LIGHTING_FUNCTION)
+    (
+    payload, barycentrics,
+    posX, posY, posZ
+
+    #if HAS_BASE_COLOR
+    ,GetBaseColor(mip, uv, g_SamPointWrap)
+    #endif
+
+    #if HAS_NORMAL_MAP
+    ,GetSampledNormal(mip, uv)
+    #endif
+
+    #if HAS_PHYSICAL_MAP
+    ,GetPhysical(mip, uv)
+    #endif
+    );
+
+    #if HAS_EMISSIVE_MAP
+    payload.Color += GetEmissive(mip, uv, g_SamPointWrap);
+    #endif
+}
