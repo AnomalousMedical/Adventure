@@ -92,7 +92,6 @@ namespace RTDungeonGeneratorTest
 
                     var shaderDesc = new PrimaryHitShader.Desc
                     {
-                        ShaderType = PrimaryHitShaderType.Mesh,
                         HasNormalMap = true,
                         HasPhysicalDescriptorMap = true,
                     };

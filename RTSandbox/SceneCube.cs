@@ -72,7 +72,6 @@ namespace RTSandbox
 
                 var shaderDesc = new PrimaryHitShader.Desc
                 {
-                    ShaderType = PrimaryHitShaderType.Mesh,
                     HasNormalMap = cubeTexture.NormalMapSRV != null,
                     HasPhysicalDescriptorMap = cubeTexture.PhysicalDescriptorMapSRV != null,
                     HasEmissiveMap = cubeTexture.EmissiveSRV != null,

@@ -79,7 +79,6 @@ namespace Adventure.Battle
 
                     var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc
                     {
-                        ShaderType = PrimaryHitShaderType.Mesh,
                         HasNormalMap = true,
                         HasPhysicalDescriptorMap = true,
                         Reflective = description.Reflective,

@@ -19,7 +19,6 @@ namespace DiligentEngine.RT.ShaderSets
     {
         public class Desc
         {
-            public PrimaryHitShaderType ShaderType { get; set; }
 
             public bool HasNormalMap { get; set; }
 
@@ -32,7 +31,6 @@ namespace DiligentEngine.RT.ShaderSets
             public override bool Equals(object obj)
             {
                 return obj is Desc description &&
-                       ShaderType == description.ShaderType &&
                        HasNormalMap == description.HasNormalMap &&
                        HasPhysicalDescriptorMap == description.HasPhysicalDescriptorMap &&
                        HasEmissiveMap == description.HasEmissiveMap &&
@@ -42,7 +40,6 @@ namespace DiligentEngine.RT.ShaderSets
             public override int GetHashCode()
             {
                 var hashCode = new HashCode();
-                hashCode.Add(ShaderType);
                 hashCode.Add(HasNormalMap);
                 hashCode.Add(HasPhysicalDescriptorMap);
                 hashCode.Add(HasEmissiveMap);
@@ -154,17 +151,6 @@ namespace DiligentEngine.RT.ShaderSets
                 // Define shader macros
                 ShaderMacroHelper Macros = new ShaderMacroHelper();
                 Macros.AddShaderMacro("NUM_LIGHTS", cameraAndLight.NumLights);
-                switch (desc.ShaderType)
-                {
-                    case PrimaryHitShaderType.Mesh:
-                        Macros.AddShaderMacro("DATA_TYPE_MESH", 1);
-                        break;
-                    case PrimaryHitShaderType.Sprite:
-                        Macros.AddShaderMacro("DATA_TYPE_SPRITE", 1);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"'{desc.ShaderType}' not supported.");
-                }
 
                 ShaderCreateInfo ShaderCI = new ShaderCreateInfo();
                 // We will not be using combined texture samplers as they
@@ -222,7 +208,7 @@ namespace DiligentEngine.RT.ShaderSets
                 shaderVars.Add("LIGHTING_FUNCTION", lightingFunction);
 
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT;
-                ShaderCI.Desc.Name = $"{desc.ShaderType} primary ray closest hit shader {lightingFunction}";
+                ShaderCI.Desc.Name = $"primary ray closest hit shader {lightingFunction}";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/PrimaryHit.hlsl");
                 ShaderCI.EntryPoint = "main";
                 pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros);
@@ -231,7 +217,7 @@ namespace DiligentEngine.RT.ShaderSets
                 //TODO: This and the one below it can probably be shared between all instances
                 //Note that multiple emissives can load here
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT;
-                ShaderCI.Desc.Name = $"{desc.ShaderType} emissive ray closest hit shader";
+                ShaderCI.Desc.Name = $"emissive ray closest hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, emissiveHitShader);
                 ShaderCI.EntryPoint = "main";
                 pCubeEmissiveHit = m_pDevice.CreateShader(ShaderCI, Macros);
@@ -240,7 +226,7 @@ namespace DiligentEngine.RT.ShaderSets
                 // Create any hit shaders.
                 //TODO: Any hit is always the same and is turned on and off by the opaque flag. This can be shared between all instances.
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT;
-                ShaderCI.Desc.Name = $"{desc.ShaderType} primary ray any hit shader";
+                ShaderCI.Desc.Name = $"primary ray any hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/AnyHit.hlsl");
                 ShaderCI.EntryPoint = "main";
                 pCubeAnyHit = m_pDevice.CreateShader(ShaderCI, Macros);

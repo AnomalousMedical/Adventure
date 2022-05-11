@@ -43,7 +43,6 @@ namespace DiligentEngine.RT.Sprites
 
                 var shader = await primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc()
                 {
-                    ShaderType = PrimaryHitShaderType.Sprite,
                     HasNormalMap = material.NormalSRV != null,
                     HasPhysicalDescriptorMap = material.PhysicalSRV != null,
                     Reflective = material.Reflective

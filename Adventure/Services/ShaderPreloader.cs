@@ -25,7 +25,6 @@ namespace Adventure.Services
                 {
                     HasNormalMap = true,
                     HasPhysicalDescriptorMap = true,
-                    ShaderType = PrimaryHitShaderType.Mesh
                 });
 
                 descriptions.Add(new PrimaryHitShader.Desc
@@ -33,22 +32,6 @@ namespace Adventure.Services
                     HasNormalMap = true,
                     HasPhysicalDescriptorMap = true,
                     Reflective = true,
-                    ShaderType = PrimaryHitShaderType.Mesh
-                });
-
-                descriptions.Add(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    ShaderType = PrimaryHitShaderType.Sprite
-                });
-
-                descriptions.Add(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    Reflective = true,
-                    ShaderType = PrimaryHitShaderType.Sprite
                 });
 
                 var loadTasks = new List<Task<PrimaryHitShader>>();

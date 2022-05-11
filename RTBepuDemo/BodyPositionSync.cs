@@ -38,7 +38,6 @@ namespace RTBepuDemo
             {
                 Shader = new PrimaryHitShader.Desc
                 {
-                    ShaderType = PrimaryHitShaderType.Mesh,
                     HasNormalMap = true,
                     HasPhysicalDescriptorMap = true,
                     Reflective = false
