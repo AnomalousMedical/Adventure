@@ -10,7 +10,7 @@ SamplerState g_SamPointWrap;
 
 #include "Textures.hlsl"
 
-void GetInstanceData
+void GetInstanceDataMesh
 (
     in BuiltInTriangleIntersectionAttributes attr,
     out float3 barycentrics,
@@ -28,25 +28,34 @@ void GetInstanceData
     posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
     posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
-    [forcecase] switch (instanceData.dataType) {
+    uv = posX.uv.xy * barycentrics.x +
+        posY.uv.xy * barycentrics.y +
+        posZ.uv.xy * barycentrics.z;
+}
 
-        case $$(MESH_DATA_TYPE):
-            uv = posX.uv.xy * barycentrics.x +
-                posY.uv.xy * barycentrics.y +
-                posZ.uv.xy * barycentrics.z;
+void GetInstanceDataSprite
+(
+    in BuiltInTriangleIntersectionAttributes attr,
+    out float3 barycentrics,
+    out CubeAttribVertex posX,
+    out CubeAttribVertex posY,
+    out CubeAttribVertex posZ,
+    out float2 uv
+)
+{
+    barycentrics = float3(1.0 - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
 
-            break;
+    uint vertId = 3 * PrimitiveIndex() + instanceData.indexOffset;
 
+    posX = $$(G_VERTICES)[$$(G_INDICES)[vertId + 0] + instanceData.vertexOffset];
+    posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
+    posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
-        case $$(SPRITE_DATA_TYPE):
-            float2 frameVertX = instanceData.uvs[$$(G_INDICES)[vertId + 0]];
-            float2 frameVertY = instanceData.uvs[$$(G_INDICES)[vertId + 1]];
-            float2 frameVertZ = instanceData.uvs[$$(G_INDICES)[vertId + 2]];
+    float2 frameVertX = instanceData.uvs[$$(G_INDICES)[vertId + 0]];
+    float2 frameVertY = instanceData.uvs[$$(G_INDICES)[vertId + 1]];
+    float2 frameVertZ = instanceData.uvs[$$(G_INDICES)[vertId + 2]];
 
-            uv = frameVertX.xy * barycentrics.x +
-                frameVertY.xy * barycentrics.y +
-                frameVertZ.xy * barycentrics.z;
-
-            break;
-    }
+    uv = frameVertX.xy * barycentrics.x +
+        frameVertY.xy * barycentrics.y +
+        frameVertZ.xy * barycentrics.z;
 }

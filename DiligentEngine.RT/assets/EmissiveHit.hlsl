@@ -7,9 +7,19 @@ void main(inout EmissiveRayPayload payload, in BuiltInTriangleIntersectionAttrib
     float3 barycentrics;
     CubeAttribVertex posX, posY, posZ;
     float2 uv;
-    GetInstanceData(attr, barycentrics, posX, posY, posZ, uv);
-
     int mip = GetMip();
+
+    [forcecase] switch (instanceData.dataType) {
+
+        case $$(MESH_DATA_TYPE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            break;
+
+
+        case $$(SPRITE_DATA_TYPE):
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
+            break;
+    }
 
     payload.Color = GetEmissive(mip, uv, g_SamLinearWrap);
 }
