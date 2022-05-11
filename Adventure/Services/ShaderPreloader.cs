@@ -21,18 +21,7 @@ namespace Adventure.Services
             coroutine.RunTask(async () =>
             {
                 var descriptions = new List<PrimaryHitShader.Desc>();
-                descriptions.Add(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                });
-
-                descriptions.Add(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    Reflective = true,
-                });
+                descriptions.Add(new PrimaryHitShader.Desc());
 
                 var loadTasks = new List<Task<PrimaryHitShader>>();
                 foreach(var desc in descriptions)

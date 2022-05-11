@@ -69,5 +69,30 @@ namespace DiligentEngine.RT.HLSL
     {
         public const uint MeshData = 0;
         public const uint SpriteData = 1;
+
+        public const uint LightAndShadeBase = 0;
+        public const uint LightAndShadeBaseNormal = 1;
+        public const uint LightAndShadeBaseNormalPhysical = 2;
+        public const uint LightAndShadeBaseNormalPhysicalReflective = 3;
+
+        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective)
+        {
+            if (hasNormal && hasPhysical && reflective)
+            {
+                return LightAndShadeBaseNormalPhysicalReflective;
+            }
+
+            if(hasNormal && hasPhysical)
+            {
+                return LightAndShadeBaseNormalPhysical;
+            }
+
+            if (hasNormal)
+            {
+                return LightAndShadeBaseNormal;
+            }
+
+            return LightAndShadeBase;
+        }
     }
 }

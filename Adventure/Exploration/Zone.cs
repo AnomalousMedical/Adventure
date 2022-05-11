@@ -325,18 +325,8 @@ namespace Adventure
                 );
 
                 //TODO: The zone BLASes must be loaded before the shaders, see todo in PrimaryHitShader
-                var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    Reflective = biome.ReflectFloor
-                });
-                var wallShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    Reflective = biome.ReflectWall
-                });
+                var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
+                var wallShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
 
                 await Task.WhenAll
                 (
@@ -356,7 +346,9 @@ namespace Adventure
 
                 rtInstances.AddShaderTableBinder(Bind);
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
+                floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor);
                 wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
+                wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectWall);
                 rtInstances.AddTlasBuild(floorInstanceData);
                 rtInstances.AddTlasBuild(wallInstanceData);
 

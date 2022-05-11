@@ -19,31 +19,18 @@ namespace DiligentEngine.RT.ShaderSets
     {
         public class Desc
         {
-
-            public bool HasNormalMap { get; set; }
-
-            public bool HasPhysicalDescriptorMap { get; set; }
-
             public bool HasEmissiveMap { get; set; }
-
-            public bool Reflective { get; set; }
 
             public override bool Equals(object obj)
             {
                 return obj is Desc description &&
-                       HasNormalMap == description.HasNormalMap &&
-                       HasPhysicalDescriptorMap == description.HasPhysicalDescriptorMap &&
-                       HasEmissiveMap == description.HasEmissiveMap &&
-                       Reflective == description.Reflective;
+                       HasEmissiveMap == description.HasEmissiveMap;
             }
 
             public override int GetHashCode()
             {
                 var hashCode = new HashCode();
-                hashCode.Add(HasNormalMap);
-                hashCode.Add(HasPhysicalDescriptorMap);
                 hashCode.Add(HasEmissiveMap);
-                hashCode.Add(Reflective);
                 return hashCode.ToHashCode();
             }
         }
@@ -174,30 +161,13 @@ namespace DiligentEngine.RT.ShaderSets
                     { "G_INDICES", IndicesVarName },
                     { "MESH_DATA_TYPE", HLSL.BlasInstanceDataConstants.MeshData.ToString() },
                     { "SPRITE_DATA_TYPE", HLSL.BlasInstanceDataConstants.SpriteData.ToString() },
+                    { "LIGHTANDSHADEBASE", HLSL.BlasInstanceDataConstants.LightAndShadeBase.ToString() },
+                    { "LIGHTANDSHADEBASENORMAL", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormal.ToString() },
+                    { "LIGHTANDSHADEBASENORMALPHYSICAL", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysical.ToString() },
+                    { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflective.ToString() },
                 };
 
                 // Create closest hit shaders.
-                var lightingFunction = "LightAndShadeBase"; //Assuming base map for now
-                Macros.AddShaderMacro("HAS_BASE_COLOR", 1);
-                if (desc.HasNormalMap)
-                {
-                    lightingFunction += "Normal";
-                    Macros.AddShaderMacro("HAS_NORMAL_MAP", 1);
-                }
-
-                if (desc.HasPhysicalDescriptorMap)
-                {
-                    lightingFunction += "Physical";
-                    Macros.AddShaderMacro("HAS_PHYSICAL_MAP", 1);
-                }
-
-                if (desc.Reflective)
-                {
-                    //This does not exist for all versions
-                    //If you get compiler errors add the function
-                    lightingFunction += "Reflective";
-                }
-
                 var emissiveSuffix = "None";
                 if (desc.HasEmissiveMap)
                 {
@@ -205,10 +175,9 @@ namespace DiligentEngine.RT.ShaderSets
                     Macros.AddShaderMacro("HAS_EMISSIVE_MAP", 1);
                 }
                 var emissiveHitShader = $"assets/EmissiveHit{emissiveSuffix}.hlsl";
-                shaderVars.Add("LIGHTING_FUNCTION", lightingFunction);
 
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT;
-                ShaderCI.Desc.Name = $"primary ray closest hit shader {lightingFunction}";
+                ShaderCI.Desc.Name = $"primary ray closest hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/PrimaryHit.hlsl");
                 ShaderCI.EntryPoint = "main";
                 pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros);

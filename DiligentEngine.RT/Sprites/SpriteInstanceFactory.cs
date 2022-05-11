@@ -41,12 +41,7 @@ namespace DiligentEngine.RT.Sprites
 
                 var material = await spriteMaterialManager.Checkout(desc);
 
-                var shader = await primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc()
-                {
-                    HasNormalMap = material.NormalSRV != null,
-                    HasPhysicalDescriptorMap = material.PhysicalSRV != null,
-                    Reflective = material.Reflective
-                });
+                var shader = await primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
 
                 var instance = new SpriteInstance(spriteBLAS, shader, primaryHitShaderFactory, material, spriteMaterialManager, activeTextures);
                 return pooledResources.CreateResult(instance);

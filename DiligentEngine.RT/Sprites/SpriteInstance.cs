@@ -40,6 +40,7 @@ namespace DiligentEngine.RT.Sprites
             this.activeTextures = activeTextures;
             blasInstanceData = this.activeTextures.AddActiveTexture(spriteMaterial);
             blasInstanceData.dataType = HLSL.BlasInstanceDataConstants.SpriteData;
+            blasInstanceData.lightingType = HLSL.BlasInstanceDataConstants.GetShaderForDescription(spriteMaterial.NormalSRV != null, spriteMaterial.PhysicalSRV != null, spriteMaterial.Reflective);
         }
 
         public void Dispose()

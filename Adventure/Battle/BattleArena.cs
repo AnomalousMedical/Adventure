@@ -77,12 +77,7 @@ namespace Adventure.Battle
 
                     await floorMesh.End("BattleArenaFloor");
 
-                    var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc
-                    {
-                        HasNormalMap = true,
-                        HasPhysicalDescriptorMap = true,
-                        Reflective = description.Reflective,
-                    });
+                    var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
 
                     await Task.WhenAll
                     (
@@ -105,6 +100,7 @@ namespace Adventure.Battle
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
                     blasInstanceData = activeTextures.AddActiveTexture(floorTexture);
+                    blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Reflective);
 
                     loadingTask.SetResult();
                 }

@@ -32,12 +32,7 @@ namespace RTBepuDemo
 
             public Desc()
             {
-                Shader = new PrimaryHitShader.Desc
-                {
-                    HasNormalMap = true,
-                    HasPhysicalDescriptorMap = true,
-                    Reflective = false
-                };
+                Shader = new PrimaryHitShader.Desc();
             }
         }
 
@@ -94,6 +89,7 @@ namespace RTBepuDemo
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 this.cubeTexture = cubeTextureTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
+                blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

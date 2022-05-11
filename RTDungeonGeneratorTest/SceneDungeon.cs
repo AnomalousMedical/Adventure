@@ -90,11 +90,7 @@ namespace RTDungeonGeneratorTest
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                    var shaderDesc = new PrimaryHitShader.Desc
-                    {
-                        HasNormalMap = true,
-                        HasPhysicalDescriptorMap = true,
-                    };
+                    var shaderDesc = new PrimaryHitShader.Desc();
                     var floorShaderSetup = primaryHitShaderFactory.Checkout(shaderDesc);
                     var wallShaderSetup = primaryHitShaderFactory.Checkout(shaderDesc);
 
@@ -141,7 +137,9 @@ namespace RTDungeonGeneratorTest
                     this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
 
                     floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
+                    floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
                     wallBlasInstanceData = this.activeTextures.AddActiveTexture(this.wallTexture);
+                    wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddTlasBuild(wallInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);

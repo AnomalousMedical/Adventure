@@ -238,10 +238,12 @@ float3 GetPerterbedNormal(
     return pertNormal;
 }
 
-void LightAndShadeBase(
+void LightAndShadeBase
+(
     inout PrimaryRayPayload payload, float3 barycentrics,
     CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ,
-    float3 baseColor)
+    float3 baseColor
+)
 {
     payload.Depth = RayTCurrent();
 
@@ -357,23 +359,49 @@ void LightDispatch
     int mip, float2 uv, SamplerState sState
 )
 {
-    $$(LIGHTING_FUNCTION)
-    (
-    payload, barycentrics,
-    posX, posY, posZ
+    [forcecase] switch (instanceData.lightingType)
+    {
+        case $$(LIGHTANDSHADEBASE):
+            LightAndShadeBase
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState)
+            );
+            break;
 
-    #if HAS_BASE_COLOR
-    ,GetBaseColor(mip, uv, sState)
-    #endif
+        case $$(LIGHTANDSHADEBASENORMAL):
+            LightAndShadeBaseNormal
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv)
+            );
+            break;
 
-    #if HAS_NORMAL_MAP
-    ,GetSampledNormal(mip, uv)
-    #endif
+        case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
+            LightAndShadeBaseNormalPhysical
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv),
+                GetPhysical(mip, uv)
+            );
+            break;
 
-    #if HAS_PHYSICAL_MAP
-    ,GetPhysical(mip, uv)
-    #endif
-    );
+        case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE):
+            LightAndShadeBaseNormalPhysicalReflective
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv),
+                GetPhysical(mip, uv)
+            );
+            break;
+    }
 
     #if HAS_EMISSIVE_MAP
     payload.Color += GetEmissive(mip, uv, sState);
