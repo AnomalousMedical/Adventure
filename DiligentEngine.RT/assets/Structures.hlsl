@@ -91,10 +91,9 @@ struct AngularInfo
 #define TRANSPARENT_GEOM_MASK 0x02
 
 // Ray types
-#define HIT_GROUP_STRIDE  3
+#define HIT_GROUP_STRIDE  2
 #define PRIMARY_RAY_INDEX 0
 #define SHADOW_RAY_INDEX  1
-#define EMISSIVE_RAY_INDEX 2
 
 
 // Small offset between ray intersection and new ray origin to avoid self-intersections.

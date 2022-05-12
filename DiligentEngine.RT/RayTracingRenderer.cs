@@ -189,7 +189,6 @@ namespace DiligentEngine.RT
 
             m_pSBT.Obj.BindMissShader("PrimaryMiss", RtStructures.PRIMARY_RAY_INDEX, IntPtr.Zero, 0);
             m_pSBT.Obj.BindMissShader("ShadowMiss", RtStructures.SHADOW_RAY_INDEX, IntPtr.Zero, 0);
-            m_pSBT.Obj.BindMissShader("EmissiveMiss", RtStructures.EMISSIVE_RAY_INDEX, IntPtr.Zero, 0);
         }
 
         private RTInstances lastInstances;

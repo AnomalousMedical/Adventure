@@ -58,30 +58,6 @@ ShadowRayPayload CastShadow(RayDesc ray, uint Recursion)
     return payload;
 }
 
-float3 GetNearbyEmissiveLighting(RayDesc ray, uint Recursion)
-{
-    EmissiveRayPayload payload = { float3(0.0, 0.0, 0.0), Recursion };
-
-    // Manually terminate the recusrion as the driver doesn't check the recursion depth.
-    if (Recursion > g_ConstantsCB.MaxRecursion)
-    {
-        payload.Color = float3(0.0, 0.0, 0.0);
-        return payload.Color;
-    }
-    //This was modified to use PRIMARY_RAY_INDEX, which makes the any hit opacity shaders work
-    TraceRay(g_TLAS,            // Acceleration structure
-        RAY_FLAG_NONE,
-        OPAQUE_GEOM_MASK,  // Instance inclusion mask - only opaque instances are visible
-        EMISSIVE_RAY_INDEX,  // Ray contribution to hit group index (aka ray type)
-        HIT_GROUP_STRIDE,  // Multiplier for geometry contribution to hit 
-                           // group index (aka the number of ray types)
-        EMISSIVE_RAY_INDEX,  // Miss shader index
-        ray,
-        payload);
-
-    return payload.Color;
-}
-
 // Calculate perpendicular to specified direction.
 void GetRayPerpendicular(float3 dir, out float3 outLeft, out float3 outUp)
 {

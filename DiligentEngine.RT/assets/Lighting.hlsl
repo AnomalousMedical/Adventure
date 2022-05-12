@@ -122,12 +122,6 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
     ray.Origin = Pos + Norm * SMALL_OFFSET;
     ray.TMin = 0.0;
 
-    //float3 eyeDir = normalize(g_ConstantsCB.CameraPos.xyz - Pos);
-
-    ray.TMax = 100; //Make this configurable
-    ray.Direction = normalize(Norm);
-    float3 emissive = GetNearbyEmissiveLighting(ray, Recursion);
-
     for (int i = 0; i < g_ConstantsCB.NumActiveLights; ++i)
     {
         // Limit max ray length by distance to light source.
@@ -156,7 +150,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         }
         col += Color * g_ConstantsCB.Darkness;
     }
-    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb + emissive;
+    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb;
 }
 
 void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm, uint Recursion, float4 physicalInfo)
@@ -170,10 +164,6 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
 
     float3 view = g_ConstantsCB.CameraPos.xyz - Pos;
     SurfaceReflectanceInfo surfInfo = GetSurfaceReflectance(Color, physicalInfo);
-
-    ray.TMax = 100; //Make this configurable
-    ray.Direction = normalize(Norm);
-    float3 emissive = GetNearbyEmissiveLighting(ray, Recursion);
 
     for (int i = 0; i < g_ConstantsCB.NumActiveLights; ++i)
     {
@@ -202,7 +192,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
         }
         col += Color * g_ConstantsCB.Darkness;
     }
-    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb + emissive;
+    Color = col * (1.0 / float(g_ConstantsCB.NumActiveLights)) + g_ConstantsCB.AmbientColor.rgb;
 }
 
 float3 GetPerterbedNormal(
