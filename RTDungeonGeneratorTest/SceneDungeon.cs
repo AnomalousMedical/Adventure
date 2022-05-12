@@ -90,9 +90,8 @@ namespace RTDungeonGeneratorTest
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                    var shaderDesc = new PrimaryHitShader.Desc();
-                    var floorShaderSetup = primaryHitShaderFactory.Checkout(shaderDesc);
-                    var wallShaderSetup = primaryHitShaderFactory.Checkout(shaderDesc);
+                    var floorShaderSetup = primaryHitShaderFactory.Checkout();
+                    var wallShaderSetup = primaryHitShaderFactory.Checkout();
 
                     await Task.Run(() =>
                     {

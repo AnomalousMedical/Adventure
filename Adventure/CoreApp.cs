@@ -94,7 +94,6 @@ namespace Adventure
             services.AddScoped<BattlePlayer.Description>();
             services.AddScoped<Enemy>();
             services.AddScoped<Enemy.Desc>();
-            services.AddSingleton<ShaderPreloader>();
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
             services.AddScoped<Attachment<IZoneManager>>();

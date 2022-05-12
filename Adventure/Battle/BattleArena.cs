@@ -77,7 +77,7 @@ namespace Adventure.Battle
 
                     await floorMesh.End("BattleArenaFloor");
 
-                    var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
+                    var floorShaderSetup = primaryHitShaderFactory.Checkout();
 
                     await Task.WhenAll
                     (

@@ -31,13 +31,6 @@ namespace RTBepuDemo
             public byte Mask { get; set; } = RtStructures.OPAQUE_GEOM_MASK;
 
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
-
-            public PrimaryHitShader.Desc Shader { get; set; }
-
-            public Desc()
-            {
-                Shader = new PrimaryHitShader.Desc();
-            }
         }
 
         private BodyHandle bodyHandle;
@@ -89,7 +82,7 @@ namespace RTBepuDemo
 
             scopedCoroutine.RunTask(async () =>
             {
-                var primaryHitShaderTask = primaryHitShaderFactory.Checkout(description.Shader);
+                var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
                 var cubeTextureTask = textureManager.Checkout(description.Texture);
 
                 await Task.WhenAll

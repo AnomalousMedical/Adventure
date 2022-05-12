@@ -27,13 +27,6 @@ namespace RTBepuDemo
             public InstanceMatrix Transform = InstanceMatrix.Identity;
 
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
-
-            public PrimaryHitShader.Desc Shader { get; set; }
-
-            public Desc()
-            {
-                Shader = new PrimaryHitShader.Desc();
-            }
         }
 
         private readonly TLASBuildInstanceData instanceData;
@@ -75,7 +68,7 @@ namespace RTBepuDemo
 
             coroutine.RunTask(async () =>
             {
-                var primaryHitShaderTask = primaryHitShaderFactory.Checkout(description.Shader);
+                var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
                 var cubeTextureTask = textureManager.Checkout(description.Texture);
 
                 await Task.WhenAll

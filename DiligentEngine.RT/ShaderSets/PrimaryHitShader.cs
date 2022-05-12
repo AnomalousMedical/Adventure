@@ -17,24 +17,11 @@ namespace DiligentEngine.RT.ShaderSets
 
     public class PrimaryHitShader : IDisposable
     {
-        public class Desc
-        {
-            public override bool Equals(object obj)
-            {
-                return obj is Desc description;
-            }
-
-            public override int GetHashCode()
-            {
-                var hashCode = new HashCode();
-                return hashCode.ToHashCode();
-            }
-        }
-
         public class Factory
         {
-            private readonly PooledResourceManager<Desc, PrimaryHitShader> pooledResources
-                = new PooledResourceManager<Desc, PrimaryHitShader>();
+            private readonly PooledResourceManager<object, PrimaryHitShader> pooledResources
+                = new PooledResourceManager<object, PrimaryHitShader>();
+            private readonly object key = new object(); //Only 1 item goes in this pooled resource manager, so just declare its key here
 
             private readonly GraphicsEngine graphicsEngine;
             private readonly ShaderLoader<RTShaders> shaderLoader;
@@ -67,12 +54,12 @@ namespace DiligentEngine.RT.ShaderSets
             /// <param name="baseName"></param>
             /// <param name="numTextures"></param>
             /// <returns></returns>
-            public Task<PrimaryHitShader> Checkout(Desc desc)
+            public Task<PrimaryHitShader> Checkout()
             {
-                return pooledResources.Checkout(desc, async () =>
+                return pooledResources.Checkout(key, async () =>
                 {
                     var shader = new PrimaryHitShader(activeTextures, rayTracingRenderer, blasBuilder);
-                    await shader.SetupShaders(desc, graphicsEngine, shaderLoader, cameraAndLight);
+                    await shader.SetupShaders(graphicsEngine, shaderLoader, cameraAndLight);
                     return pooledResources.CreateResult(shader);
                 });
             }
@@ -111,7 +98,7 @@ namespace DiligentEngine.RT.ShaderSets
             this.activeTextures = activeTextures;
         }
 
-        private async Task SetupShaders(Desc desc, GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader, RTCameraAndLight cameraAndLight)
+        private async Task SetupShaders(GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader, RTCameraAndLight cameraAndLight)
         {
             var id = RTId.CreateId("PrimaryHitShaderVariable").Replace("-", "");
 

@@ -70,8 +70,7 @@ namespace RTSandbox
             {
                 this.cubeTexture = await textureManager.Checkout(description.Texture);
 
-                var shaderDesc = new PrimaryHitShader.Desc();
-                var primaryHitShaderTask = primaryHitShaderFactory.Checkout(shaderDesc);
+                var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
 
                 await Task.WhenAll
                 (

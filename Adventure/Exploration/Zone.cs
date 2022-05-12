@@ -325,8 +325,8 @@ namespace Adventure
                 );
 
                 //TODO: The zone BLASes must be loaded before the shaders, see todo in PrimaryHitShader
-                var floorShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
-                var wallShaderSetup = primaryHitShaderFactory.Checkout(new PrimaryHitShader.Desc());
+                var floorShaderSetup = primaryHitShaderFactory.Checkout();
+                var wallShaderSetup = primaryHitShaderFactory.Checkout();
 
                 await Task.WhenAll
                 (
