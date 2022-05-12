@@ -137,9 +137,9 @@ namespace RTDungeonGeneratorTest
                     this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
 
                     floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
-                    floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
+                    floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     wallBlasInstanceData = this.activeTextures.AddActiveTexture(this.wallTexture);
-                    wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
+                    wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddTlasBuild(wallInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);

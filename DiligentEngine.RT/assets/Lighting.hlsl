@@ -360,6 +360,16 @@ void LightDispatch
             );
             break;
 
+        case $$(LIGHTANDSHADEBASEEMISSIVE):
+            LightAndShadeBase
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState)
+            );
+            payload.Color += GetEmissive(mip, uv, sState);
+            break;
+
         case $$(LIGHTANDSHADEBASENORMAL):
             LightAndShadeBaseNormal
             (
@@ -368,6 +378,17 @@ void LightDispatch
                 GetBaseColor(mip, uv, sState),
                 GetSampledNormal(mip, uv)
             );
+            break;
+
+        case $$(LIGHTANDSHADEBASENORMALEMISSIVE):
+            LightAndShadeBaseNormal
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv)
+            );
+            payload.Color += GetEmissive(mip, uv, sState);
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
@@ -381,6 +402,18 @@ void LightDispatch
             );
             break;
 
+        case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE):
+            LightAndShadeBaseNormalPhysical
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv),
+                GetPhysical(mip, uv)
+            );
+            payload.Color += GetEmissive(mip, uv, sState);
+            break;
+
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE):
             LightAndShadeBaseNormalPhysicalReflective
             (
@@ -391,11 +424,19 @@ void LightDispatch
                 GetPhysical(mip, uv)
             );
             break;
-    }
 
-    #if HAS_EMISSIVE_MAP
-    payload.Color += GetEmissive(mip, uv, sState);
-    #endif
+        case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE):
+            LightAndShadeBaseNormalPhysicalReflective
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                GetBaseColor(mip, uv, sState),
+                GetSampledNormal(mip, uv),
+                GetPhysical(mip, uv)
+            );
+            payload.Color += GetEmissive(mip, uv, sState);
+            break;
+    }
 }
 
 void LightMesh

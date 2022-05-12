@@ -19,18 +19,14 @@ namespace DiligentEngine.RT.ShaderSets
     {
         public class Desc
         {
-            public bool HasEmissiveMap { get; set; }
-
             public override bool Equals(object obj)
             {
-                return obj is Desc description &&
-                       HasEmissiveMap == description.HasEmissiveMap;
+                return obj is Desc description;
             }
 
             public override int GetHashCode()
             {
                 var hashCode = new HashCode();
-                hashCode.Add(HasEmissiveMap);
                 return hashCode.ToHashCode();
             }
         }
@@ -158,17 +154,16 @@ namespace DiligentEngine.RT.ShaderSets
                     { "MESH_DATA_TYPE", HLSL.BlasInstanceDataConstants.MeshData.ToString() },
                     { "SPRITE_DATA_TYPE", HLSL.BlasInstanceDataConstants.SpriteData.ToString() },
                     { "LIGHTANDSHADEBASE", HLSL.BlasInstanceDataConstants.LightAndShadeBase.ToString() },
+                    { "LIGHTANDSHADEBASEEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseEmissive.ToString() },
                     { "LIGHTANDSHADEBASENORMAL", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormal.ToString() },
+                    { "LIGHTANDSHADEBASENORMALEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalEmissive.ToString() },
                     { "LIGHTANDSHADEBASENORMALPHYSICAL", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysical.ToString() },
+                    { "LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalEmissive.ToString() },
                     { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflective.ToString() },
+                    { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflectiveEmissive.ToString() },
                 };
 
                 // Create closest hit shaders.
-                if (desc.HasEmissiveMap)
-                {
-                    Macros.AddShaderMacro("HAS_EMISSIVE_MAP", 1);
-                }
-
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT;
                 ShaderCI.Desc.Name = $"primary ray closest hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/PrimaryHit.hlsl");

@@ -71,27 +71,47 @@ namespace DiligentEngine.RT.HLSL
         public const uint SpriteData = 1;
 
         public const uint LightAndShadeBase = 0;
-        public const uint LightAndShadeBaseNormal = 1;
-        public const uint LightAndShadeBaseNormalPhysical = 2;
-        public const uint LightAndShadeBaseNormalPhysicalReflective = 3;
+        public const uint LightAndShadeBaseEmissive = 1;
+        public const uint LightAndShadeBaseNormal = 2;
+        public const uint LightAndShadeBaseNormalEmissive = 3;
+        public const uint LightAndShadeBaseNormalPhysical = 4;
+        public const uint LightAndShadeBaseNormalPhysicalEmissive = 5;
+        public const uint LightAndShadeBaseNormalPhysicalReflective = 6;
+        public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 7;
 
-        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective)
+        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive)
         {
             if (hasNormal && hasPhysical && reflective)
             {
+                if (emissive)
+                {
+                    return LightAndShadeBaseNormalPhysicalReflectiveEmissive;
+                }
                 return LightAndShadeBaseNormalPhysicalReflective;
             }
 
             if(hasNormal && hasPhysical)
             {
+                if (emissive)
+                {
+                    return LightAndShadeBaseNormalPhysicalEmissive;
+                }
                 return LightAndShadeBaseNormalPhysical;
             }
 
             if (hasNormal)
             {
+                if (emissive)
+                {
+                    return LightAndShadeBaseNormalEmissive;
+                }
                 return LightAndShadeBaseNormal;
             }
 
+            if (emissive)
+            {
+                return LightAndShadeBaseEmissive;
+            }
             return LightAndShadeBase;
         }
     }

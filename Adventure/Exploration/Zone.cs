@@ -346,9 +346,9 @@ namespace Adventure
 
                 rtInstances.AddShaderTableBinder(Bind);
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
-                floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor);
+                floorBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false);
                 wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
-                wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectWall);
+                wallBlasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectWall, false);
                 rtInstances.AddTlasBuild(floorInstanceData);
                 rtInstances.AddTlasBuild(wallInstanceData);
 

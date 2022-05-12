@@ -70,10 +70,7 @@ namespace RTSandbox
             {
                 this.cubeTexture = await textureManager.Checkout(description.Texture);
 
-                var shaderDesc = new PrimaryHitShader.Desc
-                {
-                    HasEmissiveMap = cubeTexture.EmissiveSRV != null,
-                };
+                var shaderDesc = new PrimaryHitShader.Desc();
                 var primaryHitShaderTask = primaryHitShaderFactory.Checkout(shaderDesc);
 
                 await Task.WhenAll
@@ -85,7 +82,7 @@ namespace RTSandbox
                 this.instanceData.pBLAS = cubeBLAS.Instance.BLAS.Obj;
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective);
+                blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

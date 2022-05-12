@@ -100,7 +100,7 @@ namespace Adventure.Battle
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
                     blasInstanceData = activeTextures.AddActiveTexture(floorTexture);
-                    blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Reflective);
+                    blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Reflective, false);
 
                     loadingTask.SetResult();
                 }

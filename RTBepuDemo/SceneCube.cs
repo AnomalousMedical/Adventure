@@ -89,7 +89,7 @@ namespace RTBepuDemo
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 this.cubeTexture = cubeTextureTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false);
+                blasInstanceData.lightingType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });
