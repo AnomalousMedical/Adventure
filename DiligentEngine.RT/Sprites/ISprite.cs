@@ -1,4 +1,6 @@
 ﻿using Engine.Platform;
+using System;
+using System.Collections.Generic;
 
 namespace DiligentEngine.RT.Sprites
 {
@@ -7,5 +9,8 @@ namespace DiligentEngine.RT.Sprites
         SpriteFrame GetCurrentFrame();
         void SetAnimation(string animationName);
         void Update(Clock clock);
+        int FrameIndex { get; }
+        String CurrentAnimationName { get; }
+        IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations { get; }
     }
 }

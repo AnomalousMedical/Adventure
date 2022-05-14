@@ -76,6 +76,7 @@ namespace DiligentEngine.RT.Sprites
     {
         private Dictionary<String, SpriteAnimation> animations;
         private SpriteAnimation current;
+        private String currentName;
         private long frameTime;
         private long duration;
         private int frame;
@@ -107,9 +108,18 @@ namespace DiligentEngine.RT.Sprites
 
         public void SetAnimation(String animationName)
         {
+            if (animationName == currentName)
+            {
+                return;
+            }
+
+            currentName = animationName;
+
             if (!animations.TryGetValue(animationName, out current))
             {
-                current = animations.Values.First();
+                var first = animations.First();
+                current = first.Value;
+                currentName = first.Key;
             }
             frameTime = 0;
             duration = current.duration;
@@ -126,6 +136,12 @@ namespace DiligentEngine.RT.Sprites
         {
             return current.frames[frame];
         }
+
+        public String CurrentAnimationName => currentName;
+
+        public int FrameIndex => frame;
+
+        public IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations => animations;
     }
 
     public class FrameEventSprite : ISprite
@@ -174,7 +190,9 @@ namespace DiligentEngine.RT.Sprites
 
             if (!animations.TryGetValue(animationName, out current))
             {
-                current = animations.Values.First();
+                var first = animations.First();
+                current = first.Value;
+                currentName = first.Key;
             }
             frameTime = 0;
             duration = current.duration;
@@ -199,5 +217,9 @@ namespace DiligentEngine.RT.Sprites
         }
 
         public String CurrentAnimationName => currentName;
+
+        public int FrameIndex => frame;
+
+        public IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations => animations;
     }
 }

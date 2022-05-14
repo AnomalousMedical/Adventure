@@ -107,7 +107,10 @@ namespace DiligentEngine.RT
 
                 blasDesc.CubeUV = new Vector4[]
                 {
-                        new Vector4(1,0,0,0), new Vector4(0,0,0,0), new Vector4(0,1,0,0), new Vector4(1,1,0,0)  //Front +z
+                    new Vector4(desc.Right,desc.Top,0,0), 
+                    new Vector4(desc.Left,desc.Top,0,0), 
+                    new Vector4(desc.Left,desc.Bottom,0,0), 
+                    new Vector4(desc.Right,desc.Bottom,0,0)  //Front +z
                 };
 
                 blasDesc.CubeNormals = new Vector4[]

@@ -20,7 +20,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
 
         case $$(SPRITE_DATA_TYPE):
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightSprite(payload, barycentrics, posX, posY, posZ, mip, uv);
             break;
     }

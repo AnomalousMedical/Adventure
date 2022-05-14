@@ -24,7 +24,7 @@ namespace DiligentEngine.RT.Sprites
 
         public SpriteInstance
         (
-            SpritePlaneBLAS spritePlaneBLAS,
+            Dictionary<String, List<SpritePlaneBLAS>> blasFrames,
             PrimaryHitShader primaryHitShader,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             SpriteMaterial spriteMaterial,
@@ -32,7 +32,7 @@ namespace DiligentEngine.RT.Sprites
             ActiveTextures activeTextures
         )
         {
-            this.spritePlaneBLAS = spritePlaneBLAS;
+            this.spritePlaneBLAS = blasFrames.Values.First()[0];
             this.primaryHitShader = primaryHitShader;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.spriteMaterial = spriteMaterial;

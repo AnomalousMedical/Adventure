@@ -201,7 +201,7 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, playerSpriteInfo.Animations);
 
                 if (this.disposed)
                 {
