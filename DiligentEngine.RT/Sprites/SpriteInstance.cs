@@ -15,12 +15,11 @@ namespace DiligentEngine.RT.Sprites
         private readonly SpriteMaterial spriteMaterial;
         private readonly ISpriteMaterialManager spriteMaterialManager;
         private readonly ActiveTextures activeTextures;
-        private readonly SpritePlaneBLAS spritePlaneBLAS;
+        private readonly SpritePlaneBLAS.Factory spriteBlasFactory;
+        private readonly Dictionary<String, List<SpritePlaneBLAS>> blasFrames;
         private PrimaryHitShader primaryHitShader;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private HLSL.BlasInstanceData blasInstanceData;
-
-        public BLASInstance Instance => spritePlaneBLAS.Instance;
 
         public SpriteInstance
         (
@@ -29,15 +28,17 @@ namespace DiligentEngine.RT.Sprites
             PrimaryHitShader.Factory primaryHitShaderFactory,
             SpriteMaterial spriteMaterial,
             ISpriteMaterialManager spriteMaterialManager,
-            ActiveTextures activeTextures
+            ActiveTextures activeTextures,
+            SpritePlaneBLAS.Factory spriteBlasFactory
         )
         {
-            this.spritePlaneBLAS = blasFrames.Values.First()[0];
+            this.blasFrames = blasFrames;
             this.primaryHitShader = primaryHitShader;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.spriteMaterial = spriteMaterial;
             this.spriteMaterialManager = spriteMaterialManager;
             this.activeTextures = activeTextures;
+            this.spriteBlasFactory = spriteBlasFactory;
             blasInstanceData = this.activeTextures.AddActiveTexture(spriteMaterial);
             blasInstanceData.dataType = HLSL.BlasInstanceDataConstants.SpriteData;
             blasInstanceData.lightingType = HLSL.BlasInstanceDataConstants.GetShaderForDescription(spriteMaterial.NormalSRV != null, spriteMaterial.PhysicalSRV != null, spriteMaterial.Reflective, false);
@@ -48,20 +49,32 @@ namespace DiligentEngine.RT.Sprites
             this.activeTextures.RemoveActiveTexture(spriteMaterial);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
             spriteMaterialManager.Return(spriteMaterial);
+            foreach(var animation in blasFrames.Values)
+            {
+                foreach(var frame in animation)
+                {
+                    spriteBlasFactory.TryReturn(frame);
+                }
+            }
         }
 
-        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, SpriteFrame frame)
+        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, TLASBuildInstanceData tlasInstanceBuildData, String currentAnimation, int frame)
         {
-            blasInstanceData.vertexOffset = spritePlaneBLAS.Instance.VertexOffset;
-            blasInstanceData.indexOffset = spritePlaneBLAS.Instance.IndexOffset;
-            blasInstanceData.u1 = frame.Right; blasInstanceData.v1 = frame.Top;
-            blasInstanceData.u2 = frame.Left; blasInstanceData.v2 = frame.Top;
-            blasInstanceData.u3 = frame.Left; blasInstanceData.v3 = frame.Bottom;
-            blasInstanceData.u4 = frame.Right; blasInstanceData.v4 = frame.Bottom;
+            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
+            //TODO: This is technicaly glitchy, this will be 1 frame behind, since we build the tlas before calling this function
+            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;
+            blasInstanceData.vertexOffset = spritePlaneBLAS.VertexOffset;
+            blasInstanceData.indexOffset = spritePlaneBLAS.IndexOffset;
             fixed (HLSL.BlasInstanceData* ptr = &this.blasInstanceData)
             {
                 primaryHitShader.BindSbt(instanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(HLSL.BlasInstanceData));
             }
+        }
+
+        internal void InitFrame(TLASBuildInstanceData tlasInstanceBuildData, String currentAnimation, int frame)
+        {
+            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
+            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;
         }
     }
 }

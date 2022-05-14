@@ -38,9 +38,10 @@ namespace DiligentEngine.RT
             shaderTableBinders.Remove(binder);
         }
 
-        public void AddSprite(ISprite sprite)
+        public void AddSprite(ISprite sprite, TLASBuildInstanceData instanceBuildData, SpriteInstance spriteInstance)
         {
             sprites.Add(sprite);
+            spriteInstance.InitFrame(instanceBuildData, sprite.CurrentAnimationName, sprite.FrameIndex);
         }
 
         public void RemoveSprite(ISprite sprite)

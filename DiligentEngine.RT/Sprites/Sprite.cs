@@ -141,7 +141,7 @@ namespace DiligentEngine.RT.Sprites
 
         public int FrameIndex => frame;
 
-        public IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations => animations;
+        public IReadOnlyDictionary<String, SpriteAnimation> Animations => animations;
     }
 
     public class FrameEventSprite : ISprite
@@ -220,6 +220,6 @@ namespace DiligentEngine.RT.Sprites
 
         public int FrameIndex => frame;
 
-        public IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations => animations;
+        public IReadOnlyDictionary<String, SpriteAnimation> Animations => animations;
     }
 }

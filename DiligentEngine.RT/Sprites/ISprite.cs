@@ -11,6 +11,6 @@ namespace DiligentEngine.RT.Sprites
         void Update(Clock clock);
         int FrameIndex { get; }
         String CurrentAnimationName { get; }
-        IEnumerable<KeyValuePair<String, SpriteAnimation>> Animations { get; }
+        IReadOnlyDictionary<String, SpriteAnimation> Animations { get; }
     }
 }
