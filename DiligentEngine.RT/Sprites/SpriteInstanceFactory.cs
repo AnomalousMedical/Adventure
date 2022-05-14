@@ -11,7 +11,7 @@ namespace DiligentEngine.RT.Sprites
 {
     public class SpriteInstanceFactory
     {
-        private readonly SpritePlaneBLAS spriteBLAS;
+        private readonly SpritePlaneBLAS.Factory spriteBLAS;
         private readonly ISpriteMaterialManager spriteMaterialManager;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly ActiveTextures activeTextures;
@@ -21,13 +21,13 @@ namespace DiligentEngine.RT.Sprites
 
         public SpriteInstanceFactory
         (
-            SpritePlaneBLAS spriteBLAS, 
+            SpritePlaneBLAS.Factory spriteBLASFactory, 
             ISpriteMaterialManager spriteMaterialManager, 
             PrimaryHitShader.Factory primaryHitShaderFactory,
             ActiveTextures activeTextures
         )
         {
-            this.spriteBLAS = spriteBLAS;
+            this.spriteBLAS = spriteBLASFactory;
             this.spriteMaterialManager = spriteMaterialManager;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.activeTextures = activeTextures;
@@ -43,7 +43,8 @@ namespace DiligentEngine.RT.Sprites
 
                 var shader = await primaryHitShaderFactory.Checkout();
 
-                var instance = new SpriteInstance(spriteBLAS, shader, primaryHitShaderFactory, material, spriteMaterialManager, activeTextures);
+                var blas = await spriteBLAS.Checkout(new SpritePlaneBLAS.Desc()); //DO better
+                var instance = new SpriteInstance(blas, shader, primaryHitShaderFactory, material, spriteMaterialManager, activeTextures);
                 return pooledResources.CreateResult(instance);
             });
         }
