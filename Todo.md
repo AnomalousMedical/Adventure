@@ -1,5 +1,9 @@
 # TODO
 
+## Finish cleaning up sprite changes
+Remove per instance data for frames
+use lighting switch to determine which kind of sampler to use, this way we can remove an entire switch statement
+
 ## Can you do better than a map and array lookup for each sprite each frame
 Even sprites that aren't animated will keep updating blas and tlas data with the SpriteBlasLinker. Optimize this so things that are one frame don't update.
 
