@@ -6,14 +6,14 @@
 	<ApplicationIcon>Adventure.ico</ApplicationIcon>
     <Configurations>Debug;Release;RelMDeb</Configurations>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <PublishSingleFile>false</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
     <OutputType>WinExe</OutputType>
+	<SelfContained>true</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='RelMDeb'">

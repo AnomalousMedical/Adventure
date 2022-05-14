@@ -211,8 +211,17 @@ namespace Adventure
             var assetPath = Path.GetFullPath(Path.Combine(FolderFinder.ExecutableFolder, "AdventureAssets"));
             if (!Directory.Exists(assetPath))
             {
-                //If no local assets, load from dev location
+                //If no local assets, load from dev location, try for both self-contained and normal
                 assetPath = Path.GetFullPath("../../../../../../AdventureAssets");
+                if (!Directory.Exists(assetPath))
+                {
+                    assetPath = Path.GetFullPath("../../../../../AdventureAssets");
+
+                    if (!Directory.Exists(assetPath))
+                    {
+                        throw new InvalidOperationException("Cannot find AdventureAssets");
+                    }
+                }
             }
             vfs.addArchive(assetPath);
 
