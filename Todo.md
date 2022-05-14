@@ -1,52 +1,15 @@
 # TODO
 
+## Can you do better than a map and array lookup for each sprite each frame
+Even sprites that aren't animated will keep updating blas and tlas data with the SpriteBlasLinker. Optimize this so things that are one frame don't update.
+
+Also the sprites are linked to the sprite instances by looking up the frames from a map then an array. This doesn't seem too bad usage wise, but it can probably be better
+
 ## Don't allow enemies in connecting corridors
 Don't allow enemies to appear in the connecting corridors or make them larger so you can't contact one not in the current zone
 
-## Finish emissive lighting
-The emissive lighting is not very good. It still needs to light up nearby objects more accurately and have a limit in length for this.
-
 ## Add occlusion map
 Add the occlusion maps to at least see what they look like.
-
-## Fix Map Mesh Normals
-The map mesh gets a bit triangly for some shadows. This is because the normals need to be averaged for each vertex. Once this is done the lighting should smooth out. As it is
-now each triangle is similar to the face of a cube and lights in the same way. Thats why the triangles appear.
-
-The meshes themselves seem to be converted between coords ok, this issue is related to the averaging.
-
-## Diligent Engine BLAS String Fix
-This is fixed in the anomalous diligent branch.
-
-This will show up as sometimes blases not finding their geometry. There will be a log error that the hashes don't match and debug asserts. The objects will also not show in the scene. This is because strings are being deallocated coming across p/invoke. The fix requires a DiligentEngine modification.
-
-Currently the diligent engine needs a small patch to work with c#. In Graphics/GraphicsEngine/src/BottomLevelASBase.cpp change line ~139 in `CopyBLASGeometryDesc` from
-```
-bool IsUniqueName = DstNameToIndex.emplace(SrcGeoName, BLASGeomIndex{i, ActualIndex}).second;
-```
-to
-```
-bool IsUniqueName = DstNameToIndex.emplace(pTriangles[i].GeometryName, BLASGeomIndex{i, ActualIndex}).second;
-```
-
-This also needs to be done to a similar line for the boxes on ~174
-```
-bool IsUniqueName = DstNameToIndex.emplace(pBoxes[i].GeometryName, BLASGeomIndex{i, ActualIndex}).second;
-```
-
-This is an issue where sometimes the blas GeometryNames from CreateBLAS are already garbage collected before we can call BuildBLAS. This is a problem anyway, since we don't want
-to use strings that are gc'd on the native side. The fix here is that the description is creating copies of all the strings anyway. Instead of using the original string from c#
-this mod changes it to use the copied string. That keeps the memory allocated. It also does not cause a leak since the "desc" lives with the object. This has the advantage of allocating
-the string with diligent's allocater too.
-
-The comment string below are some more notes about the problem, but this is the issue and fix.
-
-//TODO: There is a potential problem here where the managed strings are deallocated, then diligent will error with "Cube" hashes the same as "" and then be unable to find the geometry. Need to figure out how to use strings with pass structs.
-//There is a hint in it is the 'RHS.Str' that is messed up
-//This is from m_NameToIndex, so it is the one being stored earlier when calling CreateBLAS, not the one from this line
-//So it is string gc, but we need to make a copy for CreateBLAS so it can be used here later in BuildBLAS
-//In BottomLevelASBase.cpp line 139 in CopyBLASGeometryDesc. You can see the string being added to the hash map is the
-//one we are passing from c++. A Copy is made, so can we use that copy in the struct instead.
 
 ## Add north - south transitions
 Make it so levels can go north and south too
