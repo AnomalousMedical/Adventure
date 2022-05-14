@@ -102,9 +102,8 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
 
-                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 graphicsLoaded = true;
 
                 AddGraphics();
@@ -158,7 +157,7 @@ namespace Adventure
                 graphicsVisible = true;
                 rtInstances.AddTlasBuild(tlasData);
                 rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
+                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
             }
         }
 
@@ -224,7 +223,7 @@ namespace Adventure
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, tlasData, sprite);
         }
     }
 }

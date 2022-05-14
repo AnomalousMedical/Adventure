@@ -109,7 +109,7 @@ namespace Adventure.Battle
                     colorMap: "Graphics/Sprites/Crawl/UI/pointingfinger.png",
                     materials: new HashSet<SpriteMaterialTextureItem>());
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(matDesc);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(matDesc, sprite);
 
                 if (disposed)
                 {
@@ -117,7 +117,6 @@ namespace Adventure.Battle
                     return; //Stop loading
                 }
 
-                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 if (visible)
                 {
                     AddToScene();
@@ -167,7 +166,7 @@ namespace Adventure.Battle
         {
             rtInstances.AddTlasBuild(tlasData);
             rtInstances.AddShaderTableBinder(Bind);
-            rtInstances.AddSprite(sprite);
+            rtInstances.AddSprite(sprite, tlasData, spriteInstance);
         }
 
         internal void BattleStarted()
@@ -309,7 +308,7 @@ namespace Adventure.Battle
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, tlasData, sprite);
         }
     }
 }

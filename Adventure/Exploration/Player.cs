@@ -145,7 +145,6 @@ namespace Adventure
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
 
-            sprite.FrameChanged += Sprite_FrameChanged;
 
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -171,8 +170,6 @@ namespace Adventure
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
             };
-
-            Sprite_FrameChanged(sprite);
 
             //Character Mover
             var shape = new Sphere(halfScale); //Each character creates a shape, try to load from resources somehow
@@ -201,7 +198,7 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, playerSpriteInfo.Animations);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, sprite);
 
                 if (this.disposed)
                 {
@@ -209,10 +206,12 @@ namespace Adventure
                     return; //Stop loading
                 }
 
-                this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                 rtInstances.AddTlasBuild(tlasData);
                 rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
+                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+
+                sprite.FrameChanged += Sprite_FrameChanged;
+                Sprite_FrameChanged(sprite);
             });
         }
 
@@ -460,7 +459,7 @@ namespace Adventure
 
             var scale = sprite.BaseScale * this.currentScale;
 
-            if(mainHandItem != null)
+            if (mainHandItem != null)
             {
                 var primaryAttach = frame.Attachments[this.primaryHand];
                 var offset = scale * primaryAttach.translate;
@@ -479,7 +478,7 @@ namespace Adventure
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, tlasData, sprite);
         }
 
         private void OnMainHandModified(CharacterSheet obj)

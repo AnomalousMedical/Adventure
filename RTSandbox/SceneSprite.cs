@@ -23,6 +23,7 @@ namespace RTSandbox
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly RTInstances rtInstances;
         private SpriteInstance spriteInstance;
+        private Sprite sprite = new Sprite();
 
         public SceneSprite
         (
@@ -54,17 +55,18 @@ namespace RTSandbox
                         new SpriteMaterialTextureItem(0xff8c4800, "cc0Textures/Leather026_1K", "jpg"),
                         new SpriteMaterialTextureItem(0xffffe254, "cc0Textures/Metal038_1K", "jpg"),
                     }
-                ));
-                this.instanceData.pBLAS = spriteInstance.Instance.BLAS.Obj;
+                ), sprite);
 
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite, instanceData, spriteInstance);
             });
         }
 
         public void Dispose()
         {
             this.spriteInstanceFactory.TryReturn(spriteInstance);
+            rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(instanceData);
         }
@@ -76,14 +78,7 @@ namespace RTSandbox
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            var spriteFrame = new SpriteFrame()
-            {
-                Left = 0,
-                Top = 0,
-                Right = 1,
-                Bottom = 1,
-            };
-            spriteInstance.Bind(this.instanceData.InstanceName, sbt, tlas, spriteFrame);
+            spriteInstance.Bind(this.instanceData.InstanceName, sbt, tlas, instanceData, sprite);
         }
     }
 }

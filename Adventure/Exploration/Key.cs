@@ -100,12 +100,11 @@ namespace Adventure
 
                 if (!state.Taken)
                 {
-                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial);
+                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
 
-                    this.tlasData.pBLAS = spriteInstance.Instance.BLAS.Obj;
                     rtInstances.AddTlasBuild(tlasData);
                     rtInstances.AddShaderTableBinder(Bind);
-                    rtInstances.AddSprite(sprite);
+                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
 
                     graphicsCreated = true;
                 }
@@ -199,7 +198,7 @@ namespace Adventure
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite.GetCurrentFrame());
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, tlasData, sprite);
         }
     }
 }
