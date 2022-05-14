@@ -78,7 +78,7 @@ namespace RTSandbox
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.instanceData.InstanceName, sbt, tlas, instanceData, sprite);
+            spriteInstance.Bind(this.instanceData.InstanceName, sbt, tlas, sprite);
         }
     }
 }

@@ -223,7 +223,7 @@ namespace Adventure
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, tlasData, sprite);
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
         }
     }
 }

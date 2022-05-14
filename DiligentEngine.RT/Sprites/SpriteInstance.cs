@@ -58,25 +58,33 @@ namespace DiligentEngine.RT.Sprites
             }
         }
 
-        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, TLASBuildInstanceData tlasInstanceBuildData, ISprite sprite)
+        /// <summary>
+        /// This will happen before the bind steps and sets up the tlas instance
+        /// build data for this frame. This actually happens during update sprites,
+        /// but the user will call that before render.
+        /// </summary>
+        internal void UpdateBlas(TLASBuildInstanceData tlasInstanceBuildData, ISprite sprite)
         {
             String currentAnimation = sprite.CurrentAnimationName;
             int frame = sprite.FrameIndex;
             var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
-            //TODO: This is technicaly glitchy, this will be 1 frame behind, since we build the tlas before calling this function
             tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;
+        }
+
+        /// <summary>
+        /// This happens after the tlas is created and binds the instance data into it.
+        /// </summary>
+        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, ISprite sprite)
+        {
+            String currentAnimation = sprite.CurrentAnimationName;
+            int frame = sprite.FrameIndex;
+            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
             blasInstanceData.vertexOffset = spritePlaneBLAS.VertexOffset;
             blasInstanceData.indexOffset = spritePlaneBLAS.IndexOffset;
             fixed (HLSL.BlasInstanceData* ptr = &this.blasInstanceData)
             {
                 primaryHitShader.BindSbt(instanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(HLSL.BlasInstanceData));
             }
-        }
-
-        internal void InitFrame(TLASBuildInstanceData tlasInstanceBuildData, String currentAnimation, int frame)
-        {
-            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
-            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;
         }
     }
 }

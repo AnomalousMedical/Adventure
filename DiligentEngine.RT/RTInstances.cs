@@ -14,7 +14,7 @@ namespace DiligentEngine.RT
 
         List<TLASBuildInstanceData> instances = new List<TLASBuildInstanceData>();
         List<ShaderTableBinder> shaderTableBinders = new List<ShaderTableBinder>();
-        List<ISprite> sprites = new List<ISprite>();
+        List<SpriteBlasLinker> sprites = new List<SpriteBlasLinker>();
 
         internal List<TLASBuildInstanceData> Instances => instances;
 
@@ -40,13 +40,20 @@ namespace DiligentEngine.RT
 
         public void AddSprite(ISprite sprite, TLASBuildInstanceData instanceBuildData, SpriteInstance spriteInstance)
         {
-            sprites.Add(sprite);
-            spriteInstance.InitFrame(instanceBuildData, sprite.CurrentAnimationName, sprite.FrameIndex);
+            sprites.Add(new SpriteBlasLinker(sprite, instanceBuildData, spriteInstance));
         }
 
         public void RemoveSprite(ISprite sprite)
         {
-            sprites.Remove(sprite);
+            var max = sprites.Count;
+            for(int i = 0; i < max; ++i)
+            {
+                if(sprites[i].WrappedSprite == sprite)
+                {
+                    sprites.RemoveAt(i);
+                    i = max;
+                }
+            }
         }
 
         public void UpdateSprites(Clock clock)

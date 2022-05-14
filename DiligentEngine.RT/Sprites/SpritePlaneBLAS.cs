@@ -102,7 +102,7 @@ namespace DiligentEngine.RT
 
                 blasDesc.CubePos = new Vector3[]
                 {
-                        new Vector3(-0.5f,-0.5f,+0.0f), new Vector3(+0.5f,-0.5f,+0.0f), new Vector3(+0.5f,+0.5f,+0.0f), new Vector3(-0.5f,+0.5f,+0.0f), //Front +z
+                    new Vector3(-0.5f,-0.5f,+0.0f), new Vector3(+0.5f,-0.5f,+0.0f), new Vector3(+0.5f,+0.5f,+0.0f), new Vector3(-0.5f,+0.5f,+0.0f), //Front +z
                 };
 
                 blasDesc.CubeUV = new Vector4[]
@@ -115,12 +115,12 @@ namespace DiligentEngine.RT
 
                 blasDesc.CubeNormals = new Vector4[]
                 {
-                        new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
+                    new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
                 };
 
                 blasDesc.Indices = new uint[]
                 {
-                        0,1,2, 0,3,2
+                    0,1,2, 0,3,2
                 };
 
                 instance = await blasBuilder.CreateBLAS(blasDesc);
