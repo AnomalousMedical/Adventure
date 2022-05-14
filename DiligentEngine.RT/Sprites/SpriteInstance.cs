@@ -58,8 +58,10 @@ namespace DiligentEngine.RT.Sprites
             }
         }
 
-        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, TLASBuildInstanceData tlasInstanceBuildData, String currentAnimation, int frame)
+        public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, TLASBuildInstanceData tlasInstanceBuildData, ISprite sprite)
         {
+            String currentAnimation = sprite.CurrentAnimationName;
+            int frame = sprite.FrameIndex;
             var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
             //TODO: This is technicaly glitchy, this will be 1 frame behind, since we build the tlas before calling this function
             tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;

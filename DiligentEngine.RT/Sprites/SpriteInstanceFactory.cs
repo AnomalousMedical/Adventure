@@ -33,7 +33,7 @@ namespace DiligentEngine.RT.Sprites
             this.activeTextures = activeTextures;
         }
 
-        public Task<SpriteInstance> Checkout(SpriteMaterialDescription desc, IReadOnlyDictionary<string, SpriteAnimation> animations)
+        public Task<SpriteInstance> Checkout(SpriteMaterialDescription desc, ISprite sprite)
         {
             return pooledResources.Checkout(desc, async () =>
             {
@@ -45,7 +45,7 @@ namespace DiligentEngine.RT.Sprites
 
                 var blasLoaders = new Dictionary<String, List<Task<SpritePlaneBLAS>>>();
 
-                foreach (var animation in animations)
+                foreach (var animation in sprite.Animations)
                 {
                     var animFrames = new List<Task<SpritePlaneBLAS>>();
                     blasLoaders[animation.Key] = animFrames;
