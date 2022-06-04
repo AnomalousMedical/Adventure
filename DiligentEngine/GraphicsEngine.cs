@@ -70,7 +70,7 @@ namespace DiligentEngine
                 var message = "Cannot create device.";
                 if (features.HasFlag(FeatureFlags.RayTracing))
                 {
-                    message += " This application requires ray tracing hardware for Vulkan 1.2 or above.";
+                    message += " This application requires hardware with Shader Model 6.3 or above.";
                 }
                 throw new InvalidOperationException(message);
             }
