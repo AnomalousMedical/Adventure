@@ -8,7 +8,7 @@ PrimaryRayPayload CastPrimaryRay(RayDesc ray, uint Recursion)
     PrimaryRayPayload payload = {float3(0, 0, 0), 0.0, Recursion};
 
     // Manually terminate the recusrion as the driver doesn't check the recursion depth.
-    if (Recursion > g_ConstantsCB.MaxRecursion)
+    if (Recursion >= g_ConstantsCB.MaxRecursion)
     {
         // set pink color for debugging
         payload.Color = float3(0.95, 0.18, 0.95);
@@ -37,7 +37,7 @@ ShadowRayPayload CastShadow(RayDesc ray, uint Recursion)
     ShadowRayPayload payload = {0.0, Recursion};
     
     // Manually terminate the recusrion as the driver doesn't check the recursion depth.
-    if (Recursion > g_ConstantsCB.MaxRecursion)
+    if (Recursion >= g_ConstantsCB.MaxRecursion)
     {
         payload.Shading = 1.0;
         return payload;
