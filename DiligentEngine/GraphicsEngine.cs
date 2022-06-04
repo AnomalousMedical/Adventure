@@ -20,6 +20,12 @@ namespace DiligentEngine
             RayTracing = 1 << 1,
         };
 
+        public enum RenderApi : Uint32
+        {
+            Vulkan = 0,
+            D3D12 = 1
+        }
+
         AutoPtr<IRenderDevice> RenderDevicePtr;
         AutoPtr<IDeviceContext> ImmediateContextPtr;
         AutoPtr<ISwapChain> SwapChainPtr;
@@ -41,11 +47,12 @@ namespace DiligentEngine
             this.SwapChainPtr.Dispose();
         }
 
-        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features = FeatureFlags.None)
+        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features = FeatureFlags.None, RenderApi renderApi = RenderApi.Vulkan)
         {
             var result = GenericEngineFactory_CreateDeviceAndSwapChain(
             hwnd
             , features
+            , renderApi
             , swapChainDesc.Width
             , swapChainDesc.Height
             , swapChainDesc.ColorBufferFormat
@@ -83,6 +90,7 @@ namespace DiligentEngine
         private static extern CreateDeviceAndSwapChainResult GenericEngineFactory_CreateDeviceAndSwapChain(
             IntPtr hWnd
             , FeatureFlags features
+            , RenderApi renderApi
             , Uint32 Width                       
             , Uint32 Height                      
             , TEXTURE_FORMAT ColorBufferFormat   
