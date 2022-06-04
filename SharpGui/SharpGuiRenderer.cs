@@ -64,6 +64,7 @@ namespace SharpGui
 
             // Create a vertex shader
             ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_VERTEX;
+            ShaderCI.ShaderCompiler = SHADER_COMPILER.SHADER_COMPILER_DXC;
             ShaderCI.EntryPoint = "main";
             ShaderCI.Desc.Name = "SharpGui Quad VS";
             ShaderCI.Source = VSSource;
@@ -71,6 +72,7 @@ namespace SharpGui
 
             //Create pixel shader
             ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_PIXEL;
+            ShaderCI.ShaderCompiler = SHADER_COMPILER.SHADER_COMPILER_DXC;
             ShaderCI.EntryPoint = "main";
             ShaderCI.Desc.Name = "SharpGui Quad PS";
             ShaderCI.Source = PSSource;
@@ -140,6 +142,7 @@ namespace SharpGui
 
             // Create a vertex shader
             ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_VERTEX;
+            ShaderCI.ShaderCompiler = SHADER_COMPILER.SHADER_COMPILER_DXC;
             ShaderCI.EntryPoint = "main";
             ShaderCI.Desc.Name = "SharpGui Text VS";
             ShaderCI.Source = TextVSSource;
@@ -147,6 +150,7 @@ namespace SharpGui
 
             //Create pixel shader
             ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_PIXEL;
+            ShaderCI.ShaderCompiler = SHADER_COMPILER.SHADER_COMPILER_DXC;
             ShaderCI.EntryPoint = "main";
             ShaderCI.Desc.Name = "SharpGui Text PS";
             ShaderCI.Source = TextPSSource;
