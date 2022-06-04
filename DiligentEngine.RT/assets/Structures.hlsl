@@ -1,6 +1,5 @@
 struct BlasInstanceData
 {
-    float2 uvs[4];
     int baseTexture;
     int normalTexture;
     int physicalTexture;
