@@ -9,5 +9,7 @@ namespace DiligentEngine
     public class DiligentEngineOptions
     {
         public GraphicsEngine.FeatureFlags Features { get; set; }
+
+        public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.Vulkan;
     }
 }

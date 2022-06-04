@@ -31,7 +31,7 @@ namespace DiligentEngine
             var window = serviceProvider.GetRequiredService<OSWindow>();
             var options = serviceProvider.GetRequiredService<DiligentEngineOptions>();
             var swapChainDesc = new SwapChainDesc();
-            this.engineFactory.CreateDeviceAndSwapChain(window.WindowHandle, swapChainDesc, options.Features);
+            this.engineFactory.CreateDeviceAndSwapChain(window.WindowHandle, swapChainDesc, options.Features, options.RenderApi);
 
             window.Resized += w =>
             {

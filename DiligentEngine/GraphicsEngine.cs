@@ -47,7 +47,7 @@ namespace DiligentEngine
             this.SwapChainPtr.Dispose();
         }
 
-        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features = FeatureFlags.None, RenderApi renderApi = RenderApi.Vulkan)
+        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features, RenderApi renderApi)
         {
             var result = GenericEngineFactory_CreateDeviceAndSwapChain(
             hwnd
