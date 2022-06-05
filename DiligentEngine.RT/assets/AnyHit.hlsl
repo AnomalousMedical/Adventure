@@ -10,17 +10,16 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float2 uv;
     int mip = GetMip();
     float opacity;
+    GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
 
-    [forcecase] switch (instanceData.dataType) 
+    [forcecase] switch (instanceData.dispatchType & 0x1)
     {
         case $$(MESH_DATA_TYPE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             opacity = GetOpacity(mip, uv, g_SamLinearWrap);
             break;
 
 
         case $$(SPRITE_DATA_TYPE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             opacity = GetOpacity(mip, uv, g_SamPointWrap);
             break;
     }

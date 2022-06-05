@@ -52,8 +52,8 @@ namespace DiligentEngine.RT.HLSL
         public int emissiveTexture;
         public uint indexOffset;
         public uint vertexOffset;
-        public uint dataType;
-        public uint lightingType;
+        public uint dispatchType;
+        public uint padding;
     };
 
     public static class BlasInstanceDataConstants
@@ -61,49 +61,58 @@ namespace DiligentEngine.RT.HLSL
         public const uint MeshData = 0;
         public const uint SpriteData = 1;
 
-        public const uint LightAndShadeBase = 0;
-        public const uint LightAndShadeBaseEmissive = 1;
-        public const uint LightAndShadeBaseNormal = 2;
-        public const uint LightAndShadeBaseNormalEmissive = 3;
-        public const uint LightAndShadeBaseNormalPhysical = 4;
-        public const uint LightAndShadeBaseNormalPhysicalEmissive = 5;
-        public const uint LightAndShadeBaseNormalPhysicalReflective = 6;
-        public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 7;
+        public const uint LightAndShadeBase = 2;
+        public const uint LightAndShadeBaseEmissive = 4;
+        public const uint LightAndShadeBaseNormal = 8;
+        public const uint LightAndShadeBaseNormalEmissive = 16;
+        public const uint LightAndShadeBaseNormalPhysical = 32;
+        public const uint LightAndShadeBaseNormalPhysicalEmissive = 64;
+        public const uint LightAndShadeBaseNormalPhysicalReflective = 128;
+        public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 256;
 
-        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive)
+        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive, bool isSprite)
         {
             if (hasNormal && hasPhysical && reflective)
             {
                 if (emissive)
                 {
-                    return LightAndShadeBaseNormalPhysicalReflectiveEmissive;
+                    return GetSpriteFlag(LightAndShadeBaseNormalPhysicalReflectiveEmissive, isSprite);
                 }
-                return LightAndShadeBaseNormalPhysicalReflective;
+                return GetSpriteFlag(LightAndShadeBaseNormalPhysicalReflective, isSprite);
             }
 
             if(hasNormal && hasPhysical)
             {
                 if (emissive)
                 {
-                    return LightAndShadeBaseNormalPhysicalEmissive;
+                    return GetSpriteFlag(LightAndShadeBaseNormalPhysicalEmissive, isSprite);
                 }
-                return LightAndShadeBaseNormalPhysical;
+                return GetSpriteFlag(LightAndShadeBaseNormalPhysical, isSprite);
             }
 
             if (hasNormal)
             {
                 if (emissive)
                 {
-                    return LightAndShadeBaseNormalEmissive;
+                    return GetSpriteFlag(LightAndShadeBaseNormalEmissive, isSprite);
                 }
-                return LightAndShadeBaseNormal;
+                return GetSpriteFlag(LightAndShadeBaseNormal, isSprite);
             }
 
             if (emissive)
             {
-                return LightAndShadeBaseEmissive;
+                return GetSpriteFlag(LightAndShadeBaseEmissive, isSprite);
             }
-            return LightAndShadeBase;
+            return GetSpriteFlag(LightAndShadeBase, isSprite);
+        }
+
+        private static uint GetSpriteFlag(uint original, bool isSprite)
+        {
+            if (isSprite)
+            {
+                original |= SpriteData;
+            }
+            return original;
         }
     }
 }
