@@ -6,9 +6,11 @@ using System.Runtime.InteropServices;
 
 namespace Engine
 {
-    [StructLayout(LayoutKind.Explicit, Size = 8)]
+    [StructLayout(LayoutKind.Explicit, Size = Vector2.Size)]
     public struct Vector2
     {
+        public const int Size = 8;
+
         [FieldOffset(0)]
         public float x;
 
