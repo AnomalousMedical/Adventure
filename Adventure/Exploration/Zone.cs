@@ -1,4 +1,6 @@
-﻿using BepuPhysics;
+﻿#define DECK_NO_WALL_HACK //Hide the wall meshes that don't work on the deck for whatever insane reason
+
+using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
 using DiligentEngine;
@@ -320,8 +322,10 @@ namespace Adventure
 
                 await Task.WhenAll
                 (
-                    floorMesh.End("ZoneFloor"),
-                    wallMesh.End("ZoneWall")
+                    floorMesh.End("ZoneFloor")
+#if !DECK_NO_WALL_HACK
+                    ,wallMesh.End("ZoneWall")
+#endif
                 );
 
                 //TODO: The zone BLASes must be loaded before the shaders, see todo in PrimaryHitShader
@@ -342,7 +346,9 @@ namespace Adventure
                 this.wallTexture = wallTextureTask.Result;
 
                 this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
+#if !DECK_NO_WALL_HACK
                 this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
+#endif
 
                 rtInstances.AddShaderTableBinder(Bind);
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
@@ -350,7 +356,9 @@ namespace Adventure
                 wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
                 wallBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectWall, false, false);
                 rtInstances.AddTlasBuild(floorInstanceData);
+#if !DECK_NO_WALL_HACK
                 rtInstances.AddTlasBuild(wallInstanceData);
+#endif
 
                 ResetPlacementData();
                 var enemyRandom = new Random(enemySeed);
@@ -397,7 +405,9 @@ namespace Adventure
             primaryHitShaderFactory.TryReturn(floorShader);
             primaryHitShaderFactory.TryReturn(wallShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
+#if !DECK_NO_WALL_HACK
             rtInstances.RemoveTlasBuild(wallInstanceData);
+#endif
         }
 
         /// <summary>
@@ -416,7 +426,9 @@ namespace Adventure
         public void SetPosition(in Vector3 position)
         {
             this.currentPosition = position;
+#if !DECK_NO_WALL_HACK
             this.wallInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
+#endif
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             foreach (var placeable in placeables)
             {
@@ -970,12 +982,14 @@ namespace Adventure
                 floorShader.BindSbt(floorInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
             }
 
+#if !DECK_NO_WALL_HACK
             wallBlasInstanceData.vertexOffset = mapMesh.WallMesh.Instance.VertexOffset;
             wallBlasInstanceData.indexOffset = mapMesh.WallMesh.Instance.IndexOffset;
             fixed (BlasInstanceData* ptr = &wallBlasInstanceData)
             {
                 wallShader.BindSbt(wallInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
             }
+#endif
         }
     }
 }
