@@ -1,4 +1,4 @@
-﻿#define DECK_NO_WALL_HACK //Hide the wall meshes that don't work on the deck for whatever insane reason
+﻿//#define DECK_NO_WALL_HACK //Hide the wall meshes that don't work on the deck for whatever insane reason
 
 using BepuPhysics;
 using BepuPhysics.Collidables;

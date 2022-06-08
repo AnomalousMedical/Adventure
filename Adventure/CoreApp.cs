@@ -60,6 +60,7 @@ namespace Adventure
             services.AddDiligentEngine(pluginManager, o =>
             {
                 o.Features = DiligentEngine.GraphicsEngine.FeatureFlags.RayTracing;
+                o.RenderApi = options.RenderApi;
             })
             .AddDiligentEngineRt();
 

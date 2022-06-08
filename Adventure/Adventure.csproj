@@ -11,7 +11,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <PublishSingleFile>false</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <OutputType>WinExe</OutputType>
+	<!--<OutputType>WinExe</OutputType>-->
 	<SelfContained>true</SelfContained>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
@@ -23,6 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
