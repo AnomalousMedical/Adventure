@@ -1,5 +1,5 @@
-StructuredBuffer<CubeAttribVertex> $$(G_VERTICES)[100]; //TODO: don't hardcode this and make it bigger
-StructuredBuffer<uint> $$(G_INDICES)[100]; //TODO: don't hardcode this and make it bigger
+StructuredBuffer<CubeAttribVertex> $$(G_VERTICES);
+StructuredBuffer<uint> $$(G_INDICES);
 
 [[vk::shader_record_ext]]
 ConstantBuffer<BlasInstanceData> instanceData;
@@ -22,15 +22,11 @@ void GetInstanceDataMesh
 {
     barycentrics = float3(1.0 - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
 
-    uint vertId = 3 * PrimitiveIndex();
+    uint vertId = 3 * PrimitiveIndex() + instanceData.indexOffset;
 
-    //TODO: Vertex offset is a temp geometry instance since its already setup
-    StructuredBuffer<CubeAttribVertex> vertices = $$(G_VERTICES)[instanceData.vertexOffset];
-    StructuredBuffer<uint> indices = $$(G_INDICES)[instanceData.vertexOffset];
-
-    posX = vertices[indices[vertId + 0]];
-    posY = vertices[indices[vertId + 1]];
-    posZ = vertices[indices[vertId + 2]];
+    posX = $$(G_VERTICES)[$$(G_INDICES)[vertId + 0] + instanceData.vertexOffset];
+    posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
+    posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
     uv = posX.uv.xy * barycentrics.x +
         posY.uv.xy * barycentrics.y +

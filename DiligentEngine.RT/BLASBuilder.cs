@@ -39,11 +39,14 @@ namespace DiligentEngine.RT
         public AutoPtr<IBottomLevelAS> BLAS { get; internal set; }
         internal AutoPtr<IBuffer> VertexBuffer { get; set; }
         internal AutoPtr<IBuffer> IndexBuffer { get; set; }
-        internal AutoPtr<IBuffer> AttrVertexBuffer { get; set; }
 
         public uint VertexOffset { get; internal set; }
 
         public uint IndexOffset { get; internal set; }
+
+        internal CubeAttribVertex[] AttrVertices;
+
+        internal uint[] Indices;
 
         private readonly BLASBuilder builder;
 
@@ -53,7 +56,6 @@ namespace DiligentEngine.RT
             BLAS.Dispose();
             IndexBuffer.Dispose();
             VertexBuffer.Dispose();
-            AttrVertexBuffer.Dispose();
         }
     }
 
@@ -62,15 +64,18 @@ namespace DiligentEngine.RT
         class BLASInstanceManager
         {
             private List<BLASInstance> instances = new List<BLASInstance>();
-            internal List<IBuffer> VertexBuffers { get; } = new List<IBuffer>();
-            internal List<IBuffer> IndexBuffers { get; } = new List<IBuffer>();
+            private int vertexCount = 0;
+            private int indexCount = 0;
+
+            public int VertexCount => vertexCount;
+
+            public int IndexCount => indexCount;
 
             public void Add(BLASInstance instance)
             {
-                instance.VertexOffset = (uint)this.instances.Count;
                 this.instances.Add(instance);
-                VertexBuffers.Add(instance.AttrVertexBuffer.Obj);
-                IndexBuffers.Add(instance.IndexBuffer.Obj);
+                vertexCount += instance.AttrVertices.Length;
+                indexCount += instance.Indices.Length;
             }
 
             public void Remove(BLASInstance instance)
@@ -79,16 +84,43 @@ namespace DiligentEngine.RT
                 if (index != -1)
                 {
                     this.instances.RemoveAt(index);
-                    VertexBuffers.RemoveAt(index);
-                    IndexBuffers.RemoveAt(index);
+                    vertexCount -= instance.AttrVertices.Length;
+                    indexCount -= instance.Indices.Length;
                 }
-                //TODO: Fix just what changes
-                uint count = 0;
-                foreach(var i in instances)
+            }
+
+            public CubeAttribVertex[] CreateAttrVerticesArray()
+            {
+                //TODO: For now just do a lame copy of the array, can improve this later once everything is working
+                var array = new CubeAttribVertex[vertexCount];
+                int offset = 0;
+                foreach(var instance in instances)
                 {
-                    i.VertexOffset = count;
-                    ++count;
+                    instance.VertexOffset = (uint)offset;
+                    var length = instance.AttrVertices.Length;
+                    var target = new Span<CubeAttribVertex>(array, offset, length);
+                    var source = new Span<CubeAttribVertex>(instance.AttrVertices);
+                    source.CopyTo(target);
+                    offset += length;
                 }
+                return array;
+            }
+
+            public uint[] CreateAttrIndicesArray()
+            {
+                //TODO: For now just do a lame copy of the array, can improve this later once everything is working
+                var array = new uint[indexCount];
+                int offset = 0;
+                foreach (var instance in instances)
+                {
+                    instance.IndexOffset = (uint)offset;
+                    var length = instance.Indices.Length;
+                    var target = new Span<uint>(array, offset, length);
+                    var source = new Span<uint>(instance.Indices);
+                    source.CopyTo(target);
+                    offset += length;
+                }
+                return array;
             }
         }
 
@@ -96,9 +128,12 @@ namespace DiligentEngine.RT
         private readonly RayTracingRenderer renderer;
         private readonly BLASInstanceManager manager = new BLASInstanceManager();
 
-        internal IReadOnlyList<IBuffer> VertexBuffers => manager.VertexBuffers;
+        AutoPtr<IBuffer> attrBuffer;
+        AutoPtr<IBuffer> indexBuffer;
 
-        internal IReadOnlyList<IBuffer> IndexBuffers => manager.IndexBuffers;
+        public IBuffer AttrBuffer => attrBuffer.Obj;
+
+        public IBuffer IndexBuffer => indexBuffer.Obj;
 
         public BLASBuilder(GraphicsEngine graphicsEngine, RayTracingRenderer renderer)
         {
@@ -126,6 +161,9 @@ namespace DiligentEngine.RT
                     var attrVertices = new CubeAttribVertex[blasMeshDesc.CubePos.Length];
                     var Indices = blasMeshDesc.Indices;
 
+                    result.AttrVertices = attrVertices;
+                    result.Indices = Indices;
+
                     for (var i = 0; i < blasMeshDesc.CubePos.Length; ++i)
                     {
                         var vertex = new CubeAttribVertex();
@@ -144,15 +182,15 @@ namespace DiligentEngine.RT
                         var pos2 = blasMeshDesc.CubePos[index2];
                         var pos3 = blasMeshDesc.CubePos[index3];
 
-                        var attrV1 = attrVertices[index1];
-                        var attrV2 = attrVertices[index2];
-                        var attrV3 = attrVertices[index3];
+                        var vertex1 = attrVertices[index1];
+                        var vertex2 = attrVertices[index2];
+                        var vertex3 = attrVertices[index3];
 
-                        CalculateTangentBitangent(pos1, pos2, pos3, ref attrV1, ref attrV2, ref attrV3);
+                        CalculateTangentBitangent(pos1, pos2, pos3, ref vertex1, ref vertex2, ref vertex3);
 
-                        attrVertices[index1] = attrV1;
-                        attrVertices[index2] = attrV2;
-                        attrVertices[index3] = attrV3;
+                        attrVertices[index1] = vertex1;
+                        attrVertices[index2] = vertex2;
+                        attrVertices[index3] = vertex3;
                     }
 
                     // Create vertex buffer
@@ -169,27 +207,6 @@ namespace DiligentEngine.RT
                             BufData.pData = new IntPtr(vertices);
                             BufData.DataSize = BuffDesc.Size = (uint)(sizeof(Vector3) * blasMeshDesc.CubePos.Length);
                             result.VertexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
-                        }
-
-                        //VERIFY_EXPR(pCubeVertexBuffer != nullptr);
-                    }
-
-                    // Create attr vertex buffer
-                    unsafe
-                    {
-                        var BuffDesc = new BufferDesc();
-                        BuffDesc.Name = $"Attr Vertices buffer";
-                        BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
-                        BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
-                        BuffDesc.ElementByteStride = (uint)sizeof(CubeAttribVertex);
-                        BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
-
-                        BufferData BufData = new BufferData();
-                        fixed (CubeAttribVertex* pVertices = attrVertices)
-                        {
-                            BufData.pData = new IntPtr(pVertices);
-                            BufData.DataSize = BuffDesc.Size = (uint)(sizeof(CubeAttribVertex) * blasMeshDesc.CubePos.Length);
-                            result.AttrVertexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                         }
 
                         //VERIFY_EXPR(pCubeVertexBuffer != nullptr);
@@ -276,7 +293,7 @@ namespace DiligentEngine.RT
 
                 //TODO: For now this has no synchronization, so do it on the main thread, but this could be changed
                 manager.Add(result);
-                renderer.RequestRebind();
+                UpdateSharedBuffers();
 
                 var m_pImmediateContext = graphicsEngine.ImmediateContext;
                 m_pImmediateContext.BuildBLAS(Attribs);
@@ -290,7 +307,7 @@ namespace DiligentEngine.RT
 
         public void Dispose()
         {
-            renderer.RequestRebind();
+            DestroyShaderBuffers();
         }
 
         public void CalculateTangentBitangent(
@@ -326,10 +343,81 @@ namespace DiligentEngine.RT
             v3.binormal = bitangent;
         }
 
+        private void DestroyShaderBuffers()
+        {
+            attrBuffer?.Dispose();
+            indexBuffer?.Dispose();
+            attrBuffer = null;
+            indexBuffer = null;
+        }
+
+        private void UpdateSharedBuffers()
+        {
+            var m_pDevice = graphicsEngine.RenderDevice;
+
+            DestroyShaderBuffers();
+
+            // Create attribs vertex buffer
+            unsafe
+            {
+                var attrVertices = manager.CreateAttrVerticesArray();
+                if(attrVertices.Length == 0)
+                {
+                    return; //No vertices, bail
+                }
+                
+                var BuffDesc = new BufferDesc();
+                BuffDesc.Name = $"Attrib vertices buffer";
+                BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
+                BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
+                BuffDesc.ElementByteStride = (uint)sizeof(CubeAttribVertex);
+                BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
+
+                BufferData BufData = new BufferData();
+                fixed (CubeAttribVertex* p_vertices = attrVertices)
+                {
+                    BufData.pData = new IntPtr(p_vertices);
+                    BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)attrVertices.Length;
+                    attrBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
+                }
+
+                //VERIFY_EXPR(pCubeVertexBuffer != nullptr);
+            }
+
+            // Create index buffer
+            unsafe
+            {
+                var Indices = manager.CreateAttrIndicesArray();
+                if(Indices.Length == 0)
+                {
+                    return; //No Indices, bail
+                }
+
+                var BuffDesc = new BufferDesc();
+                BuffDesc.Name = $"Indices buffer";
+                BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
+                BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
+                BuffDesc.ElementByteStride = (uint)sizeof(uint);
+                BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
+
+                BufferData BufData = new BufferData();
+                fixed (uint* p_indices = Indices)
+                {
+                    BufData.pData = new IntPtr(p_indices);
+                    BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)Indices.Length;
+                    indexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
+                }
+
+                //VERIFY_EXPR(pCubeIndexBuffer != nullptr);
+            }
+
+            renderer.RequestRebind();
+        }
+
         internal void Remove(BLASInstance blas)
         {
             manager.Remove(blas);
-            renderer.RequestRebind();
+            UpdateSharedBuffers();
         }
     }
 }
