@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ namespace Adventure.Services
             {
                 Formatting = Formatting.Indented,
             };
+            serializer.Converters.Add(new StringEnumConverter());
         }
 
         public void Dispose()
@@ -30,6 +33,8 @@ namespace Adventure.Services
 
         public void Save()
         {
+            //TODO: With how this works right now anything sent as an arg is also saved
+
             if (options == null) { return; }
 
             var outFile = GetFile();
@@ -50,6 +55,11 @@ namespace Adventure.Services
                 using var stream = new JsonTextReader(new StreamReader(File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read)));
                 options = serializer.Deserialize<Options>(stream);
             }
+
+            var configBuilder = new ConfigurationBuilder();
+            configBuilder.AddCommandLine(Environment.GetCommandLineArgs());
+            var envConfiguration = configBuilder.Build();
+            envConfiguration.Bind(options);
 
             return options;
         }

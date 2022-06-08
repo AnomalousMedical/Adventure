@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiligentEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,8 @@ namespace Adventure.Services
 {
     class Options
     {
+        public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.Vulkan;
+
         public bool Fullscreen { get; set; }
-#if RELEASE
-        = true;
-#endif
     }
 }
