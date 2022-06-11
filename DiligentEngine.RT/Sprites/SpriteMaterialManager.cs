@@ -108,22 +108,27 @@ namespace DiligentEngine.RT.Sprites
         private readonly IResourceProvider<SpriteMaterialManager> resourceProvider;
         private readonly TextureLoader textureLoader;
         private readonly ISpriteMaterialTextureManager spriteMaterialTextureManager;
+        private readonly GraphicsEngine graphicsEngine;
 
         public SpriteMaterialManager(
             IResourceProvider<SpriteMaterialManager> resourceProvider,
             TextureLoader textureLoader,
-            ISpriteMaterialTextureManager spriteMaterialTextureManager
+            ISpriteMaterialTextureManager spriteMaterialTextureManager,
+            GraphicsEngine graphicsEngine
         )
         {
             this.resourceProvider = resourceProvider;
             this.textureLoader = textureLoader;
             this.spriteMaterialTextureManager = spriteMaterialTextureManager;
+            this.graphicsEngine = graphicsEngine;
         }
 
         public Task<SpriteMaterial> Checkout(SpriteMaterialDescription desc)
         {
             return pooledResources.Checkout(desc, async () =>
             {
+                List<StateTransitionDesc> barriers = new List<StateTransitionDesc>(1);
+
                 using var image = await Task.Run(() =>
                 {
                     using var stream = resourceProvider.openFile(desc.ColorMap);
@@ -137,7 +142,7 @@ namespace DiligentEngine.RT.Sprites
                 //has main thread sync support
                 var spriteMatTextures = await spriteMaterialTextureManager.Checkout(image, new SpriteMaterialTextureDescription(desc.ColorMap, desc.Materials));
 
-                return await Task.Run(() =>
+                var pooledResult = await Task.Run(() =>
                 {
                     var swaps = desc.PalletSwap;
                     var width = image.Width;
@@ -162,10 +167,16 @@ namespace DiligentEngine.RT.Sprites
                     }
 
                     using var colorTexture = textureLoader.CreateTextureFromImage(image, 1, "colorTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
+                    barriers.Add(new StateTransitionDesc { pResource = colorTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
                     var result = new SpriteMaterial(width, height, spriteMaterialTextureManager, spriteMatTextures, colorTexture.Obj);
                     return pooledResources.CreateResult(result);
                 });
+
+                //This needs to stay on the main thread
+                graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
+
+                return pooledResult;
             });
         }
 

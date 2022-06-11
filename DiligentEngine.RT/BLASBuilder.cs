@@ -156,6 +156,8 @@ namespace DiligentEngine.RT
 
             try
             {
+                var barriers = new List<StateTransitionDesc>(10);
+
                 await Task.Run(() =>
                 {
                     var attrVertices = new CubeAttribVertex[blasMeshDesc.CubePos.Length];
@@ -197,7 +199,7 @@ namespace DiligentEngine.RT
                     unsafe
                     {
                         var BuffDesc = new BufferDesc();
-                        BuffDesc.Name = $"Vertices buffer";
+                        BuffDesc.Name = $"BLAS Vertices buffer";
                         BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                         BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING;
 
@@ -209,14 +211,14 @@ namespace DiligentEngine.RT
                             result.VertexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                         }
 
-                        //VERIFY_EXPR(pCubeVertexBuffer != nullptr);
+                        barriers.Add(new StateTransitionDesc { pResource = result.VertexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_READ, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
 
                     // Create index buffer
                     unsafe
                     {
                         var BuffDesc = new BufferDesc();
-                        BuffDesc.Name = $"Indices buffer";
+                        BuffDesc.Name = $"BLAS Indices buffer";
                         BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                         BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
                         BuffDesc.ElementByteStride = (uint)sizeof(uint);
@@ -230,7 +232,7 @@ namespace DiligentEngine.RT
                             result.IndexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                         }
 
-                        //VERIFY_EXPR(pCubeIndexBuffer != nullptr);
+                        barriers.Add(new StateTransitionDesc { pResource = result.IndexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_READ, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
 
                     // Create & build bottom level acceleration structure
@@ -252,7 +254,8 @@ namespace DiligentEngine.RT
                             ASDesc.pTriangles = new List<BLASTriangleDesc> { Triangles };
 
                             result.BLAS = m_pDevice.CreateBLAS(ASDesc);
-                            //VERIFY_EXPR(m_pCubeBLAS != nullptr);
+
+                            barriers.Add(new StateTransitionDesc { pResource = result.BLAS.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                         }
 
                         // Create scratch buffer
@@ -263,6 +266,8 @@ namespace DiligentEngine.RT
                             BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
                             Size = result.BLAS.Obj.ScratchBufferSizes_Build,
                         }, new BufferData());
+
+                        barriers.Add(new StateTransitionDesc { pResource = pScratchBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
                         // Build BLAS
                         var TriangleData = new BLASBuildTriangleData();
@@ -285,17 +290,18 @@ namespace DiligentEngine.RT
                         Attribs.pScratchBuffer = pScratchBuffer.Obj;
 
                         // Allow engine to change resource states.
-                        Attribs.BLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-                        Attribs.GeometryTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-                        Attribs.ScratchBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+                        Attribs.BLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY;
+                        Attribs.GeometryTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY;
+                        Attribs.ScratchBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY;
                     }
                 });
 
                 //TODO: For now this has no synchronization, so do it on the main thread, but this could be changed
                 manager.Add(result);
-                UpdateSharedBuffers();
+                UpdateSharedBuffers(barriers);
 
                 var m_pImmediateContext = graphicsEngine.ImmediateContext;
+                m_pImmediateContext.TransitionResourceStates(barriers);
                 m_pImmediateContext.BuildBLAS(Attribs);
                 return result;
             }
@@ -351,7 +357,7 @@ namespace DiligentEngine.RT
             indexBuffer = null;
         }
 
-        private void UpdateSharedBuffers()
+        private void UpdateSharedBuffers(List<StateTransitionDesc> barriers)
         {
             var m_pDevice = graphicsEngine.RenderDevice;
 
@@ -381,7 +387,7 @@ namespace DiligentEngine.RT
                     attrBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 
-                //VERIFY_EXPR(pCubeVertexBuffer != nullptr);
+                barriers.Add(new StateTransitionDesc { pResource = attrBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             }
 
             // Create index buffer
@@ -408,7 +414,7 @@ namespace DiligentEngine.RT
                     indexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
                 }
 
-                //VERIFY_EXPR(pCubeIndexBuffer != nullptr);
+                barriers.Add(new StateTransitionDesc { pResource = indexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             }
 
             renderer.RequestRebind();
@@ -417,7 +423,9 @@ namespace DiligentEngine.RT
         internal void Remove(BLASInstance blas)
         {
             manager.Remove(blas);
-            UpdateSharedBuffers();
+            var barriers = new List<StateTransitionDesc>();
+            UpdateSharedBuffers(barriers);
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
         }
     }
 }

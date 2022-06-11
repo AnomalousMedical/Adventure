@@ -160,18 +160,19 @@ namespace DiligentEngine.RT
             BuffDesc.Usage = USAGE.USAGE_DEFAULT;
             BuffDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
 
-            m_ConstantsCB = m_pDevice.CreateBuffer(BuffDesc);
-            //VERIFY_EXPR(m_ConstantsCB != nullptr);
+            m_ConstantsCB = m_pDevice.CreateBuffer(BuffDesc)
+                ?? throw new InvalidOperationException("Cannot create Ray Tracing PSO Constants Buffer");
+
             var createInfo = CreatePSOCreateInfo();
-            this.m_pRayTracingPSO = m_pDevice.CreateRayTracingPipelineState(createInfo);
-            //VERIFY_EXPR(m_pRayTracingPSO != nullptr);
+            this.m_pRayTracingPSO = m_pDevice.CreateRayTracingPipelineState(createInfo)
+                 ?? throw new InvalidOperationException("Cannot create Ray Tracing PSO Pipeline State");
 
             m_pRayTracingPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ConstantsCB").Set(m_ConstantsCB.Obj);
             m_pRayTracingPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_MISS, "g_ConstantsCB").Set(m_ConstantsCB.Obj);
             m_pRayTracingPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, "g_ConstantsCB").Set(m_ConstantsCB.Obj);
 
-            m_pRayTracingSRB = m_pRayTracingPSO.Obj.CreateShaderResourceBinding(true);
-            //VERIFY_EXPR(m_pRayTracingSRB != nullptr);
+            m_pRayTracingSRB = m_pRayTracingPSO.Obj.CreateShaderResourceBinding(true)
+                ?? throw new InvalidOperationException("Cannot create Ray Tracing PSO Shader Resource Binding");
         }
 
         void CreateSBT()
@@ -183,8 +184,8 @@ namespace DiligentEngine.RT
             SBTDesc.Name = "SBT";
             SBTDesc.pPSO = m_pRayTracingPSO.Obj;
 
-            m_pSBT = m_pDevice.CreateSBT(SBTDesc);
-            //VERIFY_EXPR(m_pSBT != nullptr);
+            m_pSBT = m_pDevice.CreateSBT(SBTDesc)
+                ?? throw new InvalidOperationException("Cannot create Ray Tracing Shader Binding Table");
 
             m_pSBT.Obj.BindRayGenShader("Main", IntPtr.Zero, 0);
 
@@ -264,13 +265,15 @@ namespace DiligentEngine.RT
             }
 
             // Create TLAS
+            var tlasBarriers = new List<StateTransitionDesc>(4);
             var TLASDesc = new TopLevelASDesc();
             TLASDesc.Name = "TLAS";
             TLASDesc.MaxInstanceCount = numInstances;
             TLASDesc.Flags = RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_ALLOW_UPDATE | RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_PREFER_FAST_TRACE;
 
             var m_pTLAS = m_pDevice.CreateTLAS(TLASDesc);
-            //VERIFY_EXPR(m_pTLAS != nullptr);
+
+            tlasBarriers.Add(new StateTransitionDesc { pResource = m_pTLAS.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
             m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_TLAS").Set(m_pTLAS.Obj);
             m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, "g_TLAS").Set(m_pTLAS.Obj);
@@ -285,6 +288,8 @@ namespace DiligentEngine.RT
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
                     Size = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
                 }, new BufferData());
+
+                tlasBarriers.Add(new StateTransitionDesc { pResource = m_ScratchBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             }
 
             // Create instance buffer
@@ -296,8 +301,8 @@ namespace DiligentEngine.RT
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING;
                 BuffDesc.Size = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * numInstances;
 
-                m_InstanceBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData());
-                //VERIFY_EXPR(m_InstanceBuffer != nullptr);
+                m_InstanceBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData())
+                    ?? throw new InvalidOperationException("Cannot create instance buffer");
             }
 
             // Build or update TLAS
@@ -321,11 +326,12 @@ namespace DiligentEngine.RT
             Attribs.HitGroupStride = RtStructures.HIT_GROUP_STRIDE;
 
             // Allow engine to change resource states.
-            Attribs.TLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-            Attribs.BLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-            Attribs.InstanceBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-            Attribs.ScratchBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+            Attribs.TLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY;
+            Attribs.BLASTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION; //TODO: Can this be managed, haven't tried yet
+            Attribs.InstanceBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION; //This seems to have to be engine managed
+            Attribs.ScratchBufferTransitionMode = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY;
 
+            m_pImmediateContext.TransitionResourceStates(tlasBarriers);
             m_pImmediateContext.BuildTLAS(Attribs);
 
             // Hit groups for primary ray
@@ -443,16 +449,25 @@ namespace DiligentEngine.RT
 
                     fixed (Constants* constantsPtr = &m_Constants)
                     {
-                        m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                        var barriers = new List<StateTransitionDesc>(); //TODO: Persist this and don't make it every frame
+                        barriers.Add(new StateTransitionDesc { pResource = m_ConstantsCB.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_COPY_DEST, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                        m_pImmediateContext.TransitionResourceStates(barriers);
+                        m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
                     }
                 }
 
                 //Trace rays
                 {
+                    var barriers = new List<StateTransitionDesc>(3); //TODO: Persist this and don't make it every frame
+                    barriers.Add(new StateTransitionDesc { pResource = m_ConstantsCB.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_CONSTANT_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    barriers.Add(new StateTransitionDesc { pResource = tlas.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_RAY_TRACING, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    imageBlitter.SetupUnorderedAccess(barriers);
+                    m_pImmediateContext.TransitionResourceStates(barriers);
+
                     m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ColorBuffer").Set(imageBlitter.TextureView);
 
                     m_pImmediateContext.SetPipelineState(m_pRayTracingPSO.Obj);
-                    m_pImmediateContext.CommitShaderResources(m_pRayTracingSRB.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                    m_pImmediateContext.CommitShaderResources(m_pRayTracingSRB.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 
                     var Attribs = new TraceRaysAttribs();
                     Attribs.DimensionX = imageBlitter.Width;

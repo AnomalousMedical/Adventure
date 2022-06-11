@@ -29,10 +29,16 @@ namespace DiligentEngine.RT.Resources
         private IDeviceObject placeholderTextureDeviceObject;
         private readonly RayTracingRenderer renderer;
 
-        public ActiveTextures(TextureLoader textureLoader, IResourceProvider<ShaderLoader<RTShaders>> resourceProvider, RayTracingRenderer renderer)
+        public ActiveTextures(TextureLoader textureLoader, IResourceProvider<ShaderLoader<RTShaders>> resourceProvider, RayTracingRenderer renderer, GraphicsEngine graphicsEngine)
         {
+            var barriers = new List<StateTransitionDesc>(1);
             using var placeholderStream = resourceProvider.openFile("assets/Placeholder.png");
+
             placeholderTexture = textureLoader.LoadTexture(placeholderStream, "Placeholder", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+            barriers.Add(new StateTransitionDesc { pResource = placeholderTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+            
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers); //This needs to happen on the main thread
+            
             placeholderTextureDeviceObject = placeholderTexture.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
 
             cc0Textures = new Dictionary<CC0TextureResult, TextureBinding>(MaxTextures);

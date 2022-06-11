@@ -99,6 +99,11 @@ namespace DiligentEngine.RT
             imageBlitSRB.Dispose();
         }
 
+        public void SetupUnorderedAccess(List<StateTransitionDesc> barriers)
+        {
+            barriers.Add(new StateTransitionDesc { pResource = colorRT.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_UNORDERED_ACCESS, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+        }
+
         public void Blit()
         {
             var swapChain = graphicsEngine.SwapChain;

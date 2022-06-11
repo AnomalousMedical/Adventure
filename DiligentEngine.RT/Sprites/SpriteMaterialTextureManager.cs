@@ -90,38 +90,56 @@ namespace DiligentEngine.RT.Sprites
         private readonly CC0MaterialTextureBuilder cc0MaterialTextureBuilder;
         private readonly TextureLoader textureLoader;
         private readonly ILogger<SpriteMaterialTextureManager> logger;
+        private readonly GraphicsEngine graphicsEngine;
 
         public SpriteMaterialTextureManager(
              CC0MaterialTextureBuilder cc0MaterialTextureBuilder,
              TextureLoader textureLoader,
-             ILogger<SpriteMaterialTextureManager> logger
+             ILogger<SpriteMaterialTextureManager> logger,
+             GraphicsEngine graphicsEngine
             )
         {
             this.cc0MaterialTextureBuilder = cc0MaterialTextureBuilder;
             this.textureLoader = textureLoader;
             this.logger = logger;
+            this.graphicsEngine = graphicsEngine;
         }
 
         public Task<SpriteMaterialTextures> Checkout(FreeImageBitmap image, SpriteMaterialTextureDescription desc)
         {
-            return pooledResources.Checkout(desc, () =>
+            return pooledResources.Checkout(desc, async () =>
             {
-                return Task.Run(() =>
+                var barriers = new List<StateTransitionDesc>(3);
+
+                var fromPoolResult = await Task.Run(() =>
                 {
                     var sw = new Stopwatch();
                     sw.Start();
+
                     var scale = Math.Min(1024 / image.Width, 1024 / image.Height); //This needs to become configurable
 
                     using var ccoTextures = cc0MaterialTextureBuilder.CreateMaterialSet(image, scale, desc.Materials?.ToDictionary(k => k.Color, e => new CC0MaterialDesc(e.BasePath, e.Ext, e.Reflective)));
 
-                    var normalTexture = ccoTextures.NormalMap != null ?
-                        textureLoader.CreateTextureFromImage(ccoTextures.NormalMap, 1, "normalTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false) : null;
+                    AutoPtr<ITexture> normalTexture = null;
+                    if (ccoTextures.NormalMap != null)
+                    {
+                        normalTexture = textureLoader.CreateTextureFromImage(ccoTextures.NormalMap, 1, "normalTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        barriers.Add(new StateTransitionDesc { pResource = normalTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    }
 
-                    var physicalTexture = ccoTextures.PhysicalDescriptorMap != null ?
-                        textureLoader.CreateTextureFromImage(ccoTextures.PhysicalDescriptorMap, 1, "physicalTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false) : null;
+                    AutoPtr<ITexture> physicalTexture = null;
+                    if (ccoTextures.PhysicalDescriptorMap != null)
+                    {
+                        physicalTexture = textureLoader.CreateTextureFromImage(ccoTextures.PhysicalDescriptorMap, 1, "physicalTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        barriers.Add(new StateTransitionDesc { pResource = physicalTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    }
 
-                    var aoTexture = ccoTextures.AmbientOcclusionMap != null ?
-                        textureLoader.CreateTextureFromImage(ccoTextures.AmbientOcclusionMap, 1, "aoTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false) : null;
+                    AutoPtr<ITexture> aoTexture = null;
+                    if (ccoTextures.AmbientOcclusionMap != null)
+                    {
+                        aoTexture = textureLoader.CreateTextureFromImage(ccoTextures.AmbientOcclusionMap, 1, "aoTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        barriers.Add(new StateTransitionDesc { pResource = aoTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    }
 
                     var result = new SpriteMaterialTextures(normalTexture, physicalTexture, aoTexture, desc.Materials.Any(i => i.Reflective));
 
@@ -130,6 +148,11 @@ namespace DiligentEngine.RT.Sprites
 
                     return pooledResources.CreateResult(result);
                 });
+
+                //This must be on the main thread
+                graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
+
+                return fromPoolResult;
             });
         }
 

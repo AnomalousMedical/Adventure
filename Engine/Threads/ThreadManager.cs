@@ -60,21 +60,6 @@ namespace Engine.Threads
             doStartInvoke(target, args);
         }
 
-        public static void RunInBackground(Action target)
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    target.Invoke();
-                }
-                catch (Exception)
-                {
-
-                }
-            });
-        }
-
         private static void doStartInvoke(Delegate target, params object[] args)
         {
             TargetEntry entry = new TargetEntry(target, args);
