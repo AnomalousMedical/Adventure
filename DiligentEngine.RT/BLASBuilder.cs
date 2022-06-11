@@ -220,7 +220,7 @@ namespace DiligentEngine.RT
                         var BuffDesc = new BufferDesc();
                         BuffDesc.Name = $"BLAS Indices buffer";
                         BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
-                        BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
+                        BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING;
                         BuffDesc.ElementByteStride = (uint)sizeof(uint);
                         BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
 
@@ -377,7 +377,7 @@ namespace DiligentEngine.RT
                 {
                     return; //No vertices, bail
                 }
-                
+
                 var BuffDesc = new BufferDesc();
                 BuffDesc.Name = "Attrib vertices buffer";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
@@ -409,7 +409,7 @@ namespace DiligentEngine.RT
                 var BuffDesc = new BufferDesc();
                 BuffDesc.Name = "Indices buffer";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
-                BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
+                BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
                 BuffDesc.ElementByteStride = (uint)sizeof(uint);
                 BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
 
