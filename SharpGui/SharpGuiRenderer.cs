@@ -48,11 +48,17 @@ namespace SharpGui
             CreateQuadPso(graphicsEngine, m_pSwapChain, m_pDevice);
             CreateTextPso(graphicsEngine, m_pSwapChain, m_pDevice, scaleHelper);
 
-            quadVertexBuffer = CreateVertexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Vertex Buffer", (uint)sizeof(SharpGuiVertex), maxNumberOfQuads);
-            quadIndexBuffer = CreateIndexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Index Buffer", maxNumberOfQuads);
+            var barriers = new List<StateTransitionDesc>(5);
 
-            textVertexBuffer = CreateVertexBuffer(graphicsEngine.RenderDevice, "SharpGui Text Vertex Buffer", (uint)sizeof(SharpGuiTextVertex), maxNumberOfQuads);
-            textIndexBuffer = CreateIndexBuffer(graphicsEngine.RenderDevice, "SharpGui Text Index Buffer", maxNumberOfQuads);
+            LoadFontTexture(graphicsEngine, scaleHelper, barriers);
+
+            quadVertexBuffer = CreateVertexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Vertex Buffer", (uint)sizeof(SharpGuiVertex), maxNumberOfQuads, barriers);
+            quadIndexBuffer = CreateIndexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Index Buffer", maxNumberOfQuads, barriers);
+
+            textVertexBuffer = CreateVertexBuffer(graphicsEngine.RenderDevice, "SharpGui Text Vertex Buffer", (uint)sizeof(SharpGuiTextVertex), maxNumberOfQuads, barriers);
+            textIndexBuffer = CreateIndexBuffer(graphicsEngine.RenderDevice, "SharpGui Text Index Buffer", maxNumberOfQuads, barriers);
+
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
         }
 
         private void CreateQuadPso(GraphicsEngine graphicsEngine, ISwapChain m_pSwapChain, IRenderDevice m_pDevice)
@@ -236,11 +242,9 @@ namespace SharpGui
 
             // Create a shader resource binding object and bind all static resources in it
             this.textShaderResourceBinding = textPipelineState.Obj.CreateShaderResourceBinding(true);
-
-            LoadFontTexture(graphicsEngine, scaleHelper);
         }
 
-        private void LoadFontTexture(GraphicsEngine graphicsEngine, IScaleHelper scaleHelper)
+        private void LoadFontTexture(GraphicsEngine graphicsEngine, IScaleHelper scaleHelper, List<StateTransitionDesc> barriers)
         {
             //Load Font Texture
             using var fontStream = resourceProvider.openFile("Fonts/Roboto-Regular.ttf");
@@ -292,6 +296,8 @@ namespace SharpGui
             textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").Set(m_TextureSRV);
 
             this.font = new Font(font.CharMap, font.GlyphInfo, font.SubstituteCodePoint, font.SubstituteCodePointGlyphInfo);
+
+            barriers.Add(new StateTransitionDesc { pResource = tex.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
         }
 
         public Font Font => this.font;
@@ -329,9 +335,9 @@ namespace SharpGui
                 //Render quad vertices
                 {
                     IBuffer[] pBuffs = new IBuffer[] { quadVertexBuffer.Obj };
-                    immediateContext.SetVertexBuffers(0, 1, pBuffs, null, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAGS.SET_VERTEX_BUFFERS_FLAG_RESET);
-                    immediateContext.SetIndexBuffer(quadIndexBuffer.Obj, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                    immediateContext.CommitShaderResources(quadShaderResourceBinding.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                    immediateContext.SetVertexBuffers(0, 1, pBuffs, null, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAGS.SET_VERTEX_BUFFERS_FLAG_RESET);
+                    immediateContext.SetIndexBuffer(quadIndexBuffer.Obj, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                    immediateContext.CommitShaderResources(quadShaderResourceBinding.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 
                     DrawAttrs.NumIndices = buffer.NumQuadIndices;
                     immediateContext.DrawIndexed(DrawAttrs);
@@ -356,9 +362,9 @@ namespace SharpGui
                 //Render text vertices
                 {
                     IBuffer[] pBuffs = new IBuffer[] { textVertexBuffer.Obj };
-                    immediateContext.SetVertexBuffers(0, 1, pBuffs, null, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAGS.SET_VERTEX_BUFFERS_FLAG_RESET);
-                    immediateContext.SetIndexBuffer(textIndexBuffer.Obj, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                    immediateContext.CommitShaderResources(textShaderResourceBinding.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                    immediateContext.SetVertexBuffers(0, 1, pBuffs, null, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAGS.SET_VERTEX_BUFFERS_FLAG_RESET);
+                    immediateContext.SetIndexBuffer(textIndexBuffer.Obj, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                    immediateContext.CommitShaderResources(textShaderResourceBinding.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 
                     DrawAttrs.NumIndices = buffer.NumTextIndices;
                     immediateContext.DrawIndexed(DrawAttrs);
@@ -368,7 +374,7 @@ namespace SharpGui
 
         public uint NumIndices { get; private set; }
 
-        unsafe static AutoPtr<IBuffer> CreateVertexBuffer(IRenderDevice device, string name, uint vertexSize, uint maxNumberOfQuads)
+        unsafe static AutoPtr<IBuffer> CreateVertexBuffer(IRenderDevice device, string name, uint vertexSize, uint maxNumberOfQuads, List<StateTransitionDesc> barriers)
         {
             BufferDesc VertBuffDesc = new BufferDesc();
             VertBuffDesc.Name = name;
@@ -377,11 +383,14 @@ namespace SharpGui
             VertBuffDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_WRITE;
             VertBuffDesc.Size = vertexSize * maxNumberOfQuads * 4;
             
-            return device.CreateBuffer(VertBuffDesc);
-            
+            var vertBuffer = device.CreateBuffer(VertBuffDesc);
+
+            barriers.Add(new StateTransitionDesc { pResource = vertBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+
+            return vertBuffer;
         }
 
-        unsafe static AutoPtr<IBuffer> CreateIndexBuffer(IRenderDevice device, string name, uint maxNumberOfQuads)
+        unsafe static AutoPtr<IBuffer> CreateIndexBuffer(IRenderDevice device, string name, uint maxNumberOfQuads, List<StateTransitionDesc> barriers)
         {
             var Indices = new UInt32[maxNumberOfQuads * 6];
 
@@ -409,7 +418,11 @@ namespace SharpGui
             {
                 IBData.pData = new IntPtr(pIndices);
                 IBData.DataSize = (uint)(sizeof(UInt32) * Indices.Length);
-                return device.CreateBuffer(IndBuffDesc, IBData);
+                var indices = device.CreateBuffer(IndBuffDesc, IBData);
+
+                barriers.Add(new StateTransitionDesc { pResource = indices.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_INDEX_BUFFER, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+
+                return indices;
             }
         }
 
