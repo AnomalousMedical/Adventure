@@ -51,22 +51,22 @@ namespace DiligentEngine.RT.ShaderSets
             ShaderCI.Desc.Name = "Ray tracing RG";
             ShaderCI.Source = shaderLoader.LoadShader("assets/RayTrace.hlsl");
             ShaderCI.EntryPoint = "main";
-            pRayGen = m_pDevice.CreateShader(ShaderCI, Macros);
-            //VERIFY_EXPR(pRayGen != nullptr);
+            pRayGen = m_pDevice.CreateShader(ShaderCI, Macros)
+                ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
             // Create miss shaders.
             ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_MISS;
             ShaderCI.Desc.Name = "Primary ray miss shader";
             ShaderCI.Source = shaderLoader.LoadShader("assets/PrimaryMiss.hlsl");
             ShaderCI.EntryPoint = "main";
-            pPrimaryMiss = m_pDevice.CreateShader(ShaderCI, Macros);
-            //VERIFY_EXPR(pPrimaryMiss != nullptr);
+            pPrimaryMiss = m_pDevice.CreateShader(ShaderCI, Macros)
+                ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
             ShaderCI.Desc.Name = "Shadow ray miss shader";
             ShaderCI.Source = shaderLoader.LoadShader("assets/ShadowMiss.hlsl");
             ShaderCI.EntryPoint = "main";
-            pShadowMiss = m_pDevice.CreateShader(ShaderCI, Macros);
-            //VERIFY_EXPR(pShadowMiss != nullptr);
+            pShadowMiss = m_pDevice.CreateShader(ShaderCI, Macros)
+                ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
             // Ray generation shader is an entry point for a ray tracing pipeline.
             rayGenShaderGroup = new RayTracingGeneralShaderGroup { Name = "Main", pShader = pRayGen.Obj };

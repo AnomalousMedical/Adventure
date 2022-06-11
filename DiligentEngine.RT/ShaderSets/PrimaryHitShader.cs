@@ -155,8 +155,8 @@ namespace DiligentEngine.RT.ShaderSets
                 ShaderCI.Desc.Name = $"primary ray closest hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/PrimaryHit.hlsl");
                 ShaderCI.EntryPoint = "main";
-                pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros);
-                //VERIFY_EXPR(pCubePrimaryHit != nullptr);
+                pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros)
+                  ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
                 // Create any hit shaders.
                 //TODO: Any hit is always the same and is turned on and off by the opaque flag. This can be shared between all instances.
@@ -164,8 +164,8 @@ namespace DiligentEngine.RT.ShaderSets
                 ShaderCI.Desc.Name = $"primary ray any hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/AnyHit.hlsl");
                 ShaderCI.EntryPoint = "main";
-                pCubeAnyHit = m_pDevice.CreateShader(ShaderCI, Macros);
-                //VERIFY_EXPR(pCubeAnyHit != nullptr);
+                pCubeAnyHit = m_pDevice.CreateShader(ShaderCI, Macros)
+                  ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
                 // Primary ray hit group for the textured cube.
                 primaryHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = shaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pCubeAnyHit.Obj };

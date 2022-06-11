@@ -373,7 +373,7 @@ namespace DiligentEngine.RT
                 }
                 
                 var BuffDesc = new BufferDesc();
-                BuffDesc.Name = $"Attrib vertices buffer";
+                BuffDesc.Name = "Attrib vertices buffer";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
                 BuffDesc.ElementByteStride = (uint)sizeof(CubeAttribVertex);
@@ -384,7 +384,8 @@ namespace DiligentEngine.RT
                 {
                     BufData.pData = new IntPtr(p_vertices);
                     BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)attrVertices.Length;
-                    attrBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
+                    attrBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData)
+                        ?? throw new InvalidOperationException("Cannot create attribute buffer");
                 }
 
                 barriers.Add(new StateTransitionDesc { pResource = attrBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
@@ -400,7 +401,7 @@ namespace DiligentEngine.RT
                 }
 
                 var BuffDesc = new BufferDesc();
-                BuffDesc.Name = $"Indices buffer";
+                BuffDesc.Name = "Indices buffer";
                 BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
                 BuffDesc.BindFlags = BIND_FLAGS.BIND_RAY_TRACING | BIND_FLAGS.BIND_SHADER_RESOURCE;
                 BuffDesc.ElementByteStride = (uint)sizeof(uint);
@@ -411,7 +412,8 @@ namespace DiligentEngine.RT
                 {
                     BufData.pData = new IntPtr(p_indices);
                     BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)Indices.Length;
-                    indexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData);
+                    indexBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData)
+                        ?? throw new InvalidOperationException("Cannot create index buffer");
                 }
 
                 barriers.Add(new StateTransitionDesc { pResource = indexBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });

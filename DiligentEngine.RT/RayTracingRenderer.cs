@@ -271,7 +271,8 @@ namespace DiligentEngine.RT
             TLASDesc.MaxInstanceCount = numInstances;
             TLASDesc.Flags = RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_ALLOW_UPDATE | RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_PREFER_FAST_TRACE;
 
-            var m_pTLAS = m_pDevice.CreateTLAS(TLASDesc);
+            var m_pTLAS = m_pDevice.CreateTLAS(TLASDesc)
+                ?? throw new InvalidOperationException($"Could not create TLAS '{TLASDesc.Name}'");
 
             tlasBarriers.Add(new StateTransitionDesc { pResource = m_pTLAS.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
@@ -281,13 +282,15 @@ namespace DiligentEngine.RT
             // Create scratch buffer
             if (m_ScratchBuffer == null)
             {
-                m_ScratchBuffer = m_pDevice.CreateBuffer(new BufferDesc()
+                var BuffDesc = new BufferDesc()
                 {
                     Name = "TLAS Scratch Buffer",
                     Usage = USAGE.USAGE_DEFAULT,
                     BindFlags = BIND_FLAGS.BIND_RAY_TRACING,
                     Size = Math.Max(m_pTLAS.Obj.ScratchBufferSizes_Build, m_pTLAS.Obj.ScratchBufferSizes_Update)
-                }, new BufferData());
+                };
+                m_ScratchBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData())
+                    ?? throw new InvalidOperationException($"Cannot create '{BuffDesc.Name}'");
 
                 tlasBarriers.Add(new StateTransitionDesc { pResource = m_ScratchBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_WRITE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
             }
@@ -302,7 +305,7 @@ namespace DiligentEngine.RT
                 BuffDesc.Size = ITopLevelAS.TLAS_INSTANCE_DATA_SIZE * numInstances;
 
                 m_InstanceBuffer = m_pDevice.CreateBuffer(BuffDesc, new BufferData())
-                    ?? throw new InvalidOperationException("Cannot create instance buffer");
+                    ?? throw new InvalidOperationException($"Cannot create '{BuffDesc.Name}'");
             }
 
             // Build or update TLAS

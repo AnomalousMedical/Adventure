@@ -166,7 +166,8 @@ namespace DiligentEngine.RT.Sprites
                         }
                     }
 
-                    using var colorTexture = textureLoader.CreateTextureFromImage(image, 1, "colorTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
+                    using var colorTexture = textureLoader.CreateTextureFromImage(image, 1, "colorTexture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true)
+                       ?? throw new InvalidOperationException("Could not create sprite color texture");
                     barriers.Add(new StateTransitionDesc { pResource = colorTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
 
                     var result = new SpriteMaterial(width, height, spriteMaterialTextureManager, spriteMatTextures, colorTexture.Obj);
