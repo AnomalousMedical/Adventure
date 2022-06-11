@@ -303,6 +303,12 @@ namespace DiligentEngine.RT
                 var m_pImmediateContext = graphicsEngine.ImmediateContext;
                 m_pImmediateContext.TransitionResourceStates(barriers);
                 m_pImmediateContext.BuildBLAS(Attribs);
+
+                //Finish blas transition
+                barriers.Clear();
+                barriers.Add(new StateTransitionDesc { pResource = result.BLAS.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_BUILD_AS_READ, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                m_pImmediateContext.TransitionResourceStates(barriers);
+
                 return result;
             }
             finally
