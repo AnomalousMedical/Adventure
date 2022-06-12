@@ -129,7 +129,7 @@ namespace DiligentEngine.RT.ShaderSets
 
                 // Shader model 6.3 is required for DXR 1.0, shader model 6.5 is required for DXR 1.1 and enables additional features.
                 // Use 6.3 for compatibility with DXR 1.0 and VK_NV_ray_tracing.
-                ShaderCI.HLSLVersion = new ShaderVersion { Major = 6, Minor = 3 };
+                ShaderCI.HLSLVersion = new ShaderVersion { Major = 6, Minor = 5 };
                 ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE.SHADER_SOURCE_LANGUAGE_HLSL;
 
                 var shaderVars = new Dictionary<string, string>()
