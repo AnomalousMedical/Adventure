@@ -61,7 +61,7 @@ namespace Adventure.Services
             var envConfiguration = configBuilder.Build();
             envConfiguration.Bind(options);
 
-            return options;
+            return options ?? new Options();
         }
 
         private String GetFile()
