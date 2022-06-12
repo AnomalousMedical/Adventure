@@ -44,11 +44,11 @@ ShadowRayPayload CastShadow(RayDesc ray, uint Recursion)
         payload.Shading = 1.0;
         return payload;
     }
-    //This was modified to use PRIMARY_RAY_INDEX, which makes the any hit opacity shaders work
+
     TraceRay(g_TLAS,            // Acceleration structure
         RAY_FLAG_SKIP_CLOSEST_HIT_SHADER | RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH,
         OPAQUE_GEOM_MASK,  // Instance inclusion mask - only opaque instances are visible
-        PRIMARY_RAY_INDEX,  // Ray contribution to hit group index (aka ray type)
+        SHADOW_RAY_INDEX,  // Ray contribution to hit group index (aka ray type)
         HIT_GROUP_STRIDE,  // Multiplier for geometry contribution to hit 
                            // group index (aka the number of ray types)
         SHADOW_RAY_INDEX,  // Miss shader index
