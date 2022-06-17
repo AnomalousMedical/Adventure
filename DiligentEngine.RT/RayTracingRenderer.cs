@@ -39,6 +39,10 @@ namespace DiligentEngine.RT
 
         List<ShaderResourceBinder> shaderResourceBinders = new List<ShaderResourceBinder>();
 
+        public delegate void TlasShaderResourceBinder(IShaderBindingTable sbt, ITopLevelAS tlas);
+
+        List<TlasShaderResourceBinder> tlasShaderResourceBinders = new List<TlasShaderResourceBinder>();
+
         public unsafe RayTracingRenderer
         (
             GraphicsEngine graphicsEngine,
@@ -341,7 +345,7 @@ namespace DiligentEngine.RT
             activeInstances.BindShaders(m_pSBT.Obj, m_pTLAS.Obj);
 
             // Hit groups for shadow ray.
-            m_pSBT.Obj.BindHitGroupForTLAS(m_pTLAS.Obj, RtStructures.SHADOW_RAY_INDEX, "FORCED_ShadowHit", IntPtr.Zero, 0);
+            BindTlasShaderResources(m_pSBT.Obj, m_pTLAS.Obj);
 
             m_pImmediateContext.UpdateSBT(m_pSBT.Obj);
 
@@ -509,6 +513,24 @@ namespace DiligentEngine.RT
             foreach (var i in shaderResourceBinders)
             {
                 i(rayTracingSRB);
+            }
+        }
+
+        public void AddTlasShaderResourceBinder(TlasShaderResourceBinder binder)
+        {
+            tlasShaderResourceBinders.Add(binder);
+        }
+
+        public void RemoveTlasShaderResourceBinder(TlasShaderResourceBinder binder)
+        {
+            tlasShaderResourceBinders.Remove(binder);
+        }
+
+        private void BindTlasShaderResources(IShaderBindingTable sbt, ITopLevelAS topLevelAS)
+        {
+            foreach (var i in tlasShaderResourceBinders)
+            {
+                i(sbt, topLevelAS);
             }
         }
     }

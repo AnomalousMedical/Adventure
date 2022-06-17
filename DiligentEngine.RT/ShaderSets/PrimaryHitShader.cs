@@ -115,7 +115,7 @@ namespace DiligentEngine.RT.ShaderSets
             await Task.Run(() =>
             {
                 this.primaryShaderGroupName = $"{Guid.NewGuid()}PrimaryHit";
-                this.shadowShaderGroupName = $"FORCED_ShadowHit";
+                this.shadowShaderGroupName = $"{Guid.NewGuid()}ShadowHit";
 
                 var m_pDevice = graphicsEngine.RenderDevice;
 
@@ -192,12 +192,14 @@ namespace DiligentEngine.RT.ShaderSets
             });
 
             renderer.AddShaderResourceBinder(Bind);
+            renderer.AddTlasShaderResourceBinder(BindTlas);
             renderer.OnSetupCreateInfo += Renderer_OnSetupCreateInfo;
         }
 
         public void Dispose()
         {
             renderer.OnSetupCreateInfo -= Renderer_OnSetupCreateInfo;
+            renderer.RemoveTlasShaderResourceBinder(BindTlas);
             renderer.RemoveShaderResourceBinder(Bind);
 
             pShadowAnyHit?.Dispose();
@@ -235,6 +237,11 @@ namespace DiligentEngine.RT.ShaderSets
 
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, TextureVarName)?.SetArray(activeTextures.Textures);
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, TextureVarName)?.SetArray(activeTextures.Textures);
+        }
+
+        private void BindTlas(IShaderBindingTable sbt, ITopLevelAS tlas)
+        {
+            sbt.BindHitGroupForTLAS(tlas, RtStructures.SHADOW_RAY_INDEX, shadowShaderGroupName, IntPtr.Zero, 0);
         }
     }
 }
