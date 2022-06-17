@@ -3,7 +3,15 @@
 #include "Data.hlsl"
 
 [shader("anyhit")]
-void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
+void main(
+#ifdef PRIMARY_HIT
+    inout PrimaryRayPayload payload,
+#endif
+#ifdef SHADOW_HIT
+    inout ShadowRayPayload payload,
+#endif
+    in BuiltInTriangleIntersectionAttributes attr
+)
 {
     float3 barycentrics;
     CubeAttribVertex posX, posY, posZ;

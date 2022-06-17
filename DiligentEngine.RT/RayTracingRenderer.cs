@@ -341,8 +341,7 @@ namespace DiligentEngine.RT
             activeInstances.BindShaders(m_pSBT.Obj, m_pTLAS.Obj);
 
             // Hit groups for shadow ray.
-            // null means no shaders are bound and hit shader invocation will be skipped.
-            m_pSBT.Obj.BindHitGroupForTLAS(m_pTLAS.Obj, RtStructures.SHADOW_RAY_INDEX, null, IntPtr.Zero, 0);
+            m_pSBT.Obj.BindHitGroupForTLAS(m_pTLAS.Obj, RtStructures.SHADOW_RAY_INDEX, "FORCED_ShadowHit", IntPtr.Zero, 0);
 
             m_pImmediateContext.UpdateSBT(m_pSBT.Obj);
 

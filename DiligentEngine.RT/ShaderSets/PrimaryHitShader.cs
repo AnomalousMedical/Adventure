@@ -32,9 +32,9 @@ namespace DiligentEngine.RT.ShaderSets
 
             public Factory
             (
-                GraphicsEngine graphicsEngine, 
-                ShaderLoader<RTShaders> shaderLoader, 
-                RayTracingRenderer rayTracingRenderer, 
+                GraphicsEngine graphicsEngine,
+                ShaderLoader<RTShaders> shaderLoader,
+                RayTracingRenderer rayTracingRenderer,
                 RTCameraAndLight cameraAndLight,
                 BLASBuilder blasBuilder,
                 ActiveTextures activeTextures
@@ -75,7 +75,7 @@ namespace DiligentEngine.RT.ShaderSets
 
         private AutoPtr<IShader> pCubePrimaryHit;
         private AutoPtr<IShader> pCubeAnyHit;
-        private RayTracingTriangleHitShaderGroup primaryHitShaderGroup;
+        private AutoPtr<IShader> pShadowAnyHit;
         private RayTracingRenderer renderer;
         private BLASBuilder builder;
 
@@ -89,7 +89,11 @@ namespace DiligentEngine.RT.ShaderSets
         private String IndicesVarName = "g_indices";
 
         private readonly ActiveTextures activeTextures;
-        private String shaderGroupName;
+
+        private String primaryShaderGroupName;
+        private String shadowShaderGroupName;
+        private RayTracingTriangleHitShaderGroup primaryHitShaderGroup;
+        private RayTracingTriangleHitShaderGroup shadowHitShaderGroup;
 
         public PrimaryHitShader(ActiveTextures activeTextures, RayTracingRenderer renderer, BLASBuilder builder)
         {
@@ -110,7 +114,8 @@ namespace DiligentEngine.RT.ShaderSets
 
             await Task.Run(() =>
             {
-                this.shaderGroupName = $"{Guid.NewGuid()}PrimaryHit";
+                this.primaryShaderGroupName = $"{Guid.NewGuid()}PrimaryHit";
+                this.shadowShaderGroupName = $"FORCED_ShadowHit";
 
                 var m_pDevice = graphicsEngine.RenderDevice;
 
@@ -158,8 +163,8 @@ namespace DiligentEngine.RT.ShaderSets
                 pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros)
                   ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
-                // Create any hit shaders.
-                //TODO: Any hit is always the same and is turned on and off by the opaque flag. This can be shared between all instances.
+                // Create primary any hit shaders.
+                Macros.AddShaderMacro("PRIMARY_HIT", 1);
                 ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT;
                 ShaderCI.Desc.Name = $"primary ray any hit shader";
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/AnyHit.hlsl");
@@ -167,9 +172,20 @@ namespace DiligentEngine.RT.ShaderSets
                 pCubeAnyHit = m_pDevice.CreateShader(ShaderCI, Macros)
                   ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
-                // Primary ray hit group for the textured cube.
-                primaryHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = shaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pCubeAnyHit.Obj };
+                Macros.RemoveMacro("PRIMARY_HIT");
+                Macros.AddShaderMacro("SHADOW_HIT", 1);
+                ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT;
+                ShaderCI.Desc.Name = $"shadow ray any hit shader";
+                ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/AnyHit.hlsl");
+                ShaderCI.EntryPoint = "main";
+                pShadowAnyHit = m_pDevice.CreateShader(ShaderCI, Macros)
+                  ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
+                // Primary ray hit group for the textured cube.
+                primaryHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = primaryShaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pCubeAnyHit.Obj };
+                shadowHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = shadowShaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pShadowAnyHit.Obj };
+
+                //TODO: Remove SHADER_TYPE.SHADER_TYPE_RAY_GEN below, seems you don't need it, but needs testing
                 verticesDesc = new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_GEN | SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT | SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, Name = VerticesVarName, Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC };
                 indicesDesc = new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_GEN | SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT | SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, Name = IndicesVarName, Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC };
                 texturesDesc = new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_GEN | SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT | SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, Name = TextureVarName, Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC };
@@ -184,6 +200,7 @@ namespace DiligentEngine.RT.ShaderSets
             renderer.OnSetupCreateInfo -= Renderer_OnSetupCreateInfo;
             renderer.RemoveShaderResourceBinder(Bind);
 
+            pShadowAnyHit?.Dispose();
             pCubeAnyHit?.Dispose();
             pCubePrimaryHit?.Dispose();
         }
@@ -191,6 +208,7 @@ namespace DiligentEngine.RT.ShaderSets
         private void Renderer_OnSetupCreateInfo(RayTracingPipelineStateCreateInfo PSOCreateInfo)
         {
             PSOCreateInfo.pTriangleHitShaders.Add(primaryHitShaderGroup);
+            PSOCreateInfo.pTriangleHitShaders.Add(shadowHitShaderGroup);
             //TODO: Adding this to the triangle hit shaders here assumes the BLAS is already created. This is setup to work ok now, but hopefully this can be unbound later
 
             PSOCreateInfo.PSODesc.ResourceLayout.Variables.Add(verticesDesc);
@@ -200,7 +218,8 @@ namespace DiligentEngine.RT.ShaderSets
 
         public void BindSbt(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, IntPtr data, uint size)
         {
-            sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.PRIMARY_RAY_INDEX, shaderGroupName, data, size);
+            sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.PRIMARY_RAY_INDEX, primaryShaderGroupName, data, size);
+            sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.SHADOW_RAY_INDEX, shadowShaderGroupName, data, size);
         }
 
         private void Bind(IShaderResourceBinding rayTracingSRB)
