@@ -9,7 +9,7 @@ namespace Adventure.Services
 {
     class Options
     {
-        public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.Vulkan;
+        public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.D3D12;
 
         public bool Fullscreen { get; set; }
     }
