@@ -34,6 +34,7 @@ namespace Adventure.Services
             //monsterAssets.Add(new MonsterAssetInfo(new MerfolkImpalerWaterNew(), BiomeType.Countryside));
             //monsterAssets.Add(new MonsterAssetInfo(new MutantBeast(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy));
+            monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert));
             monsterAssets.Add(new MonsterAssetInfo(new SirenNew(), BiomeType.Countryside));
