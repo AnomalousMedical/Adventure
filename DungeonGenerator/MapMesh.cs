@@ -889,7 +889,6 @@ namespace DungeonGenerator
             var right = left + MapUnitX;
             var far = mapY * MapUnitZ;
             var near = far - MapUnitZ;
-            var square = squareInfo[mapX + 1, mapY + 1];
             var tempSquare = tempSquareInfo[mapX + 1, mapY + 1];
 
             //
@@ -902,6 +901,9 @@ namespace DungeonGenerator
             Vector3 rightFar = new Vector3(right, tempSquare.RightFarY, far);
             Vector3 rightNear = new Vector3(right, tempSquare.RightNearY, near);
             Vector3 leftNear = new Vector3(left, tempSquare.LeftNearY, near);
+
+            //Fix center points so they can be used later
+            squareInfo[mapX + 1, mapY + 1].Center = (rightNear - leftFar) / 2 + leftFar;
 
             var north = tempSquareInfo[mapX + 1, mapY + 1 + 1];
             var west = tempSquareInfo[mapX - 1 + 1, mapY + 1];

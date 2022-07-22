@@ -368,6 +368,7 @@ namespace Adventure
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
+                CreateBackgroundItems();
 
                 AddLootDrop();
                 AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
@@ -937,6 +938,45 @@ namespace Adventure
             else
             {
                 logger.LogWarning($"No battle triggers, cannot place overflow chest treasure.");
+            }
+        }
+
+        private void CreateBackgroundItems()
+        {
+            //return;
+            //disabled for now
+            for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
+            {
+                for (var y = 0; y < mapMesh.MapBuilder.Map_Size.Height; ++y)
+                {
+                    if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell)
+                    {
+                        var add = false;
+                        if(y % 2 == 0)
+                        {
+                            add = x % 2 == 0;
+                        }
+                        else
+                        {
+                            add = x % 2 == 1;
+                        }
+                        if (add)
+                        {
+                            var mapLoc = mapMesh.PointToVector(x, y);
+                            var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
+                            {
+                                o.InstanceId = 0;
+                                o.ZoneIndex = index;
+                                o.MapOffset = mapLoc;
+                                o.Translation = currentPosition + o.MapOffset;
+                                var keyAsset = new Tree();
+                                o.Sprite = keyAsset.CreateSprite();
+                                o.SpriteMaterial = keyAsset.CreateMaterial();
+                            });
+                            this.placeables.Add(bgItem);
+                        }
+                    }
+                }
             }
         }
 

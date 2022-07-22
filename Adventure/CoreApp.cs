@@ -114,6 +114,8 @@ namespace Adventure
             services.AddScoped<Gate.Description>();
             services.AddScoped<Key>();
             services.AddScoped<Key.Description>();
+            services.AddScoped<BackgroundItem>();
+            services.AddScoped<BackgroundItem.Description>();
             services.AddScoped<RestArea>();
             services.AddScoped<RestArea.Description>();
             services.AddScoped<LootDropTrigger>();
