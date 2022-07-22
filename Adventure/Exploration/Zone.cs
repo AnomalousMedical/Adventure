@@ -368,7 +368,7 @@ namespace Adventure
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
-                CreateBackgroundItems();
+                CreateBackgroundItems(enemyRandom);
 
                 AddLootDrop();
                 AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
@@ -941,25 +941,27 @@ namespace Adventure
             }
         }
 
-        private void CreateBackgroundItems()
+        private void CreateBackgroundItems(Random bgItemsRandom)
         {
             //return;
             //disabled for now
+            var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
-                for (var y = 0; y < mapMesh.MapBuilder.Map_Size.Height; ++y)
+                for (var y = mapMesh.MapBuilder.Map_Size.Height - 1; y > -1; --y)
                 {
                     if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell)
                     {
                         var add = false;
-                        if(y % 2 == 0)
+                        if(bgItemsRandom.Next(0, 100) < 11)
                         {
-                            add = x % 2 == 0;
+                            add = true;
                         }
-                        else
-                        {
-                            add = x % 2 == 1;
-                        }
+                        
+                        //if (!hitWalkablePath[x])
+                        //{
+                        //    add = true;
+                        //}
                         if (add)
                         {
                             var mapLoc = mapMesh.PointToVector(x, y);
@@ -975,6 +977,10 @@ namespace Adventure
                             });
                             this.placeables.Add(bgItem);
                         }
+                    }
+                    else
+                    {
+                        hitWalkablePath[x] = true;
                     }
                 }
             }
