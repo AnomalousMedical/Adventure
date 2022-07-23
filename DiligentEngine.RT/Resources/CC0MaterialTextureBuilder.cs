@@ -274,7 +274,7 @@ namespace DiligentEngine.RT.Resources
             var yEnd = srcY + height;
 
             //Does width and height fit in the current size?
-            if (xEnd < src.Width && yEnd < src.Height)
+            if (xEnd <= src.Width && yEnd <= src.Height)
             {
                 var srcRect = new IntRect(srcX, srcY, width, height);
                 var destRect = new IntRect(x, y, width, height);
