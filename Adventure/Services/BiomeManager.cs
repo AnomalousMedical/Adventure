@@ -152,7 +152,13 @@ namespace Adventure
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
-                }
+                },
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(1, new ComputerDesk()),
+                    new BiomeBackgroundItem(3, new Tree())
+                },
+                MaxBackgroundItemRoll = 250
             };
 
             return biome;

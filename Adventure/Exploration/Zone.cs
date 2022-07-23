@@ -961,6 +961,7 @@ namespace Adventure
                             if(roll < item.Chance)
                             {
                                 add = item;
+                                break;
                             }
                         }
                         
