@@ -368,7 +368,11 @@ namespace Adventure
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
-                CreateBackgroundItems(enemyRandom);
+
+                if (biome.BackgroundItems != null)
+                {
+                    CreateBackgroundItems(enemyRandom, biome);
+                }
 
                 AddLootDrop();
                 AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
@@ -941,28 +945,30 @@ namespace Adventure
             }
         }
 
-        private void CreateBackgroundItems(Random bgItemsRandom)
+        private void CreateBackgroundItems(Random bgItemsRandom, IBiome biome)
         {
-            //return;
-            //disabled for now
-            var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
+            //var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
                 for (var y = mapMesh.MapBuilder.Map_Size.Height - 1; y > -1; --y)
                 {
                     if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell)
                     {
-                        var add = false;
-                        if(bgItemsRandom.Next(0, 100) < 11)
+                        BiomeBackgroundItem add = null;
+                        var roll = bgItemsRandom.Next(0, biome.MaxBackgroundItemRoll);
+                        foreach(var item in biome.BackgroundItems)
                         {
-                            add = true;
+                            if(roll < item.Chance)
+                            {
+                                add = item;
+                            }
                         }
                         
                         //if (!hitWalkablePath[x])
                         //{
                         //    add = true;
                         //}
-                        if (add)
+                        if (add != null)
                         {
                             var mapLoc = mapMesh.PointToVector(x, y);
                             var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
@@ -971,7 +977,7 @@ namespace Adventure
                                 o.ZoneIndex = index;
                                 o.MapOffset = mapLoc;
                                 o.Translation = currentPosition + o.MapOffset;
-                                var keyAsset = new Tree();
+                                var keyAsset = add.Asset;
                                 o.Sprite = keyAsset.CreateSprite();
                                 o.SpriteMaterial = keyAsset.CreateMaterial();
                             });
@@ -980,7 +986,7 @@ namespace Adventure
                     }
                     else
                     {
-                        hitWalkablePath[x] = true;
+                        //hitWalkablePath[x] = true;
                     }
                 }
             }

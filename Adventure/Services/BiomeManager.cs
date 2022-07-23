@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Assets.World;
 
 namespace Adventure
 {
@@ -71,7 +72,11 @@ namespace Adventure
                     Asset = new Assets.World.TreasureChest(),
                 },
                 BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
-                BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg"
+                BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(10, new PineTree())
+                }
             };
 
             return biome;
@@ -104,6 +109,10 @@ namespace Adventure
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
+                },
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(10, new Tree())
                 }
             };
 
@@ -119,6 +128,10 @@ namespace Adventure
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
+                },
+                BackgroundItems =new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(20, new TallTree())
                 }
             };
 

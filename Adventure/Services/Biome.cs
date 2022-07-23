@@ -19,13 +19,17 @@ namespace Adventure
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
 
-        public List<BiomeEnemy> RegularEnemies { get; }
+        List<BiomeEnemy> RegularEnemies { get; }
 
         /// <summary>
         /// Set this to control the boss version of the enemy separately. You will get a boss enemy
         /// stat-wise no matter what.
         /// </summary>
-        public BiomeEnemy BossEnemy { get; set; }
+        BiomeEnemy BossEnemy { get; set; }
+
+        List<BiomeBackgroundItem> BackgroundItems { get; set; }
+
+        int MaxBackgroundItemRoll { get; set; }
     }
 
     class Biome : IBiome
@@ -63,5 +67,11 @@ namespace Adventure
         public ISpriteAsset GateAsset { get; set; } = new Assets.World.MetalGate();
 
         public ISpriteAsset KeyAsset { get; set; } = new Assets.World.RoundKey();
+
+        public List<BiomeBackgroundItem> BackgroundItems { get; set; }
+
+        public int MaxBackgroundItemRoll { get; set; } = 100;
     }
+
+    record BiomeBackgroundItem(int Chance, ISpriteAsset Asset);
 }
