@@ -42,11 +42,12 @@ namespace DiligentEngine.RT.Sprites
 
     public class SpriteMaterialDescription
     {
-        public SpriteMaterialDescription(string colorMap, HashSet<SpriteMaterialTextureItem> materials, Dictionary<uint, uint> palletSwap = null)
+        public SpriteMaterialDescription(string colorMap, HashSet<SpriteMaterialTextureItem> materials, Dictionary<uint, uint> palletSwap = null, int? textureScale = null)
         {
             this.ColorMap = colorMap;
             this.Materials = materials;
             this.PalletSwap = palletSwap;
+            this.TextureScale = textureScale;
         }
 
         public String ColorMap { get; set; }
@@ -55,10 +56,13 @@ namespace DiligentEngine.RT.Sprites
 
         public Dictionary<uint, uint> PalletSwap { get; set; }
 
+        public int? TextureScale { get; set; }
+
         public override bool Equals(object obj)
         {
             return obj is SpriteMaterialDescription description &&
                    ColorMap == description.ColorMap &&
+                   TextureScale == description.TextureScale &&
                    (
                        (Materials == null && description.Materials == null) ||
                        (Materials?.SetEquals(description.Materials) == true)
@@ -74,6 +78,7 @@ namespace DiligentEngine.RT.Sprites
         {
             var hashCode = new HashCode();
             hashCode.Add(ColorMap);
+            hashCode.Add(TextureScale);
             if (Materials != null && Materials.Count > 0) //Null and empty considered the same
             {
                 foreach (var mat in Materials.OrderBy(i => i.Color))
@@ -140,7 +145,7 @@ namespace DiligentEngine.RT.Sprites
                 //This makes it take multiple frames, but living with that for now
                 //Ideally this should go back into 1 task.run to run at full speed, but this manager only
                 //has main thread sync support
-                var spriteMatTextures = await spriteMaterialTextureManager.Checkout(image, new SpriteMaterialTextureDescription(desc.ColorMap, desc.Materials));
+                var spriteMatTextures = await spriteMaterialTextureManager.Checkout(image, new SpriteMaterialTextureDescription(desc.ColorMap, desc.Materials, desc.TextureScale));
 
                 var pooledResult = await Task.Run(() =>
                 {

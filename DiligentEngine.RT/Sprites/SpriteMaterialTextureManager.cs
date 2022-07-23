@@ -15,20 +15,24 @@ namespace DiligentEngine.RT.Sprites
 {
     public class SpriteMaterialTextureDescription
     {
-        public SpriteMaterialTextureDescription(string baseMap, HashSet<SpriteMaterialTextureItem> materials)
+        public SpriteMaterialTextureDescription(string baseMap, HashSet<SpriteMaterialTextureItem> materials, int? scale)
         {
             BaseMap = baseMap;
             Materials = materials;
+            Scale = scale;
         }
 
         String BaseMap { get; }
 
         public HashSet<SpriteMaterialTextureItem> Materials { get; }
 
+        public int? Scale { get; set; }
+
         public override bool Equals(object obj)
         {
             return obj is SpriteMaterialTextureDescription description &&
                    BaseMap == description.BaseMap &&
+                   Scale == description.Scale &&
                     (
                         (Materials == null && description.Materials == null) ||
                         (Materials?.SetEquals(description.Materials) == true)
@@ -39,6 +43,7 @@ namespace DiligentEngine.RT.Sprites
         {
             var hashCode = new HashCode();
             hashCode.Add(BaseMap);
+            hashCode.Add(Scale);
             if (Materials != null && Materials.Count > 0) //Null and empty considered the same
             {
                 foreach (var mat in Materials.OrderBy(i => i.Color))
@@ -116,7 +121,7 @@ namespace DiligentEngine.RT.Sprites
                     var sw = new Stopwatch();
                     sw.Start();
 
-                    var scale = Math.Min(1024 / image.Width, 1024 / image.Height); //This needs to become configurable
+                    var scale = desc.Scale ?? Math.Min(1024 / image.Width, 1024 / image.Height);
 
                     using var ccoTextures = cc0MaterialTextureBuilder.CreateMaterialSet(image, scale, desc.Materials?.ToDictionary(k => k.Color, e => new CC0MaterialDesc(e.BasePath, e.Ext, e.Reflective)));
 

@@ -19,7 +19,8 @@ namespace Adventure.Assets.World
                 {
                     new SpriteMaterialTextureItem(0xff008d00, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
                     new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
-                }
+                },
+                textureScale: 16
             );
         }
 
