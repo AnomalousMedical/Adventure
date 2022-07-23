@@ -47,6 +47,7 @@ namespace Adventure
         private readonly Party party;
         private readonly IWorldManager worldManager;
         private readonly Persistence persistence;
+        private readonly Sky sky;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -59,7 +60,8 @@ namespace Adventure
             IWorldManager worldManager,
             IObjectResolverFactory objectResolverFactory,
             Persistence persistence,
-            IBepuScene bepuScene //Inject this so it is created earlier and destroyed later
+            IBepuScene bepuScene, //Inject this so it is created earlier and destroyed later
+            Sky sky
         )
         {
             objectResolver = objectResolverFactory.Create();
@@ -67,6 +69,7 @@ namespace Adventure
             this.party = party;
             this.worldManager = worldManager;
             this.persistence = persistence;
+            this.sky = sky;
         }
 
         public async Task Restart()
@@ -190,8 +193,10 @@ namespace Adventure
             currentZone.SetupPhysics();
 
             var playerLoc = triggerLoc;
-            playerLoc += new Vector3(-150f, previousOffset.y, previousOffset.z);
-            foreach(var player in players)
+            var playerOffset = new Vector3(-150f, previousOffset.y, previousOffset.z);
+            playerLoc += playerOffset;
+            sky.CelestialOffset += playerOffset;
+            foreach (var player in players)
             {
                 player?.SetLocation(playerLoc);
             }
@@ -258,7 +263,9 @@ namespace Adventure
             currentZone.SetupPhysics();
 
             var playerLoc = triggerLoc;
-            playerLoc += new Vector3(150f, nextOffset.y, nextOffset.z);
+            var playerOffset = new Vector3(150f, nextOffset.y, nextOffset.z);
+            playerLoc += playerOffset;
+            sky.CelestialOffset += playerOffset;
             foreach (var player in players)
             {
                 player?.SetLocation(playerLoc);

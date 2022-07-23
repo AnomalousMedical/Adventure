@@ -37,14 +37,18 @@ namespace Adventure
 
         const float LightDistance = 10000.0f;
 
+        public Vector3 CelestialOffset { get; set; }
+
         public unsafe void UpdateLight(Clock clock)
         {
             var rotation = new Quaternion(Vector3.UnitZ, timeClock.TimeFactor * 2 * MathF.PI);
             sunPosition = Quaternion.quatRotate(rotation, Vector3.Down) * LightDistance;
             sunPosition += new Vector3(0f, 0f, -LightDistance);
+            sunPosition += CelestialOffset;
 
             moonPosition = Quaternion.quatRotate(rotation, Vector3.Up) * LightDistance;
             moonPosition += new Vector3(0f, 0f, -LightDistance);
+            moonPosition += CelestialOffset;
 
             if (timeClock.IsDay)
             {
