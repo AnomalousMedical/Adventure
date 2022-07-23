@@ -93,7 +93,11 @@ namespace Adventure
                     Asset = new Assets.World.TreasureChest(),
                 },
                 BgMusic = "Music/opengameart/Fantasy_Origins - Cavernous_Desert02.ogg",
-                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg"
+                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(2, new Cactus())
+                }
             };
 
             return biome;
