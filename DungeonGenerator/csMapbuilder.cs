@@ -326,6 +326,65 @@ namespace RogueLikeMapBuilder
 
         }
 
+        public void AddTopBottomPad(int topRows, int bottomRows)
+        {
+            var width = Map_Size.Width;
+            var oldHeight = Map_Size.Height;
+            var oldMap = map;
+            var newHeight = oldHeight + topRows + bottomRows;
+
+            Map_Size = new Size(width, newHeight);
+            map = new ushort[width, newHeight];
+            
+            for (int y = 0; y < oldHeight; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    map[x, y + topRows] = oldMap[x, y];
+                }
+            }
+
+            Point AddTopPadding(Point point)
+            {
+                point.y += topRows;
+                return point;
+            }
+
+            Rectangle AddTopPaddingRect(Rectangle rect)
+            {
+                rect.Top += topRows;
+                return rect;
+            }
+
+            lBuilltCorridors = lBuilltCorridors.Select(AddTopPadding).ToList();
+            lPotentialCorridor = lPotentialCorridor.Select(AddTopPadding).ToList();
+            
+            if(EastConnector != null)
+            {
+                EastConnector = AddTopPadding(EastConnector.Value);
+            }
+
+            if (WestConnector != null)
+            {
+                WestConnector = AddTopPadding(WestConnector.Value);
+            }
+
+            if (NorthConnector != null)
+            {
+                NorthConnector = AddTopPadding(NorthConnector.Value);
+            }
+
+            if (SouthConnector != null)
+            {
+                SouthConnector = AddTopPadding(SouthConnector.Value);
+            }
+
+            rctBuiltRooms = rctBuiltRooms.Select(AddTopPaddingRect).ToList();
+            rctCurrentRoom = AddTopPaddingRect(rctCurrentRoom);
+            startRoom = AddTopPaddingRect(startRoom);
+            endRoom = AddTopPaddingRect(endRoom);
+        }
+
         public void AddNorthConnector()
         {
             var width = Map_Size.Width;

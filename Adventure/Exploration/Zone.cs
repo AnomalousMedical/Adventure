@@ -285,10 +285,15 @@ namespace Adventure
                     };
                     mapBuilder.Build_ConnectedStartRooms();
                     mapBuilder.AddEastConnector();
-                    int startX, startY;
                     if (description.GoPrevious)
                     {
                         mapBuilder.AddWestConnector();
+                    }
+                    mapBuilder.AddTopBottomPad(75, 75);
+
+                    int startX, startY;
+                    if (description.GoPrevious)
+                    {
                         var startConnector = mapBuilder.WestConnector.Value;
                         startX = startConnector.x;
                         startY = startConnector.y;
@@ -964,7 +969,7 @@ namespace Adventure
                                 break;
                             }
                         }
-                        
+
                         //if (!hitWalkablePath[x])
                         //{
                         //    add = true;
