@@ -616,6 +616,45 @@ namespace DungeonGenerator
                 }
             }
 
+            //Flatten sides to the exit height
+            //This is not perfect, but a big improvement over just leaving it.
+            if(mapbuilder.WestConnectorIndex != csMapbuilder.NullCell)
+            {
+                var point = mapbuilder.WestConnector.Value;
+                var connectorLoc = PointToVector(point.x, point.y);
+                var mapX = 0;
+                for (int mapY = 0; mapY < mapHeight; ++mapY)
+                {
+                    var cell = mapbuilder.map[mapX, mapY];
+                    if (cell == csMapbuilder.EmptyCell)
+                    {
+                        var square = tempSquareInfo[mapX + 1, mapY + 1];
+                        square.LeftNearY = connectorLoc.y;
+                        square.LeftFarY = connectorLoc.y;
+                        tempSquareInfo[mapX + 1, mapY + 1] = square;
+                    }
+                }
+            }
+
+            if (mapbuilder.EastConnectorIndex != csMapbuilder.NullCell)
+            {
+                var point = mapbuilder.EastConnector.Value;
+                var connectorLoc = PointToVector(point.x, point.y);
+                var mapX = mapWidth - 1;
+                var mismatchCells = new List<int>();
+                for (int mapY = 0; mapY < mapHeight; ++mapY)
+                {
+                    var cell = mapbuilder.map[mapX, mapY];
+                    if (cell == csMapbuilder.EmptyCell)
+                    {
+                        var square = tempSquareInfo[mapX + 1, mapY + 1];
+                        square.RightNearY = connectorLoc.y;
+                        square.RightFarY = connectorLoc.y;
+                        tempSquareInfo[mapX + 1, mapY + 1] = square;
+                    }
+                }
+            }
+
             //Render remaining squares
             for (int mapY = 0; mapY < mapHeight; ++mapY)
             {
