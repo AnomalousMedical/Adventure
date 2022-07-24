@@ -629,20 +629,12 @@ namespace DungeonGenerator
                     if (cell == csMapbuilder.EmptyCell)
                     {
                         var square = tempSquareInfo[mapX + 1, mapY + 1];
+                        var nextSquare = tempSquareInfo[mapX + 2, mapY + 1];
                         square.LeftNearY = connectorLoc.y;
                         square.LeftFarY = connectorLoc.y;
-                        square.RightNearY -= (square.RightNearY - connectorLoc.y) / 2;
-                        square.RightFarY -= (square.RightFarY - connectorLoc.y) / 2;
+                        square.RightFarY = nextSquare.LeftFarY;
+                        square.RightNearY = nextSquare.LeftNearY;
                         tempSquareInfo[mapX + 1, mapY + 1] = square;
-
-                        var nextCell = mapbuilder.map[mapX + 1, mapY];
-                        if (nextCell == csMapbuilder.EmptyCell)
-                        {
-                            var nextSquare = tempSquareInfo[mapX + 2, mapY + 1];
-                            nextSquare.LeftNearY = square.RightNearY;
-                            nextSquare.LeftFarY = square.RightFarY;
-                            tempSquareInfo[mapX + 2, mapY + 1] = nextSquare;
-                        }
                     }
                 }
             }
@@ -659,20 +651,12 @@ namespace DungeonGenerator
                     if (cell == csMapbuilder.EmptyCell)
                     {
                         var square = tempSquareInfo[mapX + 1, mapY + 1];
+                        var nextSquare = tempSquareInfo[mapX, mapY + 1];
                         square.RightNearY = connectorLoc.y;
                         square.RightFarY = connectorLoc.y;
-                        square.LeftNearY -= (square.LeftNearY - connectorLoc.y) / 2;
-                        square.LeftFarY -= (square.LeftFarY - connectorLoc.y) / 2;
+                        square.LeftFarY = nextSquare.RightFarY;
+                        square.LeftNearY = nextSquare.RightNearY;
                         tempSquareInfo[mapX + 1, mapY + 1] = square;
-
-                        var nextCell = mapbuilder.map[mapX - 1, mapY];
-                        if (nextCell == csMapbuilder.EmptyCell)
-                        {
-                            var nextSquare = tempSquareInfo[mapX, mapY + 1];
-                            nextSquare.RightNearY = square.LeftNearY;
-                            nextSquare.RightFarY = square.LeftFarY;
-                            tempSquareInfo[mapX, mapY + 1] = nextSquare;
-                        }
                     }
                 }
             }
