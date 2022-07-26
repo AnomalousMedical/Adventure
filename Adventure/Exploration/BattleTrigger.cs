@@ -146,8 +146,11 @@ namespace Adventure
 
             if (!physicsCreated)
             {
+                var x = MathF.Max(currentScale.x, 1);
+                var z = MathF.Max(currentScale.z, 1);
+
                 physicsCreated = true;
-                var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
+                var shape = new Box(x, 1000, z); //TODO: Each one creates its own, try to load from resources
                 shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
                 staticHandle = bepuScene.Simulation.Statics.Add(
