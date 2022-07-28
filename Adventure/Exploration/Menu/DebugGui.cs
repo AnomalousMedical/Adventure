@@ -67,7 +67,7 @@ namespace Adventure.Exploration.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
-            averageLevel.Text = $"Level: {party.GetAverageLevel()} Zone: {zoneManager.Current.EnemyLevel}";
+            averageLevel.Text = $"Zone: {zoneManager.Current.Index} Level: {party.GetAverageLevel()} Enemy: {zoneManager.Current.EnemyLevel}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";
             toggleCamera.Text = flyCameraManager.Enabled ? "Disable Fly Camera" : "Enable Fly Camera";
 
