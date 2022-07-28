@@ -979,8 +979,6 @@ namespace Adventure
                             var mapLoc = mapMesh.PointToVector(x, y);
                             var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
                             {
-                                o.InstanceId = 0;
-                                o.ZoneIndex = index;
                                 o.MapOffset = mapLoc;
                                 o.Translation = currentPosition + o.MapOffset;
                                 var keyAsset = add.Asset;

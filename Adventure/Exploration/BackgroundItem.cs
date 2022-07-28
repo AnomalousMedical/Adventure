@@ -12,10 +12,6 @@ namespace Adventure
     {
         public class Description : SceneObjectDesc
         {
-            public int ZoneIndex { get; set; }
-
-            public int InstanceId { get; set; }
-
             public Vector3 MapOffset { get; set; }
 
             public Sprite Sprite { get; set; }
