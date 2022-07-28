@@ -92,6 +92,7 @@ namespace Adventure.Battle
         private readonly IBattleBuilder battleBuilder;
         private readonly IObjectResolver objectResolver;
         private BattleArena battleArena;
+        private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
 
         private SharpButton endBattle = new SharpButton() { Text = "End Battle" };
         private SharpText goldRewardText = new SharpText() { Color = Color.White };
@@ -416,6 +417,11 @@ namespace Adventure.Battle
 
         private void ZoneManager_ZoneChanged(IZoneManager levelManager)
         {
+            foreach(var placeable in bgItems)
+            {
+                placeable.RequestDestruction();
+            }
+
             battleArena?.RequestDestruction();
 
             battleArena = objectResolver.Resolve<BattleArena, BattleArena.Description>(o =>
@@ -425,6 +431,29 @@ namespace Adventure.Battle
                 o.Texture = levelManager.Current.Biome.FloorTexture;
                 o.Reflective = levelManager.Current.Biome.ReflectFloor;
             });
+
+            var biome = levelManager.Current.Biome;
+            var bgItemsRandom = new Random(levelManager.Current.Index); //TODO: Get better, but still consistent seed for here
+
+            if (biome.BackgroundItems.Count > 0)
+            {
+                for (var i = 0; i < 5; ++i)
+                {
+                    var roll = bgItemsRandom.Next(0, biome.BackgroundItems.Count);
+                    var add = biome.BackgroundItems[roll];
+
+                    var pos = new Vector3(-10f + 4f * i + 2f, 0f, 8f);
+                    var bgItem = objectResolver.Resolve<BattleBackgroundItem, BattleBackgroundItem.Description>(o =>
+                    {
+                        o.MapOffset = Vector3.Zero;
+                        o.Translation = pos + o.MapOffset;
+                        var keyAsset = add.Asset;
+                        o.Sprite = keyAsset.CreateSprite();
+                        o.SpriteMaterial = keyAsset.CreateMaterial();
+                    });
+                    this.bgItems.Add(bgItem);
+                }
+            }
         }
 
         public IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target)
