@@ -1,6 +1,4 @@
-﻿//#define DECK_NO_WALL_HACK //Hide the wall meshes that don't work on the deck for whatever insane reason
-
-using BepuPhysics;
+﻿using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
 using DiligentEngine;
@@ -155,10 +153,8 @@ namespace Adventure
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly ILogger<Zone> logger;
         private PrimaryHitShader floorShader;
-        private PrimaryHitShader wallShader;
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
-        private readonly TLASBuildInstanceData wallInstanceData;
         private readonly TLASBuildInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private TypedIndex boundaryCubeShapeIndex;
@@ -172,7 +168,6 @@ namespace Adventure
         private IBiome biome;
         private bool goPrevious;
         private BlasInstanceData floorBlasInstanceData;
-        private BlasInstanceData wallBlasInstanceData;
         private int enemySeed;
         private int index;
         private bool makeRestArea;
@@ -207,7 +202,6 @@ namespace Adventure
             ILogger<Zone> logger,
             IObjectResolverFactory objectResolverFactory,
             MeshBLAS floorMesh,
-            MeshBLAS wallMesh,
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
@@ -244,12 +238,6 @@ namespace Adventure
             this.floorInstanceData = new TLASBuildInstanceData()
             {
                 InstanceName = RTId.CreateId("ZoneFloor"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
-            };
-            this.wallInstanceData = new TLASBuildInstanceData()
-            {
-                InstanceName = RTId.CreateId("ZoneWall"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
             };
@@ -313,7 +301,7 @@ namespace Adventure
                         startY = startRoom.Top + startRoom.Height / 2;
                     }
 
-                    mapMesh = new MapMesh(mapBuilder, random, floorMesh, wallMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ);
+                    mapMesh = new MapMesh(mapBuilder, random, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ);
 
                     startPointLocal = mapMesh.PointToVector(startX, startY);
                     var endConnector = mapBuilder.EastConnector.Value;
@@ -325,45 +313,28 @@ namespace Adventure
 
                 await zoneGenerationTask; //Need the zone before kicking off the calls to End() below.
 
-                await Task.WhenAll
-                (
-                    floorMesh.End("ZoneFloor")
-#if !DECK_NO_WALL_HACK
-                    ,wallMesh.End("ZoneWall")
-#endif
-                );
+                await floorMesh.End("ZoneFloor");
 
                 //TODO: The zone BLASes must be loaded before the shaders, see todo in PrimaryHitShader
                 var floorShaderSetup = primaryHitShaderFactory.Checkout();
-                var wallShaderSetup = primaryHitShaderFactory.Checkout();
 
                 await Task.WhenAll
                 (
                     floorTextureTask,
                     wallTextureTask,
-                    floorShaderSetup,
-                    wallShaderSetup
+                    floorShaderSetup
                 );
 
                 this.floorShader = floorShaderSetup.Result;
-                this.wallShader = wallShaderSetup.Result;
                 this.floorTexture = floorTextureTask.Result;
                 this.wallTexture = wallTextureTask.Result;
 
                 this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
-#if !DECK_NO_WALL_HACK
-                this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
-#endif
 
                 rtInstances.AddShaderTableBinder(Bind);
-                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture);
+                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
-                wallBlasInstanceData = activeTextures.AddActiveTexture(wallTexture);
-                wallBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectWall, false, false);
                 rtInstances.AddTlasBuild(floorInstanceData);
-#if !DECK_NO_WALL_HACK
-                rtInstances.AddTlasBuild(wallInstanceData);
-#endif
 
                 ResetPlacementData();
                 var enemyRandom = new Random(enemySeed);
@@ -413,11 +384,7 @@ namespace Adventure
             textureManager.TryReturn(floorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
-            primaryHitShaderFactory.TryReturn(wallShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
-#if !DECK_NO_WALL_HACK
-            rtInstances.RemoveTlasBuild(wallInstanceData);
-#endif
         }
 
         /// <summary>
@@ -436,9 +403,6 @@ namespace Adventure
         public void SetPosition(in Vector3 position)
         {
             this.currentPosition = position;
-#if !DECK_NO_WALL_HACK
-            this.wallInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
-#endif
             this.floorInstanceData.Transform = new InstanceMatrix(position, Quaternion.Identity);
             foreach (var placeable in placeables)
             {
@@ -1037,15 +1001,6 @@ namespace Adventure
             {
                 floorShader.BindSbt(floorInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
             }
-
-#if !DECK_NO_WALL_HACK
-            wallBlasInstanceData.vertexOffset = mapMesh.WallMesh.Instance.VertexOffset;
-            wallBlasInstanceData.indexOffset = mapMesh.WallMesh.Instance.IndexOffset;
-            fixed (BlasInstanceData* ptr = &wallBlasInstanceData)
-            {
-                wallShader.BindSbt(wallInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
-            }
-#endif
         }
     }
 }

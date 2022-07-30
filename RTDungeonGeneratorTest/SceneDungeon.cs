@@ -26,7 +26,6 @@ namespace RTDungeonGeneratorTest
             public int Seed { get; set; }
         }
 
-        private readonly TLASBuildInstanceData wallInstanceData;
         private readonly TLASBuildInstanceData floorInstanceData;
         private readonly IDestructionRequest destructionRequest;
         private readonly TextureManager textureManager;
@@ -35,11 +34,9 @@ namespace RTDungeonGeneratorTest
         private readonly RTInstances rtInstances;
         private readonly RayTracingRenderer renderer;
         private PrimaryHitShader floorShader;
-        private PrimaryHitShader wallShader;
         private MapMesh mapMesh;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private BlasInstanceData floorBlasInstanceData;
-        private BlasInstanceData wallBlasInstanceData;
 
 
         CC0TextureResult floorTexture;
@@ -51,7 +48,6 @@ namespace RTDungeonGeneratorTest
             IScopedCoroutine coroutineRunner,
             IDestructionRequest destructionRequest,
             MeshBLAS floorMesh,
-            MeshBLAS wallMesh,
             TextureManager textureManager, 
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
@@ -72,12 +68,6 @@ namespace RTDungeonGeneratorTest
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity)
             };
-            this.wallInstanceData = new TLASBuildInstanceData()
-            {
-                InstanceName = RTId.CreateId("SceneDungeonWall"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity)
-            };
 
             coroutineRunner.RunTask(async () =>
             {
@@ -91,7 +81,6 @@ namespace RTDungeonGeneratorTest
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
                     var floorShaderSetup = primaryHitShaderFactory.Checkout();
-                    var wallShaderSetup = primaryHitShaderFactory.Checkout();
 
                     await Task.Run(() =>
                     {
@@ -114,33 +103,26 @@ namespace RTDungeonGeneratorTest
 
                         //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
 
-                        mapMesh = new MapMesh(mapBuilder, random, floorMesh, wallMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
+                        mapMesh = new MapMesh(mapBuilder, random, floorMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
                     });
 
                     await Task.WhenAll
                     (
                         floorTextureTask,
                         wallTextureTask,
-                        floorMesh.End("SceneDungeonFloor"), 
-                        wallMesh.End("SceneDungeonWall"),
-                        floorShaderSetup,
-                        wallShaderSetup
+                        floorMesh.End("SceneDungeonFloor"),
+                        floorShaderSetup
                     );
 
                     this.floorShader = floorShaderSetup.Result;
-                    this.wallShader = wallShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
                     this.wallTexture = wallTextureTask.Result;
 
                     this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
-                    this.wallInstanceData.pBLAS = mapMesh.WallMesh.Instance.BLAS.Obj;
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
-                    wallBlasInstanceData = this.activeTextures.AddActiveTexture(this.wallTexture);
-                    wallBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddTlasBuild(floorInstanceData);
-                    rtInstances.AddTlasBuild(wallInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
 
                     loadingTask.SetResult();
@@ -164,16 +146,13 @@ namespace RTDungeonGeneratorTest
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
-            primaryHitShaderFactory.TryReturn(wallShader);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
-            rtInstances.RemoveTlasBuild(wallInstanceData);
         }
 
         public void SetTransform(InstanceMatrix matrix)
         {
             this.floorInstanceData.Transform = matrix;
-            this.wallInstanceData.Transform = matrix;
         }
 
         private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
@@ -183,13 +162,6 @@ namespace RTDungeonGeneratorTest
             fixed (BlasInstanceData* ptr = &floorBlasInstanceData)
             {
                 floorShader.BindSbt(floorInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
-            }
-
-            wallBlasInstanceData.vertexOffset = mapMesh.WallMesh.Instance.VertexOffset;
-            wallBlasInstanceData.indexOffset = mapMesh.WallMesh.Instance.IndexOffset;
-            fixed (BlasInstanceData* ptr = &wallBlasInstanceData)
-            {
-                wallShader.BindSbt(wallInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
             }
         }
 

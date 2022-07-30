@@ -15,7 +15,6 @@ namespace DungeonGenerator
         public csMapbuilder MapBuilder => mapbuilder;
 
         private MeshBLAS floorMesh;
-        private MeshBLAS wallMesh;
         private List<MapMeshPosition> floorCubeCenterPoints;
         private List<Vector3> boundaryCubeCenterPoints;
         private MapMeshSquareInfo[,] squareInfo; //This array is 1 larger in each dimension, use accessor to translate points
@@ -44,7 +43,33 @@ namespace DungeonGenerator
 
         public float MaxSlopeY { get; set; } = 1f;
 
-        public MapMesh(csMapbuilder mapbuilder, Random random, MeshBLAS floorMesh, MeshBLAS wallMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
+        private float floorTextureIndex = 0.5f;
+        public int FloorTextureIndex
+        {
+            get
+            {
+                return (int)floorTextureIndex;
+            }
+            set
+            {
+                floorTextureIndex = value + 0.5f;
+            }
+        }
+
+        private float wallTextureIndex = 1.5f;
+        public int WallTextureIndex
+        {
+            get
+            {
+                return (int)wallTextureIndex;
+            }
+            set
+            {
+                wallTextureIndex = value + 0.5f;
+            }
+        }
+
+        public MapMesh(csMapbuilder mapbuilder, Random random, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
             if (mapbuilder.AllowOtherCorridors)
             {
@@ -216,7 +241,6 @@ namespace DungeonGenerator
             MapMeshTempSquareInfo[,] tempSquareInfo = new MapMeshTempSquareInfo[squareCenterMapWidth, squareCenterMapHeight];
             this.mapbuilder = mapbuilder;
             this.floorMesh = floorMesh;
-            this.wallMesh = wallMesh;
 
             //Figure out number of quads
             uint numFloorQuads = 0;
@@ -270,8 +294,7 @@ namespace DungeonGenerator
             }
 
             //Make mesh
-            floorMesh.Begin(numFloorQuads);
-            wallMesh.Begin(numWallQuads);
+            floorMesh.Begin(numFloorQuads + numWallQuads);
 
             boundaryCubeCenterPoints = new List<Vector3>((int)(numBoundaryCubes));
             floorCubeCenterPoints = new List<MapMeshPosition>((int)(numFloorCubes));
@@ -681,8 +704,6 @@ namespace DungeonGenerator
 
         public MeshBLAS FloorMesh => floorMesh;
 
-        public MeshBLAS WallMesh => wallMesh;
-
         private void ProcessRoom(csMapbuilder mapbuilder, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, ushort[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, bool[,] processedSquares, ushort roomId)
         {
             var room = mapbuilder.Rooms[roomId];
@@ -809,7 +830,8 @@ namespace DungeonGenerator
                     floorNormal,
                     floorNormal,
                     topLeft,
-                    bottomRight);
+                    bottomRight,
+                    floorTextureIndex);
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
@@ -1076,7 +1098,7 @@ namespace DungeonGenerator
 
             GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
 
-            wallMesh.AddQuad(
+            floorMesh.AddQuad(
                 leftFar,
                 rightFar,
                 rightNear,
@@ -1090,7 +1112,8 @@ namespace DungeonGenerator
                 //cross,
                 //cross,
                 topLeft,
-                bottomRight);
+                bottomRight, 
+                wallTextureIndex);
         }
 
         private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom)
