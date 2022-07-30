@@ -51,9 +51,9 @@ void GetInstanceDataSprite
     posY = $$(G_VERTICES)[$$(G_INDICES)[vertId + 1] + instanceData.vertexOffset];
     posZ = $$(G_VERTICES)[$$(G_INDICES)[vertId + 2] + instanceData.vertexOffset];
 
-    float2 frameVertX = instanceData.uv[$$(G_INDICES)[vertId + 0] % 4];
-    float2 frameVertY = instanceData.uv[$$(G_INDICES)[vertId + 1] % 4];
-    float2 frameVertZ = instanceData.uv[$$(G_INDICES)[vertId + 2] % 4];
+    float2 frameVertX = instanceData.uv[$$(G_INDICES)[vertId + 0]];
+    float2 frameVertY = instanceData.uv[$$(G_INDICES)[vertId + 1]];
+    float2 frameVertZ = instanceData.uv[$$(G_INDICES)[vertId + 2]];
 
     uv = frameVertX.xy * barycentrics.x +
         frameVertY.xy * barycentrics.y +
