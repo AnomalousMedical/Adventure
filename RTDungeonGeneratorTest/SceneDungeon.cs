@@ -159,6 +159,8 @@ namespace RTDungeonGeneratorTest
 
         public void Dispose()
         {
+            activeTextures.RemoveActiveTexture(wallTexture);
+            activeTextures.RemoveActiveTexture(floorTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
