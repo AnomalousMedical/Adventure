@@ -175,13 +175,23 @@ namespace DungeonGenerator
                         var south = GetSouthSquare(mapX, mapY, map);
                         var east = GetEastSquare(mapX, mapY, map, mapWidth);
                         var west = GetWestSquare(mapX, mapY, map);
+                        var northEast = GetNorthEastSquare(mapX, mapY, map, mapWidth, mapHeight);
+                        var southEast = GetSouthEastSquare(mapX, mapY, map, mapWidth);
+                        var northWest = GetNorthWestSquare(mapX, mapY, map, mapHeight);
+                        var southWest = GetSouthWestSquare(mapX, mapY, map);
+
                         if(north == csMapbuilder.EmptyCell
-                            && south == csMapbuilder.EmptyCell
-                            && east == csMapbuilder.EmptyCell
-                            && west == csMapbuilder.EmptyCell)
+                        && south == csMapbuilder.EmptyCell
+                        && east == csMapbuilder.EmptyCell
+                        && west == csMapbuilder.EmptyCell
+                        && northEast == csMapbuilder.EmptyCell
+                        && southEast == csMapbuilder.EmptyCell
+                        && northWest == csMapbuilder.EmptyCell
+                        && southWest == csMapbuilder.EmptyCell
+                        )
                         {
                             processedSquares[mapX, mapY] = true;
-                            ProcessSquare(1.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                            ProcessSquare(0.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                         }
                     }
                 }
@@ -577,6 +587,66 @@ namespace DungeonGenerator
         {
             x += 1;
             if (x >= width)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            return map[x, y];
+        }
+
+        private int GetNorthEastSquare(int x, int y, int[,] map, int width, int height)
+        {
+            x += 1;
+            y += 1;
+            if (x >= width)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            if(y >= height)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            return map[x, y];
+        }
+
+        private int GetSouthEastSquare(int x, int y, int[,] map, int width)
+        {
+            x += 1;
+            y -= 1;
+            if (x >= width)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            if (y < 0)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            return map[x, y];
+        }
+
+        private int GetNorthWestSquare(int x, int y, int[,] map, int height)
+        {
+            x -= 1;
+            y += 1;
+            if (x < 0)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            if (y >= height)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            return map[x, y];
+        }
+
+        private int GetSouthWestSquare(int x, int y, int[,] map)
+        {
+            x -= 1;
+            y -= 1;
+            if (x < 0)
+            {
+                return csMapbuilder.EmptyCell;
+            }
+            if (y < 0)
             {
                 return csMapbuilder.EmptyCell;
             }
