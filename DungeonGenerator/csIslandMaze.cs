@@ -7,6 +7,9 @@ using System;
 public class csIslandMaze
 {
 
+    public const int EmptyCell = 0;
+    public const int RoomCell = 1;
+
     private Random r;
 
     public int Neighbours { get; set; }

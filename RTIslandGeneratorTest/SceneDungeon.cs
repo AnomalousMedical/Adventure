@@ -101,7 +101,7 @@ namespace RTIslandGeneratorTest
 
                         sw.Stop();
 
-                        DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
+                        //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
 
                         mapMesh = new IslandMazeMesh(mapBuilder, random, floorMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
                     });
