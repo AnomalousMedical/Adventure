@@ -4,7 +4,7 @@ using System;
 /// 
 /// For more info on it's use see http://www.evilscience.co.uk/?p=53
 /// </summary>
-class csIslandMaze
+public class csIslandMaze
 {
 
     private Random r;
