@@ -15,30 +15,27 @@ namespace DiligentEngine.RT.Sprites
         private readonly SpriteMaterial spriteMaterial;
         private readonly ISpriteMaterialManager spriteMaterialManager;
         private readonly ActiveTextures activeTextures;
-        private readonly SpritePlaneBLAS.Factory spriteBlasFactory;
-        private readonly Dictionary<String, List<SpritePlaneBLAS>> blasFrames;
+        private readonly SpritePlaneBLAS spritePlaneBLAS;
         private PrimaryHitShader primaryHitShader;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private HLSL.BlasInstanceData blasInstanceData;
 
         public SpriteInstance
         (
-            Dictionary<String, List<SpritePlaneBLAS>> blasFrames,
             PrimaryHitShader primaryHitShader,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             SpriteMaterial spriteMaterial,
             ISpriteMaterialManager spriteMaterialManager,
             ActiveTextures activeTextures,
-            SpritePlaneBLAS.Factory spriteBlasFactory
+            SpritePlaneBLAS spritePlaneBLAS
         )
         {
-            this.blasFrames = blasFrames;
             this.primaryHitShader = primaryHitShader;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.spriteMaterial = spriteMaterial;
             this.spriteMaterialManager = spriteMaterialManager;
             this.activeTextures = activeTextures;
-            this.spriteBlasFactory = spriteBlasFactory;
+            this.spritePlaneBLAS = spritePlaneBLAS;
             blasInstanceData = this.activeTextures.AddActiveTexture(spriteMaterial);
             blasInstanceData.dispatchType = HLSL.BlasInstanceDataConstants.GetShaderForDescription(spriteMaterial.NormalSRV != null, spriteMaterial.PhysicalSRV != null, spriteMaterial.Reflective, false, true);
         }
@@ -48,13 +45,6 @@ namespace DiligentEngine.RT.Sprites
             this.activeTextures.RemoveActiveTexture(spriteMaterial);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
             spriteMaterialManager.Return(spriteMaterial);
-            foreach(var animation in blasFrames.Values)
-            {
-                foreach(var frame in animation)
-                {
-                    spriteBlasFactory.TryReturn(frame);
-                }
-            }
         }
 
         /// <summary>
@@ -62,12 +52,9 @@ namespace DiligentEngine.RT.Sprites
         /// build data for this frame. This actually happens during update sprites,
         /// but the user will call that before render.
         /// </summary>
-        internal void UpdateBlas(TLASBuildInstanceData tlasInstanceBuildData, ISprite sprite)
+        internal void UpdateBlas(TLASBuildInstanceData tlasInstanceBuildData)
         {
-            String currentAnimation = sprite.CurrentAnimationName;
-            int frame = sprite.FrameIndex;
-            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
-            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.BLAS.Obj;
+            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.Instance.BLAS.Obj;
         }
 
         /// <summary>
@@ -76,11 +63,9 @@ namespace DiligentEngine.RT.Sprites
         public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, ISprite sprite)
         {
             String currentAnimation = sprite.CurrentAnimationName;
-            int frameIndex = sprite.FrameIndex;
-            var spritePlaneBLAS = blasFrames[currentAnimation][frameIndex].Instance;
             var frame = sprite.GetCurrentFrame();
-            blasInstanceData.vertexOffset = spritePlaneBLAS.VertexOffset;
-            blasInstanceData.indexOffset = spritePlaneBLAS.IndexOffset;
+            blasInstanceData.vertexOffset = spritePlaneBLAS.Instance.VertexOffset;
+            blasInstanceData.indexOffset = spritePlaneBLAS.Instance.IndexOffset;
             blasInstanceData.u1 = frame.Right; blasInstanceData.v1 = frame.Top;
             blasInstanceData.u2 = frame.Left; blasInstanceData.v2 = frame.Top;
             blasInstanceData.u3 = frame.Left; blasInstanceData.v3 = frame.Bottom;

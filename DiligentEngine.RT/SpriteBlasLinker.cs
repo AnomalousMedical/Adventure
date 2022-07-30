@@ -19,7 +19,7 @@ namespace DiligentEngine.RT
             this.wrappedSprite = wrappedSprite;
             this.instanceBuildData = instanceBuildData;
             this.spriteInstance = spriteInstance;
-            spriteInstance.UpdateBlas(instanceBuildData, wrappedSprite); //This one isn't really needed, but it ensures we seed with something since the user calls update
+            spriteInstance.UpdateBlas(instanceBuildData);
         }
 
         public ISprite WrappedSprite => wrappedSprite;
@@ -27,7 +27,6 @@ namespace DiligentEngine.RT
         public void Update(Clock clock)
         {
             wrappedSprite.Update(clock);
-            spriteInstance.UpdateBlas(instanceBuildData, wrappedSprite);
         }
     }
 }

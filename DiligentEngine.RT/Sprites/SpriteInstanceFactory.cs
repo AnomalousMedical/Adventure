@@ -11,26 +11,26 @@ namespace DiligentEngine.RT.Sprites
 {
     public class SpriteInstanceFactory
     {
-        private readonly SpritePlaneBLAS.Factory spriteBLASFactory;
         private readonly ISpriteMaterialManager spriteMaterialManager;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly ActiveTextures activeTextures;
+        private readonly SpritePlaneBLAS spritePlaneBLAS;
 
         private readonly PooledResourceManager<SpriteMaterialDescription, SpriteInstance> pooledResources
             = new PooledResourceManager<SpriteMaterialDescription, SpriteInstance>();
 
         public SpriteInstanceFactory
         (
-            SpritePlaneBLAS.Factory spriteBLASFactory, 
             ISpriteMaterialManager spriteMaterialManager, 
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            ActiveTextures activeTextures
+            ActiveTextures activeTextures,
+            SpritePlaneBLAS spritePlaneBLAS
         )
         {
-            this.spriteBLASFactory = spriteBLASFactory;
             this.spriteMaterialManager = spriteMaterialManager;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.activeTextures = activeTextures;
+            this.spritePlaneBLAS = spritePlaneBLAS;
         }
 
         public Task<SpriteInstance> Checkout(SpriteMaterialDescription desc, ISprite sprite)
@@ -43,48 +43,9 @@ namespace DiligentEngine.RT.Sprites
 
                 var shader = await primaryHitShaderFactory.Checkout();
 
-                var blasLoaders = new Dictionary<String, List<Task<SpritePlaneBLAS>>>();
-
-                foreach (var animation in sprite.Animations)
-                {
-                    var animFrames = new List<Task<SpritePlaneBLAS>>();
-                    blasLoaders[animation.Key] = animFrames;
-                    foreach (var frame in animation.Value.frames)
-                    {
-                        animFrames.Add(LoadBlas(frame));
-                    }
-                }
-
-                var blasFrames = new Dictionary<String, List<SpritePlaneBLAS>>(blasLoaders.Count);
-                foreach (var loader in blasLoaders)
-                {
-                    var animFrames = new List<SpritePlaneBLAS>(loader.Value.Count);
-                    blasFrames[loader.Key] = animFrames;
-                    foreach(var frame in loader.Value)
-                    {
-                        animFrames.Add(await frame);
-                    }
-                }
-
-                //You could cache the animations once more if you can make sure each asset only loads them once
-                //Then you won't need to even do all this lookup
-
-                var instance = new SpriteInstance(blasFrames, shader, primaryHitShaderFactory, material, spriteMaterialManager, activeTextures, spriteBLASFactory);
+                var instance = new SpriteInstance(shader, primaryHitShaderFactory, material, spriteMaterialManager, activeTextures, spritePlaneBLAS);
                 return pooledResources.CreateResult(instance);
             });
-        }
-
-        private async Task<SpritePlaneBLAS> LoadBlas(SpriteFrame frame)
-        {
-            var blasDesc = new SpritePlaneBLAS.Desc()
-            {
-                Left = frame.Left,
-                Top = frame.Top,
-                Right = frame.Right,
-                Bottom = frame.Bottom,
-            };
-            var blas = await spriteBLASFactory.Checkout(blasDesc);
-            return blas;
         }
 
         public void TryReturn(SpriteInstance item)
