@@ -76,10 +76,16 @@ namespace DiligentEngine.RT.Sprites
         public unsafe void Bind(String instanceName, IShaderBindingTable sbt, ITopLevelAS tlas, ISprite sprite)
         {
             String currentAnimation = sprite.CurrentAnimationName;
-            int frame = sprite.FrameIndex;
-            var spritePlaneBLAS = blasFrames[currentAnimation][frame].Instance;
+            int frameIndex = sprite.FrameIndex;
+            var spritePlaneBLAS = blasFrames[currentAnimation][frameIndex].Instance;
+            var frame = sprite.GetCurrentFrame();
             blasInstanceData.vertexOffset = spritePlaneBLAS.VertexOffset;
             blasInstanceData.indexOffset = spritePlaneBLAS.IndexOffset;
+            blasInstanceData.u1 = frame.Right; blasInstanceData.v1 = frame.Top;
+            blasInstanceData.u2 = frame.Left; blasInstanceData.v2 = frame.Top;
+            blasInstanceData.u3 = frame.Left; blasInstanceData.v3 = frame.Bottom;
+            blasInstanceData.u4 = frame.Right; blasInstanceData.v4 = frame.Bottom;
+
             fixed (HLSL.BlasInstanceData* ptr = &this.blasInstanceData)
             {
                 primaryHitShader.BindSbt(instanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(HLSL.BlasInstanceData));

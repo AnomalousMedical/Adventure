@@ -11,11 +11,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     CubeAttribVertex posX, posY, posZ;
     float2 uv;
     int mip = GetMip();
-    GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
 
     [forcecase] switch (instanceData.dispatchType) 
     {
         case $$(LIGHTANDSHADEBASE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -25,6 +25,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -34,6 +35,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -44,6 +46,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -54,6 +57,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -64,6 +68,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -74,6 +79,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -85,6 +91,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -96,6 +103,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -107,6 +115,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -118,6 +127,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -130,6 +140,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -142,6 +153,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -153,6 +165,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -164,6 +177,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -176,6 +190,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE) + 1:
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
