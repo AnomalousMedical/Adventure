@@ -35,6 +35,15 @@ void GetInstanceDataMesh
 
 float2 GetTriUvs(uint vertId)
 {
+    //This is obviously not very efficient, but passing arrays in the blas
+    //data only works correcly on Nvidia using Vulkan. All the other combos tested
+    //don't work
+    //Nvidia - D3D12, all blases are black
+    //Amd - Vulkan - Works, but has corruption across the middle of the sprite where the triangle intersects
+    //Amd - D3D12, crashes
+    //So instead the frames are passed in as 4 float2 elements, however this changes 3 array
+    //lookups into 3 switch statements, so its going to be slower, real world impact seems minimal
+    //TODO: Optimize so only sprites that have animations need to call GetTriUvs
     switch ($$(G_INDICES)[vertId])
     {
     case 0:
