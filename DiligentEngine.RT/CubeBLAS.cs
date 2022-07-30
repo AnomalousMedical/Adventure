@@ -62,6 +62,16 @@ namespace DiligentEngine.RT
                     new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
                     };
 
+                    blasDesc.Textures = new float[]
+                    {
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f, 0.5f,
+                    };
+
                     blasDesc.Indices = new uint[]
                     {
                     2,0,1,    2,3,0, //Back -z

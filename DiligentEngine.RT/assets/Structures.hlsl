@@ -1,9 +1,9 @@
 struct BlasInstanceData
 {
-    float2 uv0;
-    float2 uv1;
-    float2 uv2;
-    float2 uv3;
+    float2 uv0; //also base extras in mesh
+    float2 uv1; //also normal extras in mesh
+    float2 uv2; //also physical extras in mesh
+    float2 uv3; //also emissive extras in mesh
 
     int baseTexture;
     int normalTexture;
@@ -20,6 +20,10 @@ struct CubeAttribVertex {
   float4 tangent;
   float4 binormal;
   float4 normal;
+  float tex;
+  int pad1;
+  int pad2;
+  int pad3;
 };
 
 struct PrimaryRayPayload

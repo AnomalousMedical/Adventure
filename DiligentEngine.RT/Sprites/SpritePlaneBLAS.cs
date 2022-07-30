@@ -51,6 +51,8 @@ namespace DiligentEngine.RT
                         new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
                     };
 
+                    blasDesc.Textures = new float[4]; //Sprites cannot use these textures, since they override the uvs
+
                     blasDesc.Indices = new uint[]
                     {
                         0,1,2, 0,3,2

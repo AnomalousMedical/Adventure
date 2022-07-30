@@ -29,5 +29,9 @@ namespace DiligentEngine.RT
         public float4 tangent;
         public float4 binormal;
         public float4 normal;
+        public float tex;
+        public int pad1;
+        public int pad2;
+        public int pad3;
     };
 }

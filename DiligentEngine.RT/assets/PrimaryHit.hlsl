@@ -20,7 +20,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex)
             );
             break;
 
@@ -40,9 +40,9 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex)
             );
-            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap);
+            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE) + 1:
@@ -62,8 +62,8 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex)
             );
             break;
 
@@ -84,10 +84,10 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex)
             );
-            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap);
+            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE) + 1:
@@ -108,9 +108,9 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv),
-                GetPhysical(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex),
+                GetPhysical(mip, uv, posX.tex)
             );
             break;
 
@@ -132,11 +132,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv),
-                GetPhysical(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex),
+                GetPhysical(mip, uv, posX.tex)
             );
-            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap);
+            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE) + 1:
@@ -158,9 +158,9 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv),
-                GetPhysical(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex),
+                GetPhysical(mip, uv, posX.tex)
             );
             break;
 
@@ -182,11 +182,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap),
-                GetSampledNormal(mip, uv),
-                GetPhysical(mip, uv)
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex),
+                GetPhysical(mip, uv, posX.tex)
             );
-            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap);
+            payload.Color += GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE) + 1:

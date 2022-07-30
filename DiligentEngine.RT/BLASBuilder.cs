@@ -22,6 +22,8 @@ namespace DiligentEngine.RT
 
         public Vector4[] CubeNormals { get; set; }
 
+        public float[] Textures { get; set; }
+
         public UInt32[] Indices { get; set; }
 
         public RAYTRACING_BUILD_AS_FLAGS BuildAsFlags { get; set; } = RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_PREFER_FAST_TRACE;
@@ -189,6 +191,10 @@ namespace DiligentEngine.RT
                         var vertex3 = attrVertices[index3];
 
                         CalculateTangentBitangent(pos1, pos2, pos3, ref vertex1, ref vertex2, ref vertex3);
+
+                        vertex1.tex = blasMeshDesc.Textures[index1];
+                        vertex2.tex = blasMeshDesc.Textures[index2];
+                        vertex3.tex = blasMeshDesc.Textures[index3];
 
                         attrVertices[index1] = vertex1;
                         attrVertices[index2] = vertex2;
