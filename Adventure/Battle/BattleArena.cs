@@ -67,61 +67,61 @@ namespace Adventure.Battle
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                    //Right now this just makes a plane, which does make one per arena request, but whatever for now
-                    //Will replace this with more dynamic geometry later that will make this worth it
-                    //Note this all happens on the main thread too, but can be backgrounded if it becomes more complex
-                    floorMesh.Begin(5);
+                    await Task.Run(() =>
+                    {
+                        floorMesh.Begin(5);
 
-                    floorMesh.AddQuad(new Vector3(-size, 0, size), new Vector3(size, 0, size), new Vector3(size, 0, -size), new Vector3(-size, 0, -size),
-                                      Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-                                      new Vector2(0, 0),
-                                      new Vector2(size, size), 0.5f);
+                        floorMesh.AddQuad(new Vector3(-size, 0, size), new Vector3(size, 0, size), new Vector3(size, 0, -size), new Vector3(-size, 0, -size),
+                                          Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                                          new Vector2(0, 0),
+                                          new Vector2(size, size), 0.5f);
 
-                    var dirOffset = farbgSize + size;
+                        var dirOffset = farbgSize + size;
 
-                    //Floor -x
-                    floorMesh.AddQuad(
-                        new Vector3(-farbgSize - dirOffset, 0, size),
-                        new Vector3(farbgSize - dirOffset, 0, size),
-                        new Vector3(farbgSize - dirOffset, 0, -size),
-                        new Vector3(-farbgSize - dirOffset, 0, -size),
-                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-                        new Vector2(0, 0),
-                        new Vector2(farbgSize, size),
-                        0.5f);
+                        //Floor -x
+                        floorMesh.AddQuad(
+                            new Vector3(-farbgSize - dirOffset, 0, size),
+                            new Vector3(farbgSize - dirOffset, 0, size),
+                            new Vector3(farbgSize - dirOffset, 0, -size),
+                            new Vector3(-farbgSize - dirOffset, 0, -size),
+                            Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, size),
+                            0.5f);
 
-                    //Floor +x
-                    floorMesh.AddQuad(
-                        new Vector3(-farbgSize + dirOffset, 0, size),
-                        new Vector3(farbgSize + dirOffset, 0, size),
-                        new Vector3(farbgSize + dirOffset, 0, -size),
-                        new Vector3(-farbgSize + dirOffset, 0, -size),
-                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-                        new Vector2(0, 0),
-                        new Vector2(farbgSize, size),
-                        0.5f);
+                        //Floor +x
+                        floorMesh.AddQuad(
+                            new Vector3(-farbgSize + dirOffset, 0, size),
+                            new Vector3(farbgSize + dirOffset, 0, size),
+                            new Vector3(farbgSize + dirOffset, 0, -size),
+                            new Vector3(-farbgSize + dirOffset, 0, -size),
+                            Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, size),
+                            0.5f);
 
-                    //Wall +z
-                    floorMesh.AddQuad(
-                        new Vector3(-farbgSize, 0, farbgSize + dirOffset), 
-                        new Vector3(farbgSize, 0, farbgSize + dirOffset), 
-                        new Vector3(farbgSize, 0, -farbgSize + dirOffset), 
-                        new Vector3(-farbgSize, 0, -farbgSize + dirOffset),
-                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-                        new Vector2(0, 0),
-                        new Vector2(farbgSize, farbgSize), 
-                        1.5f);
+                        //Wall +z
+                        floorMesh.AddQuad(
+                            new Vector3(-farbgSize, 0, farbgSize + dirOffset),
+                            new Vector3(farbgSize, 0, farbgSize + dirOffset),
+                            new Vector3(farbgSize, 0, -farbgSize + dirOffset),
+                            new Vector3(-farbgSize, 0, -farbgSize + dirOffset),
+                            Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, farbgSize),
+                            1.5f);
 
-                    //Wall -z
-                    floorMesh.AddQuad(
-                        new Vector3(-farbgSize, 0, farbgSize - dirOffset),
-                        new Vector3(farbgSize, 0, farbgSize - dirOffset),
-                        new Vector3(farbgSize, 0, -farbgSize - dirOffset),
-                        new Vector3(-farbgSize, 0, -farbgSize - dirOffset),
-                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-                        new Vector2(0, 0),
-                        new Vector2(farbgSize, farbgSize),
-                        1.5f);
+                        //Wall -z
+                        floorMesh.AddQuad(
+                            new Vector3(-farbgSize, 0, farbgSize - dirOffset),
+                            new Vector3(farbgSize, 0, farbgSize - dirOffset),
+                            new Vector3(farbgSize, 0, -farbgSize - dirOffset),
+                            new Vector3(-farbgSize, 0, -farbgSize - dirOffset),
+                            Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, farbgSize),
+                            1.5f);
+                    });
 
                     await floorMesh.End("BattleArenaFloor");
 
