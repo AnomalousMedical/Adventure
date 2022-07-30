@@ -167,52 +167,22 @@ namespace DungeonGenerator
                     if (map[mapX, mapY] != csMapbuilder.EmptyCell)
                     {
                         processedSquares[mapX, mapY] = true;
-                        ProcessSquare(halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                        ProcessSquare(3.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                     }
-                }
-            }
-
-            //Figure out heights for remaining squares, which are just empty squares
-            //This will make a smooth terrain
-            var walkHeight = mapHeight + 1;
-            for (int mapX = 0; mapX < mapWidth; ++mapX)
-            {
-                var currentCell = map[mapX, 0];
-                var emptyCellStart = -1;
-                for (int mapY = 0; mapY < walkHeight; ++mapY)
-                {
-                    var cellType = mapY == mapHeight ? UInt16.MaxValue : map[mapX, mapY];
-                    if (cellType != currentCell)
+                    else
                     {
-                        if (currentCell == csMapbuilder.EmptyCell) //Coming from an empty cell
+                        var north = GetNorthSquare(mapX, mapY, map, mapHeight);
+                        var south = GetSouthSquare(mapX, mapY, map);
+                        var east = GetEastSquare(mapX, mapY, map, mapWidth);
+                        var west = GetWestSquare(mapX, mapY, map);
+                        if(north == csMapbuilder.EmptyCell
+                            && south == csMapbuilder.EmptyCell
+                            && east == csMapbuilder.EmptyCell
+                            && west == csMapbuilder.EmptyCell)
                         {
-                            var end = squareInfo[mapX + 1, mapY + 1];
-                            var start = squareInfo[mapX + 1, emptyCellStart + 1];
-                            var startCell = emptyCellStart + 1;
-                            float yOffset = (end.Center.y - start.Center.y) / (mapY - startCell);
-                            var halfOffset = Math.Abs(yOffset / 2f);
-                            var walkYOffset = start.Center.y;
-                            for (var walk = startCell; walk < mapY; ++walk)
-                            {
-                                var left = mapX * MapUnitX;
-                                var far = mapY * MapUnitZ;
-                                var centerY = yOffset * (walk - startCell) + walkYOffset;
-
-                                squareInfo[mapX + 1, walk + 1] = new MapMeshSquareInfo(new Vector3(left + halfUnitX, centerY, far - halfUnitZ), halfOffset);
-                                tempSquareInfo[mapX + 1, walk + 1] = new MapMeshTempSquareInfo(
-                                    leftFarY: centerY + yOffset - halfUnitY,
-                                    rightFarY: centerY + yOffset - halfUnitY,
-                                    rightNearY: centerY - halfUnitY,
-                                    leftNearY: centerY - halfUnitY
-                                );
-                            }
+                            processedSquares[mapX, mapY] = true;
+                            ProcessSquare(1.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                         }
-                        else if (cellType == csMapbuilder.EmptyCell) //Going to an empty cell
-                        {
-                            emptyCellStart = mapY - 1;
-                        }
-
-                        currentCell = cellType;
                     }
                 }
             }
@@ -495,7 +465,7 @@ namespace DungeonGenerator
 
         public MeshBLAS FloorMesh => floorMesh;
 
-        private void ProcessSquare(float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
+        private void ProcessSquare(float centerY, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
         {
             //This is a bit odd, corridors previous points are the previous square, but room previous points are their terminating corrdor square
             //This will work ok with some of the calculations below since rooms are always 0 rotation anyway
@@ -506,8 +476,6 @@ namespace DungeonGenerator
             var near = far - MapUnitZ;
 
             //Update our center point in the slope grid
-
-            var centerY = 3.0f;// previousSlope.Center.y + totalYOffset;
             var floorFarLeftY = centerY;
             var floorFarRightY = centerY;
             var floorNearRightY = centerY;
@@ -525,7 +493,7 @@ namespace DungeonGenerator
 
             var floorNormal = Quaternion.quatRotate(floorCubeRot, Vector3.Up);
 
-            if (map[mapX, mapY] >= csMapbuilder.RoomCell)
+            //if (map[mapX, mapY] >= csMapbuilder.RoomCell)
             {
                 //Floor
                 GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
@@ -543,39 +511,39 @@ namespace DungeonGenerator
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
-                int test;
+                //int test;
 
-                //South wall
-                test = mapY - 1;
-                if (test < 0 || map[mapX, test] == csMapbuilder.EmptyCell)
-                {
-                    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, near - halfUnitZ));
-                }
+                ////South wall
+                //test = mapY - 1;
+                //if (test < 0 || map[mapX, test] == csMapbuilder.EmptyCell)
+                //{
+                //    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, near - halfUnitZ));
+                //}
 
-                //North wall
-                test = mapY + 1;
-                if (test >= mapHeight || map[mapX, test] == csMapbuilder.EmptyCell)
-                {
-                    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, far + halfUnitZ));
-                }
+                ////North wall
+                //test = mapY + 1;
+                //if (test >= mapHeight || map[mapX, test] == csMapbuilder.EmptyCell)
+                //{
+                //    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, far + halfUnitZ));
+                //}
 
-                //West wall
-                test = mapX - 1;
-                if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
-                {
-                    boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
-                }
+                ////West wall
+                //test = mapX - 1;
+                //if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
+                //{
+                //    boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
+                //}
 
-                //East wall
-                test = mapX + 1;
-                if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
-                {
-                    boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
-                }
+                ////East wall
+                //test = mapX + 1;
+                //if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
+                //{
+                //    boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
+                //}
             }
         }
 
-        private UInt16 GetNorthSquare(int x, int y, ushort[,] map, int height)
+        private int GetNorthSquare(int x, int y, int[,] map, int height)
         {
             y += 1;
             if (y >= height)
@@ -585,7 +553,7 @@ namespace DungeonGenerator
             return map[x, y];
         }
 
-        private UInt16 GetSouthSquare(int x, int y, ushort[,] map)
+        private int GetSouthSquare(int x, int y, int[,] map)
         {
             y -= 1;
             if (y < 0)
@@ -595,7 +563,7 @@ namespace DungeonGenerator
             return map[x, y];
         }
 
-        private UInt16 GetWestSquare(int x, int y, ushort[,] map)
+        private int GetWestSquare(int x, int y, int[,] map)
         {
             x -= 1;
             if (x < 0)
@@ -605,7 +573,7 @@ namespace DungeonGenerator
             return map[x, y];
         }
 
-        private UInt16 GetEastSquare(int x, int y, ushort[,] map, int width)
+        private int GetEastSquare(int x, int y, int[,] map, int width)
         {
             x += 1;
             if (x >= width)
