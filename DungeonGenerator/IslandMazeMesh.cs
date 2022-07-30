@@ -61,7 +61,6 @@ namespace DungeonGenerator
             uvYStride = uvXStride * (mapUnitZ / mapUnitX);
 
             var map = mapbuilder.Map;
-            var slopeMap = new Slope[mapWidth, mapHeight];
 
             for (int mapY = mapHeight - 1; mapY > -1; --mapY)
             {
@@ -89,7 +88,6 @@ namespace DungeonGenerator
                         slope.PreviousPoint = new IntVector2(0, mapY);
                     }
 
-                    slopeMap[mapX, mapY] = slope;
                     previousCell = currentCell;
                 }
             }
@@ -169,7 +167,7 @@ namespace DungeonGenerator
                     if (map[mapX, mapY] != csMapbuilder.EmptyCell)
                     {
                         processedSquares[mapX, mapY] = true;
-                        ProcessSquare(halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, slopeMap, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                        ProcessSquare(halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                     }
                 }
             }
@@ -497,7 +495,7 @@ namespace DungeonGenerator
 
         public MeshBLAS FloorMesh => floorMesh;
 
-        private void ProcessSquare(float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, Slope[,] slopeMap, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
+        private void ProcessSquare(float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
         {
             //This is a bit odd, corridors previous points are the previous square, but room previous points are their terminating corrdor square
             //This will work ok with some of the calculations below since rooms are always 0 rotation anyway
@@ -507,80 +505,16 @@ namespace DungeonGenerator
             var far = mapY * MapUnitZ;
             var near = far - MapUnitZ;
 
-            var slope = slopeMap[mapX, mapY];
-            var previousOffset = slope.PreviousPoint - new IntVector2(mapX, mapY);
-            bool positivePrevious = previousOffset.x > 0 || previousOffset.y > 0;
-
-            var realHalfY = slope.YOffset / 2f;
-            float halfYOffset = Math.Abs(realHalfY);
-
-            bool xDir = previousOffset.x != 0;
-            float xInfluence = xDir ? 1 : 0; //1 for x 0 for y
-            float yInfluence = 1.0f - xInfluence;
-
-            float xHeightStep = slope.YOffset * xInfluence;
-            float yHeightStep = slope.YOffset * yInfluence;
-
-            var floorCubeRot = Quaternion.Identity;
-            Vector3 dirInfluence = new Vector3(xHeightStep, 0, yHeightStep).normalized();
-            if (dirInfluence.isNumber())
-            {
-                Vector3 floorCubeRotationVec = new Vector3(halfUnitX * dirInfluence.x, halfYOffset, halfUnitZ * dirInfluence.z).normalized();
-                floorCubeRot = Quaternion.shortestArcQuat(ref dirInfluence, ref floorCubeRotationVec);
-                if (positivePrevious)
-                {
-                    floorCubeRot = floorCubeRot.inverse();
-                }
-            }
-
-            //Get previous square center
-            var previousSlope = squareInfo[slope.PreviousPoint.x + 1, slope.PreviousPoint.y + 1];
-
-            var totalYOffset = previousSlope.HalfYOffset + realHalfY;
-            var centerY = previousSlope.Center.y + totalYOffset;
-
-            float floorFarLeftY = 0;
-            float floorFarRightY = 0;
-            float floorNearRightY = 0;
-            float floorNearLeftY = 0;
-            if (slope.YOffset > 0 && !positivePrevious || slope.YOffset < 0 && positivePrevious)
-            {
-                if (xDir)
-                {
-                    floorFarLeftY = centerY - halfYOffset;
-                    floorFarRightY = centerY + halfYOffset;
-                    floorNearRightY = centerY + halfYOffset;
-                    floorNearLeftY = centerY - halfYOffset;
-                }
-                else
-                {
-                    floorFarLeftY = centerY + halfYOffset;
-                    floorFarRightY = centerY + halfYOffset;
-                    floorNearRightY = centerY - halfYOffset;
-                    floorNearLeftY = centerY - halfYOffset;
-                }
-            }
-            else
-            {
-                if (xDir)
-                {
-
-                    floorFarLeftY = centerY + halfYOffset;
-                    floorFarRightY = centerY - halfYOffset;
-                    floorNearRightY = centerY - halfYOffset;
-                    floorNearLeftY = centerY + halfYOffset;
-                }
-                else
-                {
-                    floorFarLeftY = centerY - halfYOffset;
-                    floorFarRightY = centerY - halfYOffset;
-                    floorNearRightY = centerY + halfYOffset;
-                    floorNearLeftY = centerY + halfYOffset;
-                }
-            }
-
             //Update our center point in the slope grid
-            squareInfo[mapX + 1, mapY + 1] = new MapMeshSquareInfo(new Vector3(left + halfUnitX, centerY, far - halfUnitZ), realHalfY);
+
+            var centerY = 3.0f;// previousSlope.Center.y + totalYOffset;
+            var floorFarLeftY = centerY;
+            var floorFarRightY = centerY;
+            var floorNearRightY = centerY;
+            var floorNearLeftY = centerY;
+            var floorCubeRot = Quaternion.Identity;
+
+            squareInfo[mapX + 1, mapY + 1] = new MapMeshSquareInfo(new Vector3(left + halfUnitX, centerY, far - halfUnitZ), centerY / 2.0f);
             tempSquareInfo[mapX + 1, mapY + 1] = new MapMeshTempSquareInfo
             (
                 leftFarY: floorFarLeftY,
@@ -615,7 +549,6 @@ namespace DungeonGenerator
                 test = mapY - 1;
                 if (test < 0 || map[mapX, test] == csMapbuilder.EmptyCell)
                 {
-                    //TODO: Add outside connector like east and west walls
                     boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, near - halfUnitZ));
                 }
 
@@ -623,45 +556,22 @@ namespace DungeonGenerator
                 test = mapY + 1;
                 if (test >= mapHeight || map[mapX, test] == csMapbuilder.EmptyCell)
                 {
-                    //TODO: Add outside connector like east and west walls
                     boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, far + halfUnitZ));
                 }
 
-                ////West wall
-                //test = mapX - 1;
-                //if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
-                //{
-                //    if (map[mapX, mapY] == mapbuilder.WestConnectorIndex
-                //        && mapbuilder.WestConnector.Value.x == mapX && mapbuilder.WestConnector.Value.y == mapY)
-                //    {
-                //        var unitXOffset = left - halfUnitX;
-                //        floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(unitXOffset, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
-                //        boundaryCubeCenterPoints.Add(new Vector3(unitXOffset, centerY, near - halfUnitZ));
-                //        boundaryCubeCenterPoints.Add(new Vector3(unitXOffset, centerY, far + halfUnitZ));
-                //    }
-                //    else
-                //    {
-                //        boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
-                //    }
-                //}
+                //West wall
+                test = mapX - 1;
+                if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
+                }
 
-                ////East wall
-                //test = mapX + 1;
-                //if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
-                //{
-                //    if (map[mapX, mapY] == mapbuilder.EastConnectorIndex
-                //        && mapbuilder.EastConnector.Value.x == mapX && mapbuilder.EastConnector.Value.y == mapY)
-                //    {
-                //        var unitXOffset = left + 3 * halfUnitX;
-                //        floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(unitXOffset, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
-                //        boundaryCubeCenterPoints.Add(new Vector3(unitXOffset, centerY, near - halfUnitZ));
-                //        boundaryCubeCenterPoints.Add(new Vector3(unitXOffset, centerY, far + halfUnitZ));
-                //    }
-                //    else
-                //    {
-                //        boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
-                //    }
-                //}
+                //East wall
+                test = mapX + 1;
+                if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
+                }
             }
         }
 
