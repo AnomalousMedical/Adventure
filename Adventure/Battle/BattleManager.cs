@@ -428,8 +428,7 @@ namespace Adventure.Battle
             {
                 o.Scale = new Vector3(20, 0.1f, 20);
                 o.Translation = new Vector3(0f, o.Scale.y / -2f, 0f);
-                o.Texture = levelManager.Current.Biome.FloorTexture;
-                o.Reflective = levelManager.Current.Biome.ReflectFloor;
+                o.Biome = levelManager.Current.Biome;
             });
 
             var biome = levelManager.Current.Biome;
@@ -442,7 +441,7 @@ namespace Adventure.Battle
                     var roll = bgItemsRandom.Next(0, biome.BackgroundItems.Count);
                     var add = biome.BackgroundItems[roll];
 
-                    var pos = new Vector3(-10f + 4f * i + 2f, 0f, 8f);
+                    var pos = new Vector3(-10f + 4f * i + 2f, 0f, 12f);
                     var bgItem = objectResolver.Resolve<BattleBackgroundItem, BattleBackgroundItem.Description>(o =>
                     {
                         o.MapOffset = Vector3.Zero;

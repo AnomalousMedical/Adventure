@@ -19,9 +19,7 @@ namespace Adventure.Battle
     {
         public class Description : SceneObjectDesc
         {
-            public String Texture { get; set; }
-
-            public bool Reflective { get; set; }
+            public IBiome Biome { get; set; }
         }
 
         private TLASBuildInstanceData floorInstanceData;
@@ -34,6 +32,7 @@ namespace Adventure.Battle
         private PrimaryHitShader floorShader;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private CC0TextureResult floorTexture;
+        private CC0TextureResult wallTexture;
         private BlasInstanceData blasInstanceData;
 
         public BattleArena
@@ -59,21 +58,71 @@ namespace Adventure.Battle
                 using var destructionBlock = destructionRequest.BlockDestruction();
                 try
                 {
-                    var floorTextureDesc = new CCOTextureBindingDescription(description.Texture, reflective: description.Reflective);
+                    var floorTextureDesc = new CCOTextureBindingDescription(description.Biome.FloorTexture, reflective: description.Biome.ReflectFloor);
+                    var wallTextureDesc = new CCOTextureBindingDescription(description.Biome.WallTexture, reflective: description.Biome.ReflectWall);
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
+                    var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
                     //Right now this just makes a plane, which does make one per arena request, but whatever for now
                     //Will replace this with more dynamic geometry later that will make this worth it
                     //Note this all happens on the main thread too, but can be backgrounded if it becomes more complex
-                    floorMesh.Begin(1);
+                    floorMesh.Begin(5);
 
                     var size = 10f;
 
                     floorMesh.AddQuad(new Vector3(-size, 0, size), new Vector3(size, 0, size), new Vector3(size, 0, -size), new Vector3(-size, 0, -size),
                                       Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                                       new Vector2(0, 0),
-                                      new Vector2(size, size));
+                                      new Vector2(size, size), 0.5f);
+
+                    var farbgSize = size * 8f;
+
+                    var dirOffset = farbgSize + size;
+
+                    //Floor -x
+                    floorMesh.AddQuad(
+                        new Vector3(-farbgSize - dirOffset, 0, size),
+                        new Vector3(farbgSize - dirOffset, 0, size),
+                        new Vector3(farbgSize - dirOffset, 0, -size),
+                        new Vector3(-farbgSize - dirOffset, 0, -size),
+                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                        new Vector2(0, 0),
+                        new Vector2(farbgSize, size),
+                        0.5f);
+
+                    //Floor +x
+                    floorMesh.AddQuad(
+                        new Vector3(-farbgSize + dirOffset, 0, size),
+                        new Vector3(farbgSize + dirOffset, 0, size),
+                        new Vector3(farbgSize + dirOffset, 0, -size),
+                        new Vector3(-farbgSize + dirOffset, 0, -size),
+                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                        new Vector2(0, 0),
+                        new Vector2(farbgSize, size),
+                        0.5f);
+
+                    //Wall +z
+                    floorMesh.AddQuad(
+                        new Vector3(-farbgSize, 0, farbgSize + dirOffset), 
+                        new Vector3(farbgSize, 0, farbgSize + dirOffset), 
+                        new Vector3(farbgSize, 0, -farbgSize + dirOffset), 
+                        new Vector3(-farbgSize, 0, -farbgSize + dirOffset),
+                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                        new Vector2(0, 0),
+                        new Vector2(farbgSize, farbgSize), 
+                        1.5f);
+
+                    //Wall -z
+                    floorMesh.AddQuad(
+                        new Vector3(-farbgSize, 0, farbgSize - dirOffset),
+                        new Vector3(farbgSize, 0, farbgSize - dirOffset),
+                        new Vector3(farbgSize, 0, -farbgSize - dirOffset),
+                        new Vector3(-farbgSize, 0, -farbgSize - dirOffset),
+                        Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                        new Vector2(0, 0),
+                        new Vector2(farbgSize, farbgSize),
+                        1.5f);
 
                     await floorMesh.End("BattleArenaFloor");
 
@@ -82,11 +131,13 @@ namespace Adventure.Battle
                     await Task.WhenAll
                     (
                         floorTextureTask,
+                        wallTextureTask,
                         floorShaderSetup
                     );
 
                     this.floorShader = floorShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
+                    this.wallTexture = wallTextureTask.Result;
 
                     this.floorInstanceData = new TLASBuildInstanceData()
                     {
@@ -99,8 +150,8 @@ namespace Adventure.Battle
 
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
-                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture);
-                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Reflective, false, false);
+                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture);
+                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Biome.ReflectFloor, false, false);
 
                     loadingTask.SetResult();
                 }
@@ -118,7 +169,9 @@ namespace Adventure.Battle
 
         public void Dispose()
         {
+            activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
+            textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
