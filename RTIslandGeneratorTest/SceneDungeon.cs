@@ -85,25 +85,16 @@ namespace RTIslandGeneratorTest
                         sw.Start();
                         var random = new Random(description.Seed);
                         var mapBuilder = new csIslandMaze(random);
-                        //mapBuilder.CorridorSpace = 10;
-                        //mapBuilder.RoomDistance = 3;
-                        //mapBuilder.Room_Min = new IntSize2(2, 2);
-                        //mapBuilder.Room_Max = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
-                        //mapBuilder.Corridor_Max = 4;
-                        //mapBuilder.Horizontal = false;
-                        //mapBuilder.Build_ConnectedStartRooms();
-                        //mapBuilder.AddNorthConnector();
-                        //mapBuilder.AddSouthConnector();
-                        //mapBuilder.AddWestConnector();
-                        //mapBuilder.AddEastConnector();
+                        mapBuilder.Iterations = 85000;
 
                         mapBuilder.go();
+                        mapBuilder.makeEdgesEmpty();
 
                         sw.Stop();
 
                         //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
 
-                        mapMesh = new IslandMazeMesh(mapBuilder, random, floorMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
+                        mapMesh = new IslandMazeMesh(mapBuilder, random, floorMesh, mapUnitX: 1.0f, mapUnitY: 1.0f, mapUnitZ: 1.0f);
                     });
 
                     await Task.WhenAll

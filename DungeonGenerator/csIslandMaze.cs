@@ -3,6 +3,17 @@ using System;
 /// IslandMaze class - generates simple islands and mazes.
 /// 
 /// For more info on it's use see http://www.evilscience.co.uk/?p=53
+/// 
+/// Map generation is controlled by the following variables:
+/// 
+/// p(int) - close cell probability.Between 0 and 100.
+/// 
+/// h (bool) - cell operation specifier.
+/// i (int) - counter.
+/// n (int) - number of cell's neighbours.
+/// 
+/// c (int) - examined cell's closed neighbours. Between 0 and 8.
+/// 
 /// </summary>
 public class csIslandMaze
 {
@@ -95,6 +106,23 @@ public class csIslandMaze
             }
 
 
+        }
+    }
+
+    public void makeEdgesEmpty()
+    {
+        var bottom = MapY - 1;
+        for(int x = 0; x < MapX; ++x)
+        {
+            Map[x, 0] = EmptyCell;
+            Map[x, bottom] = EmptyCell;
+        }
+
+        var right = MapX - 1;
+        for (int y = 0; y < MapY; ++y)
+        {
+            Map[0, y] = EmptyCell;
+            Map[right, y] = EmptyCell;
         }
     }
 
