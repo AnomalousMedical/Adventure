@@ -35,8 +35,8 @@ namespace Adventure.Battle
         private CC0TextureResult wallTexture;
         private BlasInstanceData blasInstanceData;
 
-        private const float size = 10f;
-        private const float farbgSize = size * 8f;
+        private const float size = 8.5f;
+        private const float farbgSize = 80f;
 
         public BattleArena
         (
@@ -207,7 +207,7 @@ namespace Adventure.Battle
                 }
             }
 
-            zStart = -farbgSize - size - farbgSize - 2f;
+            zStart = -farbgSize - size - farbgSize - 5f;
             zEnd = farbgSize - size - farbgSize;
 
             for (var x = -farbgSize; x < xEnd; x += step)
