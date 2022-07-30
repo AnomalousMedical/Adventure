@@ -35,6 +35,9 @@ namespace Adventure.Battle
         private CC0TextureResult wallTexture;
         private BlasInstanceData blasInstanceData;
 
+        private const float size = 10f;
+        private const float farbgSize = size * 8f;
+
         public BattleArena
         (
             Description description,
@@ -69,14 +72,10 @@ namespace Adventure.Battle
                     //Note this all happens on the main thread too, but can be backgrounded if it becomes more complex
                     floorMesh.Begin(5);
 
-                    var size = 10f;
-
                     floorMesh.AddQuad(new Vector3(-size, 0, size), new Vector3(size, 0, size), new Vector3(size, 0, -size), new Vector3(-size, 0, -size),
                                       Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                                       new Vector2(0, 0),
                                       new Vector2(size, size), 0.5f);
-
-                    var farbgSize = size * 8f;
 
                     var dirOffset = farbgSize + size;
 
@@ -191,6 +190,33 @@ namespace Adventure.Battle
         public Task WaitForLoad()
         {
             return loadingTask.Task;
+        }
+
+        public IEnumerable<Vector3> BgItemLocations()
+        {
+            var step = 3;
+            var xEnd = farbgSize;
+            var zStart = -farbgSize + size + farbgSize + 2f;
+            var zEnd = farbgSize + size + farbgSize;
+
+            for(var x = -farbgSize; x < xEnd; x += step)
+            {
+                for (var z = zStart; z < zEnd; z += step)
+                {
+                    yield return new Vector3(x, 0, z);
+                }
+            }
+
+            zStart = -farbgSize - size - farbgSize - 2f;
+            zEnd = farbgSize - size - farbgSize;
+
+            for (var x = -farbgSize; x < xEnd; x += step)
+            {
+                for (var z = zStart; z < zEnd; z += step)
+                {
+                    yield return new Vector3(x, 0, z);
+                }
+            }
         }
     }
 }

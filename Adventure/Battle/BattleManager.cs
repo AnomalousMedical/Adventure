@@ -436,21 +436,31 @@ namespace Adventure.Battle
 
             if (biome.BackgroundItems.Count > 0)
             {
-                for (var i = 0; i < 5; ++i)
+                foreach(var location in battleArena.BgItemLocations())
                 {
-                    var roll = bgItemsRandom.Next(0, biome.BackgroundItems.Count);
-                    var add = biome.BackgroundItems[roll];
-
-                    var pos = new Vector3(-10f + 4f * i + 2f, 0f, 12f);
-                    var bgItem = objectResolver.Resolve<BattleBackgroundItem, BattleBackgroundItem.Description>(o =>
+                    BiomeBackgroundItem add = null;
+                    var roll = bgItemsRandom.Next(0, biome.MaxBackgroundItemRoll);
+                    foreach (var item in biome.BackgroundItems)
                     {
-                        o.MapOffset = Vector3.Zero;
-                        o.Translation = pos + o.MapOffset;
-                        var keyAsset = add.Asset;
-                        o.Sprite = keyAsset.CreateSprite();
-                        o.SpriteMaterial = keyAsset.CreateMaterial();
-                    });
-                    this.bgItems.Add(bgItem);
+                        if (roll < item.Chance)
+                        {
+                            add = item;
+                            break;
+                        }
+                    }
+
+                    if (add != null)
+                    {
+                        var bgItem = objectResolver.Resolve<BattleBackgroundItem, BattleBackgroundItem.Description>(o =>
+                        {
+                            o.MapOffset = Vector3.Zero;
+                            o.Translation = location + o.MapOffset;
+                            var keyAsset = add.Asset;
+                            o.Sprite = keyAsset.CreateSprite();
+                            o.SpriteMaterial = keyAsset.CreateMaterial();
+                        });
+                        this.bgItems.Add(bgItem);
+                    }
                 }
             }
         }
