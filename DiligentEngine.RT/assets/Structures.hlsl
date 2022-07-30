@@ -1,6 +1,6 @@
 struct BlasInstanceData
 {
-    float2 uv0; //also base extras in mesh
+    float2 uv0; //also base color extras in mesh
     float2 uv1; //also normal extras in mesh
     float2 uv2; //also physical extras in mesh
     float2 uv3; //also emissive extras in mesh

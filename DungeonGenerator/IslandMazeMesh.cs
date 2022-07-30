@@ -44,6 +44,45 @@ namespace DungeonGenerator
 
         public float MaxSlopeY { get; set; } = 1f;
 
+        private float wallTextureIndex = 1.5f;
+        public int WallTextureIndex
+        {
+            get
+            {
+                return (int)wallTextureIndex;
+            }
+            set
+            {
+                wallTextureIndex = value + 0.5f;
+            }
+        }
+
+        private float lowerGroundTextureIndex = 2.5f;
+        public int LowerGroundTextureIndex
+        {
+            get
+            {
+                return (int)lowerGroundTextureIndex;
+            }
+            set
+            {
+                lowerGroundTextureIndex = value + 0.5f;
+            }
+        }
+
+        private float upperGroundTextureIndex = 0.5f;
+        public int UpperGroundTextureIndex
+        {
+            get
+            {
+                return (int)upperGroundTextureIndex;
+            }
+            set
+            {
+                upperGroundTextureIndex = value + 0.5f;
+            }
+        }
+
         public IslandMazeMesh(csIslandMaze mapbuilder, Random random, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
             MapUnitX = mapUnitX;
@@ -167,7 +206,7 @@ namespace DungeonGenerator
                     if (map[mapX, mapY] != csMapbuilder.EmptyCell)
                     {
                         processedSquares[mapX, mapY] = true;
-                        ProcessSquare(3.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                        ProcessSquare(MapUnitY, upperGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                     }
                     else
                     {
@@ -191,7 +230,7 @@ namespace DungeonGenerator
                         )
                         {
                             processedSquares[mapX, mapY] = true;
-                            ProcessSquare(0.0f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                            ProcessSquare(0.0f, lowerGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
                         }
                     }
                 }
@@ -475,7 +514,7 @@ namespace DungeonGenerator
 
         public MeshBLAS FloorMesh => floorMesh;
 
-        private void ProcessSquare(float centerY, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
+        private void ProcessSquare(float centerY, float textureIndex, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
         {
             //This is a bit odd, corridors previous points are the previous square, but room previous points are their terminating corrdor square
             //This will work ok with some of the calculations below since rooms are always 0 rotation anyway
@@ -517,7 +556,8 @@ namespace DungeonGenerator
                     floorNormal,
                     floorNormal,
                     topLeft,
-                    bottomRight);
+                    bottomRight,
+                    textureIndex);
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
@@ -815,7 +855,8 @@ namespace DungeonGenerator
                 //cross,
                 //cross,
                 topLeft,
-                bottomRight);
+                bottomRight,
+                wallTextureIndex);
         }
 
         private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom)

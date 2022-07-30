@@ -96,6 +96,38 @@ namespace DiligentEngine.RT.Resources
             return binding.data;
         }
 
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1)
+        {
+            var instance0 = AddActiveTexture(texture0);
+            var instance1 = AddActiveTexture(texture1);
+
+            instance0.u1 = instance1.baseTexture;
+            instance0.u2 = instance1.normalTexture;
+            instance0.u3 = instance1.physicalTexture;
+            instance0.u4 = instance1.emissiveTexture;
+
+            return instance0;
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2)
+        {
+            var instance0 = AddActiveTexture(texture0);
+            var instance1 = AddActiveTexture(texture1);
+            var instance2 = AddActiveTexture(texture2);
+
+            instance0.u1 = instance1.baseTexture;
+            instance0.u2 = instance1.normalTexture;
+            instance0.u3 = instance1.physicalTexture;
+            instance0.u4 = instance1.emissiveTexture;
+
+            instance0.v1 = instance2.baseTexture;
+            instance0.v2 = instance2.normalTexture;
+            instance0.v3 = instance2.physicalTexture;
+            instance0.v4 = instance2.emissiveTexture;
+
+            return instance0;
+        }
+
         /// <summary>
         /// Remove an active texture. Must be done from main thread.
         /// </summary>

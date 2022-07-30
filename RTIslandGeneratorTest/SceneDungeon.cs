@@ -40,6 +40,8 @@ namespace RTIslandGeneratorTest
 
 
         CC0TextureResult floorTexture;
+        CC0TextureResult wallTexture;
+        CC0TextureResult lowerFloorTexture;
 
         public SceneDungeon
         (
@@ -74,8 +76,12 @@ namespace RTIslandGeneratorTest
                 try
                 {
                     var floorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
+                    var wallTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock029_1K");
+                    var lowerFloorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock022_1K");
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
+                    var wallTextureTask = textureManager.Checkout(wallTextureDesc);
+                    var lowerFloorTextureTask = textureManager.Checkout(lowerFloorTextureDesc);
 
                     var floorShaderSetup = primaryHitShaderFactory.Checkout();
 
@@ -100,16 +106,20 @@ namespace RTIslandGeneratorTest
                     await Task.WhenAll
                     (
                         floorTextureTask,
+                        wallTextureTask,
+                        lowerFloorTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
                         floorShaderSetup
                     );
 
                     this.floorShader = floorShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
+                    this.wallTexture = wallTextureTask.Result;
+                    this.lowerFloorTexture = lowerFloorTextureTask.Result;
 
                     this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture, this.lowerFloorTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
@@ -130,7 +140,12 @@ namespace RTIslandGeneratorTest
 
         public void Dispose()
         {
+            activeTextures.RemoveActiveTexture(wallTexture);
+            activeTextures.RemoveActiveTexture(floorTexture);
+            activeTextures.RemoveActiveTexture(lowerFloorTexture);
             textureManager.TryReturn(floorTexture);
+            textureManager.TryReturn(wallTexture);
+            textureManager.TryReturn(lowerFloorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);

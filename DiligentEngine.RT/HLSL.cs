@@ -46,13 +46,13 @@ namespace DiligentEngine.RT.HLSL
     [StructLayout(LayoutKind.Sequential)]
     public struct BlasInstanceData
     {
-        public float u1;
+        public float u1;//also base color extras in mesh
         public float v1;
-        public float u2;
+        public float u2;//also normal extras in mesh
         public float v2;
-        public float u3;
+        public float u3;//also physical extras in mesh
         public float v3;
-        public float u4;
+        public float u4;//also emissive extras in mesh
         public float v4;
 
         public int baseTexture;
