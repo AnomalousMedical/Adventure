@@ -314,7 +314,7 @@ namespace DiligentEngine.RT
             }
 
             // Build or update TLAS
-            var Attribs = new BuildTLASAttribs();
+            var Attribs = new BuildTLASAttribsOptimized();
             Attribs.pTLAS = m_pTLAS.Obj;
             Attribs.Update = false;
 

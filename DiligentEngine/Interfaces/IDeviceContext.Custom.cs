@@ -23,6 +23,38 @@ namespace DiligentEngine
     partial class IDeviceContext
     {
 
+        /// <summary>
+        /// Prefer this version of BuildTLAS.
+        /// 
+        /// Builds a top-level acceleration structure with the specified instances.
+        /// \param [in] Attribs - Structure describing build TLAS command attributes, see Diligent::BuildTLASAttribs for details.
+        /// 
+        /// \note Don't call build or copy operation on the same TLAS in a different contexts, because TLAS has CPU-side data
+        /// that will not match with GPU-side, so shader binding were incorrect.
+        /// 
+        /// \remarks Supported contexts: graphics, compute.
+        /// </summary>
+        public void BuildTLAS(BuildTLASAttribsOptimized Attribs)
+        {
+            IDeviceContext_BuildTLAS(
+                this.objPtr
+                , Attribs.pTLAS?.objPtr ?? IntPtr.Zero
+                , Attribs.TLASTransitionMode
+                , Attribs.BLASTransitionMode
+                , Attribs.pInstances
+                , Attribs.NumInstances
+                , Attribs.pInstanceBuffer?.objPtr ?? IntPtr.Zero
+                , Attribs.InstanceBufferOffset
+                , Attribs.InstanceBufferTransitionMode
+                , Attribs.HitGroupStride
+                , Attribs.BaseContributionToHitGroupIndex
+                , Attribs.BindingMode
+                , Attribs.pScratchBuffer?.objPtr ?? IntPtr.Zero
+                , Attribs.ScratchBufferOffset
+                , Attribs.ScratchBufferTransitionMode
+                , Attribs.Update
+            );
+        }
         public void SetRenderTarget(ITextureView renderTarget, ITextureView depthStencil, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
         {
             IDeviceContext_SetRenderTarget(objPtr,

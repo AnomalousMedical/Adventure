@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,17 +19,23 @@ using BOOL = System.Boolean;
 
 namespace DiligentEngine
 {
-    public partial class BuildTLASAttribs
+    /// <summary>
+    /// This class allows the use of the optimized version of creating a tlas.
+    /// This means that is can use the TLASBuildInstanceDataPassStruct directly
+    /// instead of relying on copies of the instance data being created. This
+    /// is optimized for use with the RTRenderer class in DiligentEngine.RT.
+    /// When using it you must supply the pInstances array and NumInstances.
+    /// </summary>
+    public partial class BuildTLASAttribsOptimized
     {
-
-        public BuildTLASAttribs()
+        public BuildTLASAttribsOptimized()
         {
-            
+
         }
         public ITopLevelAS pTLAS { get; set; }
         public RESOURCE_STATE_TRANSITION_MODE TLASTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public RESOURCE_STATE_TRANSITION_MODE BLASTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
-        public List<TLASBuildInstanceData> pInstances { get; set; }
+        public TLASBuildInstanceDataPassStruct[] pInstances { get; set; }
         public IBuffer pInstanceBuffer { get; set; }
         public Uint64 InstanceBufferOffset { get; set; } = 0;
         public RESOURCE_STATE_TRANSITION_MODE InstanceBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
@@ -41,6 +47,9 @@ namespace DiligentEngine
         public RESOURCE_STATE_TRANSITION_MODE ScratchBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public Bool Update { get; set; } = false;
 
-
+        /// <summary>
+        /// This must be set when using this version. It is optimized for the RT renderer.
+        /// </summary>
+        public uint NumInstances { get; set; }
     }
 }

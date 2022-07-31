@@ -403,8 +403,8 @@ namespace DiligentEngine
                 , Attribs.pTLAS?.objPtr ?? IntPtr.Zero
                 , Attribs.TLASTransitionMode
                 , Attribs.BLASTransitionMode
-                , Attribs.pInstances
-                , Attribs?.pInstances != null ? (Attribs.NumInstances ?? (Uint32)(Attribs.pInstances.Length)) : 0
+                , TLASBuildInstanceDataPassStruct.ToStruct(Attribs?.pInstances)
+                , Attribs?.pInstances != null ? (Uint32)Attribs.pInstances.Count : 0
                 , Attribs.pInstanceBuffer?.objPtr ?? IntPtr.Zero
                 , Attribs.InstanceBufferOffset
                 , Attribs.InstanceBufferTransitionMode
