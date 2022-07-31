@@ -890,7 +890,7 @@ namespace DiligentEngineRayTracing
             Attribs.pInstanceBuffer = m_InstanceBuffer.Obj;
 
             // Instances will be converted to the format that is required by the graphics driver and copied to the instance buffer.
-            Attribs.pInstances = Instances;
+            Attribs.pInstances = TLASBuildInstanceDataPassStruct.ToStruct(Instances); //This is making a complete copy, but the c# rt renderer is what improves this relationship. This is good for the tutorial.
 
             // Bind hit shaders per instance, it allows you to change the number of geometries in BLAS without invalidating the shader binding table.
             Attribs.BindingMode = HIT_GROUP_BINDING_MODE.HIT_GROUP_BINDING_MODE_PER_INSTANCE;

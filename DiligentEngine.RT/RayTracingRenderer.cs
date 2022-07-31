@@ -219,7 +219,7 @@ namespace DiligentEngine.RT
 
             var instances = activeInstances.Instances;
 
-            uint numInstances = (uint)instances.Count;
+            uint numInstances = activeInstances.InstanceCount;
             if (numInstances == 0)
             {
                 return null;

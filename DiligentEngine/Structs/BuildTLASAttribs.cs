@@ -29,7 +29,7 @@ namespace DiligentEngine
         public ITopLevelAS pTLAS { get; set; }
         public RESOURCE_STATE_TRANSITION_MODE TLASTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public RESOURCE_STATE_TRANSITION_MODE BLASTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
-        public List<TLASBuildInstanceData> pInstances { get; set; }
+        public TLASBuildInstanceDataPassStruct[] pInstances { get; set; }
         public IBuffer pInstanceBuffer { get; set; }
         public Uint64 InstanceBufferOffset { get; set; } = 0;
         public RESOURCE_STATE_TRANSITION_MODE InstanceBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;

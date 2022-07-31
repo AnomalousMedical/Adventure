@@ -21,7 +21,7 @@ using BOOL = System.Boolean;
 namespace DiligentEngine
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    struct TLASBuildInstanceDataPassStruct
+    public struct TLASBuildInstanceDataPassStruct
     {
         public String InstanceName;
         public IntPtr pBLAS;
