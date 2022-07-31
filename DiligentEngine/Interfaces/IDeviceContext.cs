@@ -404,7 +404,7 @@ namespace DiligentEngine
                 , Attribs.TLASTransitionMode
                 , Attribs.BLASTransitionMode
                 , Attribs.pInstances
-                , Attribs?.pInstances != null ? (Uint32)Attribs.pInstances.Length : 0
+                , Attribs?.pInstances != null ? (Attribs.NumInstances ?? (Uint32)(Attribs.pInstances.Length)) : 0
                 , Attribs.pInstanceBuffer?.objPtr ?? IntPtr.Zero
                 , Attribs.InstanceBufferOffset
                 , Attribs.InstanceBufferTransitionMode

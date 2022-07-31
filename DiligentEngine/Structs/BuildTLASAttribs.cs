@@ -21,7 +21,6 @@ namespace DiligentEngine
 {
     public partial class BuildTLASAttribs
     {
-
         public BuildTLASAttribs()
         {
             
@@ -40,7 +39,9 @@ namespace DiligentEngine
         public Uint64 ScratchBufferOffset { get; set; } = 0;
         public RESOURCE_STATE_TRANSITION_MODE ScratchBufferTransitionMode { get; set; } = RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_NONE;
         public Bool Update { get; set; } = false;
-
-
+        /// <summary>
+        /// If this is not null, this will be passed as the max number of instances instead of pInstances.Length
+        /// </summary>
+        public uint? NumInstances { get; set; }
     }
 }

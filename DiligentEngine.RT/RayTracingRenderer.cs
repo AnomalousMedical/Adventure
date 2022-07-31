@@ -217,7 +217,8 @@ namespace DiligentEngine.RT
                 return null;
             }
 
-            var instances = activeInstances.Instances;
+            activeInstances.UpdateInstances();
+            var instances = activeInstances.passInstances;
 
             uint numInstances = activeInstances.InstanceCount;
             if (numInstances == 0)
@@ -327,6 +328,7 @@ namespace DiligentEngine.RT
 
             // Instances will be converted to the format that is required by the graphics driver and copied to the instance buffer.
             Attribs.pInstances = instances;
+            Attribs.NumInstances = numInstances;
 
             // Bind hit shaders per instance, it allows you to change the number of geometries in BLAS without invalidating the shader binding table.
             Attribs.BindingMode = HIT_GROUP_BINDING_MODE.HIT_GROUP_BINDING_MODE_PER_INSTANCE;
