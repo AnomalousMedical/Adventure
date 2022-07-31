@@ -17,38 +17,48 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor RoseHsl = new IntColor(Rose).ToHsl();
         private static readonly HslColor VinesHsl = new IntColor(Vines).ToHsl();
         private static readonly HslColor ThornsHsl = new IntColor(Thorns).ToHsl();
-        
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+
+        private const string colorMap = "Graphics/Sprites/Crawl/Enemies/thorn_hunter.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Rose, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"),
+            new SpriteMaterialTextureItem(Vines, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(Thorns, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+        };
+
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/Enemies/thorn_hunter.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Rose, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Vines, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Thorns, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = RoseHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 { Rose, IntColor.FromHslOffset(RoseHsl, h, baseH).ARGB },
                 { Vines, IntColor.FromHslOffset(VinesHsl, h, baseH).ARGB },
                 { Thorns, IntColor.FromHslOffset(ThornsHsl, h, baseH).ARGB },
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }

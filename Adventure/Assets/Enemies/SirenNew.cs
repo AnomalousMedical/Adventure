@@ -24,33 +24,31 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor PantsHsl = new IntColor(Pants).ToHsl();
         private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        private const string colorMap = "Graphics/Sprites/Crawl/Enemies/siren_new.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Hair, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
+            new SpriteMaterialTextureItem(Highlight, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(Shirt, "Graphics/Textures/AmbientCG/Fabric027_1K", "jpg"),
+            new SpriteMaterialTextureItem(Pants, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+        };
+
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/Enemies/siren_new.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Hair, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Highlight, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                    new SpriteMaterialTextureItem(Shirt, "Graphics/Textures/AmbientCG/Fabric027_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Pants, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = HairHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 { Hair, IntColor.FromHslOffset(HairHsl, h, baseH).ARGB },
                 { Highlight, IntColor.FromHslOffset(HighlightHsl, h, baseH).ARGB },
@@ -58,6 +56,18 @@ namespace Adventure.Assets.Enemies
                 { Pants, IntColor.FromHslOffset(PantsHsl, h, baseH).ARGB },
                 { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }

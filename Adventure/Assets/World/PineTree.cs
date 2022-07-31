@@ -10,17 +10,22 @@ namespace Adventure.Assets.World
 {
     class PineTree : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/Anomalous/World/PineTree.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff9de7b9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff582b09, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Anomalous/World/PineTree.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(0xff9de7b9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xff582b09, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
-                }
-            );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

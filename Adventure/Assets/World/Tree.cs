@@ -10,17 +10,22 @@ namespace Adventure.Assets.World
 {
     class Tree : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/Anomalous/World/Tree.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff406d1e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff7b532e, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Anomalous/World/Tree.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(0xff406d1e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xff7b532e, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
-                }
-            );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

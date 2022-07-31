@@ -18,39 +18,46 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor SpineHsl = new IntColor(Spine).ToHsl();
         private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
-        public string SkinMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
-        public string SpineMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        private const string colorMap = "Graphics/Sprites/Anomalous/Enemies/TinyDino.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Skin, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
+            new SpriteMaterialTextureItem(Spine, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
+        };
+
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
 
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Anomalous/Enemies/TinyDino.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Skin, SkinMaterial, "jpg"),
-                    new SpriteMaterialTextureItem(Spine, SpineMaterial, "jpg"),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1.466666666666667f, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = SkinHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
                 { Spine, IntColor.FromHslOffset(SpineHsl, h, baseH).ARGB },
                 { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+             (
+                 colorMap: colorMap,
+                 materials: materials,
+                 palletSwap: palletSwap
+             );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1.466666666666667f, 1, 1) };
         }
     }
 }

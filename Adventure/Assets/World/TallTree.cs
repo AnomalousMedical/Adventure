@@ -10,18 +10,23 @@ namespace Adventure.Assets.World
 {
     class TallTree : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/Anomalous/World/TallTree.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff008d00, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials,
+            textureScale: 16
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Anomalous/World/TallTree.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(0xff008d00, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
-                },
-                textureScale: 16
-            );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

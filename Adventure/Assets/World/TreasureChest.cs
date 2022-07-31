@@ -7,6 +7,22 @@ namespace Adventure.Assets.World
 {
     class TreasureChest : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/OpenGameArt/Bonsaiheldin/treasure_chests_32x32.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff979ca0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), // (grey)
+            new SpriteMaterialTextureItem(0xff971a1a, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
+            new SpriteMaterialTextureItem(0xffbe2121, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
+            new SpriteMaterialTextureItem(0xff691212, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
+            new SpriteMaterialTextureItem(0xff450c0c, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public Quaternion GetOrientation()
         {
             return new Quaternion(0, MathFloat.PI / 4f, 0);
@@ -14,18 +30,7 @@ namespace Adventure.Assets.World
 
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-                (
-                    colorMap: "Graphics/Sprites/OpenGameArt/Bonsaiheldin/treasure_chests_32x32.png",
-                    materials: new HashSet<SpriteMaterialTextureItem>
-                    {
-                        new SpriteMaterialTextureItem(0xff979ca0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), // (grey)
-                        new SpriteMaterialTextureItem(0xff971a1a, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
-                        new SpriteMaterialTextureItem(0xffbe2121, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
-                        new SpriteMaterialTextureItem(0xff691212, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
-                        new SpriteMaterialTextureItem(0xff450c0c, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), // (red)
-                    }
-                );
+            return defaultMaterial;
         }
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()

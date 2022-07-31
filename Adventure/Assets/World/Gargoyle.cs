@@ -18,44 +18,26 @@ namespace Adventure.Assets.World
         private const uint Horn = 0xffffffff;
         private const uint Eyes = 0xffc00000;
 
-        public string WingMaterial { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
-        public string Skin1Material { get; set; } = "Graphics/Textures/AmbientCG/Rock022_1K";
-        public string Skin2Material { get; set; } = "Graphics/Textures/AmbientCG/Rock022_1K";
-        public string Skin3Material { get; set; } = "Graphics/Textures/AmbientCG/Leather008_1K";
-        public string HornMaterial { get; set; } = "Graphics/Textures/AmbientCG/Rock022_1K";
+        private const string colorMap = "Graphics/Sprites/Crawl/NPC/gargoyle.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(WingDarkGray, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),//wing (dark gray)
+            new SpriteMaterialTextureItem(WingLightGray, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),//wing (light gray)
+            new SpriteMaterialTextureItem(FaceArms, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //face, arms
+            new SpriteMaterialTextureItem(Legs, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //legs
+            new SpriteMaterialTextureItem(Belly, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"), //belly
+            new SpriteMaterialTextureItem(Horn, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //horn
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
 
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/NPC/gargoyle.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(WingDarkGray, WingMaterial, "jpg"),//wing (dark gray)
-                    new SpriteMaterialTextureItem(WingLightGray, WingMaterial, "jpg"),//wing (light gray)
-                    new SpriteMaterialTextureItem(FaceArms, Skin1Material, "jpg"), //face, arms
-                    new SpriteMaterialTextureItem(Legs, Skin2Material, "jpg"), //legs
-                    new SpriteMaterialTextureItem(Belly, Skin3Material, "jpg"), //belly
-                    new SpriteMaterialTextureItem(Horn, HornMaterial, "jpg"), //horn
-                }
-            );
-        }
-
-        public SpriteMaterialDescription CreateSwappedMaterial()
-        {
-            var mat = CreateMaterial();
-            mat.PalletSwap = new Dictionary<uint, uint>()
-            {
-                { WingDarkGray, 0xff802000 },
-                { WingLightGray, 0xffc03000 },
-                { FaceArms, 0xffe00000 },
-                { Legs, 0xffe00000 },
-                { Belly, 0xffe00000 },
-                { Eyes, 0xffffc000 },
-                { Horn, 0xffc0c0c0 }
-
-            };
-            return mat;
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

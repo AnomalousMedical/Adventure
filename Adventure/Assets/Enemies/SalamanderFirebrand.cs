@@ -20,38 +20,47 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor ChestHsl = new IntColor(Chest).ToHsl();
         private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        private const string colorMap = "Graphics/Sprites/Crawl/Enemies/salamander_firebrand.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Horns, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(Skin, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
+            new SpriteMaterialTextureItem(Chest, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
+        };
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/Enemies/salamander_firebrand.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Horns, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                    new SpriteMaterialTextureItem(Skin, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Chest, "Graphics/Textures/AmbientCG/Leather008_1K", "jpg"),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = SkinHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
                 { Horns, IntColor.FromHslOffset(HornsHsl, h, baseH).ARGB },
                 { Chest, IntColor.FromHslOffset(ChestHsl, h, baseH).ARGB },
                 { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }

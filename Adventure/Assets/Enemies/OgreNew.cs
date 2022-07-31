@@ -20,37 +20,47 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor RagsHsl = new IntColor(Rags).ToHsl();
         private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        private const string colorMap = "Graphics/Sprites/Crawl/Enemies/ogre_new.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Belt, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
+            new SpriteMaterialTextureItem(Rags, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+        };
+
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/Enemies/ogre_new.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Belt, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Rags, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = BeltHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 //{ Skin, IntColor.FromHsl(h, s, l).ARGB },
                 { Belt, IntColor.FromHslOffset(BeltHsl, h, baseH).ARGB },
                 { Rags, IntColor.FromHslOffset(RagsHsl, h, baseH).ARGB },
                 { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }

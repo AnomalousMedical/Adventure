@@ -11,13 +11,17 @@ namespace Adventure.Assets.PixelEffects
 {
     class FireSpin : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/FreePixelEffectsPack/7_firespin_spritesheet.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/FreePixelEffectsPack/7_firespin_spritesheet.png",
-                materials: new HashSet<SpriteMaterialTextureItem>()
-            );
+            return defaultMaterial;
         }
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()

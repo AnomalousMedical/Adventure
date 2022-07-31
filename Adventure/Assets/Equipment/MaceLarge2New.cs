@@ -12,18 +12,23 @@ namespace Adventure.Assets.Equipment
             return new Quaternion(0, MathFloat.PI / 4f, 0);
         }
 
+        private const string colorMap = "Graphics/Sprites/Crawl/Weapons/mace_large_2_new.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff9e0000, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), //Handle (red)
+            new SpriteMaterialTextureItem(0xffffc000, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Highlight (gold)
+            new SpriteMaterialTextureItem(0xffbfcfde, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Bludgeon (silver)
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-                (
-                    colorMap: "Graphics/Sprites/Crawl/Weapons/mace_large_2_new.png",
-                    materials: new HashSet<SpriteMaterialTextureItem>
-                    {
-                        new SpriteMaterialTextureItem(0xff9e0000, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), //Handle (red)
-                        new SpriteMaterialTextureItem(0xffffc000, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Highlight (gold)
-                        new SpriteMaterialTextureItem(0xffbfcfde, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Bludgeon (silver)
-                    }
-                );
+            return defaultMaterial;
         }
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()

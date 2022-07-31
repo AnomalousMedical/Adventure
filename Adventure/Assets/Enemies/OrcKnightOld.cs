@@ -22,38 +22,48 @@ namespace Adventure.Assets.Enemies
         private static readonly HslColor ArmorHsl = new IntColor(Armor).ToHsl();
         private static readonly HslColor EyesHsl = new IntColor(Eyes).ToHsl();
 
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        private const string colorMap = "Graphics/Sprites/Crawl/Enemies/orc_knight_old.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Tusks, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"),
+            new SpriteMaterialTextureItem(Belt, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(Armor, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+        };
+
+        private SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Crawl/Enemies/orc_knight_old.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(Tusks, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"),
-                    new SpriteMaterialTextureItem(Belt, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                    new SpriteMaterialTextureItem(Armor, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                },
-                palletSwap: PalletSwap
-            );
-        }
-
-        public Sprite CreateSprite()
-        {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return defaultMaterial;
         }
 
         public void SetupSwap(float h, float s, float l)
         {
             var baseH = BeltHsl.H;
 
-            PalletSwap = new Dictionary<uint, uint>
+            var palletSwap = new Dictionary<uint, uint>
             {
                 { Skin, IntColor.FromHslOffset(SkinHsl, h, baseH).ARGB },
                 { Armor, IntColor.FromHslOffset(ArmorHsl, h, baseH).ARGB },
                 { Belt, IntColor.FromHslOffset(BeltHsl, h, baseH).ARGB },
                 { Eyes, IntColor.FromHslOffset(EyesHsl, h, baseH).ARGB }
             };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
+
+        public Sprite CreateSprite()
+        {
+            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }

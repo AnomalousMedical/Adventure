@@ -10,16 +10,21 @@ namespace Adventure.Assets.World
 {
     class MetalGate : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/OpenGameArt/bee/MetalGate.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff7d7071, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/OpenGameArt/bee/MetalGate.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(0xff7d7071, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                }
-            );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

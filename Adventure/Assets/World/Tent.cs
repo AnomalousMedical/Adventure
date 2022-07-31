@@ -11,19 +11,21 @@ namespace Adventure.Assets.World
     class Tent : ISpriteAsset
     {
         //Threax drew this one
+        private const string colorMap = "Graphics/Sprites/Anomalous/Tent.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xff2476cf, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"),//blue
+        };
 
-        public string TentMaterial { get; set; } = "Graphics/Textures/AmbientCG/Fabric045_1K";
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
 
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-            (
-                colorMap: "Graphics/Sprites/Anomalous/Tent.png",
-                materials: new HashSet<SpriteMaterialTextureItem>
-                {
-                    new SpriteMaterialTextureItem(0xff2476cf, TentMaterial, "jpg"),//blue
-                }
-            );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

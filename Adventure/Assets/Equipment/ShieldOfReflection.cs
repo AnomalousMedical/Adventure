@@ -7,17 +7,21 @@ namespace Adventure.Assets.Equipment
 {
     class ShieldOfReflection : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/Crawl/Shields/shield_of_reflection.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xffa0a0a0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-                (
-                    colorMap: "Graphics/Sprites/Crawl/Shields/shield_of_reflection.png",
-                    //colorMap: "opengameart/Dungeon Crawl Stone Soup Full/misc/cursor_red.png",
-                    materials: new HashSet<SpriteMaterialTextureItem>
-                    {
-                        new SpriteMaterialTextureItem(0xffa0a0a0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
-                    }
-                );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

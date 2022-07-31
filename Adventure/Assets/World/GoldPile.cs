@@ -7,16 +7,21 @@ namespace Adventure.Assets.World
 {
     class GoldPile : ISpriteAsset
     {
+        private const string colorMap = "Graphics/Sprites/Crawl/World/gold_pile_16.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(0xffffe254, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+        };
+
+        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        (
+            colorMap: colorMap,
+            materials: materials
+        );
+
         public SpriteMaterialDescription CreateMaterial()
         {
-            return new SpriteMaterialDescription
-                (
-                     colorMap: "Graphics/Sprites/Crawl/World/gold_pile_16.png",
-                    materials: new HashSet<SpriteMaterialTextureItem>
-                    {
-                        new SpriteMaterialTextureItem(0xffffe254, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-                    }
-                );
+            return defaultMaterial;
         }
 
         public Sprite CreateSprite()

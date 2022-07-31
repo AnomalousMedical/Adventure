@@ -10,6 +10,13 @@ namespace Adventure.Assets.Equipment
         public const uint Staff = 0xff9f7f66;//Staff (brown)
         public const uint Crystal = 0xff3722af;//Crystal (purple)
 
+        private const string colorMap = "Graphics/Sprites/Crawl/Weapons/staff_7.png";
+        private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
+        {
+            new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
+            new SpriteMaterialTextureItem(Crystal, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
+        };
+
         protected Dictionary<uint, uint> PalletSwap { get; set; }
 
         public Quaternion GetOrientation()
@@ -20,15 +27,11 @@ namespace Adventure.Assets.Equipment
         public SpriteMaterialDescription CreateMaterial()
         {
             return new SpriteMaterialDescription
-                (
-                    colorMap: "Graphics/Sprites/Crawl/Weapons/staff_7.png",
-                    materials: new HashSet<SpriteMaterialTextureItem>
-                    {
-                        new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
-                        new SpriteMaterialTextureItem(Crystal, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
-                    },
-                    palletSwap: PalletSwap
-                );
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: PalletSwap
+            );
         }
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()

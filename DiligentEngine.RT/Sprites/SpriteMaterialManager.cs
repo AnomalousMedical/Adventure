@@ -50,13 +50,13 @@ namespace DiligentEngine.RT.Sprites
             this.TextureScale = textureScale;
         }
 
-        public String ColorMap { get; set; }
+        public String ColorMap { get; private set; }
 
-        public HashSet<SpriteMaterialTextureItem> Materials { get; set; }
+        public HashSet<SpriteMaterialTextureItem> Materials { get; private set; }
 
-        public Dictionary<uint, uint> PalletSwap { get; set; }
+        public Dictionary<uint, uint> PalletSwap { get; private set; }
 
-        public int? TextureScale { get; set; }
+        public int? TextureScale { get; private set; }
 
         public override bool Equals(object obj)
         {
