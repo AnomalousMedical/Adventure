@@ -155,7 +155,7 @@ namespace Adventure
         private PrimaryHitShader floorShader;
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
-        private readonly TLASBuildInstanceData floorInstanceData;
+        private readonly TLASInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private TypedIndex boundaryCubeShapeIndex;
         private TypedIndex floorCubeShapeIndex;
@@ -235,7 +235,7 @@ namespace Adventure
 
             this.currentPosition = description.Translation;
 
-            this.floorInstanceData = new TLASBuildInstanceData()
+            this.floorInstanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("ZoneFloor"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

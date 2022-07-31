@@ -36,7 +36,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private readonly IBepuScene bepuScene;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
         private readonly Vector3 mapOffset;
@@ -79,7 +79,7 @@ namespace Adventure
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("LootDropTrigger"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

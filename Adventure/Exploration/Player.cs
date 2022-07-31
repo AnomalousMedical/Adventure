@@ -35,7 +35,7 @@ namespace Adventure
         public const int LeftHand = 1;
 
         private readonly RTInstances<IZoneManager> rtInstances;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene bepuScene;
@@ -164,7 +164,7 @@ namespace Adventure
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Player"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

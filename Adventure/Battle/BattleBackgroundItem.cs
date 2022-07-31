@@ -24,7 +24,7 @@ namespace Adventure.Battle
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private readonly Vector3 mapOffset;
         private bool graphicsCreated = false;
 
@@ -52,7 +52,7 @@ namespace Adventure.Battle
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Key"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

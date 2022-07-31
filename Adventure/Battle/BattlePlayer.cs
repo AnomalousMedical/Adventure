@@ -32,7 +32,7 @@ namespace Adventure.Battle
         private Inventory inventory;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
 
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
         private bool disposed = false;
         private int primaryHand;
@@ -184,7 +184,7 @@ namespace Adventure.Battle
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("BattlePlayer"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

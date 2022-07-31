@@ -31,7 +31,7 @@ namespace Adventure.Battle
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private bool disposed;
         private readonly ICharacterTimer characterTimer;
         private readonly IBattleManager battleManager;
@@ -82,7 +82,7 @@ namespace Adventure.Battle
             this.currentScale = sprite.BaseScale * description.Scale;
             this.startPosition = currentPosition;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Enemy"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

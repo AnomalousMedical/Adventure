@@ -26,7 +26,7 @@ namespace RTIslandGeneratorTest
             public int Seed { get; set; }
         }
 
-        private readonly TLASBuildInstanceData floorInstanceData;
+        private readonly TLASInstanceData floorInstanceData;
         private readonly IDestructionRequest destructionRequest;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
@@ -63,7 +63,7 @@ namespace RTIslandGeneratorTest
             this.rtInstances = rtInstances;
             this.renderer = renderer;
 
-            this.floorInstanceData = new TLASBuildInstanceData()
+            this.floorInstanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("SceneDungeonFloor"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

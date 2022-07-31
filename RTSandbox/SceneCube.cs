@@ -29,7 +29,7 @@ namespace RTSandbox
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
         }
 
-        private readonly TLASBuildInstanceData instanceData;
+        private readonly TLASInstanceData instanceData;
         private readonly CubeBLAS cubeBLAS;
         private readonly RTInstances rtInstances;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -58,7 +58,7 @@ namespace RTSandbox
             this.renderer = renderer;
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;
-            this.instanceData = new TLASBuildInstanceData()
+            this.instanceData = new TLASInstanceData()
             {
                 InstanceName = description.InstanceName,
                 Mask = description.Mask,

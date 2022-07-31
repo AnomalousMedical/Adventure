@@ -32,7 +32,7 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly LightManager lightManager;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private readonly Light light;
         private readonly Vector3 lightOffset;
         private bool dummyLight;
@@ -61,7 +61,7 @@ namespace Adventure
             this.lightManager = lightManager;
             this.lightOffset = attachmentDescription.LightOffset;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Attachment"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

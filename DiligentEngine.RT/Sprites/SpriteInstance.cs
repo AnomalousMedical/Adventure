@@ -52,9 +52,9 @@ namespace DiligentEngine.RT.Sprites
         /// build data for this frame. This actually happens during update sprites,
         /// but the user will call that before render.
         /// </summary>
-        internal void UpdateBlas(TLASBuildInstanceData tlasInstanceBuildData)
+        internal void UpdateBlas(TLASInstanceData tlasInstanceData)
         {
-            tlasInstanceBuildData.pBLAS = spritePlaneBLAS.Instance.BLAS.Obj;
+            tlasInstanceData.pBLAS = spritePlaneBLAS.Instance.BLAS.Obj;
         }
 
         /// <summary>

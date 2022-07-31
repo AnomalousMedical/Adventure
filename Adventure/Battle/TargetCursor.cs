@@ -20,7 +20,7 @@ namespace Adventure.Battle
         private readonly ISharpGui sharpGui;
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
         private bool disposed;
 
@@ -94,7 +94,7 @@ namespace Adventure.Battle
             })
             { BaseScale = new Vector3(0.5f, 0.5f, 1f) };
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("TargetCursor"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

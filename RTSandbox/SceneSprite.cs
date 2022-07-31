@@ -19,7 +19,7 @@ namespace RTSandbox
             public InstanceMatrix Transform = InstanceMatrix.Identity;
         }
 
-        private readonly TLASBuildInstanceData instanceData;
+        private readonly TLASInstanceData instanceData;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly RTInstances rtInstances;
         private SpriteInstance spriteInstance;
@@ -36,7 +36,7 @@ namespace RTSandbox
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.rtInstances = rtInstances;
 
-            this.instanceData = new TLASBuildInstanceData()
+            this.instanceData = new TLASInstanceData()
             {
                 InstanceName = description.InstanceName,
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

@@ -43,7 +43,7 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASBuildInstanceData tlasData;
+        private readonly TLASInstanceData tlasData;
         private readonly IBepuScene bepuScene;
         private readonly Description description;
         private readonly ICollidableTypeIdentifier collidableIdentifier;
@@ -106,7 +106,7 @@ namespace Adventure
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
-            this.tlasData = new TLASBuildInstanceData()
+            this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("BattleTrigger"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,

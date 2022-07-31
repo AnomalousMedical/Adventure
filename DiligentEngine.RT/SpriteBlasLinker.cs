@@ -11,15 +11,15 @@ namespace DiligentEngine.RT
     internal class SpriteBlasLinker
     {
         private ISprite wrappedSprite;
-        private readonly TLASBuildInstanceData instanceBuildData;
+        private readonly TLASInstanceData instanceBuildData;
         private readonly SpriteInstance spriteInstance;
 
-        public SpriteBlasLinker(ISprite wrappedSprite, TLASBuildInstanceData instanceBuildData, SpriteInstance spriteInstance)
+        public SpriteBlasLinker(ISprite wrappedSprite, TLASInstanceData instanceData, SpriteInstance spriteInstance)
         {
             this.wrappedSprite = wrappedSprite;
-            this.instanceBuildData = instanceBuildData;
+            this.instanceBuildData = instanceData;
             this.spriteInstance = spriteInstance;
-            spriteInstance.UpdateBlas(instanceBuildData);
+            spriteInstance.UpdateBlas(instanceData);
         }
 
         public ISprite WrappedSprite => wrappedSprite;

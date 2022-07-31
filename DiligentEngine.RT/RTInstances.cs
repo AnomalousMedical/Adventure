@@ -8,23 +8,11 @@ using System.Threading.Tasks;
 
 namespace DiligentEngine.RT
 {
-    //public class RTInstanceHandle
-    //{
-    //    public String InstanceName { get; set; }
-    //    public IBottomLevelAS pBLAS { get; set; }
-    //    public InstanceMatrix Transform { get; set; }
-    //    public UInt32 CustomId { get; set; }
-    //    public RAYTRACING_INSTANCE_FLAGS Flags { get; set; }
-    //    public Byte Mask { get; set; }
-    //    public UInt32 ContributionToHitGroupIndex { get; set; }
-    //    internal int Index { get; set; } = -1;
-    //}
-
     public class RTInstances
     {
         public delegate void ShaderTableBinder(IShaderBindingTable sbt, ITopLevelAS tlas);
 
-        List<TLASBuildInstanceData> instances = new List<TLASBuildInstanceData>();
+        List<TLASInstanceData> instances = new List<TLASInstanceData>();
         List<ShaderTableBinder> shaderTableBinders = new List<ShaderTableBinder>();
         List<SpriteBlasLinker> sprites = new List<SpriteBlasLinker>();
 
@@ -47,24 +35,23 @@ namespace DiligentEngine.RT
                     //from the original build data.
 
                     updatePassInstances = false;
-                    passInstances = TLASBuildInstanceDataPassStruct.ToStruct(instances);
-                    //passInstances = new TLASBuildInstanceDataPassStruct[instances.Count];
-                    //var numInstancs = instances.Count;
-                    //for (int i = 0; i < numInstancs; i++)
-                    //{
-                    //    var instance = instances[i];
-                    //    instance.Index = i;
-                    //    passInstances[i] = new TLASBuildInstanceDataPassStruct
-                    //    {
-                    //        InstanceName = instance.InstanceName,
-                    //        pBLAS = TLASBuildInstanceDataPassStruct.GetPblasPtr(instance.pBLAS),
-                    //        Transform = instance.Transform,
-                    //        CustomId = instance.CustomId,
-                    //        Flags = instance.Flags,
-                    //        Mask = instance.Mask,
-                    //        ContributionToHitGroupIndex = instance.ContributionToHitGroupIndex,
-                    //    };
-                    //}
+                    passInstances = new TLASBuildInstanceDataPassStruct[instances.Count];
+                    var numInstancs = instances.Count;
+                    for (int i = 0; i < numInstancs; i++)
+                    {
+                        var instance = instances[i];
+                        //instance.Index = i;
+                        passInstances[i] = new TLASBuildInstanceDataPassStruct
+                        {
+                            InstanceName = instance.InstanceName,
+                            pBLAS = instance.pBLAS.ObjPtr,
+                            Transform = instance.Transform,
+                            CustomId = instance.CustomId,
+                            Flags = instance.Flags,
+                            Mask = instance.Mask,
+                            ContributionToHitGroupIndex = instance.ContributionToHitGroupIndex,
+                        };
+                    }
                 }
                 return passInstances;
             }
@@ -72,13 +59,13 @@ namespace DiligentEngine.RT
 
         public uint InstanceCount => (uint)instances.Count;
 
-        public void AddTlasBuild(TLASBuildInstanceData instance)
+        public void AddTlasBuild(TLASInstanceData instance)
         {
             updatePassInstances = true;
             instances.Add(instance);
         }
 
-        public void RemoveTlasBuild(TLASBuildInstanceData instance)
+        public void RemoveTlasBuild(TLASInstanceData instance)
         {
             updatePassInstances = true;
             instances.Remove(instance);
@@ -94,9 +81,9 @@ namespace DiligentEngine.RT
             shaderTableBinders.Remove(binder);
         }
 
-        public void AddSprite(ISprite sprite, TLASBuildInstanceData instanceBuildData, SpriteInstance spriteInstance)
+        public void AddSprite(ISprite sprite, TLASInstanceData instanceData, SpriteInstance spriteInstance)
         {
-            sprites.Add(new SpriteBlasLinker(sprite, instanceBuildData, spriteInstance));
+            sprites.Add(new SpriteBlasLinker(sprite, instanceData, spriteInstance));
         }
 
         public void RemoveSprite(ISprite sprite)

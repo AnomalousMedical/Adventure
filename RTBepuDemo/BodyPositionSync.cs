@@ -35,7 +35,7 @@ namespace RTBepuDemo
 
         private BodyHandle bodyHandle;
 
-        private readonly TLASBuildInstanceData instanceData;
+        private readonly TLASInstanceData instanceData;
         private readonly CubeBLAS cubeBLAS;
         private readonly IBepuScene bepuScene;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -64,7 +64,7 @@ namespace RTBepuDemo
             this.rtInstances = rtInstances;
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;            
-            this.instanceData = new TLASBuildInstanceData()
+            this.instanceData = new TLASInstanceData()
             {
                 InstanceName = description.InstanceName,
                 Mask = description.Mask,

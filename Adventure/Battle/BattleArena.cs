@@ -22,7 +22,7 @@ namespace Adventure.Battle
             public IBiome Biome { get; set; }
         }
 
-        private TLASBuildInstanceData floorInstanceData;
+        private TLASInstanceData floorInstanceData;
         private readonly IDestructionRequest destructionRequest;
         private readonly MeshBLAS floorMesh;
         private readonly TextureManager textureManager;
@@ -138,7 +138,7 @@ namespace Adventure.Battle
                     this.floorTexture = floorTextureTask.Result;
                     this.wallTexture = wallTextureTask.Result;
 
-                    this.floorInstanceData = new TLASBuildInstanceData()
+                    this.floorInstanceData = new TLASInstanceData()
                     {
                         InstanceName = RTId.CreateId("BattleArenaFloor"),
                         CustomId = 3, //Texture index
