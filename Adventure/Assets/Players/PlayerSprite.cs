@@ -36,7 +36,7 @@ namespace Adventure.Assets.Players
          * 
          ********************************************/
 
-        private Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
+        private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
         {
             { "stand-down", new SpriteAnimation(spriteWalkFrameSpeed,
                 new SpriteFrame(SpriteStepX * 2, SpriteStepY * 1, SpriteStepX * 3, SpriteStepY * 2)

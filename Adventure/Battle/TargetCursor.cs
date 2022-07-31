@@ -56,6 +56,28 @@ namespace Adventure.Battle
 
         TaskCompletionSource<IBattleTarget> getTargetTask;
 
+        private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation(1,
+                new SpriteFrame(0, 0, 1, 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(0, 9, -0.01f, 32, 32),
+                    }
+                } )
+            },
+            { "reverse", new SpriteAnimation(1,
+                new SpriteFrame(1, 0, 0, 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(31, 9, -0.01f, 32, 32),
+                    }
+                } )
+            }
+        };
+
         public TargetCursor
         (
             IDestructionRequest destructionRequest,
@@ -71,27 +93,7 @@ namespace Adventure.Battle
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.sharpGui = sharpGui;
             this.battleScreenLayout = battleScreenLayout;
-            this.sprite = new Sprite(new Dictionary<string, SpriteAnimation>()
-            {
-                { "default", new SpriteAnimation(1,
-                    new SpriteFrame(0, 0, 1, 1)
-                    {
-                        Attachments = new List<SpriteFrameAttachment>()
-                        {
-                            SpriteFrameAttachment.FromFramePosition(0, 9, -0.01f, 32, 32),
-                        }
-                    } )
-                },
-                { "reverse", new SpriteAnimation(1,
-                    new SpriteFrame(1, 0, 0, 1)
-                    {
-                        Attachments = new List<SpriteFrameAttachment>()
-                        {
-                            SpriteFrameAttachment.FromFramePosition(31, 9, -0.01f, 32, 32),
-                        }
-                    } )
-                }
-            })
+            this.sprite = new Sprite(animations)
             { BaseScale = new Vector3(0.5f, 0.5f, 1f) };
 
             this.tlasData = new TLASInstanceData()

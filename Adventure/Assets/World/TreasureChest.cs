@@ -28,29 +28,31 @@ namespace Adventure.Assets.World
                 );
         }
 
+        private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(0, 0, 24f / 64f, 24f / 32f)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(6, 25, 0, 32, 32), //Center of grip
+                    }
+                } )
+            },
+            { "open", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(24f / 64f, 0, 48f / 64f, 28f / 32f)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(6, 25, 0, 32, 32), //Center of grip
+                    }
+                } )
+            },
+        };
+
         public Sprite CreateSprite()
         {
-            return new Sprite(new Dictionary<string, SpriteAnimation>()
-                {
-                    { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                        new SpriteFrame(0, 0, 24f / 64f, 24f / 32f)
-                        {
-                            Attachments = new List<SpriteFrameAttachment>()
-                            {
-                                SpriteFrameAttachment.FromFramePosition(6, 25, 0, 32, 32), //Center of grip
-                            }
-                        } )
-                    },
-                    { "open", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                        new SpriteFrame(24f / 64f, 0, 48f / 64f, 28f / 32f)
-                        {
-                            Attachments = new List<SpriteFrameAttachment>()
-                            {
-                                SpriteFrameAttachment.FromFramePosition(6, 25, 0, 32, 32), //Center of grip
-                            }
-                        } )
-                    },
-                })
+            return new Sprite(animations)
             { BaseScale = new Vector3(0.55f, 0.55f, 0.55f) };
         }
     }

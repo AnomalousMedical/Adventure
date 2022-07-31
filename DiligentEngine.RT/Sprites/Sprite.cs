@@ -102,6 +102,10 @@ namespace DiligentEngine.RT.Sprites
 
         }
 
+        /// <summary>
+        /// Constructor to supply an animation. The animations can be shared between multiple instances.
+        /// </summary>
+        /// <param name="animations"></param>
         public Sprite(Dictionary<String, SpriteAnimation> animations)
         {
             this.animations = animations;
