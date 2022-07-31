@@ -21,8 +21,11 @@ namespace DiligentEngine.RT
 {
     public partial class TLASInstanceData
     {
-        int instanceIndex = -1;
-        RTInstances rTInstances;
+        internal static readonly RTInstances DefaultRTInstance = new RTInstances();
+        internal const int DefaultRTInstanceIndex = 0;
+
+        int instanceIndex = DefaultRTInstanceIndex;
+        RTInstances rTInstances = DefaultRTInstance;
         public String instanceName;
         public IBottomLevelAS pblas;
         public InstanceMatrix transform;
@@ -45,11 +48,8 @@ namespace DiligentEngine.RT
             set
             {
                 instanceName = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.InstanceName = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.InstanceName = value;
             }
         }
 
@@ -62,11 +62,8 @@ namespace DiligentEngine.RT
             set
             {
                 pblas = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.pBLAS = value?.ObjPtr ?? IntPtr.Zero;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.pBLAS = value?.ObjPtr ?? IntPtr.Zero;
             }
         }
 
@@ -79,11 +76,8 @@ namespace DiligentEngine.RT
             set
             {
                 transform = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.Transform = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.Transform = value;
             }
         }
 
@@ -96,11 +90,8 @@ namespace DiligentEngine.RT
             set
             {
                 customId = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.CustomId = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.CustomId = value;
             }
         }
 
@@ -113,11 +104,8 @@ namespace DiligentEngine.RT
             set
             {
                 flags = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.Flags = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.Flags = value;
             }
         }
 
@@ -130,11 +118,8 @@ namespace DiligentEngine.RT
             set
             {
                 mask = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.Mask = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.Mask = value;
             }
         }
 
@@ -147,11 +132,8 @@ namespace DiligentEngine.RT
             set
             {
                 contributionToHitGroupIndex = value;
-                if (rTInstances != null)
-                {
-                    ref var modInstance = ref rTInstances.passInstances[instanceIndex];
-                    modInstance.ContributionToHitGroupIndex = value;
-                }
+                ref var modInstance = ref rTInstances.passInstances[instanceIndex];
+                modInstance.ContributionToHitGroupIndex = value;
             }
         }
 

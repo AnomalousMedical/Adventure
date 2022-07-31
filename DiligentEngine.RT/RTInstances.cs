@@ -58,7 +58,7 @@ namespace DiligentEngine.RT
 
         public void AddTlasBuild(TLASInstanceData instance)
         {
-            if(instance.InstanceIndex != -1)
+            if(instance.RTInstances != TLASInstanceData.DefaultRTInstance)
             {
                 throw new InvalidOperationException("TLASInstanceData already added. These can only be added to once RTInstances one time.");
             }
@@ -74,8 +74,8 @@ namespace DiligentEngine.RT
             if (instances.Remove(instance))
             {
                 updatePassInstances = true;
-                instance.InstanceIndex = -1;
-                instance.RTInstances = null;
+                instance.InstanceIndex = TLASInstanceData.DefaultRTInstanceIndex;
+                instance.RTInstances = TLASInstanceData.DefaultRTInstance;
             }
         }
 
