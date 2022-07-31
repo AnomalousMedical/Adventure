@@ -14,7 +14,7 @@ namespace DiligentEngine.RT
 
         List<TLASInstanceData> instances = new List<TLASInstanceData>();
         List<ShaderTableBinder> shaderTableBinders = new List<ShaderTableBinder>();
-        List<SpriteBlasLinker> sprites = new List<SpriteBlasLinker>();
+        List<ISprite> sprites = new List<ISprite>();
         bool updatePassInstances = false;
 
         //There is always an extra dummy instance to serve as the lookup for anything new that has been added
@@ -91,20 +91,13 @@ namespace DiligentEngine.RT
 
         public void AddSprite(ISprite sprite, TLASInstanceData instanceData, SpriteInstance spriteInstance)
         {
-            sprites.Add(new SpriteBlasLinker(sprite, instanceData, spriteInstance));
+            spriteInstance.UpdateBlas(instanceData);
+            sprites.Add(sprite);
         }
 
         public void RemoveSprite(ISprite sprite)
         {
-            var max = sprites.Count;
-            for(int i = 0; i < max; ++i)
-            {
-                if(sprites[i].WrappedSprite == sprite)
-                {
-                    sprites.RemoveAt(i);
-                    i = max;
-                }
-            }
+            sprites.Remove(sprite);
         }
 
         public void UpdateSprites(Clock clock)
