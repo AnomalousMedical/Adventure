@@ -83,19 +83,21 @@ namespace DiligentEngine.RT.Sprites
 
         public Vector3 BaseScale;
 
+        private static readonly Dictionary<String, SpriteAnimation> defaultAnimation = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
+                {
+                    Left = 0f,
+                    Top = 0f,
+                    Right = 1f,
+                    Bottom = 1f,
+                    Attachments = new List<SpriteFrameAttachment>(){ new SpriteFrameAttachment() }
+                } })
+            }
+        };
+
         public Sprite()
-            : this(new Dictionary<string, SpriteAnimation>()
-            {
-                { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
-                    {
-                        Left = 0f,
-                        Top = 0f,
-                        Right = 1f,
-                        Bottom = 1f,
-                        Attachments = new List<SpriteFrameAttachment>(){ new SpriteFrameAttachment() }
-                    } })
-                }
-            })
+            : this(defaultAnimation)
         {
 
         }
