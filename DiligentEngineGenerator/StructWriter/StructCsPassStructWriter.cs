@@ -10,6 +10,8 @@ namespace DiligentEngineGenerator
     {
         private CodeStruct code;
 
+        public bool MakePublic { get; set; }
+
         public StructCsPassStructWriter(CodeStruct code)
         {
             this.code = code;
@@ -28,10 +30,10 @@ using System.Linq;
 
 namespace DiligentEngine
 {{");
-
+            var visibility = MakePublic ? "public " : "";
             writer.WriteLine(
 @$"    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    struct {code.Name}PassStruct
+    {visibility}struct {code.Name}PassStruct
     {{");
 
             foreach (var item in code.Properties.Where(i => i.TakeAutoSize == null))

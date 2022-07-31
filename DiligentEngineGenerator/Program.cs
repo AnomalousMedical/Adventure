@@ -392,7 +392,7 @@ namespace DiligentEngineGenerator
                     .Where(i => !skip.Contains(i.Name)).ToList();
 
                 codeWriter.AddWriter(new StructCsWriter(TLASBuildInstanceData), Path.Combine(baseStructDir, $"{nameof(TLASBuildInstanceData)}.cs"));
-                codeWriter.AddWriter(new StructCsPassStructWriter(TLASBuildInstanceData), Path.Combine(baseStructDir, $"{nameof(TLASBuildInstanceData)}.PassStruct.cs"));
+                codeWriter.AddWriter(new StructCsPassStructWriter(TLASBuildInstanceData) { MakePublic = true }, Path.Combine(baseStructDir, $"{nameof(TLASBuildInstanceData)}.PassStruct.cs"));
                 codeWriter.AddWriter(new StructCppPassStructWriter(TLASBuildInstanceData), Path.Combine(baseCPlusPlusOutDir, $"{nameof(TLASBuildInstanceData)}.PassStruct.h"));
             }
 
