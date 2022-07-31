@@ -1,9 +1,5 @@
 # TODO
 
-## Finish cleaning up sprite changes
-Remove per instance data for frames
-use lighting switch to determine which kind of sampler to use, this way we can remove an entire switch statement
-
 ## Get rid of renamed vertex and index buffers in shaders
 now there there is only 1 primary shader instance, we don't need to rename the g_vertices and g_indices buffers.
 
