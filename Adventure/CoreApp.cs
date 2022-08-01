@@ -18,6 +18,7 @@ using Adventure.Assets;
 using Adventure.Items;
 using Adventure.Items.Creators;
 using Adventure.Battle.Skills;
+using Adventure.WorldMap;
 
 namespace Adventure
 {
@@ -89,6 +90,7 @@ namespace Adventure
             services.AddSingleton<IRootMenu, RootMenu>();
             services.AddSingleton<IBattleGameState, BattleGameState>();
             services.AddSingleton<IGameOverGameState, GameOverGameState>();
+            services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddScoped<Player>();
             services.AddScoped<Player.Description>();
             services.AddScoped<BattlePlayer>();
@@ -97,6 +99,7 @@ namespace Adventure
             services.AddScoped<Enemy.Desc>();
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
+            services.AddSingleton<RTInstances<IWorldMap>>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();
             services.AddScoped<Attachment<IBattleManager>>();

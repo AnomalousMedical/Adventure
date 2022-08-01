@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.WorldMap;
 
 namespace Adventure
 {
@@ -16,7 +17,7 @@ namespace Adventure
     {
         bool AllowBattles { get; set; }
 
-        void Link(IBattleGameState battleState);
+        void Link(IBattleGameState battleState, IWorldMapGameState worldMapState);
 
         /// <summary>
         /// Request a battle with a given trigger. The trigger can be null.
@@ -24,6 +25,7 @@ namespace Adventure
         /// <param name="battleTrigger"></param>
         void RequestBattle(BattleTrigger battleTrigger = null);
         void SetExplorationEvent(Func<Clock, bool> explorationEvent);
+        void RequestWorldMap();
     }
 
     class ExplorationGameState : IExplorationGameState
@@ -34,6 +36,7 @@ namespace Adventure
         private readonly IExplorationMenu explorationMenu;
         private readonly IContextMenu contextMenu;
         private IBattleGameState battleState;
+        private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
         private Func<Clock, bool> explorationEvent;
 
@@ -55,9 +58,10 @@ namespace Adventure
             coroutineRunner.RunTask(zoneManager.Restart());
         }
 
-        public void Link(IBattleGameState battleState)
+        public void Link(IBattleGameState battleState, IWorldMapGameState worldMapState)
         {
             this.battleState = battleState;
+            this.worldMapState = worldMapState;
         }
 
         public void SetActive(bool active)
@@ -79,6 +83,11 @@ namespace Adventure
             {
                 battleTrigger?.BattleWon();
             }
+        }
+
+        public void RequestWorldMap()
+        {
+            nextState = worldMapState;
         }
 
         public void SetExplorationEvent(Func<Clock, bool> explorationEvent)
