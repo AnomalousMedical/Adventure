@@ -112,7 +112,10 @@ namespace Adventure
             }
             else
             {
-                bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                if (zoneManager.Current?.PhysicsActive == true)
+                {
+                    bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                }
                 contextMenu.Update();
             }
 

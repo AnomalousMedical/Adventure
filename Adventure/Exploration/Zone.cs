@@ -191,6 +191,8 @@ namespace Adventure
         public Vector3 LocalStartPoint => startPointLocal;
         public Vector3 LocalEndPoint => endPointLocal;
 
+        public bool PhysicsActive => physicsActive;
+
         public int Index => index;
 
         public Zone
