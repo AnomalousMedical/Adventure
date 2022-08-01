@@ -16,8 +16,8 @@ namespace DungeonGenerator
 
         private MeshBLAS floorMesh;
         //private MeshBLAS wallMesh;
-        private List<MapMeshPosition> floorCubeCenterPoints;
-        private List<Vector3> boundaryCubeCenterPoints;
+        private List<MapMeshPosition> floorCubeCenterPoints; //TODO: these are not populated correctly, but are needed for physics
+        private List<Vector3> boundaryCubeCenterPoints; //TODO: these are not populated correctly, but are needed for physics
         private MapMeshSquareInfo[,] squareInfo; //This array is 1 larger in each dimension, use accessor to translate points
 
         private readonly float uvXStride;

@@ -14,7 +14,7 @@ namespace Adventure.WorldMap
 {
     interface IWorldMapGameState : IGameState
     {
-        void Link(IGameState explorationState);
+        void Link(IExplorationGameState explorationState);
     }
 
     class WorldMapGameState : IWorldMapGameState
@@ -25,9 +25,11 @@ namespace Adventure.WorldMap
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
-        private IGameState nextState;
+        private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
-        private SharpText gameOver = new SharpText("World Map");
+        private SharpSliderHorizontal zoneSelect;
+        private int currentZone = 0;
+        private SharpText worldMapText = new SharpText("Zone 0") { Color = Color.White };
         private ILayoutItem layout;
 
         public RTInstances Instances => rtInstances;
@@ -39,7 +41,8 @@ namespace Adventure.WorldMap
             IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
-            Persistence persistence
+            Persistence persistence,
+            IScaleHelper scaleHelper
         )
         {
             this.sharpGui = sharpGui;
@@ -48,12 +51,13 @@ namespace Adventure.WorldMap
             this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
             this.persistence = persistence;
-            layout = new ColumnLayout(gameOver, restart) { Margin = new IntPad(10) };
+            layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+            zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
         }
 
-        public void Link(IGameState nextState)
+        public void Link(IExplorationGameState explorationState)
         {
-            this.nextState = nextState;
+            this.explorationState = explorationState;
         }
 
         public void SetActive(bool active)
@@ -75,13 +79,19 @@ namespace Adventure.WorldMap
             var rect = screenPositioner.GetCenterRect(size);
             layout.SetRect(rect);
 
-            sharpGui.Text(gameOver);
+            sharpGui.Text(worldMapText);
 
-            //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
-            if (sharpGui.Button(restart, GamepadId.Pad1) || sharpGui.Button(restart, GamepadId.Pad2) || sharpGui.Button(restart, GamepadId.Pad3) || sharpGui.Button(restart, GamepadId.Pad4))
+            if(sharpGui.Slider(zoneSelect, ref currentZone, GamepadId.Pad1))
             {
+                worldMapText.Text = $"Zone {currentZone}";
+            }
+
+            if (sharpGui.Button(restart, GamepadId.Pad1))
+            {
+                persistence.Current.Player.Position = null;
+                persistence.Current.Zone.CurrentIndex = currentZone;
                 coroutineRunner.RunTask(zoneManager.Restart());
-                nextState = this.nextState;
+                nextState = this.explorationState;
             }
 
             return nextState;

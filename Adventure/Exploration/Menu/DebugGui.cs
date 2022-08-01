@@ -113,6 +113,7 @@ namespace Adventure.Exploration.Menu
             if (sharpGui.Button(goWorld, gamepad, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goEnd.Id, navRight: goStart.Id))
             {
                 explorationGameState.RequestWorldMap();
+                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, gamepad, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
