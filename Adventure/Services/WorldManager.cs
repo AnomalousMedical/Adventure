@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Exploration
+namespace Adventure
 {
     interface IWorldManager
     {
@@ -399,6 +399,162 @@ namespace Adventure.Exploration
                 }
             }
             return startingZones;
+        }
+
+        private int GetAreaForZone(int zoneIndex)
+        {
+            var end = 2;
+            if(zoneIndex < end)
+            {
+                return 0;
+            }
+
+            //Phase 1
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 1;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 2;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 3;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 4;
+            }
+
+            //Phase 2
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 5;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 6;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 7;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 8;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 9;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 10;
+            }
+
+            //Phase 3
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 11;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 12;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 13;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 14;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 15;
+            }
+            end += 2;
+            if (zoneIndex < end)
+            {
+                return 16;
+            }
+
+            //Phase 4
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 17;
+            }
+
+            //Bonus 1
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 18;
+            }
+
+            //Bonus 2
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 19;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 20;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 21;
+            }
+
+            //Bonus 3
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 22;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 23;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 24;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 25;
+            }
+            end += 3;
+            if (zoneIndex < end)
+            {
+                return 26;
+            }
+
+            //Outside the range, return the 1st level
+            return 0;
         }
     }
 }
