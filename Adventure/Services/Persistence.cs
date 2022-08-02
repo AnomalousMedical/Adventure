@@ -110,6 +110,8 @@ namespace Adventure.Services
         public class WorldData
         {
             public int Seed { get; set; }
+
+            public int Level { get; set; }
         }
 
         public class CharacterData

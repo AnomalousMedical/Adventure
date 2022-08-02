@@ -28,6 +28,7 @@ namespace Adventure.Services
         {
             var gameState = new Persistence.GameState();
             gameState.World.Seed = seed;
+            gameState.World.Level = 1;
             var characterRandom = new Random(seed);
 
             {
