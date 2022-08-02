@@ -22,8 +22,6 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly IBiomeManager biomeManager;
         private readonly IMonsterMaker monsterMaker;
-        private List<int> createdZoneSeeds = new List<int>();
-        private Random zoneRandom;
         private readonly SwordCreator swordCreator;
         private readonly SpearCreator spearCreator;
         private readonly MaceCreator maceCreator;
@@ -35,6 +33,7 @@ namespace Adventure
         private readonly PotionCreator potionCreator;
         private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
+        private readonly IWorldDatabase worldDatabase;
         private List<MonsterInfo> monsterInfo;
         private HashSet<int> chipZones = new HashSet<int>();
         private List<BiomeType> startingZones;
@@ -58,10 +57,10 @@ namespace Adventure
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
             AxeCreator axeCreator,
-            DaggerCreator daggerCreator
+            DaggerCreator daggerCreator,
+            IWorldDatabase worldDatabase
         )
         {
-            this.zoneRandom = new Random(persistence.Current.World.Seed);
             this.persistence = persistence;
             this.biomeManager = biomeManager;
             this.monsterMaker = monsterMaker;
@@ -76,7 +75,7 @@ namespace Adventure
             this.potionCreator = potionCreator;
             this.axeCreator = axeCreator;
             this.daggerCreator = daggerCreator;
-
+            this.worldDatabase = worldDatabase;
             var weaknessRandom = new Random(persistence.Current.World.Seed);
             this.monsterInfo = monsterMaker.CreateBaseMonsters(weaknessRandom);
 
@@ -103,7 +102,7 @@ namespace Adventure
         public void SetupZone(int zoneIndex, Zone.Description o)
         {
             //It is important to keep the random order here, or everything changes
-            var initRandom = new Random(GetZoneSeed(zoneIndex));
+            var initRandom = new Random(worldDatabase.GetZoneSeed(zoneIndex));
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
 
@@ -127,7 +126,7 @@ namespace Adventure
             o.MakeBoss = zoneIndex % zoneLevelScaler == 1;
             o.MakeGate = zoneIndex % 4 == 3;
             var zoneSeedIndex = zoneIndex / zoneLevelScaler;
-            var zoneSeed = GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
+            var zoneSeed = worldDatabase.GetZoneSeed(zoneSeedIndex); //Division keeps us pinned on the same type of zone for that many zones
             var monsterRandom = new Random(zoneSeed);
             var treasureRandom = new Random(zoneSeed);
 
@@ -369,16 +368,6 @@ namespace Adventure
             monsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, weakElement, resistElement);
         }
 
-        private int GetZoneSeed(int index)
-        {
-            var end = index + 1;
-            for (var i = createdZoneSeeds.Count; i < end; ++i)
-            {
-                createdZoneSeeds.Add(zoneRandom.Next(int.MinValue, int.MaxValue));
-            }
-            return createdZoneSeeds[index];
-        }
-
         private List<BiomeType> GetStartingZones()
         {
             var starupZoneRandom = new Random(persistence.Current.World.Seed);
@@ -399,162 +388,6 @@ namespace Adventure
                 }
             }
             return startingZones;
-        }
-
-        private int GetAreaForZone(int zoneIndex)
-        {
-            var end = 2;
-            if(zoneIndex < end)
-            {
-                return 0;
-            }
-
-            //Phase 1
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 1;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 2;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 3;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 4;
-            }
-
-            //Phase 2
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 5;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 6;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 7;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 8;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 9;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 10;
-            }
-
-            //Phase 3
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 11;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 12;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 13;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 14;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 15;
-            }
-            end += 2;
-            if (zoneIndex < end)
-            {
-                return 16;
-            }
-
-            //Phase 4
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 17;
-            }
-
-            //Bonus 1
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 18;
-            }
-
-            //Bonus 2
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 19;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 20;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 21;
-            }
-
-            //Bonus 3
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 22;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 23;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 24;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 25;
-            }
-            end += 3;
-            if (zoneIndex < end)
-            {
-                return 26;
-            }
-
-            //Outside the range, return the 1st level
-            return 0;
         }
     }
 }

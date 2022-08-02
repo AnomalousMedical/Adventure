@@ -138,6 +138,7 @@ namespace Adventure
             services.AddSingleton<LightManager>();
             services.AddSingleton<IZoneManager, ZoneManager>();
             services.AddSingleton<IWorldManager, WorldManager>();
+            services.AddSingleton<IWorldDatabase, WorldDatabase>();
             services.AddSingleton<IBattleManager, BattleManager>();
             services.AddSingleton<INameGenerator, NameGenerator>();
             services.AddSingleton<IMonsterMaker, MonsterMaker>();
