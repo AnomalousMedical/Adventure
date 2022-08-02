@@ -29,10 +29,6 @@ namespace Adventure.Services
         public MonsterMaker()
         {
             monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside));
-            //monsterAssets.Add(new MonsterAssetInfo(new DeepTrollBerserker(), BiomeType.Snowy));
-            //monsterAssets.Add(new MonsterAssetInfo(new Ghoul(), BiomeType.Desert));
-            //monsterAssets.Add(new MonsterAssetInfo(new MerfolkImpalerWaterNew(), BiomeType.Countryside));
-            //monsterAssets.Add(new MonsterAssetInfo(new MutantBeast(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy));
