@@ -31,6 +31,8 @@ public class csIslandMaze
 
     public int[,] Map;
 
+    public int NumIslands { get; private set; }
+
 
     public csIslandMaze(Random random)
     {
@@ -127,8 +129,9 @@ public class csIslandMaze
 
     public void findIslands()
     {
-        var islandFinder = new GFG(MapX, MapY);
-        Map = islandFinder.countIslands(Map);
+        var islandFinder = new IslandFinder(MapX, MapY);
+        Map = islandFinder.findIslands(Map);
+        NumIslands = islandFinder.NumIslands;
     }
 
     /// <summary>
@@ -215,13 +218,15 @@ For more information, please refer to <http://unlicense.org>
 // This code is contributed
 // by shiv_bhakt.
 //https://www.geeksforgeeks.org/find-number-of-islands/
-class GFG
+class IslandFinder
 {
     // No of rows
     // and columns
     int ROW = 5, COL = 5;
 
-    public GFG(int row, int col)
+    public int NumIslands { get; private set; }
+
+    public IslandFinder(int row, int col)
     {
         this.ROW = row; ;
         this.COL = col;
@@ -272,7 +277,7 @@ class GFG
     // The main function that
     // returns count of islands
     // in a given boolean 2D matrix
-    public int[,] countIslands(int[,] M)
+    public int[,] findIslands(int[,] M)
     {
         // Make a bool array to
         // mark visited cells.
@@ -284,7 +289,7 @@ class GFG
         // Initialize count as 0 and
         // traverse through the all
         // cells of given matrix
-        int id = 2;
+        int id = 1;
         for (int i = 0; i < ROW; ++i)
             for (int j = 0; j < COL; ++j)
                 if (M[i, j] == 1 && !visited[i, j])
@@ -296,6 +301,8 @@ class GFG
                     DFS(M, i, j, visited, id, marked);
                     ++id;
                 }
+
+        NumIslands = id - 1;
 
         return marked;
     }

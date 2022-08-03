@@ -195,6 +195,7 @@ namespace RTIslandGeneratorTest
             }
             Console.WriteLine($"Level seed {seed}");
             Console.WriteLine($"Created in {creationTime}");
+            Console.WriteLine($"Number of islands {mapBuilder.NumIslands}");
             Console.WriteLine("--------------------------------------------------");
         }
     }
