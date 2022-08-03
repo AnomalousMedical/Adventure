@@ -95,10 +95,11 @@ namespace RTIslandGeneratorTest
 
                         mapBuilder.go();
                         mapBuilder.makeEdgesEmpty();
+                        mapBuilder.findIslands();
 
                         sw.Stop();
 
-                        //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
+                        DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
 
                         mapMesh = new IslandMazeMesh(mapBuilder, random, floorMesh, mapUnitX: 1.0f, mapUnitY: 1.0f, mapUnitZ: 1.0f);
                     });
