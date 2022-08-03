@@ -20,7 +20,7 @@ namespace Adventure.WorldMap
     class WorldMapGameState : IWorldMapGameState
     {
         private readonly ISharpGui sharpGui;
-        private readonly RTInstances<IWorldMap> rtInstances;
+        private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly IScreenPositioner screenPositioner;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
@@ -37,7 +37,7 @@ namespace Adventure.WorldMap
         public WorldMapGameState
         (
             ISharpGui sharpGui,
-            RTInstances<IWorldMap> rtInstances,
+            RTInstances<IWorldMapGameState> rtInstances,
             IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,

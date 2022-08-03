@@ -99,7 +99,7 @@ namespace Adventure
             services.AddScoped<Enemy.Desc>();
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
-            services.AddSingleton<RTInstances<IWorldMap>>();
+            services.AddSingleton<RTInstances<IWorldMapGameState>>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();
             services.AddScoped<Attachment<IBattleManager>>();
