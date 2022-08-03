@@ -52,6 +52,7 @@ namespace Adventure.Services
         {
             //TODO: change treasure to be based off an item level, not the current enemy level
             //TODO: Set the biomes
+            //TODO: setup gates
 
             //It is important to keep the random order here, or everything changes
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);

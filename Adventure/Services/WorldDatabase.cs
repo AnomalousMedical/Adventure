@@ -24,6 +24,7 @@ namespace Adventure.Services
         AxeCreator AxeCreator { get; }
         DaggerCreator DaggerCreator { get; }
         IMonsterMaker MonsterMaker { get; }
+        WorldMapData WorldMap { get; }
     }
 
     class WorldDatabase : IWorldDatabase
@@ -47,6 +48,7 @@ namespace Adventure.Services
         public AxeCreator AxeCreator { get; }
         public DaggerCreator DaggerCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
+        public WorldMapData WorldMap { get; private set; }
 
         public WorldDatabase
         (
@@ -126,6 +128,7 @@ namespace Adventure.Services
             areaBuilders = new List<IAreaBuilder>(27);
             var weaknessRandom = new Random(newSeed);
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
+            WorldMap = new WorldMapData(newSeed);
             areaBuilders = new List<IAreaBuilder>();
             for(var i = 0; i < 27; ++i)
             {
