@@ -91,6 +91,7 @@ namespace Adventure
             services.AddSingleton<IBattleGameState, BattleGameState>();
             services.AddSingleton<IGameOverGameState, GameOverGameState>();
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
+            services.AddSingleton<IWorldMapManager, WorldMapManager>();
             services.AddScoped<Player>();
             services.AddScoped<Player.Description>();
             services.AddScoped<BattlePlayer>();
@@ -109,6 +110,8 @@ namespace Adventure
             services.AddScoped<Zone.Description>();
             services.AddScoped<ZoneConnector>();
             services.AddScoped<ZoneConnector.Description>();
+            services.AddScoped<WorldMapInstance>();
+            services.AddScoped<WorldMapInstance.Description>();
             services.AddScoped<BattleTrigger>();
             services.AddScoped<BattleTrigger.Description>();
             services.AddScoped<TreasureTrigger>();

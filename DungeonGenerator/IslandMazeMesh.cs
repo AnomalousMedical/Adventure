@@ -83,7 +83,7 @@ namespace DungeonGenerator
             }
         }
 
-        public IslandMazeMesh(csIslandMaze mapbuilder, Random random, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
+        public IslandMazeMesh(csIslandMaze mapbuilder, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
             MapUnitX = mapUnitX;
             MapUnitY = mapUnitY;

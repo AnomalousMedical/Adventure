@@ -48,7 +48,17 @@ namespace Adventure.Services
         public AxeCreator AxeCreator { get; }
         public DaggerCreator DaggerCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
-        public WorldMapData WorldMap { get; private set; }
+
+        private WorldMapData _worldMap;
+        public WorldMapData WorldMap
+        {
+            get
+            {
+                CheckSeed();
+
+                return _worldMap;
+            }
+        }
 
         public WorldDatabase
         (
@@ -101,9 +111,9 @@ namespace Adventure.Services
         {
             CheckSeed();
 
-            foreach(var area in areaBuilders)
+            foreach (var area in areaBuilders)
             {
-                if(zoneIndex >= area.StartZone && zoneIndex <= area.EndZone)
+                if (zoneIndex >= area.StartZone && zoneIndex <= area.EndZone)
                 {
                     return area;
                 }
@@ -128,9 +138,9 @@ namespace Adventure.Services
             areaBuilders = new List<IAreaBuilder>(27);
             var weaknessRandom = new Random(newSeed);
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
-            WorldMap = new WorldMapData(newSeed);
+            _worldMap = new WorldMapData(newSeed);
             areaBuilders = new List<IAreaBuilder>();
-            for(var i = 0; i < 27; ++i)
+            for (var i = 0; i < 27; ++i)
             {
                 var areaBuilder = SetupAreaBuilder(i, monsterInfo);
                 areaBuilders.Add(areaBuilder);

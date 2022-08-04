@@ -1,11 +1,11 @@
-﻿using DiligentEngine;
+﻿using Adventure.Services;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.HLSL;
 using DiligentEngine.RT.Resources;
 using DiligentEngine.RT.ShaderSets;
 using DungeonGenerator;
 using Engine;
-using RogueLikeMapBuilder;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,17 +13,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RTIslandGeneratorTest
+namespace Adventure.WorldMap
 {
-    internal class SceneDungeon : IDisposable
+    class WorldMapInstance : IDisposable
     {
-        public class Desc
+        public class Description
         {
-            public string InstanceName { get; set; } = RTId.CreateId("SceneDungeon");
-
-            public InstanceMatrix Transform = InstanceMatrix.Identity;
-
-            public int Seed { get; set; }
+            public csIslandMaze csIslandMaze { get; set; }
         }
 
         private readonly TLASInstanceData floorInstanceData;
@@ -31,7 +27,7 @@ namespace RTIslandGeneratorTest
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
-        private readonly RTInstances rtInstances;
+        private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly RayTracingRenderer renderer;
         private PrimaryHitShader floorShader;
         private IslandMazeMesh mapMesh;
@@ -43,16 +39,16 @@ namespace RTIslandGeneratorTest
         CC0TextureResult wallTexture;
         CC0TextureResult lowerFloorTexture;
 
-        public SceneDungeon
+        public WorldMapInstance
         (
-            Desc description,
+            Description description,
             IScopedCoroutine coroutineRunner,
             IDestructionRequest destructionRequest,
             MeshBLAS floorMesh,
-            TextureManager textureManager, 
+            TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances rtInstances,
+            RTInstances<IWorldMapGameState> rtInstances,
             RayTracingRenderer renderer
         )
         {
@@ -87,21 +83,7 @@ namespace RTIslandGeneratorTest
 
                     await Task.Run(() =>
                     {
-                        var sw = new Stopwatch();
-                        sw.Start();
-                        var random = new Random(description.Seed);
-                        var mapBuilder = new csIslandMaze(random);
-                        mapBuilder.Iterations = 85000;
-
-                        mapBuilder.go();
-                        mapBuilder.makeEdgesEmpty();
-                        mapBuilder.findIslands();
-
-                        sw.Stop();
-
-                        DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
-
-                        mapMesh = new IslandMazeMesh(mapBuilder, floorMesh, mapUnitX: 1.0f, mapUnitY: 1.0f, mapUnitZ: 1.0f);
+                        mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: 1.0f, mapUnitY: 1.0f, mapUnitZ: 1.0f);
                     });
 
                     await Task.WhenAll
@@ -182,7 +164,7 @@ namespace RTIslandGeneratorTest
             {
                 for (int mapX = 0; mapX < mapWidth; ++mapX)
                 {
-                    if (map[mapX, mapY] == csMapbuilder.EmptyCell)
+                    if (map[mapX, mapY] == csIslandMaze.EmptyCell)
                     {
                         Console.Write(' ');
                     }
