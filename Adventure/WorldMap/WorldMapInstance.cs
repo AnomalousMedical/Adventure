@@ -71,9 +71,9 @@ namespace Adventure.WorldMap
                 using var destructionBlock = destructionRequest.BlockDestruction();
                 try
                 {
-                    var floorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
-                    var wallTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock029_1K");
-                    var lowerFloorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock022_1K");
+                    var floorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground037_1K");
+                    var wallTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
+                    var lowerFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
