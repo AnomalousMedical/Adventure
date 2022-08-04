@@ -27,8 +27,7 @@ namespace Adventure.WorldMap
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
         private readonly IWorldMapManager worldMapManager;
-        private readonly CameraMover cameraMover;
-        private readonly FirstPersonFlyCamera flyCamera;
+        private readonly FlyCameraManager flyCameraManager;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
@@ -48,8 +47,7 @@ namespace Adventure.WorldMap
             Persistence persistence,
             IScaleHelper scaleHelper,
             IWorldMapManager worldMapManager,
-            CameraMover cameraMover,
-            FirstPersonFlyCamera flyCamera
+            FlyCameraManager flyCameraManager
         )
         {
             this.sharpGui = sharpGui;
@@ -59,8 +57,7 @@ namespace Adventure.WorldMap
             this.zoneManager = zoneManager;
             this.persistence = persistence;
             this.worldMapManager = worldMapManager;
-            this.cameraMover = cameraMover;
-            this.flyCamera = flyCamera;
+            this.flyCameraManager = flyCameraManager;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -73,6 +70,7 @@ namespace Adventure.WorldMap
 
         public void SetActive(bool active)
         {
+            flyCameraManager.Enabled = active;
             if (active)
             {
                 //persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
@@ -83,11 +81,7 @@ namespace Adventure.WorldMap
 
         public IGameState Update(Clock clock)
         {
-            flyCamera.UpdateInput(clock);
-
-            cameraMover.Position = flyCamera.Position;
-            cameraMover.Orientation = flyCamera.Orientation;
-            cameraMover.SceneCenter = flyCamera.Position;
+            flyCameraManager.Update(clock);
 
             IGameState nextState = this;
 
