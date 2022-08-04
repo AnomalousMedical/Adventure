@@ -1,4 +1,7 @@
+using Engine;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 /// <summary>
 /// IslandMaze class - generates simple islands and mazes.
 /// 
@@ -15,6 +18,27 @@ using System;
 /// c (int) - examined cell's closed neighbours. Between 0 and 8.
 /// 
 /// </summary>
+/// 
+
+public class IslandInfo
+{
+    public IslandInfo(int id, int x, int y)
+    {
+        this.Id = id;
+        this.Northmost = new IntVector2(x, y);
+        this.Southmost = new IntVector2(x, y);
+        this.Eastmost = new IntVector2(x, y);
+        this.Westmost = new IntVector2(x, y);
+    }
+
+    public int Id;
+    public int Size;
+    public IntVector2 Northmost;
+    public IntVector2 Southmost;
+    public IntVector2 Eastmost;
+    public IntVector2 Westmost;
+}
+
 public class csIslandMaze
 {
     public const int EmptyCell = 0;
@@ -33,6 +57,9 @@ public class csIslandMaze
 
     public int NumIslands { get; private set; }
 
+    public List<int> IslandSizeOrder { get; private set; }
+
+    public List<IslandInfo> IslandInfo { get; private set; }
 
     public csIslandMaze(Random random)
     {
@@ -45,8 +72,6 @@ public class csIslandMaze
         CloseCellProb = 45;
 
     }
-
-
 
     /// <summary>
     /// Build a Map
@@ -132,6 +157,8 @@ public class csIslandMaze
         var islandFinder = new IslandFinder(MapX, MapY);
         Map = islandFinder.findIslands(Map);
         NumIslands = islandFinder.NumIslands;
+        IslandInfo = islandFinder.IslandInfo;
+        IslandSizeOrder = islandFinder.IslandInfo.OrderByDescending(i => i.Size).Select(i => i.Id).ToList();
     }
 
     /// <summary>
@@ -225,6 +252,7 @@ class IslandFinder
     int ROW = 5, COL = 5;
 
     public int NumIslands { get; private set; }
+    public List<IslandInfo> IslandInfo { get; private set; }
 
     public IslandFinder(int row, int col)
     {
@@ -264,14 +292,41 @@ class IslandFinder
         // as visited
         visited[row, col] = true;
         marked[row, col] = id;
+        var index = id - 1;
+        var islandInfo = IslandInfo[index];
+        ++islandInfo.Size;
+
+        if (col > islandInfo.Northmost.y)
+        {
+            islandInfo.Northmost = new IntVector2(row, col);
+        }
+
+        if (col < islandInfo.Southmost.y)
+        {
+            islandInfo.Southmost = new IntVector2(row, col);
+        }
+
+        if (row > islandInfo.Eastmost.x)
+        {
+            islandInfo.Eastmost = new IntVector2(row, col);
+        }
+
+        if (row < islandInfo.Westmost.x)
+        {
+            islandInfo.Westmost = new IntVector2(row, col);
+        }
 
         // Recur for all
         // connected neighbours
         for (int k = 0; k < 8; ++k)
+        {
             if (isSafe(M, row + rowNbr[k], col + colNbr[k], visited))
+            {
                 DFS(M, row + rowNbr[k],
                     col + colNbr[k], visited,
                     id, marked);
+            }
+        }
     }
 
     // The main function that
@@ -285,22 +340,28 @@ class IslandFinder
         // are unvisited
         bool[,] visited = new bool[ROW, COL];
         int[,] marked = new int[ROW, COL];
+        IslandInfo = new List<IslandInfo>(50);
 
         // Initialize count as 0 and
         // traverse through the all
         // cells of given matrix
         int id = 1;
         for (int i = 0; i < ROW; ++i)
+        {
             for (int j = 0; j < COL; ++j)
+            {
                 if (M[i, j] == 1 && !visited[i, j])
                 {
                     // If a cell with value 1 is not
                     // visited yet, then new island
                     // found, Visit all cells in this
                     // island and increment island count
+                    IslandInfo.Add(new IslandInfo(id, i, j));
                     DFS(M, i, j, visited, id, marked);
                     ++id;
                 }
+            }
+        }
 
         NumIslands = id - 1;
 
