@@ -23,6 +23,11 @@ namespace Adventure.WorldMap
     {
         public class Description : SceneObjectDesc
         {
+            public Description()
+            {
+                Scale = new Vector3(0.35f, 0.35f, 1.0f);
+            }
+
             public int PrimaryHand = RightHand;
             public int SecondaryHand = LeftHand;
             public EventLayers EventLayer = EventLayers.Exploration;
@@ -178,7 +183,7 @@ namespace Adventure.WorldMap
             var moverDesc = new CharacterMoverDescription()
             {
                 MinimumSupportDepth = shape.Radius * -0.01f,
-
+                Speed = 2f,
             };
 
             //Because characters are dynamic, they require a defined BodyInertia. For the purposes of the demos, we don't want them to rotate or fall over, so the inverse inertia tensor is left at its default value of all zeroes.
