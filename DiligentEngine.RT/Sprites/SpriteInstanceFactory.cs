@@ -39,6 +39,8 @@ namespace DiligentEngine.RT.Sprites
             {
                 var instanceName = RTId.CreateId("SpriteInstanceFactory");
 
+                await spritePlaneBLAS.WaitForLoad();
+
                 var material = await spriteMaterialManager.Checkout(desc);
 
                 var shader = await primaryHitShaderFactory.Checkout();
