@@ -210,4 +210,11 @@ namespace BepuPlugin
 
         public Simulation Simulation => simulation;
     }
+
+    public class BepuScene<T> : BepuScene, IBepuScene<T>
+    {
+        public BepuScene(Description description) : base(description)
+        {
+        }
+    }
 }

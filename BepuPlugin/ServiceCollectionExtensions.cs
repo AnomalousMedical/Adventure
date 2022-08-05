@@ -16,5 +16,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        public static IServiceCollection AddBepuSceneType<T>(this IServiceCollection services)
+        {
+            services.TryAddSingleton<IBepuScene<T>, BepuScene<T>>();
+
+            return services;
+        }
     }
 }

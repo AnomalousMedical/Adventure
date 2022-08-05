@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.CameraMovement;
+using BepuPlugin;
 
 namespace Adventure.WorldMap
 {
@@ -28,6 +29,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly IWorldMapManager worldMapManager;
         private readonly FlyCameraManager flyCameraManager;
+        private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
@@ -47,7 +49,8 @@ namespace Adventure.WorldMap
             Persistence persistence,
             IScaleHelper scaleHelper,
             IWorldMapManager worldMapManager,
-            FlyCameraManager flyCameraManager
+            FlyCameraManager flyCameraManager,
+            IBepuScene<IWorldMapGameState> bepuScene
         )
         {
             this.sharpGui = sharpGui;
@@ -58,6 +61,7 @@ namespace Adventure.WorldMap
             this.persistence = persistence;
             this.worldMapManager = worldMapManager;
             this.flyCameraManager = flyCameraManager;
+            this.bepuScene = bepuScene;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -104,6 +108,8 @@ namespace Adventure.WorldMap
                 coroutineRunner.RunTask(zoneManager.Restart());
                 nextState = this.explorationState;
             }
+
+            bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
 
             return nextState;
         }

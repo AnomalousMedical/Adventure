@@ -78,7 +78,8 @@ namespace Adventure
             {
                 o.EventLayer = EventLayers.Exploration;
             });
-            services.AddBepuPlugin();
+            services.AddBepuPlugin()
+                    .AddBepuSceneType<IWorldMapGameState>();
             services.AddRpgMath();
 
             //Add this app's services
