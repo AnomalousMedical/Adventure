@@ -20,6 +20,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
+        private readonly IScopedCoroutine scopedCoroutine;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
 
@@ -27,13 +28,14 @@ namespace Adventure.WorldMap
         (
             IObjectResolverFactory objectResolverFactory,
             IWorldDatabase worldDatabase,
-            Party party
+            Party party,
+            IScopedCoroutine scopedCoroutine
         )
         {
             this.objectResolver = objectResolverFactory.Create();
             this.worldDatabase = worldDatabase;
             this.party = party;
-
+            this.scopedCoroutine = scopedCoroutine;
             var playerCharacter = party.ActiveCharacters.FirstOrDefault();
             player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
             {
@@ -51,7 +53,7 @@ namespace Adventure.WorldMap
 
         public void MovePlayerToArea(int area)
         {
-            player.SetLocation(Vector3.Zero);
+            player.SetLocation(new Vector3(10, 10, 10));
             player.StopMovement();
         }
 
@@ -62,6 +64,12 @@ namespace Adventure.WorldMap
             worldMapInstance = objectResolver.Resolve<WorldMapInstance, WorldMapInstance.Description>(o =>
             {
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
+            });
+
+            scopedCoroutine.RunTask(async () =>
+            {
+                await worldMapInstance.WaitForLoad();
+                worldMapInstance.SetupPhysics();
             });
         }
     }

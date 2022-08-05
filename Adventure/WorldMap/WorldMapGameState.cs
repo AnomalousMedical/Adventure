@@ -89,7 +89,7 @@ namespace Adventure.WorldMap
 
             var size = layout.GetDesiredSize(sharpGui);
             layout.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetCenterRect(size);
+            var rect = screenPositioner.GetBottomRightRect(size);
             layout.SetRect(rect);
 
             sharpGui.Text(worldMapText);

@@ -1,4 +1,7 @@
 ﻿using Adventure.Services;
+using BepuPhysics;
+using BepuPhysics.Collidables;
+using BepuPlugin;
 using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.HLSL;
@@ -29,10 +32,16 @@ namespace Adventure.WorldMap
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly RayTracingRenderer renderer;
+        private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private PrimaryHitShader floorShader;
         private IslandMazeMesh mapMesh;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private BlasInstanceData floorBlasInstanceData;
+        private bool physicsActive = false;
+        private TypedIndex boundaryCubeShapeIndex;
+        private TypedIndex floorCubeShapeIndex;
+        private List<StaticHandle> staticHandles = new List<StaticHandle>();
+        private Vector3 currentPosition = Vector3.Zero;
 
 
         CC0TextureResult floorTexture;
@@ -49,7 +58,8 @@ namespace Adventure.WorldMap
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RTInstances<IWorldMapGameState> rtInstances,
-            RayTracingRenderer renderer
+            RayTracingRenderer renderer,
+            IBepuScene<IWorldMapGameState> bepuScene
         )
         {
             this.destructionRequest = destructionRequest;
@@ -58,7 +68,7 @@ namespace Adventure.WorldMap
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.rtInstances = rtInstances;
             this.renderer = renderer;
-
+            this.bepuScene = bepuScene;
             this.floorInstanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("SceneDungeonFloor"),
@@ -123,6 +133,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            DestroyPhysics();
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
             activeTextures.RemoveActiveTexture(lowerFloorTexture);
@@ -132,6 +143,104 @@ namespace Adventure.WorldMap
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
+        }
+
+        public void SetupPhysics()
+        {
+            if (physicsActive)
+            {
+                //Don't do anything if physics are active
+                return;
+            }
+
+            physicsActive = true;
+
+            float yBoundaryScale = 50f;
+
+            //Add stuff to physics scene
+            var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
+            boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
+
+            var floorCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
+            floorCubeShapeIndex = bepuScene.Simulation.Shapes.Add(floorCubeShape);
+
+            var boundaryOrientation = System.Numerics.Quaternion.Identity;
+
+            foreach (var boundary in mapMesh.FloorCubeCenterPoints)
+            {
+                //TODO: Figure out where nans are coming from
+                var orientation = boundary.Orientation.isNumber() ? boundary.Orientation : Quaternion.Identity;
+                var staticHandle = bepuScene.Simulation.Statics.Add(
+                    new StaticDescription(
+                        (boundary.Position + currentPosition).ToSystemNumerics(),
+                        orientation.ToSystemNumerics(),
+                        new CollidableDescription(floorCubeShapeIndex, 0.1f)));
+
+                staticHandles.Add(staticHandle);
+            }
+
+            foreach (var boundary in mapMesh.BoundaryCubeCenterPoints)
+            {
+                var staticHandle = bepuScene.Simulation.Statics.Add(
+                    new StaticDescription(
+                        (boundary + currentPosition).ToSystemNumerics(),
+                        boundaryOrientation,
+                        new CollidableDescription(boundaryCubeShapeIndex, 0.1f)));
+
+                staticHandles.Add(staticHandle);
+            }
+
+            //if (goPrevious)
+            //{
+            //    this.previousZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+            //    {
+            //        o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
+            //        o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
+            //        o.GoPrevious = true;
+            //    });
+            //}
+
+            //this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+            //{
+            //    o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
+            //    o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
+            //    o.GoPrevious = false;
+            //});
+
+            //foreach (var placeable in placeables)
+            //{
+            //    placeable.CreatePhysics();
+            //}
+        }
+
+        public void DestroyPhysics()
+        {
+            if (!physicsActive)
+            {
+                //Do nothing if physics aren't active.
+                return;
+            }
+            physicsActive = false;
+
+            //foreach (var placeable in placeables)
+            //{
+            //    placeable.DestroyPhysics();
+            //}
+
+            //this.previousZoneConnector?.RequestDestruction();
+            //this.nextZoneConnector?.RequestDestruction();
+
+            //this.previousZoneConnector = null;
+            //this.nextZoneConnector = null;
+
+            var statics = bepuScene.Simulation.Statics;
+            foreach (var staticHandle in staticHandles)
+            {
+                statics.Remove(staticHandle);
+            }
+            bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
+            bepuScene.Simulation.Shapes.Remove(floorCubeShapeIndex);
+            staticHandles.Clear();
         }
 
         public void SetTransform(InstanceMatrix matrix)
