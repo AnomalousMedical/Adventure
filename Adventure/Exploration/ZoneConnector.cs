@@ -22,8 +22,8 @@ namespace Adventure
         }
 
         private readonly IDestructionRequest destructionRequest;
-        private readonly IBepuScene bepuScene;
-        private readonly ICollidableTypeIdentifier collidableIdentifier;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private StaticHandle staticHandle;
@@ -33,9 +33,9 @@ namespace Adventure
         public ZoneConnector(
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
-            ICollidableTypeIdentifier collidableIdentifier,
+            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager)
         {

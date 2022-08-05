@@ -9,10 +9,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBepuPlugin(this IServiceCollection services)
+        public static IServiceCollection AddBepuPlugin<T>(this IServiceCollection services)
         {
-            services.TryAddSingleton<IBepuScene, BepuScene>();
-            services.TryAddSingleton<BepuScene.Description>();
+            services.TryAddSingleton<IBepuScene<T>, BepuScene<T>>();
+            services.TryAddSingleton<BepuScene<T>.Description>();
 
             return services;
         }
@@ -20,6 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddBepuSceneType<T>(this IServiceCollection services)
         {
             services.TryAddSingleton<IBepuScene<T>, BepuScene<T>>();
+            services.TryAddSingleton<BepuScene<T>.Description>();
 
             return services;
         }

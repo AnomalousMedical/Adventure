@@ -78,8 +78,9 @@ namespace Adventure
             {
                 o.EventLayer = EventLayers.Exploration;
             });
-            services.AddBepuPlugin()
+            services.AddBepuPlugin<IExplorationGameState>()
                     .AddBepuSceneType<IWorldMapGameState>();
+
             services.AddRpgMath();
 
             //Add this app's services
@@ -93,6 +94,8 @@ namespace Adventure
             services.AddSingleton<IGameOverGameState, GameOverGameState>();
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
+            services.AddScoped<WorldMapPlayer, WorldMapPlayer>();
+            services.AddScoped<WorldMapPlayer.Description, WorldMapPlayer.Description>();
             services.AddScoped<Player>();
             services.AddScoped<Player.Description>();
             services.AddScoped<BattlePlayer>();
@@ -151,7 +154,8 @@ namespace Adventure
             services.AddSingleton<IBiomeManager, BiomeManager>();
             services.AddSingleton<IGameStateLinker, GameStateLinker>();
             services.AddSingleton<CameraMover>();
-            services.AddSingleton<ICollidableTypeIdentifier, CollidableTypeIdentifier>();
+            services.AddSingleton<ICollidableTypeIdentifier<IExplorationGameState>, CollidableTypeIdentifier<IExplorationGameState>>();
+            services.AddSingleton<ICollidableTypeIdentifier<IWorldMapGameState>, CollidableTypeIdentifier<IWorldMapGameState>>();
             services.AddSingleton<IBackgroundMusicPlayer, BackgroundMusicPlayer>();
             services.AddSingleton<BackgroundMusicManager>();
             services.AddSingleton<ICameraProjector, CameraProjector>();

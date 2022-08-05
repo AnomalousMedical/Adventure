@@ -57,7 +57,7 @@ namespace RTBepuDemo
             services.AddSharpGui();
 
             services.AddFirstPersonFlyCamera();
-            services.AddBepuPlugin();
+            services.AddBepuPlugin<BepuUpdateListener>();
 
             //Add this app's services
             services.TryAddSingleton<BepuUpdateListener>();

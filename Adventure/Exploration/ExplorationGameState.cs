@@ -30,7 +30,7 @@ namespace Adventure
 
     class ExplorationGameState : IExplorationGameState
     {
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
         private readonly IZoneManager zoneManager;
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IExplorationMenu explorationMenu;
@@ -44,7 +44,7 @@ namespace Adventure
 
         public ExplorationGameState(
             ICoroutineRunner coroutineRunner,
-            IBepuScene bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             IZoneManager zoneManager,
             RTInstances<IZoneManager> rtInstances,
             IExplorationMenu explorationMenu,

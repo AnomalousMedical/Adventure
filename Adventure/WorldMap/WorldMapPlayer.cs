@@ -17,9 +17,9 @@ using System.Text;
 using System.Threading.Tasks;
 using RpgMath;
 
-namespace Adventure
+namespace Adventure.WorldMap
 {
-    class Player : IDisposable
+    class WorldMapPlayer : IDisposable
     {
         public class Description : SceneObjectDesc
         {
@@ -38,10 +38,10 @@ namespace Adventure
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly EventLayer eventLayer;
@@ -90,18 +90,18 @@ namespace Adventure
             public Vector3? Location { get; set; }
         }
 
-        public Player
+        public WorldMapPlayer
         (
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<IWorldMapGameState> bepuScene,
             EventManager eventManager,
             Description description,
             CameraMover cameraMover,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory
         )

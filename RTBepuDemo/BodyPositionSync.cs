@@ -37,7 +37,7 @@ namespace RTBepuDemo
 
         private readonly TLASInstanceData instanceData;
         private readonly CubeBLAS cubeBLAS;
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<BepuUpdateListener> bepuScene;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly RTInstances rtInstances;
         private readonly TextureManager textureManager;
@@ -50,7 +50,7 @@ namespace RTBepuDemo
         (
             Desc description,
             CubeBLAS cubeBLAS,
-            IBepuScene bepuScene,
+            IBepuScene<BepuUpdateListener> bepuScene,
             IScopedCoroutine scopedCoroutine,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RTInstances rtInstances,

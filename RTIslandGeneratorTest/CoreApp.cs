@@ -52,8 +52,6 @@ namespace RTIslandGeneratorTest
             });
             services.AddSingleton<RTInstances>();
 
-            services.AddBepuPlugin();
-
             services.AddOSPlatform(pluginManager);
             services.AddSharpGui();
 

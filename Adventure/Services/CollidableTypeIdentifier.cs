@@ -7,7 +7,15 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class CollidableTypeIdentifier : ICollidableTypeIdentifier
+    interface ICollidableTypeIdentifier<IdType>
+    {
+        void AddIdentifier<T>(CollidableReference collidable, T reference);
+        void RemoveIdentifier(CollidableReference collidable);
+        bool TryGetIdentifier(CollidableReference collidable, out object value);
+        bool TryGetIdentifier<T>(CollidableReference collidable, out T value);
+    }
+
+    class CollidableTypeIdentifier<IdType> : ICollidableTypeIdentifier<IdType>
     {
         private Dictionary<CollidableReference, Object> identifiers = new Dictionary<CollidableReference, object>();
 

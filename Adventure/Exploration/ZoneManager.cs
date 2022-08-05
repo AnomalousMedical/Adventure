@@ -60,7 +60,7 @@ namespace Adventure
             IWorldManager worldManager,
             IObjectResolverFactory objectResolverFactory,
             Persistence persistence,
-            IBepuScene bepuScene, //Inject this so it is created earlier and destroyed later
+            IBepuScene<IExplorationGameState> bepuScene, //Inject this so it is created earlier and destroyed later
             Sky sky
         )
         {
@@ -297,7 +297,11 @@ namespace Adventure
         {
             foreach (var player in players)
             {
-                player?.SetLocation(currentZone.StartPoint);
+                if (player != null)
+                {
+                    player.SetLocation(currentZone.StartPoint);
+                    player.StopMovement();
+                }
             }
         }
 
@@ -305,7 +309,11 @@ namespace Adventure
         {
             foreach (var player in players)
             {
-                player?.SetLocation(currentZone.EndPoint);
+                if (player != null)
+                {
+                    player.SetLocation(currentZone.EndPoint);
+                    player.StopMovement();
+                }
             }
         }
 

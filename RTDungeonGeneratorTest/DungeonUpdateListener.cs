@@ -1,22 +1,11 @@
 ﻿using Anomalous.OSPlatform;
 using DiligentEngine;
-using Engine;
-using Engine.Platform;
-using System;
-using System.Collections.Generic;
-using BepuPhysics;
-using BepuUtilities;
-using BepuUtilities.Memory;
-using BepuPhysics.Collidables;
-using Microsoft.Extensions.Logging;
-using Engine.CameraMovement;
-using RogueLikeMapBuilder;
-using DungeonGenerator;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using SharpGui;
 using DiligentEngine.RT;
-using BepuPlugin;
+using Engine;
+using Engine.CameraMovement;
+using Engine.Platform;
+using SharpGui;
+using System;
 
 namespace RTDungeonGeneratorTest
 {
@@ -28,7 +17,6 @@ namespace RTDungeonGeneratorTest
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly ICoroutineRunner coroutineRunner;
-        private readonly IBepuScene bepuScene;
         private readonly IObjectResolverFactory objectResolverFactory;
         private readonly RayTracingRenderer renderer;
         private readonly RTInstances rtInstances;
@@ -48,7 +36,6 @@ namespace RTDungeonGeneratorTest
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             ICoroutineRunner coroutineRunner,
-            IBepuScene bepuScene,
             IObjectResolverFactory objectResolverFactory,
             RayTracingRenderer renderer,
             RTInstances rtInstances,
@@ -61,7 +48,6 @@ namespace RTDungeonGeneratorTest
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.coroutineRunner = coroutineRunner;
-            this.bepuScene = bepuScene;
             this.objectResolverFactory = objectResolverFactory;
             this.renderer = renderer;
             this.rtInstances = rtInstances;
@@ -117,7 +103,6 @@ namespace RTDungeonGeneratorTest
         public unsafe void sendUpdate(Clock clock)
         {
             cameraControls.UpdateInput(clock);
-            bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
             UpdateGui(clock);
             objectResolverFactory.Flush();
             Render();

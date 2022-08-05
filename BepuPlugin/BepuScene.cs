@@ -14,13 +14,12 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace BepuPlugin
 {
-    public class BepuScene : IDisposable, IBepuScene
+    public class BepuScene<T> : IDisposable, IBepuScene<T>
     {
         public class Description
         {
             public float TimestepSeconds { get; set; } = 1f / 60f;
         }
-
         Simulation simulation;
         SimpleThreadDispatcher threadDispatcher;
         BufferPool bufferPool;
@@ -209,12 +208,5 @@ namespace BepuPlugin
         }
 
         public Simulation Simulation => simulation;
-    }
-
-    public class BepuScene<T> : BepuScene, IBepuScene<T>
-    {
-        public BepuScene(Description description) : base(description)
-        {
-        }
     }
 }

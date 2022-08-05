@@ -147,7 +147,7 @@ namespace Adventure
         private readonly RayTracingRenderer renderer;
         private readonly Persistence persistence;
         private readonly IDestructionRequest destructionRequest;
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -199,7 +199,7 @@ namespace Adventure
         (
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
             ILogger<Zone> logger,
             IObjectResolverFactory objectResolverFactory,

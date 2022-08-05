@@ -31,8 +31,8 @@ namespace BepuPlugin
         void Update(Clock clock, in System.Numerics.Vector3 cameraForward);
     }
 
-    public interface IBepuScene<T> : IBepuScene 
-    { 
+    public interface IBepuScene<T> : IBepuScene
+    {
 
     }
 }

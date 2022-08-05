@@ -23,7 +23,7 @@ namespace RTBepuDemo
         private readonly FirstPersonFlyCamera cameraControls;
         private readonly GraphicsEngine graphicsEngine;
         private readonly IObjectResolverFactory objectResolverFactory;
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<BepuUpdateListener> bepuScene;
         private readonly RTGui gui;
         private readonly ISharpGui sharpGui;
         private readonly RTInstances rtInstances;
@@ -44,7 +44,7 @@ namespace RTBepuDemo
             FirstPersonFlyCamera cameraControls,
             GraphicsEngine graphicsEngine,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene bepuScene,
+            IBepuScene<BepuUpdateListener> bepuScene,
             RTGui gui,
             ISharpGui sharpGui,
             CubeBLAS cubeBLAS,

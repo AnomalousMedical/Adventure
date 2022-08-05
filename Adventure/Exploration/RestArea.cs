@@ -38,11 +38,11 @@ namespace Adventure
         private readonly IContextMenu contextMenu;
         private readonly RestManager restManager;
         private readonly IExplorationGameState explorationGameState;
-        private readonly ICollidableTypeIdentifier collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -59,13 +59,13 @@ namespace Adventure
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             RestManager restManager,
             IExplorationGameState explorationGameState,
-            ICollidableTypeIdentifier collidableIdentifier
+            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier
         )
         {
             this.sprite = description.Sprite;

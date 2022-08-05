@@ -44,9 +44,9 @@ namespace Adventure
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
-        private readonly IBepuScene bepuScene;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
         private readonly Description description;
-        private readonly ICollidableTypeIdentifier collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
         private readonly Persistence persistence;
         private readonly IPersistenceWriter persistenceWriter;
@@ -73,9 +73,9 @@ namespace Adventure
             RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
-            ICollidableTypeIdentifier collidableIdentifier,
+            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IExplorationGameState explorationGameState,
             Persistence persistence,
