@@ -74,12 +74,10 @@ namespace Adventure.WorldMap
 
         public void SetActive(bool active)
         {
-            flyCameraManager.Enabled = active;
             if (active)
             {
-                //persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
-                //persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
                 persistence.Current.BattleTriggers.ClearData();
+                worldMapManager.MovePlayerToArea(0);
             }
         }
 

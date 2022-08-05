@@ -34,7 +34,7 @@ namespace Adventure.WorldMap
         public const int RightHand = 0;
         public const int LeftHand = 1;
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -92,7 +92,7 @@ namespace Adventure.WorldMap
 
         public WorldMapPlayer
         (
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<IWorldMapGameState> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
@@ -377,7 +377,7 @@ namespace Adventure.WorldMap
         /// <param name="safetyPosition"></param>
         public void RestorePersistedLocation(in Vector3 safetyPosition)
         {
-            var location = persistence.Current.Player.Position;
+            var location = persistence.Current.Player.WorldPosition;
             if (location == null)
             {
                 SetLocation(safetyPosition);
@@ -403,7 +403,7 @@ namespace Adventure.WorldMap
         private void BepuScene_OnUpdated(IBepuScene obj)
         {
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
-            this.persistence.Current.Player.Position = this.currentPosition;
+            this.persistence.Current.Player.WorldPosition = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
             cameraMover.Position = this.currentPosition + cameraOffset;

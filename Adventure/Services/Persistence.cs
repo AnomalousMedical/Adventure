@@ -91,6 +91,8 @@ namespace Adventure.Services
         {
             public Vector3? Position { get; set; }
 
+            public Vector3? WorldPosition { get; set; }
+
             public int? RespawnZone { get; set; }
 
             public Vector3? RespawnPosition { get; set; }

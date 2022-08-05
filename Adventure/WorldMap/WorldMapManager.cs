@@ -11,6 +11,7 @@ namespace Adventure.WorldMap
 {
     interface IWorldMapManager
     {
+        void MovePlayerToArea(int area);
         void SetupWorldMap();
     }
 
@@ -33,19 +34,25 @@ namespace Adventure.WorldMap
             this.worldDatabase = worldDatabase;
             this.party = party;
 
-            //var playerCharacter = party.ActiveCharacters.FirstOrDefault();
-            //player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
-            //{
-            //    //o.Translation = currentZone.StartPoint;
-            //    o.PlayerSprite = playerCharacter.PlayerSprite;
-            //    o.CharacterSheet = playerCharacter.CharacterSheet;
-            //    o.Gamepad = GamepadId.Pad1;
-            //});
+            var playerCharacter = party.ActiveCharacters.FirstOrDefault();
+            player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
+            {
+                //o.Translation = currentZone.StartPoint;
+                o.PlayerSprite = playerCharacter.PlayerSprite;
+                o.CharacterSheet = playerCharacter.CharacterSheet;
+                o.Gamepad = GamepadId.Pad1;
+            });
         }
 
         public void Dispose()
         {
             objectResolver.Dispose();
+        }
+
+        public void MovePlayerToArea(int area)
+        {
+            player.SetLocation(Vector3.Zero);
+            player.StopMovement();
         }
 
         public void SetupWorldMap()
