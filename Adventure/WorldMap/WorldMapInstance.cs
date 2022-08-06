@@ -25,6 +25,8 @@ namespace Adventure.WorldMap
             public csIslandMaze csIslandMaze { get; set; }
 
             public List<IAreaBuilder> Areas { get; set; }
+
+            public int AreaLocationSeed { get; set; }
         }
 
         private readonly TLASInstanceData floorInstanceData;
@@ -128,7 +130,9 @@ namespace Adventure.WorldMap
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
 
-                    SetupAreas(description.Areas);
+                    var placementRandom = new Random(description.AreaLocationSeed);
+
+                    SetupAreas(description.Areas, placementRandom);
 
                     loadingTask.SetResult();
                 }
@@ -296,51 +300,108 @@ namespace Adventure.WorldMap
             Console.WriteLine("--------------------------------------------------");
         }
 
-        private void SetupAreas(List<IAreaBuilder> areaBuilders)
+        private IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom, IntVector2 desired)
         {
-            int index = 0;
-            foreach(var area in areaBuilders)
+            if (!usedSquares[desired.x, desired.y])
             {
-                int islandIndex = 0;
-                if(area.Phase < 2)
+                return desired;
+            }
+
+            return GetUnusedSquare(usedSquares, island, placementRandom);
+        }
+
+        private IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom)
+        { 
+            for (var i = 0; i < 5; ++i)
+            {
+                var next = placementRandom.Next(0, island.Size);
+                var square = island.islandPoints[next];
+                if(!usedSquares[square.x, square.y])
                 {
-                    islandIndex = map.IslandSizeOrder.First();
+                    return square;
                 }
+            }
+
+            foreach(var square in island.islandPoints)
+            {
+                if (!usedSquares[square.x, square.y])
+                {
+                    return square;
+                }
+            }
+
+            //This should not happen
+            throw new InvalidOperationException($"Cannot find unused point on island {island.Id} out of possible {island.Size}");
+        }
+
+        private void SetupAreas(List<IAreaBuilder> areaBuilders, Random placementRandom)
+        {
+            var usedSquares = new bool[map.MapX, map.MapY];
+            var usedIslands = new bool[map.NumIslands];
+
+            foreach(var area in areaBuilders.Where(i => i.Phase == 0))
+            {
+                var islandIndex = map.IslandSizeOrder.First();
+                var island = map.IslandInfo[islandIndex];
+                var square = island.islandPoints.First();
+                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+
+                var loc = mapMesh.PointToVector(square.x, square.y);
+                var biome = biomeManager.GetBiome(area.Biome);
+
+                usedSquares[square.x, square.y] = true;
+                var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
+                {
+                    o.ZoneIndex = area.EndZone; //This is a special case, since the start is an empty square
+                    o.MapOffset = loc;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var entrance = biome.BackgroundItems[0];
+                    o.Sprite = entrance.Asset.CreateSprite();
+                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(entrance);
+            }
+
+            foreach (var area in areaBuilders.Where(i => i.Phase == 1))
+            {
+                var islandIndex = map.IslandSizeOrder.First();
                 var island = map.IslandInfo[islandIndex];
                 var square = island.islandPoints.First();
 
-                switch (index)
+                switch (area.Index)
                 {
-                    case 0:
-                        square = island.Westmost;
-                        break;
                     case 1:
-                        square = island.Eastmost;
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
                         break;
                     case 2:
-                        square = island.Northmost;
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
                         break;
                     case 3:
-                        square = island.Southmost;
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+                        break;
+                    default:
+                        square = GetUnusedSquare(usedSquares, island, placementRandom);
                         break;
                 }
 
                 var loc = mapMesh.PointToVector(square.x, square.y);
                 var biome = biomeManager.GetBiome(area.Biome);
 
+                usedSquares[square.x, square.y] = true;
                 var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
                 {
                     o.ZoneIndex = area.StartZone;
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
-                    var treasure = biome.Treasure;
-                    o.Sprite = treasure.Asset.CreateSprite();
-                    o.SpriteMaterial = treasure.Asset.CreateMaterial();
+                    var entrance = biome.BackgroundItems[0];
+                    o.Sprite = entrance.Asset.CreateSprite();
+                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
                 });
 
                 placeables.Add(entrance);
-
-                ++index;
             }
         }
     }

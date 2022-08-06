@@ -115,7 +115,7 @@ namespace Adventure
 
             foreach(var player in players)
             {
-                player?.RestorePersistedLocation(currentZone.StartPoint);
+                player?.RestorePersistedLocation(currentZone.PlayerEntryPoint);
             }
 
             ZoneChanged?.Invoke(this);

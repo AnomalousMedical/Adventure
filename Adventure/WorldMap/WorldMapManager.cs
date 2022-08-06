@@ -76,6 +76,7 @@ namespace Adventure.WorldMap
             {
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
                 o.Areas = worldDatabase.AreaBuilders;
+                o.AreaLocationSeed = worldDatabase.CurrentSeed;
             });
 
             scopedCoroutine.RunTask(async () =>

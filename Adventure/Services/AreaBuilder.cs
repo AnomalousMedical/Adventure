@@ -14,13 +14,15 @@ namespace Adventure.Services
     {
         void SetupZone(int zoneIndex, Zone.Description o, Random initRandom);
 
-        public int StartZone { get; }
+        int StartZone { get; }
 
-        public int EndZone { get; }
+        int EndZone { get; }
 
-        public int Phase { get; }
+        int Phase { get; }
 
-        public BiomeType Biome { get; }
+        BiomeType Biome { get; }
+
+        int Index { get; }
     }
 
     class AreaBuilder : IAreaBuilder
@@ -31,11 +33,13 @@ namespace Adventure.Services
         public AreaBuilder
         (
             IWorldDatabase worldDatabase,
-            IList<MonsterInfo> monsterInfo
+            IList<MonsterInfo> monsterInfo,
+            int index
         )
         {
             this.worldDatabase = worldDatabase;
             this.monsterInfo = monsterInfo;
+            this.Index = index;
         }
 
         public int StartZone { get; set; }
@@ -43,6 +47,8 @@ namespace Adventure.Services
         public int EndZone { get; set; }
 
         public int Phase { get; set; }
+
+        public int Index { get; private set; }
 
         public IEnumerable<int> GateZones { get; set; }
 
@@ -246,7 +252,7 @@ namespace Adventure.Services
 
     class Area0Builder : AreaBuilder
     {
-        public Area0Builder(IWorldDatabase worldDatabase, IList<MonsterInfo> monsterInfo) : base(worldDatabase, monsterInfo)
+        public Area0Builder(IWorldDatabase worldDatabase, IList<MonsterInfo> monsterInfo, int index) : base(worldDatabase, monsterInfo, index)
         {
             PlaceTreasure = false;
         }
@@ -285,6 +291,7 @@ namespace Adventure.Services
                 o.MakeRest = true;
                 o.MakeBoss = true;
                 o.MakeGate = false;
+                o.StartEnd = true;
 
                 //Give out starting armor
                 var treasures = new List<ITreasure>();

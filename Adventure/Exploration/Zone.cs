@@ -105,6 +105,11 @@ namespace Adventure
             public bool GoPrevious { get; set; } = true;
 
             /// <summary>
+            /// Set this to true to use the end point as the starting point.
+            /// </summary>
+            public bool StartEnd { get; set; }
+
+            /// <summary>
             /// Set this to true to make a rest area in this zone.
             /// </summary>
             public bool MakeRest { get; set; }
@@ -176,6 +181,7 @@ namespace Adventure
         private bool makeGate;
         private int enemyLevel;
         private int maxMainCorridorBattles;
+        private bool startEnd;
         private IEnumerable<ITreasure> treasure;
 
         private Task zoneGenerationTask;
@@ -184,6 +190,8 @@ namespace Adventure
         private Vector3 endPointLocal;
         private Vector3 startPointLocal;
         private Vector3 currentPosition;
+
+        public Vector3 PlayerEntryPoint => startEnd ? EndPoint : StartPoint;
 
         public Vector3 StartPoint => startPointLocal + currentPosition;
         public Vector3 EndPoint => endPointLocal + currentPosition;
@@ -212,6 +220,7 @@ namespace Adventure
             Persistence persistence
         )
         {
+            this.startEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
             this.index = description.Index;
