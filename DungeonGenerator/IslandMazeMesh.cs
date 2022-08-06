@@ -561,35 +561,35 @@ namespace DungeonGenerator
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
-                //int test;
+                int test;
 
-                ////South wall
-                //test = mapY - 1;
-                //if (test < 0 || map[mapX, test] == csMapbuilder.EmptyCell)
-                //{
-                //    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, near - halfUnitZ));
-                //}
+                //South wall
+                test = mapY - 1;
+                if (test < 0 || map[mapX, test] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, near - halfUnitZ));
+                }
 
-                ////North wall
-                //test = mapY + 1;
-                //if (test >= mapHeight || map[mapX, test] == csMapbuilder.EmptyCell)
-                //{
-                //    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, far + halfUnitZ));
-                //}
+                //North wall
+                test = mapY + 1;
+                if (test >= mapHeight || map[mapX, test] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(left + halfUnitX, centerY, far + halfUnitZ));
+                }
 
-                ////West wall
-                //test = mapX - 1;
-                //if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
-                //{
-                //    boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
-                //}
+                //West wall
+                test = mapX - 1;
+                if (test < 0 || map[test, mapY] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(left - halfUnitX, centerY, near + halfUnitZ));
+                }
 
-                ////East wall
-                //test = mapX + 1;
-                //if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
-                //{
-                //    boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
-                //}
+                //East wall
+                test = mapX + 1;
+                if (test >= mapWidth || map[test, mapY] == csMapbuilder.EmptyCell)
+                {
+                    boundaryCubeCenterPoints.Add(new Vector3(right + halfUnitX, centerY, near + halfUnitZ));
+                }
             }
         }
 
