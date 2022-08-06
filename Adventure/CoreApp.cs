@@ -116,6 +116,8 @@ namespace Adventure
             services.AddScoped<ZoneConnector.Description>();
             services.AddScoped<WorldMapInstance>();
             services.AddScoped<WorldMapInstance.Description>();
+            services.AddScoped<ZoneEntrance>();
+            services.AddScoped<ZoneEntrance.Description>();
             services.AddScoped<BattleTrigger>();
             services.AddScoped<BattleTrigger.Description>();
             services.AddScoped<TreasureTrigger>();

@@ -23,6 +23,8 @@ namespace Adventure.WorldMap
         public class Description
         {
             public csIslandMaze csIslandMaze { get; set; }
+
+            public List<IAreaBuilder> Areas { get; set; }
         }
 
         private readonly TLASInstanceData floorInstanceData;
@@ -33,7 +35,9 @@ namespace Adventure.WorldMap
         private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly RayTracingRenderer renderer;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBiomeManager biomeManager;
         private readonly csIslandMaze map;
+        private readonly IObjectResolver objectResolver;
         private PrimaryHitShader floorShader;
         private IslandMazeMesh mapMesh;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
@@ -43,6 +47,7 @@ namespace Adventure.WorldMap
         private TypedIndex floorCubeShapeIndex;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private Vector3 currentPosition = Vector3.Zero;
+        private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
 
 
         CC0TextureResult floorTexture;
@@ -60,9 +65,12 @@ namespace Adventure.WorldMap
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RTInstances<IWorldMapGameState> rtInstances,
             RayTracingRenderer renderer,
-            IBepuScene<IWorldMapGameState> bepuScene
+            IObjectResolverFactory objectResolverFactory,
+            IBepuScene<IWorldMapGameState> bepuScene,
+            IBiomeManager biomeManager
         )
         {
+            this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;
@@ -70,6 +78,7 @@ namespace Adventure.WorldMap
             this.rtInstances = rtInstances;
             this.renderer = renderer;
             this.bepuScene = bepuScene;
+            this.biomeManager = biomeManager;
             this.map = description.csIslandMaze;
             this.floorInstanceData = new TLASInstanceData()
             {
@@ -119,6 +128,8 @@ namespace Adventure.WorldMap
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
 
+                    SetupAreas(description.Areas);
+
                     loadingTask.SetResult();
                 }
                 catch (Exception ex)
@@ -135,6 +146,11 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            foreach (var placeable in placeables)
+            {
+                placeable.RequestDestruction();
+            }
+            objectResolver.Dispose();
             DestroyPhysics();
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
@@ -192,27 +208,10 @@ namespace Adventure.WorldMap
                 staticHandles.Add(staticHandle);
             }
 
-            //if (goPrevious)
-            //{
-            //    this.previousZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
-            //    {
-            //        o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
-            //        o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
-            //        o.GoPrevious = true;
-            //    });
-            //}
-
-            //this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
-            //{
-            //    o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
-            //    o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
-            //    o.GoPrevious = false;
-            //});
-
-            //foreach (var placeable in placeables)
-            //{
-            //    placeable.CreatePhysics();
-            //}
+            foreach (var placeable in placeables)
+            {
+                placeable.CreatePhysics();
+            }
         }
 
         public void DestroyPhysics()
@@ -224,16 +223,10 @@ namespace Adventure.WorldMap
             }
             physicsActive = false;
 
-            //foreach (var placeable in placeables)
-            //{
-            //    placeable.DestroyPhysics();
-            //}
-
-            //this.previousZoneConnector?.RequestDestruction();
-            //this.nextZoneConnector?.RequestDestruction();
-
-            //this.previousZoneConnector = null;
-            //this.nextZoneConnector = null;
+            foreach (var placeable in placeables)
+            {
+                placeable.DestroyPhysics();
+            }
 
             var statics = bepuScene.Simulation.Statics;
             foreach (var staticHandle in staticHandles)
@@ -301,6 +294,54 @@ namespace Adventure.WorldMap
             Console.WriteLine($"Created in {creationTime}");
             Console.WriteLine($"Number of islands {mapBuilder.NumIslands}");
             Console.WriteLine("--------------------------------------------------");
+        }
+
+        private void SetupAreas(List<IAreaBuilder> areaBuilders)
+        {
+            int index = 0;
+            foreach(var area in areaBuilders)
+            {
+                int islandIndex = 0;
+                if(area.Phase < 2)
+                {
+                    islandIndex = map.IslandSizeOrder.First();
+                }
+                var island = map.IslandInfo[islandIndex];
+                var square = island.islandPoints.First();
+
+                switch (index)
+                {
+                    case 0:
+                        square = island.Westmost;
+                        break;
+                    case 1:
+                        square = island.Eastmost;
+                        break;
+                    case 2:
+                        square = island.Northmost;
+                        break;
+                    case 3:
+                        square = island.Southmost;
+                        break;
+                }
+
+                var loc = mapMesh.PointToVector(square.x, square.y);
+                var biome = biomeManager.GetBiome(area.Biome);
+
+                var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
+                {
+                    o.ZoneIndex = area.StartZone;
+                    o.MapOffset = loc;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var treasure = biome.Treasure;
+                    o.Sprite = treasure.Asset.CreateSprite();
+                    o.SpriteMaterial = treasure.Asset.CreateMaterial();
+                });
+
+                placeables.Add(entrance);
+
+                ++index;
+            }
         }
     }
 }

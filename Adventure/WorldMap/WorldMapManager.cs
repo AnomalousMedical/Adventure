@@ -75,6 +75,7 @@ namespace Adventure.WorldMap
             worldMapInstance = objectResolver.Resolve<WorldMapInstance, WorldMapInstance.Description>(o =>
             {
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
+                o.Areas = worldDatabase.AreaBuilders;
             });
 
             scopedCoroutine.RunTask(async () =>

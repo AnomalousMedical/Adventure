@@ -25,6 +25,7 @@ namespace Adventure.Services
         DaggerCreator DaggerCreator { get; }
         IMonsterMaker MonsterMaker { get; }
         WorldMapData WorldMap { get; }
+        List<IAreaBuilder> AreaBuilders { get; }
     }
 
     class WorldDatabase : IWorldDatabase
@@ -57,6 +58,16 @@ namespace Adventure.Services
                 CheckSeed();
 
                 return _worldMap;
+            }
+        }
+
+        public List<IAreaBuilder> AreaBuilders
+        {
+            get
+            {
+                CheckSeed();
+
+                return areaBuilders;
             }
         }
 
@@ -159,6 +170,7 @@ namespace Adventure.Services
                     areaBuilder = new Area0Builder(this, monsterInfo);
                     areaBuilder.StartZone = 0;
                     areaBuilder.EndZone = 1;
+                    areaBuilder.Phase = 0;
                     areaBuilder.IncludeStrongElement = false;
                     areaBuilder.IncludeWeakElement = false;
                     break;
@@ -168,6 +180,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 2;
                     areaBuilder.EndZone = 3;
+                    areaBuilder.Phase = 1;
                     areaBuilder.IncludeStrongElement = false;
                     areaBuilder.IncludeWeakElement = false;
                     break;
@@ -176,6 +189,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 4;
                     areaBuilder.EndZone = 5;
+                    areaBuilder.Phase = 1;
                     areaBuilder.IncludeStrongElement = false;
                     areaBuilder.IncludeWeakElement = false;
                     break;
@@ -184,6 +198,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 6;
                     areaBuilder.EndZone = 7;
+                    areaBuilder.Phase = 1;
                     areaBuilder.IncludeStrongElement = false;
                     areaBuilder.IncludeWeakElement = false;
                     break;
@@ -192,6 +207,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 8;
                     areaBuilder.EndZone = 9;
+                    areaBuilder.Phase = 1;
                     areaBuilder.IncludeStrongElement = false;
                     break;
 
@@ -200,36 +216,42 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 10;
                     areaBuilder.EndZone = 11;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 6:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 12;
                     areaBuilder.EndZone = 13;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 7:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 14;
                     areaBuilder.EndZone = 15;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 8:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 16;
                     areaBuilder.EndZone = 17;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 9:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 18;
                     areaBuilder.EndZone = 19;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 10:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 20;
                     areaBuilder.EndZone = 21;
+                    areaBuilder.Phase = 2;
                     break;
 
                 //Phase 3
@@ -237,36 +259,42 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 22;
                     areaBuilder.EndZone = 23;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 12:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 24;
                     areaBuilder.EndZone = 25;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 13:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 26;
                     areaBuilder.EndZone = 27;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 14:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 28;
                     areaBuilder.EndZone = 29;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 15:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 30;
                     areaBuilder.EndZone = 31;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 16:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 32;
                     areaBuilder.EndZone = 33;
+                    areaBuilder.Phase = 3;
                     break;
 
                 //Phase 4
@@ -274,6 +302,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 34;
                     areaBuilder.EndZone = 36;
+                    areaBuilder.Phase = 4;
                     break;
 
                 //Bonus 1
@@ -281,6 +310,7 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 37;
                     areaBuilder.EndZone = 39;
+                    areaBuilder.Phase = 1;
                     break;
 
                 //Bonus 2
@@ -288,18 +318,21 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 40;
                     areaBuilder.EndZone = 42;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 20:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 43;
                     areaBuilder.EndZone = 45;
+                    areaBuilder.Phase = 2;
                     break;
 
                 case 21:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 46;
                     areaBuilder.EndZone = 48;
+                    areaBuilder.Phase = 2;
                     break;
 
                 //Bonus 3
@@ -307,36 +340,42 @@ namespace Adventure.Services
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 49;
                     areaBuilder.EndZone = 51;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 23:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 52;
                     areaBuilder.EndZone = 54;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 24:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 55;
                     areaBuilder.EndZone = 57;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 25:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 58;
                     areaBuilder.EndZone = 60;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 26:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 61;
                     areaBuilder.EndZone = 63;
+                    areaBuilder.Phase = 3;
                     break;
 
                 case 27:
                     areaBuilder = new AreaBuilder(this, monsterInfo);
                     areaBuilder.StartZone = 64;
                     areaBuilder.EndZone = 66;
+                    areaBuilder.Phase = 3;
                     break;
             }
 

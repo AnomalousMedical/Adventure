@@ -17,6 +17,10 @@ namespace Adventure.Services
         public int StartZone { get; }
 
         public int EndZone { get; }
+
+        public int Phase { get; }
+
+        public BiomeType Biome { get; }
     }
 
     class AreaBuilder : IAreaBuilder
@@ -37,6 +41,8 @@ namespace Adventure.Services
         public int StartZone { get; set; }
 
         public int EndZone { get; set; }
+
+        public int Phase { get; set; }
 
         public IEnumerable<int> GateZones { get; set; }
 

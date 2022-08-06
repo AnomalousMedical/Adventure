@@ -161,7 +161,7 @@ namespace Adventure
         private TypedIndex floorCubeShapeIndex;
         private MapMesh mapMesh;
         private bool physicsActive = false;
-        private IObjectResolver objectResolver;
+        private readonly IObjectResolver objectResolver;
         private ZoneConnector nextZoneConnector;
         private ZoneConnector previousZoneConnector;
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();

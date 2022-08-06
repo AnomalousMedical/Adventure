@@ -11,12 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.CameraMovement;
 using BepuPlugin;
+using Adventure.Exploration.Menu;
 
 namespace Adventure.WorldMap
 {
     interface IWorldMapGameState : IGameState
     {
         void Link(IExplorationGameState explorationState);
+        void RequestZone(int zoneIndex);
     }
 
     class WorldMapGameState : IWorldMapGameState
@@ -30,12 +32,14 @@ namespace Adventure.WorldMap
         private readonly IWorldMapManager worldMapManager;
         private readonly FlyCameraManager flyCameraManager;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IContextMenu contextMenu;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
         private int currentZone = 0;
         private SharpText worldMapText = new SharpText("Zone 0") { Color = Color.White };
         private ILayoutItem layout;
+        private IGameState nextState;
 
         public RTInstances Instances => rtInstances;
 
@@ -50,7 +54,8 @@ namespace Adventure.WorldMap
             IScaleHelper scaleHelper,
             IWorldMapManager worldMapManager,
             FlyCameraManager flyCameraManager,
-            IBepuScene<IWorldMapGameState> bepuScene
+            IBepuScene<IWorldMapGameState> bepuScene,
+            IContextMenu contextMenu
         )
         {
             this.sharpGui = sharpGui;
@@ -62,6 +67,7 @@ namespace Adventure.WorldMap
             this.worldMapManager = worldMapManager;
             this.flyCameraManager = flyCameraManager;
             this.bepuScene = bepuScene;
+            this.contextMenu = contextMenu;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -76,20 +82,27 @@ namespace Adventure.WorldMap
         {
             if (active)
             {
+                nextState = this;
                 persistence.Current.BattleTriggers.ClearData();
                 worldMapManager.MovePlayerToArea(0);
             }
+        }
+
+        public void RequestZone(int zoneIndex)
+        {
+            persistence.Current.Player.Position = null;
+            persistence.Current.Zone.CurrentIndex = zoneIndex;
+            coroutineRunner.RunTask(zoneManager.Restart());
+            nextState = this.explorationState;
         }
 
         public IGameState Update(Clock clock)
         {
             flyCameraManager.Update(clock);
 
-            IGameState nextState = this;
-
             var size = layout.GetDesiredSize(sharpGui);
             layout.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetBottomRightRect(size);
+            var rect = screenPositioner.GetBottomLeftRect(size);
             layout.SetRect(rect);
 
             sharpGui.Text(worldMapText);
@@ -101,13 +114,11 @@ namespace Adventure.WorldMap
 
             if (sharpGui.Button(restart, GamepadId.Pad1))
             {
-                persistence.Current.Player.Position = null;
-                persistence.Current.Zone.CurrentIndex = currentZone;
-                coroutineRunner.RunTask(zoneManager.Restart());
-                nextState = this.explorationState;
+                RequestZone(currentZone);
             }
 
             bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+            contextMenu.Update();
 
             return nextState;
         }
