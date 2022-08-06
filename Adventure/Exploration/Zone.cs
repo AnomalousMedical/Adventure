@@ -209,6 +209,10 @@ namespace Adventure
 
         public int Index => index;
 
+        public bool LoadPreviousLevel => index - 1 > -1 && !connectPreviousToWorld;
+
+        public bool LoadNextLevel => !connectNextToWorld;
+
         public Zone
         (
             IDestructionRequest destructionRequest,

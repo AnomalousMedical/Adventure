@@ -101,13 +101,25 @@ namespace Adventure
 
             var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
             currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
-            nextZone = CreateZone(new Vector3(150, 0, 0), currentZoneIndex + 1);
-            if(currentZoneIndex - 1 >= 0)
+            await currentZone.WaitForGeneration();
+
+            if (currentZone.LoadNextLevel)
+            {
+                nextZone = CreateZone(new Vector3(150, 0, 0), currentZoneIndex + 1);
+            }
+            else
+            {
+                nextZone = null;
+            }
+
+            if(currentZone.LoadPreviousLevel)
             {
                 previousZone = CreateZone(new Vector3(-150, 0, 0), currentZoneIndex - 1);
             }
-
-            await currentZone.WaitForGeneration();
+            else
+            {
+                previousZone = null;
+            }
 
             currentZone.SetupPhysics();
 
@@ -120,9 +132,13 @@ namespace Adventure
 
             ZoneChanged?.Invoke(this);
 
-            await nextZone.WaitForGeneration();
-            var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
-            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            if (nextZone != null)
+            {
+                await nextZone.WaitForGeneration();
+                var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
+                nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            }
+
             if (previousZone != null)
             {
                 await previousZone.WaitForGeneration();
@@ -170,7 +186,10 @@ namespace Adventure
             {
                 await previousZone.WaitForGeneration(); //This is pretty unlikely, but have to stop here if zone isn't created yet
             }
-            await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
+            if (nextZone != null)
+            {
+                await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
+            }
 
             //Shuffle zones
             previousZone?.SetPosition(new Vector3(-150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
@@ -183,7 +202,14 @@ namespace Adventure
             var nextZoneIndex = persistence.Current.Zone.CurrentIndex + 1;
 
             //Create new zone
-            nextZone = CreateZone(new Vector3(150, 0, 0), nextZoneIndex);
+            if (currentZone.LoadNextLevel)
+            {
+                nextZone = CreateZone(new Vector3(150, 0, 0), nextZoneIndex);
+            }
+            else
+            {
+                nextZone = null;
+            }
 
             //Physics changeover
             previousZone.DestroyPhysics();
@@ -206,9 +232,12 @@ namespace Adventure
             changingZone = false;
 
             //Keep this last after setting changingZone
-            await nextZone.WaitForGeneration();
-            var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
-            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            if (nextZone != null)
+            {
+                await nextZone.WaitForGeneration();
+                var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
+                nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            }
         }
 
         public Task GoPrevious()
@@ -237,7 +266,10 @@ namespace Adventure
             {
                 await previousZone.WaitForGeneration(); //This is pretty unlikely, but have to stop here if zone isn't created yet
             }
-            await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
+            if (nextZone != null)
+            {
+                await nextZone.WaitForGeneration(); //Also unlikely, but next zone might not be loaded yet
+            }
 
             //Shuffle zones
             nextZone?.SetPosition(new Vector3(150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
@@ -245,7 +277,7 @@ namespace Adventure
             nextZone = currentZone;
             currentZone = previousZone;
 
-            if (persistence.Current.Zone.CurrentIndex > 0)
+            if (currentZone.LoadPreviousLevel)
             {
                 var previousZoneIndex = persistence.Current.Zone.CurrentIndex - 1;
                 previousZone = CreateZone(new Vector3(-150, 0, 0), previousZoneIndex);
