@@ -14,7 +14,7 @@ namespace Adventure.Exploration.Menu
         IRootMenu RootMenu { get; }
 
         void RequestSubMenu(IExplorationSubMenu subMenu, GamepadId gamepad);
-        bool Update(ExplorationGameState explorationGameState);
+        bool Update(IExplorationGameState explorationGameState);
     }
 
     class ExplorationMenu : IExplorationMenu
@@ -40,7 +40,7 @@ namespace Adventure.Exploration.Menu
         /// Update the menu. Returns true if something was done. False if nothing was done and the menu wasn't shown
         /// </summary>
         /// <returns></returns>
-        public bool Update(ExplorationGameState explorationGameState)
+        public bool Update(IExplorationGameState explorationGameState)
         {
             bool handled = false;
             if (currentMenu != null)

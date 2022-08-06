@@ -34,6 +34,7 @@ namespace Adventure.WorldMap
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly IContextMenu contextMenu;
         private readonly IWorldDatabase worldDatabase;
+        private readonly IExplorationMenu explorationMenu;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
@@ -57,7 +58,8 @@ namespace Adventure.WorldMap
             FlyCameraManager flyCameraManager,
             IBepuScene<IWorldMapGameState> bepuScene,
             IContextMenu contextMenu,
-            IWorldDatabase worldDatabase
+            IWorldDatabase worldDatabase,
+            IExplorationMenu explorationMenu
         )
         {
             this.sharpGui = sharpGui;
@@ -71,6 +73,7 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.contextMenu = contextMenu;
             this.worldDatabase = worldDatabase;
+            this.explorationMenu = explorationMenu;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -108,25 +111,15 @@ namespace Adventure.WorldMap
         {
             flyCameraManager.Update(clock);
 
-            var size = layout.GetDesiredSize(sharpGui);
-            layout.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetBottomLeftRect(size);
-            layout.SetRect(rect);
-
-            sharpGui.Text(worldMapText);
-
-            if(sharpGui.Slider(zoneSelect, ref currentZone, GamepadId.Pad1))
+            if (explorationMenu.Update(explorationState))
             {
-                worldMapText.Text = $"Zone {currentZone}";
+                //If menu did something
             }
-
-            if (sharpGui.Button(restart, GamepadId.Pad1))
+            else
             {
-                RequestZone(currentZone);
+                bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                contextMenu.Update();
             }
-
-            bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
-            contextMenu.Update();
 
             return nextState;
         }
