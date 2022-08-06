@@ -88,7 +88,10 @@ namespace Adventure.WorldMap
             {
                 nextState = this;
                 persistence.Current.BattleTriggers.ClearData();
-                worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
+                if (persistence.Current.Player.WorldPosition == null)
+                {
+                    worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
+                }
             }
         }
 
