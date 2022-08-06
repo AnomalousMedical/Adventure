@@ -1,30 +1,25 @@
-﻿using DiligentEngine.RT;
+﻿using Adventure.Services;
+using Adventure.WorldMap;
+using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
-using RpgMath;
-using Adventure.Battle;
 using SharpGui;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure
 {
     interface ISetupGameState : IGameState
     {
-        void Link(IGameState nextState);
+        void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState);
     }
 
     class SetupGameState : ISetupGameState
     {
         private readonly IZoneManager zoneManager;
-        private readonly Party party;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private readonly RTInstances rtInstances;
+        private readonly Persistence persistence;
         private IGameState nextState;
         private bool finished = false;
 
@@ -35,24 +30,31 @@ namespace Adventure
         public SetupGameState
         (
             IZoneManager zoneManager,
-            Party party,
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<IZoneManager> rtInstances
+            RTInstances<IZoneManager> rtInstances,
+            Persistence persistence
         )
         {
             this.zoneManager = zoneManager;
-            this.party = party;
             this.coroutineRunner = coroutineRunner;
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
             this.rtInstances = rtInstances;
+            this.persistence = persistence;
         }
 
-        public void Link(IGameState nextState)
+        public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
         {
-            this.nextState = nextState;
+            if (persistence.Current.Player.InWorld)
+            {
+                this.nextState = worldMapGameState;
+            }
+            else
+            {
+                this.nextState = explorationGameState;
+            }
         }
 
         public void SetActive(bool active)

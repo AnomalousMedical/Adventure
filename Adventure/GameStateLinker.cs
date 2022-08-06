@@ -20,7 +20,7 @@ namespace Adventure
             ISetupGameState setup
         )
         {
-            setup.Link(exploration);
+            setup.Link(exploration, worldMap);
             exploration.Link(battle, worldMap);
             battle.Link(exploration, gameOver);
             gameOver.Link(setup);

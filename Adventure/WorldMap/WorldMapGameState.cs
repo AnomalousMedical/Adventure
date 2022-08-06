@@ -83,6 +83,7 @@ namespace Adventure.WorldMap
 
         public void SetActive(bool active)
         {
+            persistence.Current.Player.InWorld = active;
             if (active)
             {
                 nextState = this;
