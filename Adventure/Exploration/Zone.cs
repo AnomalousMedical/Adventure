@@ -128,6 +128,10 @@ namespace Adventure
             /// </summary>
             public int EnemyLevel { get; set; }
 
+            public bool ConnectPreviousToWorld { get; set; }
+
+            public bool ConnectNextToWorld { get; set; }
+
             /// <summary>
             /// The number of battles for the level's "main" corridor.
             /// Must be at least 1, default is int.MaxValue. This will
@@ -183,6 +187,8 @@ namespace Adventure
         private int maxMainCorridorBattles;
         private bool startEnd;
         private IEnumerable<ITreasure> treasure;
+        private bool connectPreviousToWorld;
+        private bool connectNextToWorld;
 
         private Task zoneGenerationTask;
         private Vector3 mapUnits;
@@ -220,6 +226,8 @@ namespace Adventure
             Persistence persistence
         )
         {
+            this.connectPreviousToWorld = description.ConnectPreviousToWorld;
+            this.connectNextToWorld = description.ConnectNextToWorld;
             this.startEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
@@ -488,6 +496,7 @@ namespace Adventure
                     o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                     o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
                     o.GoPrevious = true;
+                    o.GoWorld = connectPreviousToWorld;
                 });
             }
 
@@ -496,6 +505,7 @@ namespace Adventure
                 o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                 o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
                 o.GoPrevious = false;
+                o.GoWorld = connectNextToWorld;
             });
 
             foreach (var placeable in placeables)

@@ -19,6 +19,11 @@ namespace Adventure
             /// Set this to true to go to the previous level. False to go to the next.
             /// </summary>
             public bool GoPrevious { get; set; }
+
+            /// <summary>
+            /// Set this to true to go to the world from this connector.
+            /// </summary>
+            public bool GoWorld { get; set; }
         }
 
         private readonly IDestructionRequest destructionRequest;
@@ -26,9 +31,11 @@ namespace Adventure
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
+        private readonly IExplorationGameState explorationGameState;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool goPrevious;
+        private bool goWorld;
 
         public ZoneConnector(
             IDestructionRequest destructionRequest,
@@ -37,15 +44,17 @@ namespace Adventure
             Description description,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             ICoroutineRunner coroutineRunner,
-            IZoneManager zoneManager)
+            IZoneManager zoneManager,
+            IExplorationGameState explorationGameState)
         {
+            this.goWorld = description.GoWorld;
             this.goPrevious = description.GoPrevious;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
-
+            this.explorationGameState = explorationGameState;
             var shape = new Box(description.Scale.x, description.Scale.y, description.Scale.z); //TODO: Each one creates its own, try to load from resources
             shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
@@ -72,8 +81,6 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            Console.WriteLine(evt.Pair);
-            Console.WriteLine(evt.EventSource);
             //Don't want to do this during the physics update. Trigger to run later.
 
             if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
@@ -81,15 +88,22 @@ namespace Adventure
             {
                 coroutineRunner.RunTask(async () =>
                 {
-                    var playerLoc = player.GetLocation();
-
-                    if (this.goPrevious)
+                    if (this.goWorld)
                     {
-                        await zoneManager.GoPrevious(playerLoc);
+                        explorationGameState.RequestWorldMap();
                     }
                     else
                     {
-                        await zoneManager.GoNext(playerLoc);
+                        var playerLoc = player.GetLocation();
+
+                        if (this.goPrevious)
+                        {
+                            await zoneManager.GoPrevious(playerLoc);
+                        }
+                        else
+                        {
+                            await zoneManager.GoNext(playerLoc);
+                        }
                     }
                 });
             }            
