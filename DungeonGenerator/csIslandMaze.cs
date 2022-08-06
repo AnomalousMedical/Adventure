@@ -159,7 +159,7 @@ public class csIslandMaze
         Map = islandFinder.findIslands(Map);
         NumIslands = islandFinder.NumIslands;
         IslandInfo = islandFinder.IslandInfo;
-        IslandSizeOrder = islandFinder.IslandInfo.OrderByDescending(i => i.Size).Select(i => i.Id).ToList();
+        IslandSizeOrder = islandFinder.IslandInfo.OrderByDescending(i => i.Size).Select(i => i.Id - 1).ToList();
     }
 
     /// <summary>
