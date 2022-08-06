@@ -35,7 +35,6 @@ namespace Adventure.Services
                 flyCamera.UpdateInput(clock);
                 cameraMover.Position = flyCamera.Position;
                 cameraMover.Orientation = flyCamera.Orientation;
-                cameraMover.SceneCenter = flyCamera.Position;
             }
         }
     }

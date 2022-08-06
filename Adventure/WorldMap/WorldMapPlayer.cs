@@ -413,7 +413,6 @@ namespace Adventure.WorldMap
             Sprite_FrameChanged(sprite);
             cameraMover.Position = this.currentPosition + cameraOffset;
             cameraMover.Orientation = cameraAngle;
-            cameraMover.SceneCenter = this.currentPosition;
 
             var movementDir = characterMover.movementDirection;
             if (movementDir.Y > 0.3f)

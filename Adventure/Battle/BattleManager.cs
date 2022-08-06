@@ -212,7 +212,6 @@ namespace Adventure.Battle
                     eventManager[EventLayers.Battle].OnUpdate += eventManager_OnUpdate;
                     cameraMover.Position = new Vector3(-1.0354034f, 2.958224f, -12.394701f);
                     cameraMover.Orientation = new Quaternion(0.057467595f, 0.0049917176f, -0.00028734046f, 0.9983348f);
-                    cameraMover.SceneCenter = new Vector3(0f, 0f, 0f);
 
                     var instantAttackChance = targetRandom.Next(100);
                     if (instantAttackChance < 3)
@@ -610,7 +609,7 @@ namespace Adventure.Battle
 
         public void AddDamageNumber(IBattleTarget target, String damage, Color color)
         {
-            var targetPos = target.DamageDisplayLocation - cameraMover.SceneCenter;
+            var targetPos = target.DamageDisplayLocation;
             var screenPos = cameraProjector.Project(targetPos);
 
             numbers.Add(new DamageNumber(damage.ToString(), NumberDisplayTime, screenPos, scaleHelper, color));
