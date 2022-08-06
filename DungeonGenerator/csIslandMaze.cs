@@ -37,6 +37,7 @@ public class IslandInfo
     public IntVector2 Southmost;
     public IntVector2 Eastmost;
     public IntVector2 Westmost;
+    public List<IntVector2> islandPoints = new List<IntVector2>(30);
 }
 
 public class csIslandMaze
@@ -295,6 +296,7 @@ class IslandFinder
         var index = id - 1;
         var islandInfo = IslandInfo[index];
         ++islandInfo.Size;
+        islandInfo.islandPoints.Add(new IntVector2(row, col));
 
         if (col > islandInfo.Northmost.y)
         {

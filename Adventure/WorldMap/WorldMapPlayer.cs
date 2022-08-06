@@ -368,7 +368,7 @@ namespace Adventure.WorldMap
 
         public void SetLocation(in Vector3 location)
         {
-            var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
+            var finalLoc = location + new Vector3(0f, sprite.BaseScale.y * currentScale.y / 2f, 0f);
 
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());

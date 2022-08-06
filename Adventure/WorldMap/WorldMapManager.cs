@@ -53,7 +53,18 @@ namespace Adventure.WorldMap
 
         public void MovePlayerToArea(int area)
         {
-            player.SetLocation(new Vector3(10, 10, 10));
+            Vector3 loc;
+
+            if(worldMapInstance != null)
+            {
+                loc = worldMapInstance.GetAreaLocation(area);
+            }
+            else
+            {
+                loc = new Vector3(10, 10, 10);
+            }
+
+            player.SetLocation(loc);
             player.StopMovement();
         }
 

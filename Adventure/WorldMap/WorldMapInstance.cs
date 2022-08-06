@@ -33,6 +33,7 @@ namespace Adventure.WorldMap
         private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly RayTracingRenderer renderer;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly csIslandMaze map;
         private PrimaryHitShader floorShader;
         private IslandMazeMesh mapMesh;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
@@ -69,6 +70,7 @@ namespace Adventure.WorldMap
             this.rtInstances = rtInstances;
             this.renderer = renderer;
             this.bepuScene = bepuScene;
+            this.map = description.csIslandMaze;
             this.floorInstanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("SceneDungeonFloor"),
@@ -246,6 +248,17 @@ namespace Adventure.WorldMap
         public void SetTransform(InstanceMatrix matrix)
         {
             this.floorInstanceData.Transform = matrix;
+        }
+
+        public Vector3 GetAreaLocation(int area)
+        {
+            //Temp hack
+            var biggestArea = map.IslandSizeOrder.First();
+            area = biggestArea;
+
+            var island = map.IslandInfo[area];
+            var square = island.islandPoints.First();
+            return mapMesh.PointToVector(square.x, square.y);
         }
 
         private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
