@@ -50,6 +50,7 @@ namespace Adventure.WorldMap
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private Vector3 currentPosition = Vector3.Zero;
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
+        private IntVector2[] areaLocations;
 
 
         CC0TextureResult floorTexture;
@@ -249,12 +250,7 @@ namespace Adventure.WorldMap
 
         public Vector3 GetAreaLocation(int area)
         {
-            //Temp hack
-            var biggestArea = map.IslandSizeOrder.First();
-            area = biggestArea;
-
-            var island = map.IslandInfo[area];
-            var square = island.islandPoints.First();
+            var square = areaLocations[area];
             return mapMesh.PointToVector(square.x, square.y);
         }
 
@@ -339,12 +335,15 @@ namespace Adventure.WorldMap
             var usedSquares = new bool[map.MapX, map.MapY];
             var usedIslands = new bool[map.NumIslands];
 
-            foreach(var area in areaBuilders.Where(i => i.Phase == 0))
+            areaLocations = new IntVector2[areaBuilders.Count];
+
+            foreach (var area in areaBuilders.Where(i => i.Phase == 0))
             {
                 var islandIndex = map.IslandSizeOrder.First();
                 var island = map.IslandInfo[islandIndex];
                 var square = island.islandPoints.First();
                 square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+                areaLocations[area.Index] = square;
 
                 var loc = mapMesh.PointToVector(square.x, square.y);
                 var biome = biomeManager.GetBiome(area.Biome);
@@ -368,7 +367,7 @@ namespace Adventure.WorldMap
             {
                 var islandIndex = map.IslandSizeOrder.First();
                 var island = map.IslandInfo[islandIndex];
-                var square = island.islandPoints.First();
+                IntVector2 square;
 
                 switch (area.Index)
                 {
@@ -390,6 +389,7 @@ namespace Adventure.WorldMap
                 var biome = biomeManager.GetBiome(area.Biome);
 
                 usedSquares[square.x, square.y] = true;
+                areaLocations[area.Index] = square;
                 var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
                 {
                     o.ZoneIndex = area.StartZone;

@@ -95,6 +95,8 @@ namespace Adventure.Services
 
             public int? RespawnZone { get; set; }
 
+            public int LastArea { get; set; }
+
             public Vector3? RespawnPosition { get; set; }
 
             public int? LootDropZone { get; set; }

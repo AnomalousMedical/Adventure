@@ -33,6 +33,7 @@ namespace Adventure.WorldMap
         private readonly FlyCameraManager flyCameraManager;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly IContextMenu contextMenu;
+        private readonly IWorldDatabase worldDatabase;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
@@ -55,7 +56,8 @@ namespace Adventure.WorldMap
             IWorldMapManager worldMapManager,
             FlyCameraManager flyCameraManager,
             IBepuScene<IWorldMapGameState> bepuScene,
-            IContextMenu contextMenu
+            IContextMenu contextMenu,
+            IWorldDatabase worldDatabase
         )
         {
             this.sharpGui = sharpGui;
@@ -68,6 +70,7 @@ namespace Adventure.WorldMap
             this.flyCameraManager = flyCameraManager;
             this.bepuScene = bepuScene;
             this.contextMenu = contextMenu;
+            this.worldDatabase = worldDatabase;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -84,7 +87,7 @@ namespace Adventure.WorldMap
             {
                 nextState = this;
                 persistence.Current.BattleTriggers.ClearData();
-                worldMapManager.MovePlayerToArea(0);
+                worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             }
         }
 
@@ -92,6 +95,7 @@ namespace Adventure.WorldMap
         {
             persistence.Current.Player.Position = null;
             persistence.Current.Zone.CurrentIndex = zoneIndex;
+            persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
             coroutineRunner.RunTask(zoneManager.Restart());
             nextState = this.explorationState;
         }
