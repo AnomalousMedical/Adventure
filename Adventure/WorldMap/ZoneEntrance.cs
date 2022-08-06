@@ -104,7 +104,7 @@ namespace Adventure.WorldMap
             if (!physicsCreated)
             {
                 physicsCreated = true;
-                var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
+                var shape = new Box(currentScale.x * 0.4f, 1000, currentScale.z * 0.4f); //TODO: Each one creates its own, try to load from resources
                 shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
                 staticHandle = bepuScene.Simulation.Statics.Add(
