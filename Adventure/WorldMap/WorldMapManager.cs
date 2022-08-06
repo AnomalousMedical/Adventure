@@ -11,6 +11,8 @@ namespace Adventure.WorldMap
 {
     interface IWorldMapManager
     {
+        bool PhysicsActive { get; }
+
         void MovePlayerToArea(int area);
         void SetupWorldMap();
     }
@@ -50,6 +52,8 @@ namespace Adventure.WorldMap
         {
             objectResolver.Dispose();
         }
+
+        public bool PhysicsActive => worldMapInstance?.PhysicsActive == true;
 
         public void MovePlayerToArea(int area)
         {

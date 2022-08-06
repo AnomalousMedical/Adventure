@@ -117,7 +117,10 @@ namespace Adventure.WorldMap
             }
             else
             {
-                bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                if (worldMapManager.PhysicsActive)
+                {
+                    bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                }
                 contextMenu.Update();
             }
 

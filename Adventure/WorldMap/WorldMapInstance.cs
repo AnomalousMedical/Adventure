@@ -52,6 +52,7 @@ namespace Adventure.WorldMap
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
         private IntVector2[] areaLocations;
 
+        public bool PhysicsActive => physicsActive;
 
         CC0TextureResult floorTexture;
         CC0TextureResult wallTexture;
