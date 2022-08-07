@@ -584,6 +584,11 @@ namespace Adventure.WorldMap
             return map.Map[cell.x, cell.y];
         }
 
+        public Vector3 GetCellCenterpoint(in IntVector2 cell)
+        {
+            return mapMesh.PointToVector(cell.x, cell.y);
+        }
+
         public bool CanLand(in IntVector2 cell)
         {
             return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell);

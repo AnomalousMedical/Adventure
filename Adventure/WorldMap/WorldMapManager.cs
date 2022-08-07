@@ -17,6 +17,7 @@ namespace Adventure.WorldMap
         void SetupWorldMap();
         void GoToNextPortal(int portalIndex);
         void Update(Clock clock);
+        void MovePlayer(in Vector3 loc);
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -71,6 +72,11 @@ namespace Adventure.WorldMap
                 loc = new Vector3(10, 10, 10);
             }
 
+            MovePlayer(loc);
+        }
+
+        public void MovePlayer(in Vector3 loc)
+        {
             player.SetLocation(loc);
             player.StopMovement();
         }
@@ -91,6 +97,7 @@ namespace Adventure.WorldMap
             {
                 o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
                 o.Map = worldMapInstance;
+                o.WorldMapManager = this;
             });
 
             scopedCoroutine.RunTask(async () =>

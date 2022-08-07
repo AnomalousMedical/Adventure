@@ -27,7 +27,10 @@ namespace Adventure.WorldMap
             public EventLayers EventLayer { get; set; } = EventLayers.Airship;
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
+
             public WorldMapInstance Map { get; set; }
+
+            public IWorldMapManager WorldMapManager { get; set; }
         }
 
         private readonly TLASInstanceData instanceData;
@@ -48,6 +51,7 @@ namespace Adventure.WorldMap
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
+        private readonly IWorldMapManager worldMapManager;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
@@ -90,6 +94,7 @@ namespace Adventure.WorldMap
             IDestructionRequest destructionRequest
         )
         {
+            this.worldMapManager = description.WorldMapManager;
             this.map = description.Map;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
@@ -264,9 +269,13 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Land);
             landEventLayer.makeFocusLayer();
             active = false;
-            currentPosition.y = 1.1747187f; //TODO: Find ground location for real
+            var cell = map.GetCellForLocation(currentPosition);
+            var center = map.GetCellCenterpoint(cell);
+            currentPosition = center;
+            currentPosition.y += currentScale.y / 2.0f;
             instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
             CreatePhysics();
+            worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
         }
 
         private void SetupInput()
