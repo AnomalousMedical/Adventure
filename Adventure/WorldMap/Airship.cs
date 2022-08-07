@@ -241,6 +241,7 @@ namespace Adventure.WorldMap
             eventLayer.makeFocusLayer();
             active = true;
             currentPosition.y = 3.14f;
+            DestroyPhysics();
         }
 
         private void Land(ContextMenuArgs args)
@@ -250,6 +251,7 @@ namespace Adventure.WorldMap
             active = false;
             currentPosition.y = 1.1747187f; //TODO: Find ground location for real
             instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+            CreatePhysics();
         }
 
         private void SetupInput()
