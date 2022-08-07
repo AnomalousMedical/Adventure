@@ -361,6 +361,11 @@ namespace Adventure.WorldMap
 
             areaLocations = new IntVector2[areaBuilders.Count];
 
+            //Reserve the 3 largest islands
+            usedIslands[map.IslandSizeOrder[0]] = true;
+            usedIslands[map.IslandSizeOrder[1]] = true;
+            usedIslands[map.IslandSizeOrder[2]] = true;
+
             foreach (var area in areaBuilders.Where(i => i.Phase == 0))
             {
                 var islandIndex = map.IslandSizeOrder[0];
@@ -430,16 +435,47 @@ namespace Adventure.WorldMap
                 placeables.Add(entrance);
             }
 
-            //Reserve the next 2 largest islands
-            usedIslands[map.IslandSizeOrder[1]] = true;
-            usedIslands[map.IslandSizeOrder[2]] = true;
-
-            foreach (var area in areaBuilders.Where(i => i.Phase == 3))
+            foreach (var area in areaBuilders.Where(i => i.Phase == 2))
             {
-                var islandIndex = GetUnusedIsland(usedIslands, placementRandom);
-                var island = map.IslandInfo[islandIndex];
+                int islandIndex;
+                IslandInfo island;
+                IntVector2 square;
+
+                switch (area.IndexInPhase)
+                {
+                    case 0:
+                        islandIndex = map.IslandSizeOrder[1];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+                        break;
+                    case 1:
+                        islandIndex = map.IslandSizeOrder[1];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+                        break;
+                    case 2:
+                        islandIndex = map.IslandSizeOrder[1];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+                        break;
+
+                    case 3:
+                        islandIndex = map.IslandSizeOrder[2];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+                        break;
+                    case 4:
+                        islandIndex = map.IslandSizeOrder[2];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+                        break;
+                    default:
+                        islandIndex = GetUnusedIsland(usedIslands, placementRandom);
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom);
+                        break;
+                }
                 usedIslands[islandIndex] = true;
-                IntVector2 square = GetUnusedSquare(usedSquares, island, placementRandom);
 
                 var loc = mapMesh.PointToVector(square.x, square.y);
                 var biome = biomeManager.GetBiome(area.Biome);
@@ -460,47 +496,12 @@ namespace Adventure.WorldMap
                 placeables.Add(entrance);
             }
 
-            foreach (var area in areaBuilders.Where(i => i.Phase == 2))
+            foreach (var area in areaBuilders.Where(i => i.Phase == 3))
             {
-                int islandIndex;
-                IslandInfo island;
-                IntVector2 square;
-
-                switch (area.IndexInPhase)
-                {
-                    case 0:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-                        break;
-                    case 1:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
-                        break;
-                    case 2:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-
-                    case 3:
-                        islandIndex = map.IslandSizeOrder[2];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-                    case 4:
-                        islandIndex = map.IslandSizeOrder[2];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
-                        break;
-                    default:
-                        islandIndex = GetUnusedIsland(usedIslands, placementRandom);
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom);
-                        break;
-                }
+                var islandIndex = GetUnusedIsland(usedIslands, placementRandom);
+                var island = map.IslandInfo[islandIndex];
                 usedIslands[islandIndex] = true;
+                IntVector2 square = GetUnusedSquare(usedSquares, island, placementRandom);
 
                 var loc = mapMesh.PointToVector(square.x, square.y);
                 var biome = biomeManager.GetBiome(area.Biome);
