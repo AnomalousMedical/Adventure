@@ -154,6 +154,9 @@ namespace Adventure.Services
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
             areaBuilders = SetupAreaBuilder(monsterInfo).ToList();
             _worldMap = new WorldMapData(newSeed);
+            //Phase 0, 1 is 1 island, 2 is 2 islands + 3 more for the phase 2 bonus areas, everything above phase 2 has its own, except phase 4, which is not in the world
+            var numIslands = areaBuilders.Where(i => i.Phase > 2).Count() + 6;
+            _worldMap.Map.RemoveExtraIslands(numIslands);
             //TODO: need to check maps
             //3 largest islands need to have enough spaces for each phase
             //World needs enough islands to cover all zones

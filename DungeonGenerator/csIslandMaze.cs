@@ -184,6 +184,38 @@ public class csIslandMaze
         return count;
     }
 
+    public void RemoveExtraIslands(int count)
+    {
+        var toRemove = new List<IslandInfo>();
+
+        for (int i = NumIslands - 1; i >= count; --i) //Smallest islands first
+        {
+            var index = IslandSizeOrder[i];
+            var island = IslandInfo[index];
+            foreach(var square in island.islandPoints)
+            {
+                Map[square.x, square.y] = csIslandMaze.EmptyCell;
+            }
+            toRemove.Add(island);
+        }
+
+        IslandInfo.RemoveAll(i => toRemove.Contains(i));
+
+        for (int i = 0; i < count; ++i) //Just go in current order, it will sort again below
+        {
+            var island = IslandInfo[i];
+            var id = i + 1;
+            foreach (var square in island.islandPoints)
+            {
+                Map[square.x, square.y] = id;
+            }
+            island.Id = id;
+        }
+
+        NumIslands = count;
+        IslandSizeOrder = IslandInfo.OrderByDescending(i => i.Size).Select(i => i.Id - 1).ToList();
+    }
+
     /// <summary>
     /// Check the examined cell is legal and closed
     /// </summary>
