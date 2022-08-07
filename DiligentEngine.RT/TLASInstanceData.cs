@@ -26,13 +26,13 @@ namespace DiligentEngine.RT
 
         int instanceIndex = DefaultRTInstanceIndex;
         RTInstances rTInstances = DefaultRTInstance;
-        public String instanceName;
-        public IBottomLevelAS pblas;
-        public InstanceMatrix transform;
-        public Uint32 customId;
-        public RAYTRACING_INSTANCE_FLAGS flags = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_NONE;
-        public Uint8 mask = 0xFF;
-        public Uint32 contributionToHitGroupIndex = ITopLevelAS.TLAS_INSTANCE_OFFSET_AUTO;
+        private String instanceName;
+        private IBottomLevelAS pblas;
+        private InstanceMatrix transform;
+        private Uint32 customId;
+        private RAYTRACING_INSTANCE_FLAGS flags = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_NONE;
+        private Uint8 mask = 0xFF;
+        private Uint32 contributionToHitGroupIndex = ITopLevelAS.TLAS_INSTANCE_OFFSET_AUTO;
 
         public TLASInstanceData()
         {
