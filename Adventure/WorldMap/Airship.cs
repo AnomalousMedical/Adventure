@@ -9,6 +9,7 @@ using DiligentEngine.RT.HLSL;
 using DiligentEngine.RT.Resources;
 using DiligentEngine.RT.ShaderSets;
 using Engine;
+using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,11 @@ namespace Adventure.WorldMap
     {
         public class Description : SceneObjectDesc
         {
-            
+            public GamepadId Gamepad { get; set; } = GamepadId.Pad1;
+
+            public EventLayers EventLayer { get; set; } = EventLayers.Airship;
+
+            public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
         }
 
         private readonly TLASInstanceData instanceData;
@@ -36,6 +41,10 @@ namespace Adventure.WorldMap
         private BlasInstanceData blasInstanceData;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly IContextMenu contextMenu;
+        private readonly EventManager eventManager;
+        private readonly IWorldMapGameState worldMapGameState;
+        private readonly EventLayer eventLayer;
+        private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -44,6 +53,15 @@ namespace Adventure.WorldMap
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
+
+        private GamepadId gamepadId;
+        private bool allowJoystickInput = true;
+
+        ButtonEvent moveForward;
+        ButtonEvent moveBackward;
+        ButtonEvent moveRight;
+        ButtonEvent moveLeft;
+        ButtonEvent land;
 
         public Airship
         (
@@ -58,9 +76,16 @@ namespace Adventure.WorldMap
             Persistence persistence,
             ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
             IBepuScene<IWorldMapGameState> bepuScene,
-            IContextMenu contextMenu
+            IContextMenu contextMenu,
+            EventManager eventManager
         )
         {
+            this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
+            this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
+            this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
+            this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
+            this.land = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_LSHIFT });
+
             var scale = description.Scale;
             var halfScale = scale.y / 2f;
             var startPos = persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
@@ -78,6 +103,21 @@ namespace Adventure.WorldMap
             this.collidableIdentifier = collidableIdentifier;
             this.bepuScene = bepuScene;
             this.contextMenu = contextMenu;
+            this.eventManager = eventManager;
+
+            //Events
+            eventManager.addEvent(moveForward);
+            eventManager.addEvent(moveBackward);
+            eventManager.addEvent(moveLeft);
+            eventManager.addEvent(moveRight);
+            eventManager.addEvent(land);
+
+            eventLayer = eventManager[description.EventLayer];
+            eventLayer.OnUpdate += EventLayer_OnUpdate;
+
+            landEventLayer = eventManager[description.LandEventLayer];
+            SetupInput();
+
             this.instanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Airship"),
@@ -113,6 +153,14 @@ namespace Adventure.WorldMap
             textureManager.TryReturn(cubeTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(instanceData);
+
+            eventManager.removeEvent(moveForward);
+            eventManager.removeEvent(moveBackward);
+            eventManager.removeEvent(moveLeft);
+            eventManager.removeEvent(moveRight);
+            eventManager.removeEvent(land);
+
+            eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
         }
 
         public void SetTransform(in Vector3 trans, in Quaternion rot)
@@ -185,7 +233,106 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            //worldMapGameState.RequestZone(zoneIndex);
+            eventLayer.makeFocusLayer();
+        }
+
+        private void SetupInput()
+        {
+            //These events are owned by this class, so don't have to unsubscribe
+            moveForward.FirstFrameDownEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = false;
+                }
+            };
+            moveForward.FirstFrameUpEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
+                }
+            };
+            moveBackward.FirstFrameDownEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = false;
+                }
+            };
+            moveBackward.FirstFrameUpEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
+                }
+            };
+            moveLeft.FirstFrameDownEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = false;
+                }
+            };
+            moveLeft.FirstFrameUpEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
+                }
+            };
+            moveRight.FirstFrameDownEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = false;
+                }
+            };
+            moveRight.FirstFrameUpEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
+                }
+            };
+            land.FirstFrameDownEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                    landEventLayer.makeFocusLayer();
+                }
+            };
+            land.FirstFrameUpEvent += l =>
+            {
+                if (l.EventProcessingAllowed)
+                {
+                    l.alertEventsHandled();
+                }
+            };
+        }
+
+        private void EventLayer_OnUpdate(EventLayer eventLayer)
+        {
+            if (eventLayer.EventProcessingAllowed)
+            {
+                if (allowJoystickInput)
+                {
+                    var pad = eventLayer.getGamepad(gamepadId);
+                    var movementDir = pad.LStick;
+                    //characterMover.movementDirection = movementDir.ToSystemNumerics();
+                }
+
+                eventLayer.alertEventsHandled();
+            }
         }
     }
 }
