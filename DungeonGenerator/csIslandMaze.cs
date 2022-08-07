@@ -315,11 +315,12 @@ class IslandFinder
     {
         // These arrays are used to
         // get row and column numbers
-        // of 8 neighbors of a given cell
-        int[] rowNbr = new int[] { -1, -1, -1, 0,
-                                   0, 1, 1, 1 };
-        int[] colNbr = new int[] { -1, 0, 1, -1,
-                                   1, -1, 0, 1 };
+        // of 4 neighbors of a given cell
+        // this needs to be walkable, so only
+        // cardinal directions work 
+
+        int[] rowNbr = new int[] { -1,  0, 0, 1 };
+        int[] colNbr = new int[] {  0, -1, 1, 0 };
 
         // Mark this cell
         // as visited
@@ -352,7 +353,7 @@ class IslandFinder
 
         // Recur for all
         // connected neighbours
-        for (int k = 0; k < 8; ++k)
+        for (int k = 0; k < 4; ++k)
         {
             if (isSafe(M, row + rowNbr[k], col + colNbr[k], visited))
             {
