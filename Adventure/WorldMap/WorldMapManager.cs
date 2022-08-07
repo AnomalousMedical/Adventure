@@ -53,6 +53,7 @@ namespace Adventure.WorldMap
             {
                 o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
             });
+            airship.CreatePhysics();
         }
 
         public void Dispose()
