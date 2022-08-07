@@ -265,10 +265,11 @@ namespace Adventure.WorldMap
             }
         }
 
-        public void StopMovement()
+        public void MakeIdle()
         {
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
+            this.sprite.SetAnimation("down");
         }
 
         private void SetupInput()

@@ -79,7 +79,7 @@ namespace Adventure.WorldMap
         public void MovePlayer(in Vector3 loc)
         {
             player.SetLocation(loc);
-            player.StopMovement();
+            player.MakeIdle();
         }
 
         public void SetPlayerVisible(bool visible)
@@ -118,7 +118,7 @@ namespace Adventure.WorldMap
             var loc = worldMapInstance?.GetPortalLocation(portalIndex + 1) ?? Vector3.Zero;
 
             player.SetLocation(loc);
-            player.StopMovement();
+            player.MakeIdle();
         }
 
         public void Update(Clock clock)
