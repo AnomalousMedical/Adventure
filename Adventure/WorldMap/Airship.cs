@@ -400,7 +400,7 @@ namespace Adventure.WorldMap
                 cameraMover.Position = currentPosition + cameraOffset;
 
                 var cell = map.GetCellForLocation(currentPosition);
-                if (cell != csIslandMaze.EmptyCell)
+                if (map.CanLand(cell))
                 {
                     contextMenu.HandleContext("Land", Land, gamepadId);
                 }

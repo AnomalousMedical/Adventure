@@ -569,14 +569,24 @@ namespace Adventure.WorldMap
             }
         }
 
-        public int GetCellForLocation(Vector3 currentPosition)
+        public IntVector2 GetCellForLocation(Vector3 currentPosition)
         {
             var square = new IntVector2
             (
                 Math.Max(0, (int)(currentPosition.x / mapMesh.MapUnitX) % map.MapX), 
                 Math.Max(0, (int)(currentPosition.z / mapMesh.MapUnitZ) % map.MapY)
             );
-            return map.Map[square.x, square.y];
+            return square;
+        }
+
+        public int GetCellType(in IntVector2 cell)
+        {
+            return map.Map[cell.x, cell.y];
+        }
+
+        public bool CanLand(in IntVector2 cell)
+        {
+            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell);
         }
 
         private void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom)
