@@ -15,6 +15,7 @@ namespace Adventure.WorldMap
 
         void MovePlayerToArea(int area);
         void SetupWorldMap();
+        void GoToNextPortal(int portalIndex);
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -88,6 +89,14 @@ namespace Adventure.WorldMap
                 await worldMapInstance.WaitForLoad();
                 worldMapInstance.SetupPhysics();
             });
+        }
+
+        public void GoToNextPortal(int portalIndex)
+        {
+            var loc = worldMapInstance?.GetPortalLocation(portalIndex + 1) ?? Vector3.Zero;
+
+            player.SetLocation(loc);
+            player.StopMovement();
         }
     }
 }

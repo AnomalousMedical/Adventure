@@ -51,6 +51,7 @@ namespace Adventure.WorldMap
         private Vector3 currentPosition = Vector3.Zero;
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
         private IntVector2[] areaLocations;
+        private List<IntVector2> portalLocations = new List<IntVector2>();
 
         public bool PhysicsActive => physicsActive;
 
@@ -143,6 +144,19 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
+        }
+
+        /// <summary>
+        /// Get the location of the portal indicated by index. The portal will be normalized, so even if you request something outside the range you will
+        /// get that portal within the range of available portals.
+        /// </summary>
+        /// <param name="portalIndex"></param>
+        public Vector3 GetPortalLocation(int portalIndex)
+        {
+            portalIndex %= portalLocations.Count;
+            var square = portalLocations[portalIndex];
+
+            return mapMesh.PointToVector(square.x, square.y);
         }
 
         public void RequestDestruction()
@@ -366,6 +380,10 @@ namespace Adventure.WorldMap
             usedIslands[map.IslandSizeOrder[1]] = true;
             usedIslands[map.IslandSizeOrder[2]] = true;
 
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[0]], usedSquares, placementRandom);
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[1]], usedSquares, placementRandom);
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom);
+
             foreach (var area in areaBuilders.Where(i => i.Phase == 0))
             {
                 var islandIndex = map.IslandSizeOrder[0];
@@ -469,12 +487,24 @@ namespace Adventure.WorldMap
                         island = map.IslandInfo[islandIndex];
                         square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
                         break;
+                    case 5:
+                        islandIndex = map.IslandSizeOrder[2];
+                        island = map.IslandInfo[islandIndex];
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+                        break;
                     default:
                         islandIndex = GetUnusedIsland(usedIslands, placementRandom);
                         island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom);
+                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
                         break;
                 }
+
+                if (!usedIslands[islandIndex])
+                {
+                    //First visit in this phase, add a portal
+                    AddPortal(island, usedSquares, placementRandom);
+                }
+
                 usedIslands[islandIndex] = true;
 
                 var loc = mapMesh.PointToVector(square.x, square.y);
@@ -521,6 +551,28 @@ namespace Adventure.WorldMap
 
                 placeables.Add(entrance);
             }
+        }
+
+        private void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom)
+        {
+            var index = portalLocations.Count;
+            var square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
+            portalLocations.Add(square);
+            usedSquares[square.x, square.y] = true;
+            var loc = mapMesh.PointToVector(square.x, square.y);
+
+            var portal = objectResolver.Resolve<IslandPortal, IslandPortal.Description>(o =>
+            {
+                o.PortalIndex = index;
+                o.MapOffset = loc;
+                o.Translation = currentPosition + o.MapOffset;
+                var entrance = new Assets.World.Portal();
+                o.Sprite = entrance.CreateSprite();
+                o.SpriteMaterial = entrance.CreateMaterial();
+                o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+            });
+
+            placeables.Add(portal);
         }
     }
 }

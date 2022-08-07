@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
-    class ZoneEntrance : IDisposable, IZonePlaceable
+    class IslandPortal : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
-            public int ZoneIndex { get; set; }
+            public int PortalIndex { get; set; }
 
             public Vector3 MapOffset { get; set; }
 
@@ -33,7 +33,7 @@ namespace Adventure.WorldMap
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
-        private readonly IWorldMapGameState worldMapGameState;
+        private readonly IWorldMapManager worldMapManager;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -43,13 +43,13 @@ namespace Adventure.WorldMap
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
-        private int zoneIndex;
+        private int portalIndex;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public ZoneEntrance(
+        public IslandPortal(
             RTInstances<IWorldMapGameState> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -58,17 +58,17 @@ namespace Adventure.WorldMap
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            IWorldMapGameState worldMapGameState)
+            IWorldMapManager worldMapManager)
         {
             this.sprite = description.Sprite;
-            this.zoneIndex = description.ZoneIndex;
+            this.portalIndex = description.PortalIndex;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
-            this.worldMapGameState = worldMapGameState;
+            this.worldMapManager = worldMapManager;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -80,7 +80,7 @@ namespace Adventure.WorldMap
 
             this.tlasData = new TLASInstanceData()
             {
-                InstanceName = RTId.CreateId("ZoneEntrance"),
+                InstanceName = RTId.CreateId("IslandPortal"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
@@ -164,7 +164,7 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            worldMapGameState.RequestZone(zoneIndex);
+            worldMapManager.GoToNextPortal(portalIndex);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
