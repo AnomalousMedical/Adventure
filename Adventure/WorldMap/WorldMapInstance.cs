@@ -569,6 +569,16 @@ namespace Adventure.WorldMap
             }
         }
 
+        public int GetCellForLocation(Vector3 currentPosition)
+        {
+            var square = new IntVector2
+            (
+                Math.Max(0, (int)(currentPosition.x / mapMesh.MapUnitX) % map.MapX), 
+                Math.Max(0, (int)(currentPosition.z / mapMesh.MapUnitZ) % map.MapY)
+            );
+            return map.Map[square.x, square.y];
+        }
+
         private void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom)
         {
             var index = portalLocations.Count;

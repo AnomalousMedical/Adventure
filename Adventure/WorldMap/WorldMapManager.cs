@@ -49,12 +49,6 @@ namespace Adventure.WorldMap
                 o.CharacterSheet = playerCharacter.CharacterSheet;
                 o.Gamepad = GamepadId.Pad1;
             });
-
-            airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
-            {
-                o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
-            });
-            airship.CreatePhysics();
         }
 
         public void Dispose()
@@ -83,6 +77,7 @@ namespace Adventure.WorldMap
 
         public void SetupWorldMap()
         {
+            airship?.RequestDestruction();
             worldMapInstance?.RequestDestruction();
 
             worldMapInstance = objectResolver.Resolve<WorldMapInstance, WorldMapInstance.Description>(o =>
@@ -90,6 +85,12 @@ namespace Adventure.WorldMap
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
                 o.Areas = worldDatabase.AreaBuilders;
                 o.AreaLocationSeed = worldDatabase.CurrentSeed;
+            });
+
+            airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
+            {
+                o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
+                o.Map = worldMapInstance;
             });
 
             scopedCoroutine.RunTask(async () =>

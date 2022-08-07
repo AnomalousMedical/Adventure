@@ -27,6 +27,7 @@ namespace Adventure.WorldMap
             public EventLayers EventLayer { get; set; } = EventLayers.Airship;
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
+            public WorldMapInstance Map { get; set; }
         }
 
         private readonly TLASInstanceData instanceData;
@@ -43,6 +44,7 @@ namespace Adventure.WorldMap
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
+        private readonly IDestructionRequest destructionRequest;
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
@@ -50,6 +52,7 @@ namespace Adventure.WorldMap
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
         private Vector3 cameraOffset = new Vector3(0, 3, -12);
+        private readonly WorldMapInstance map;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -83,9 +86,11 @@ namespace Adventure.WorldMap
             IBepuScene<IWorldMapGameState> bepuScene,
             IContextMenu contextMenu,
             EventManager eventManager,
-            CameraMover cameraMover
+            CameraMover cameraMover,
+            IDestructionRequest destructionRequest
         )
         {
+            this.map = description.Map;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -111,6 +116,7 @@ namespace Adventure.WorldMap
             this.contextMenu = contextMenu;
             this.eventManager = eventManager;
             this.cameraMover = cameraMover;
+            this.destructionRequest = destructionRequest;
 
             //Events
             eventManager.addEvent(moveForward);
@@ -131,8 +137,12 @@ namespace Adventure.WorldMap
                 Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
             };
 
+            CreatePhysics();
+
             coroutine.RunTask(async () =>
             {
+                using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
+
                 this.cubeTexture = await textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Metal032_1K", reflective: true));
 
                 var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
@@ -166,6 +176,11 @@ namespace Adventure.WorldMap
             eventManager.removeEvent(moveRight);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
+        }
+
+        public void RequestDestruction()
+        {
+            destructionRequest.RequestDestruction();
         }
 
         public void SetTransform(in Vector3 trans, in Quaternion rot)
@@ -342,8 +357,6 @@ namespace Adventure.WorldMap
         {
             if (active)
             {
-                contextMenu.HandleContext("Land", Land, gamepadId);
-
                 Vector2 lStick = new Vector2();
                 bool readJoystick = true;
                 if (moveForward.Down)
@@ -385,6 +398,16 @@ namespace Adventure.WorldMap
 
                 instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
                 cameraMover.Position = currentPosition + cameraOffset;
+
+                var cell = map.GetCellForLocation(currentPosition);
+                if (cell != csIslandMaze.EmptyCell)
+                {
+                    contextMenu.HandleContext("Land", Land, gamepadId);
+                }
+                else
+                {
+                    contextMenu.ClearContext(Land);
+                }
             }
         }
     }
