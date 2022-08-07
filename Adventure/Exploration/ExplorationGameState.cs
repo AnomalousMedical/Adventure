@@ -35,6 +35,7 @@ namespace Adventure
         private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IExplorationMenu explorationMenu;
         private readonly IContextMenu contextMenu;
+        private readonly EventManager eventManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -48,13 +49,15 @@ namespace Adventure
             IZoneManager zoneManager,
             RTInstances<IZoneManager> rtInstances,
             IExplorationMenu explorationMenu,
-            IContextMenu contextMenu)
+            IContextMenu contextMenu,
+            EventManager eventManager)
         {
             this.bepuScene = bepuScene;
             this.zoneManager = zoneManager;
             this.rtInstances = rtInstances;
             this.explorationMenu = explorationMenu;
             this.contextMenu = contextMenu;
+            this.eventManager = eventManager;
             coroutineRunner.RunTask(zoneManager.Restart());
         }
 
@@ -68,6 +71,10 @@ namespace Adventure
         {
             //Stopping them both directions
             zoneManager.StopPlayer();
+            if (active)
+            {
+                eventManager[EventLayers.Exploration].makeFocusLayer();
+            }
         }
 
         public bool AllowBattles { get; set; } = true;

@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Exploration.Menu;
+using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
@@ -34,6 +35,7 @@ namespace Adventure.WorldMap
         private CC0TextureResult cubeTexture;
         private BlasInstanceData blasInstanceData;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IContextMenu contextMenu;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -55,7 +57,8 @@ namespace Adventure.WorldMap
             ActiveTextures activeTextures,
             Persistence persistence,
             ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
-            IBepuScene<IWorldMapGameState> bepuScene
+            IBepuScene<IWorldMapGameState> bepuScene,
+            IContextMenu contextMenu
         )
         {
             var scale = description.Scale;
@@ -74,6 +77,7 @@ namespace Adventure.WorldMap
             this.activeTextures = activeTextures;
             this.collidableIdentifier = collidableIdentifier;
             this.bepuScene = bepuScene;
+            this.contextMenu = contextMenu;
             this.instanceData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Airship"),
@@ -166,22 +170,22 @@ namespace Adventure.WorldMap
 
         private void HandleCollision(CollisionEvent evt)
         {
-            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
-               || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
+               || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                //contextMenu.HandleContext("Enter", Enter, player.GamepadId);
+                contextMenu.HandleContext("Enter", Enter, player.GamepadId);
             }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
         {
-            //contextMenu.ClearContext(Enter);
+            contextMenu.ClearContext(Enter);
         }
 
-        //private void Enter(ContextMenuArgs args)
-        //{
-        //    contextMenu.ClearContext(Enter);
-        //    worldMapGameState.RequestZone(zoneIndex);
-        //}
+        private void Enter(ContextMenuArgs args)
+        {
+            contextMenu.ClearContext(Enter);
+            //worldMapGameState.RequestZone(zoneIndex);
+        }
     }
 }

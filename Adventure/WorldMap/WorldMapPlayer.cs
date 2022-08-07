@@ -30,7 +30,7 @@ namespace Adventure.WorldMap
 
             public int PrimaryHand = RightHand;
             public int SecondaryHand = LeftHand;
-            public EventLayers EventLayer = EventLayers.Exploration;
+            public EventLayers EventLayer = EventLayers.WorldMap;
             public GamepadId Gamepad = GamepadId.Pad1;
             public String PlayerSprite { get; set; }
             public CharacterSheet CharacterSheet { get; set; }
@@ -436,24 +436,29 @@ namespace Adventure.WorldMap
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)
         {
-            if (eventLayer.EventProcessingAllowed && allowJoystickInput)
+            if (eventLayer.EventProcessingAllowed) 
             {
-                var pad = eventLayer.getGamepad(gamepadId);
-                var movementDir = pad.LStick;
-                characterMover.movementDirection = movementDir.ToSystemNumerics();
-            }
-
-            if(characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
-            {
-                switch (sprite.CurrentAnimationName)
+                if (allowJoystickInput)
                 {
-                    case "up":
-                    case "down":
-                    case "left":
-                    case "right":
-                        sprite.SetAnimation($"stand-{sprite.CurrentAnimationName}");
-                        break;
+                    var pad = eventLayer.getGamepad(gamepadId);
+                    var movementDir = pad.LStick;
+                    characterMover.movementDirection = movementDir.ToSystemNumerics();
                 }
+
+                if (characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
+                {
+                    switch (sprite.CurrentAnimationName)
+                    {
+                        case "up":
+                        case "down":
+                        case "left":
+                        case "right":
+                            sprite.SetAnimation($"stand-{sprite.CurrentAnimationName}");
+                            break;
+                    }
+                }
+
+                eventLayer.alertEventsHandled();
             }
         }
 

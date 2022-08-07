@@ -11,5 +11,6 @@ namespace Adventure
         Gui, 
         Battle,
         Exploration,
+        WorldMap
     }
 }

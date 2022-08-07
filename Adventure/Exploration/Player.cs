@@ -431,24 +431,29 @@ namespace Adventure
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)
         {
-            if (eventLayer.EventProcessingAllowed && allowJoystickInput)
+            if (eventLayer.EventProcessingAllowed)
             {
-                var pad = eventLayer.getGamepad(gamepadId);
-                var movementDir = pad.LStick;
-                characterMover.movementDirection = movementDir.ToSystemNumerics();
-            }
-
-            if(characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
-            {
-                switch (sprite.CurrentAnimationName)
+                if (allowJoystickInput)
                 {
-                    case "up":
-                    case "down":
-                    case "left":
-                    case "right":
-                        sprite.SetAnimation($"stand-{sprite.CurrentAnimationName}");
-                        break;
+                    var pad = eventLayer.getGamepad(gamepadId);
+                    var movementDir = pad.LStick;
+                    characterMover.movementDirection = movementDir.ToSystemNumerics();
                 }
+
+                if (characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
+                {
+                    switch (sprite.CurrentAnimationName)
+                    {
+                        case "up":
+                        case "down":
+                        case "left":
+                        case "right":
+                            sprite.SetAnimation($"stand-{sprite.CurrentAnimationName}");
+                            break;
+                    }
+                }
+
+                eventLayer.alertEventsHandled();
             }
         }
 

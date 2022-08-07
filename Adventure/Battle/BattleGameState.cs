@@ -25,6 +25,7 @@ namespace Adventure.Battle
         private readonly RTInstances<IBattleManager> rtInstances;
         private readonly Party party;
         private readonly PotionCreator potionCreator;
+        private readonly EventManager eventManager;
         private IGameState gameOverState;
         private IGameState returnState;
         private BattleTrigger battleTrigger;
@@ -35,13 +36,15 @@ namespace Adventure.Battle
             IBattleManager battleManager,
             RTInstances<IBattleManager> rtInstances,
             Party party,
-            PotionCreator potionCreator
+            PotionCreator potionCreator,
+            EventManager eventManager
         )
         {
             this.battleManager = battleManager;
             this.rtInstances = rtInstances;
             this.party = party;
             this.potionCreator = potionCreator;
+            this.eventManager = eventManager;
         }
 
         public RTInstances Instances => rtInstances;
@@ -61,6 +64,7 @@ namespace Adventure.Battle
         {
             if (active)
             {
+                eventManager[EventLayers.Battle].makeFocusLayer();
                 int battleSeed;
                 int level;
                 bool boss = false;

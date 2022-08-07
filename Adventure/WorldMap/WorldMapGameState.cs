@@ -35,6 +35,7 @@ namespace Adventure.WorldMap
         private readonly IContextMenu contextMenu;
         private readonly IWorldDatabase worldDatabase;
         private readonly IExplorationMenu explorationMenu;
+        private readonly EventManager eventManager;
         private IExplorationGameState explorationState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpSliderHorizontal zoneSelect;
@@ -59,7 +60,8 @@ namespace Adventure.WorldMap
             IBepuScene<IWorldMapGameState> bepuScene,
             IContextMenu contextMenu,
             IWorldDatabase worldDatabase,
-            IExplorationMenu explorationMenu
+            IExplorationMenu explorationMenu,
+            EventManager eventManager
         )
         {
             this.sharpGui = sharpGui;
@@ -74,6 +76,7 @@ namespace Adventure.WorldMap
             this.contextMenu = contextMenu;
             this.worldDatabase = worldDatabase;
             this.explorationMenu = explorationMenu;
+            this.eventManager = eventManager;
             worldMapManager.SetupWorldMap();
             layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
@@ -89,6 +92,7 @@ namespace Adventure.WorldMap
             persistence.Current.Player.InWorld = active;
             if (active)
             {
+                eventManager[EventLayers.WorldMap].makeFocusLayer();
                 nextState = this;
                 persistence.Current.BattleTriggers.ClearData();
                 if (persistence.Current.Player.WorldPosition == null)
