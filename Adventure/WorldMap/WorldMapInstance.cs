@@ -300,6 +300,22 @@ namespace Adventure.WorldMap
                     }
                     else
                     {
+                        Console.Write('X');
+                    }
+                }
+                Console.WriteLine();
+            }
+
+            for (int mapY = mapHeight - 1; mapY > -1; --mapY)
+            {
+                for (int mapX = 0; mapX < mapWidth; ++mapX)
+                {
+                    if (map[mapX, mapY] == csIslandMaze.EmptyCell)
+                    {
+                        Console.Write(' ');
+                    }
+                    else
+                    {
                         Console.Write(map[mapX, mapY]);
                     }
                 }
