@@ -16,6 +16,7 @@ namespace Adventure.WorldMap
         void MovePlayerToArea(int area);
         void SetupWorldMap();
         void GoToNextPortal(int portalIndex);
+        void Update(Clock clock);
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -61,7 +62,7 @@ namespace Adventure.WorldMap
             objectResolver.Dispose();
         }
 
-        public bool PhysicsActive => worldMapInstance?.PhysicsActive == true;
+        public bool PhysicsActive => worldMapInstance?.PhysicsActive == true && !airship.Active;
 
         public void MovePlayerToArea(int area)
         {
@@ -104,6 +105,11 @@ namespace Adventure.WorldMap
 
             player.SetLocation(loc);
             player.StopMovement();
+        }
+
+        public void Update(Clock clock)
+        {
+            airship.UpdateInput(clock);
         }
     }
 }

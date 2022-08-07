@@ -125,6 +125,7 @@ namespace Adventure.WorldMap
                 {
                     bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
                 }
+                worldMapManager.Update(clock);
                 contextMenu.Update();
             }
 

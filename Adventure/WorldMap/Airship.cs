@@ -22,7 +22,7 @@ namespace Adventure.WorldMap
     {
         public class Description : SceneObjectDesc
         {
-            public GamepadId Gamepad { get; set; } = GamepadId.Pad1;
+            public GamepadId GamepadId { get; set; } = GamepadId.Pad1;
 
             public EventLayers EventLayer { get; set; } = EventLayers.Airship;
 
@@ -42,13 +42,14 @@ namespace Adventure.WorldMap
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
-        private readonly IWorldMapGameState worldMapGameState;
+        private readonly CameraMover cameraMover;
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
+        private Vector3 cameraOffset = new Vector3(0, 3, -12);
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -61,7 +62,11 @@ namespace Adventure.WorldMap
         ButtonEvent moveBackward;
         ButtonEvent moveRight;
         ButtonEvent moveLeft;
-        ButtonEvent land;
+
+        float moveSpeed = 10.0f;
+        bool active = false;
+
+        public bool Active => active;
 
         public Airship
         (
@@ -77,14 +82,15 @@ namespace Adventure.WorldMap
             ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
             IBepuScene<IWorldMapGameState> bepuScene,
             IContextMenu contextMenu,
-            EventManager eventManager
+            EventManager eventManager,
+            CameraMover cameraMover
         )
         {
+            this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
             this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
             this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
-            this.land = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_LSHIFT });
 
             var scale = description.Scale;
             var halfScale = scale.y / 2f;
@@ -104,13 +110,13 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.contextMenu = contextMenu;
             this.eventManager = eventManager;
+            this.cameraMover = cameraMover;
 
             //Events
             eventManager.addEvent(moveForward);
             eventManager.addEvent(moveBackward);
             eventManager.addEvent(moveLeft);
             eventManager.addEvent(moveRight);
-            eventManager.addEvent(land);
 
             eventLayer = eventManager[description.EventLayer];
             eventLayer.OnUpdate += EventLayer_OnUpdate;
@@ -158,7 +164,6 @@ namespace Adventure.WorldMap
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
-            eventManager.removeEvent(land);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
         }
@@ -221,19 +226,30 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Enter", Enter, player.GamepadId);
+                contextMenu.HandleContext("Take Off", TakeOff, player.GamepadId);
             }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
         {
-            contextMenu.ClearContext(Enter);
+            contextMenu.ClearContext(TakeOff);
         }
 
-        private void Enter(ContextMenuArgs args)
+        private void TakeOff(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(Enter);
+            contextMenu.ClearContext(TakeOff);
             eventLayer.makeFocusLayer();
+            active = true;
+            currentPosition.y = 3.14f;
+        }
+
+        private void Land(ContextMenuArgs args)
+        {
+            contextMenu.ClearContext(Land);
+            landEventLayer.makeFocusLayer();
+            active = false;
+            currentPosition.y = 1.1747187f; //TODO: Find ground location for real
+            instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
         private void SetupInput()
@@ -303,21 +319,6 @@ namespace Adventure.WorldMap
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
                 }
             };
-            land.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    landEventLayer.makeFocusLayer();
-                }
-            };
-            land.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                }
-            };
         }
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)
@@ -332,6 +333,56 @@ namespace Adventure.WorldMap
                 }
 
                 eventLayer.alertEventsHandled();
+            }
+        }
+
+        public void UpdateInput(Clock clock)
+        {
+            if (active)
+            {
+                contextMenu.HandleContext("Land", Land, gamepadId);
+
+                Vector2 lStick = new Vector2();
+                bool readJoystick = true;
+                if (moveForward.Down)
+                {
+                    lStick.y = 1f;
+                    readJoystick = false;
+                }
+
+                if (moveBackward.Down)
+                {
+                    lStick.y = -1f;
+                    readJoystick = false;
+                }
+
+                if (moveLeft.Down)
+                {
+                    lStick.x = -1f;
+                    readJoystick = false;
+                }
+
+                if (moveRight.Down)
+                {
+                    lStick.x = 1f;
+                    readJoystick = false;
+                }
+
+                if (readJoystick)
+                {
+                    var pad = eventLayer.getGamepad(gamepadId);
+                    lStick = pad.LStick;
+                }
+                else
+                {
+                    lStick.normalize();
+                }
+
+                currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
+                currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
+
+                instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+                cameraMover.Position = currentPosition + cameraOffset;
             }
         }
     }
