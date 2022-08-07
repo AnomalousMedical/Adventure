@@ -94,8 +94,10 @@ namespace Adventure
             services.AddSingleton<IGameOverGameState, GameOverGameState>();
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
-            services.AddScoped<WorldMapPlayer, WorldMapPlayer>();
-            services.AddScoped<WorldMapPlayer.Description, WorldMapPlayer.Description>();
+            services.AddScoped<WorldMapPlayer>();
+            services.AddScoped<WorldMapPlayer.Description>();
+            services.AddScoped<Airship>();
+            services.AddScoped<Airship.Description>();
             services.AddScoped<Player>();
             services.AddScoped<Player.Description>();
             services.AddScoped<BattlePlayer>();

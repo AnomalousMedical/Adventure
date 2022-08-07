@@ -26,6 +26,7 @@ namespace Adventure.WorldMap
         private readonly IScopedCoroutine scopedCoroutine;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
+        private Airship airship;
 
         public WorldMapManager
         (
@@ -46,6 +47,11 @@ namespace Adventure.WorldMap
                 o.PlayerSprite = playerCharacter.PlayerSprite;
                 o.CharacterSheet = playerCharacter.CharacterSheet;
                 o.Gamepad = GamepadId.Pad1;
+            });
+
+            airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
+            {
+                o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
             });
         }
 
