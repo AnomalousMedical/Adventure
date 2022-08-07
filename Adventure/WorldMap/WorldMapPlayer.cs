@@ -54,6 +54,7 @@ namespace Adventure.WorldMap
 
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
+        private bool graphicsActive = false;
 
         private Attachment<IZoneManager> mainHandItem;
         private Attachment<IZoneManager> offHandItem;
@@ -211,9 +212,7 @@ namespace Adventure.WorldMap
                     return; //Stop loading
                 }
 
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                SetGraphicsActive(true);
 
                 sprite.FrameChanged += Sprite_FrameChanged;
                 Sprite_FrameChanged(sprite);
@@ -241,10 +240,29 @@ namespace Adventure.WorldMap
             bepuScene.Simulation.Shapes.Remove(shapeIndex);
             sprite.FrameChanged -= Sprite_FrameChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
+            SetGraphicsActive(false);
             objectResolver.Dispose();
+        }
+
+        public void SetGraphicsActive(bool active)
+        {
+            if (graphicsActive != active)
+            {
+                if (active)
+                {
+                    rtInstances.AddTlasBuild(tlasData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                    graphicsActive = true;
+                }
+                else
+                {
+                    rtInstances.RemoveSprite(sprite);
+                    rtInstances.RemoveShaderTableBinder(Bind);
+                    rtInstances.RemoveTlasBuild(tlasData);
+                    graphicsActive = false;
+                }
+            }
         }
 
         public void StopMovement()

@@ -262,6 +262,7 @@ namespace Adventure.WorldMap
             active = true;
             currentPosition.y = 3.14f;
             DestroyPhysics();
+            worldMapManager.SetPlayerVisible(false);
         }
 
         private void Land(ContextMenuArgs args)
@@ -276,6 +277,7 @@ namespace Adventure.WorldMap
             instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
             CreatePhysics();
             worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
+            worldMapManager.SetPlayerVisible(true);
         }
 
         private void SetupInput()

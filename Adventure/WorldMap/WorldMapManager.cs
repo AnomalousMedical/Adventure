@@ -18,6 +18,7 @@ namespace Adventure.WorldMap
         void GoToNextPortal(int portalIndex);
         void Update(Clock clock);
         void MovePlayer(in Vector3 loc);
+        void SetPlayerVisible(bool visible);
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -79,6 +80,11 @@ namespace Adventure.WorldMap
         {
             player.SetLocation(loc);
             player.StopMovement();
+        }
+
+        public void SetPlayerVisible(bool visible)
+        {
+            player.SetGraphicsActive(visible);
         }
 
         public void SetupWorldMap()
