@@ -23,6 +23,8 @@ namespace Adventure.Services
         BiomeType Biome { get; }
 
         int Index { get; }
+
+        int IndexInPhase { get; }
     }
 
     class AreaBuilder : IAreaBuilder
@@ -49,6 +51,8 @@ namespace Adventure.Services
         public int Phase { get; set; }
 
         public int Index { get; private set; }
+
+        public int IndexInPhase { get; set; } = int.MaxValue;
 
         public IEnumerable<int> GateZones { get; set; }
 

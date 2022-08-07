@@ -152,8 +152,12 @@ namespace Adventure.Services
             areaBuilders = new List<IAreaBuilder>(27);
             var weaknessRandom = new Random(newSeed);
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
-            _worldMap = new WorldMapData(newSeed);
             areaBuilders = SetupAreaBuilder(monsterInfo).ToList();
+            _worldMap = new WorldMapData(newSeed);
+            //TODO: need to check maps
+            //3 largest islands need to have enough spaces for each phase
+            //World needs enough islands to cover all zones
+            //remove extra islands
         }
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo)
@@ -168,6 +172,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 0;
             areaBuilder.EndZone = 1;
             areaBuilder.Phase = 0;
+            areaBuilder.IndexInPhase = 0;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             yield return areaBuilder;
@@ -177,6 +182,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 2;
             areaBuilder.EndZone = 3;
             areaBuilder.Phase = 1;
+            areaBuilder.IndexInPhase = 1;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             yield return areaBuilder;
@@ -185,6 +191,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 4;
             areaBuilder.EndZone = 5;
             areaBuilder.Phase = 1;
+            areaBuilder.IndexInPhase = 2;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             yield return areaBuilder;
@@ -193,6 +200,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 6;
             areaBuilder.EndZone = 7;
             areaBuilder.Phase = 1;
+            areaBuilder.IndexInPhase = 3;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             yield return areaBuilder;
@@ -201,6 +209,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 8;
             areaBuilder.EndZone = 9;
             areaBuilder.Phase = 1;
+            areaBuilder.IndexInPhase = 4;
             areaBuilder.IncludeStrongElement = false;
             yield return areaBuilder;
 
@@ -209,36 +218,42 @@ namespace Adventure.Services
             areaBuilder.StartZone = 10;
             areaBuilder.EndZone = 11;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 0;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 12;
             areaBuilder.EndZone = 13;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 1;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 14;
             areaBuilder.EndZone = 15;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 2;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 16;
             areaBuilder.EndZone = 17;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 3;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 18;
             areaBuilder.EndZone = 19;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 4;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 20;
             areaBuilder.EndZone = 21;
             areaBuilder.Phase = 2;
+            areaBuilder.IndexInPhase = 5;
             yield return areaBuilder;
 
             //Phase 3
@@ -246,36 +261,42 @@ namespace Adventure.Services
             areaBuilder.StartZone = 22;
             areaBuilder.EndZone = 23;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 0;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 24;
             areaBuilder.EndZone = 25;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 1;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 26;
             areaBuilder.EndZone = 27;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 2;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 28;
             areaBuilder.EndZone = 29;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 3;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 30;
             areaBuilder.EndZone = 31;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 4;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 32;
             areaBuilder.EndZone = 33;
             areaBuilder.Phase = 3;
+            areaBuilder.IndexInPhase = 5;
             yield return areaBuilder;
 
             //Phase 4
@@ -283,6 +304,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 34;
             areaBuilder.EndZone = 36;
             areaBuilder.Phase = 4;
+            areaBuilder.IndexInPhase = 0;
             yield return areaBuilder;
 
             //Bonus 1
