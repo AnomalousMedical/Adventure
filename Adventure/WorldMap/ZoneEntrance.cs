@@ -38,7 +38,7 @@ namespace Adventure.WorldMap
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -55,7 +55,7 @@ namespace Adventure.WorldMap
             IScopedCoroutine coroutine,
             IBepuScene<IWorldMapGameState> bepuScene,
             Description description,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             IWorldMapGameState worldMapGameState)
@@ -149,8 +149,8 @@ namespace Adventure.WorldMap
 
         private void HandleCollision(CollisionEvent evt)
         {
-            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
-               || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
+               || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
                 contextMenu.HandleContext("Enter", Enter, player.GamepadId);
             }
