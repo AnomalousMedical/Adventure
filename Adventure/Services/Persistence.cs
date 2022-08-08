@@ -93,6 +93,8 @@ namespace Adventure.Services
 
             public Vector3? WorldPosition { get; set; }
 
+            public Vector3? AirshipPosition { get; set; }
+
             public int? RespawnZone { get; set; }
 
             public int LastArea { get; set; }
@@ -106,6 +108,8 @@ namespace Adventure.Services
             public Vector3? LootDropPosition { get; set; }
 
             public long LootDropGold { get; set; }
+
+            public bool InAirship { get; set; }
         }
 
         public class TimeData

@@ -40,6 +40,7 @@ namespace Adventure.WorldMap
         private readonly RayTracingRenderer renderer;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
+        private readonly Persistence persistence;
         private PrimaryHitShader primaryHitShader;
         private CC0TextureResult cubeTexture;
         private BlasInstanceData blasInstanceData;
@@ -56,6 +57,7 @@ namespace Adventure.WorldMap
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
         private Vector3 cameraOffset = new Vector3(0, 3, -12);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 14f);
         private readonly WorldMapInstance map;
 
         private Vector3 currentPosition;
@@ -106,7 +108,7 @@ namespace Adventure.WorldMap
             var halfScale = scale.y / 2f;
             var startPos = persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
-            this.currentPosition = startPos;
+            this.currentPosition = persistence.Current.Player.AirshipPosition ?? startPos;
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
 
@@ -116,6 +118,7 @@ namespace Adventure.WorldMap
             this.renderer = renderer;
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;
+            this.persistence = persistence;
             this.collidableIdentifier = collidableIdentifier;
             this.bepuScene = bepuScene;
             this.contextMenu = contextMenu;
@@ -143,6 +146,11 @@ namespace Adventure.WorldMap
             };
 
             CreatePhysics();
+
+            if (persistence.Current.Player.InAirship)
+            {
+                TakeOff(null);
+            }
 
             coroutine.RunTask(async () =>
             {
@@ -257,6 +265,7 @@ namespace Adventure.WorldMap
 
         private void TakeOff(ContextMenuArgs args)
         {
+            persistence.Current.Player.InAirship = true;
             contextMenu.ClearContext(TakeOff);
             eventLayer.makeFocusLayer();
             active = true;
@@ -267,6 +276,7 @@ namespace Adventure.WorldMap
 
         private void Land(ContextMenuArgs args)
         {
+            persistence.Current.Player.InAirship = false;
             contextMenu.ClearContext(Land);
             landEventLayer.makeFocusLayer();
             active = false;
@@ -274,6 +284,7 @@ namespace Adventure.WorldMap
             var center = map.GetCellCenterpoint(cell);
             currentPosition = center;
             currentPosition.y += currentScale.y / 2.0f;
+            this.persistence.Current.Player.AirshipPosition = this.currentPosition;
             instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
             CreatePhysics();
             worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
@@ -407,8 +418,11 @@ namespace Adventure.WorldMap
                 currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
                 currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
 
+                this.persistence.Current.Player.AirshipPosition = this.currentPosition;
+
                 instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
                 cameraMover.Position = currentPosition + cameraOffset;
+                cameraMover.Orientation = cameraAngle;
 
                 var cell = map.GetCellForLocation(currentPosition);
                 if (map.CanLand(cell))

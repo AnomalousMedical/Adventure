@@ -212,7 +212,7 @@ namespace Adventure.WorldMap
                     return; //Stop loading
                 }
 
-                SetGraphicsActive(true);
+                SetGraphicsActive(!persistence.Current.Player.InAirship);
 
                 sprite.FrameChanged += Sprite_FrameChanged;
                 Sprite_FrameChanged(sprite);
