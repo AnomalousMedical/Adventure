@@ -49,6 +49,7 @@ namespace Adventure.WorldMap
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
@@ -93,7 +94,8 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             EventManager eventManager,
             CameraMover cameraMover,
-            IDestructionRequest destructionRequest
+            IDestructionRequest destructionRequest,
+            IBackgroundMusicPlayer backgroundMusicPlayer
         )
         {
             this.worldMapManager = description.WorldMapManager;
@@ -106,9 +108,8 @@ namespace Adventure.WorldMap
 
             var scale = description.Scale;
             var halfScale = scale.y / 2f;
-            var startPos = persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
-            this.currentPosition = persistence.Current.Player.AirshipPosition ?? startPos;
+            this.currentPosition = persistence.Current.Player.AirshipPosition ?? persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
 
@@ -125,6 +126,7 @@ namespace Adventure.WorldMap
             this.eventManager = eventManager;
             this.cameraMover = cameraMover;
             this.destructionRequest = destructionRequest;
+            this.backgroundMusicPlayer = backgroundMusicPlayer;
 
             //Events
             eventManager.addEvent(moveForward);
@@ -272,6 +274,7 @@ namespace Adventure.WorldMap
             currentPosition.y = 3.14f;
             DestroyPhysics();
             worldMapManager.SetPlayerVisible(false);
+            backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
         }
 
         private void Land(ContextMenuArgs args)
@@ -289,6 +292,7 @@ namespace Adventure.WorldMap
             CreatePhysics();
             worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
             worldMapManager.SetPlayerVisible(true);
+            backgroundMusicPlayer.SetBattleTrack(null);
         }
 
         private void SetupInput()
