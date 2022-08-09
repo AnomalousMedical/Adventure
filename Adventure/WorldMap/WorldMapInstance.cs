@@ -51,7 +51,7 @@ namespace Adventure.WorldMap
         private TypedIndex floorCubeShapeIndex;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private Vector3 currentPosition = Vector3.Zero;
-        private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
+        private List<IWorldMapPlaceable> placeables = new List<IWorldMapPlaceable>();
         private IntVector2[] areaLocations;
         private List<IntVector2> portalLocations = new List<IntVector2>();
         private float mapScale;

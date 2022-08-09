@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
-    class ZoneEntrance : IDisposable, IZonePlaceable
+    class ZoneEntrance : IDisposable, IWorldMapPlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -152,14 +152,6 @@ namespace Adventure.WorldMap
         public void RequestDestruction()
         {
             this.destructionRequest.RequestDestruction();
-        }
-
-        public void SetZonePosition(in Vector3 zonePosition)
-        {
-            //TODO: not supported / needed, remove
-            //currentPosition = zonePosition + mapOffset;
-            //currentPosition.y += currentScale.y / 2;
-            //this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
         private void HandleCollision(CollisionEvent evt)
