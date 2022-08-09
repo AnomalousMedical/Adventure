@@ -27,9 +27,11 @@ namespace Adventure.WorldMap
             public List<IAreaBuilder> Areas { get; set; }
 
             public int AreaLocationSeed { get; set; }
+
+            public float MapScale { get; set; } = 1.0f;
         }
 
-        private readonly TLASInstanceData floorInstanceData;
+        private readonly TLASInstanceData[] floorInstanceData;
         private readonly IDestructionRequest destructionRequest;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
@@ -52,8 +54,12 @@ namespace Adventure.WorldMap
         private List<IZonePlaceable> placeables = new List<IZonePlaceable>();
         private IntVector2[] areaLocations;
         private List<IntVector2> portalLocations = new List<IntVector2>();
+        private float mapScale;
+        private Vector2 mapSize;
 
         public bool PhysicsActive => physicsActive;
+
+        public Vector2 MapSize => mapSize;
 
         CC0TextureResult floorTexture;
         CC0TextureResult wallTexture;
@@ -75,6 +81,11 @@ namespace Adventure.WorldMap
             IBiomeManager biomeManager
         )
         {
+            this.mapScale = description.MapScale;
+            var mapWidth = description.csIslandMaze.MapX * this.mapScale;
+            var mapHeight = description.csIslandMaze.MapY * this.mapScale;
+            this.mapSize = new Vector2(mapWidth, mapHeight);
+
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
             this.textureManager = textureManager;
@@ -85,12 +96,28 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.biomeManager = biomeManager;
             this.map = description.csIslandMaze;
-            this.floorInstanceData = new TLASInstanceData()
+            var transforms = new[]
             {
-                InstanceName = RTId.CreateId("SceneDungeonFloor"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity)
+                new InstanceMatrix(Vector3.Zero, Quaternion.Identity),
+                new InstanceMatrix(new Vector3(0, 0, mapHeight), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(0, 0, -mapHeight), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(mapWidth, 0, 0), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(-mapWidth, 0, 0), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(mapWidth, 0, mapHeight), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(-mapWidth, 0, mapHeight), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(mapWidth, 0, -mapHeight), Quaternion.Identity),
+                new InstanceMatrix(new Vector3(-mapWidth, 0, -mapHeight), Quaternion.Identity),
             };
+            this.floorInstanceData = new TLASInstanceData[9];
+            for(var i = 0; i < floorInstanceData.Length; i++)
+            {
+                this.floorInstanceData[i] = new TLASInstanceData()
+                {
+                    InstanceName = RTId.CreateId("SceneDungeonFloor"),
+                    Mask = RtStructures.OPAQUE_GEOM_MASK,
+                    Transform = transforms[i]
+                };
+            }
 
             coroutineRunner.RunTask(async () =>
             {
@@ -109,7 +136,7 @@ namespace Adventure.WorldMap
 
                     await Task.Run(() =>
                     {
-                        mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: 1.0f, mapUnitY: 1.0f, mapUnitZ: 1.0f);
+                        mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale);
                     });
 
                     await Task.WhenAll
@@ -126,11 +153,14 @@ namespace Adventure.WorldMap
                     this.wallTexture = wallTextureTask.Result;
                     this.lowerFloorTexture = lowerFloorTextureTask.Result;
 
-                    this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
+                    foreach (var data in floorInstanceData)
+                    {
+                        data.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
+                        rtInstances.AddTlasBuild(data);
+                    }
 
                     floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture, this.lowerFloorTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
-                    rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
 
                     var placementRandom = new Random(description.AreaLocationSeed);
@@ -180,7 +210,10 @@ namespace Adventure.WorldMap
             textureManager.TryReturn(lowerFloorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
-            rtInstances.RemoveTlasBuild(floorInstanceData);
+            foreach(var data in floorInstanceData)
+            {
+                rtInstances.RemoveTlasBuild(data);
+            }
         }
 
         public void SetupPhysics()
@@ -258,11 +291,6 @@ namespace Adventure.WorldMap
             staticHandles.Clear();
         }
 
-        public void SetTransform(InstanceMatrix matrix)
-        {
-            this.floorInstanceData.Transform = matrix;
-        }
-
         public Vector3 GetAreaLocation(int area)
         {
             var square = areaLocations[area];
@@ -275,7 +303,10 @@ namespace Adventure.WorldMap
             floorBlasInstanceData.indexOffset = mapMesh.FloorMesh.Instance.IndexOffset;
             fixed (BlasInstanceData* ptr = &floorBlasInstanceData)
             {
-                floorShader.BindSbt(floorInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
+                foreach (var data in floorInstanceData)
+                {
+                    floorShader.BindSbt(data.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
+                }
             }
         }
 

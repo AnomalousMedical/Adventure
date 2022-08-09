@@ -65,6 +65,8 @@ namespace Adventure.WorldMap
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
+        private Rect worldRect;
+
         private GamepadId gamepadId;
         private bool allowJoystickInput = true;
 
@@ -100,6 +102,7 @@ namespace Adventure.WorldMap
         {
             this.worldMapManager = description.WorldMapManager;
             this.map = description.Map;
+            this.worldRect = new Rect(0, 0, map.MapSize.x, map.MapSize.y);
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -421,6 +424,25 @@ namespace Adventure.WorldMap
 
                 currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
                 currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
+
+                if(currentPosition.x < worldRect.Left)
+                {
+                    currentPosition.x += worldRect.Width;
+                }
+                else if (currentPosition.x > worldRect.Right)
+                {
+                    currentPosition.x -= worldRect.Width;
+                }
+
+                //There is a quadrandt mismatch, rects are in the third and the world is in the first
+                if(currentPosition.z < worldRect.Top)
+                {
+                    currentPosition.z += worldRect.Height;
+                }
+                if(currentPosition.z > worldRect.Bottom)
+                {
+                    currentPosition.z -= worldRect.Height;
+                }
 
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
 
