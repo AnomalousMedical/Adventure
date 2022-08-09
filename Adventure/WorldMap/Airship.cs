@@ -112,7 +112,7 @@ namespace Adventure.WorldMap
             var scale = description.Scale;
             var halfScale = scale.y / 2f;
 
-            this.currentPosition = persistence.Current.Player.AirshipPosition ?? persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            this.currentPosition = persistence.Current.Player.AirshipPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
 
@@ -150,13 +150,6 @@ namespace Adventure.WorldMap
                 Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
             };
 
-            CreatePhysics();
-
-            if (persistence.Current.Player.InAirship)
-            {
-                TakeOff(null);
-            }
-
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -175,6 +168,20 @@ namespace Adventure.WorldMap
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
                 blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
+
+                await map.WaitForLoad();
+
+                if (persistence.Current.Player.InAirship)
+                {
+                    TakeOff(null);
+                }
+                else
+                {
+                    this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, halfScale, 0f);
+                    instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+                    CreatePhysics();
+                }
+
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });
@@ -199,20 +206,6 @@ namespace Adventure.WorldMap
         public void RequestDestruction()
         {
             destructionRequest.RequestDestruction();
-        }
-
-        public void SetTransform(in Vector3 trans, in Quaternion rot)
-        {
-            var hasPhysics = physicsCreated;
-            if (hasPhysics)
-            {
-                DestroyPhysics();
-            }
-            this.instanceData.Transform = new InstanceMatrix(trans, rot);
-            if (hasPhysics)
-            {
-                CreatePhysics();
-            }
         }
 
         private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

@@ -118,6 +118,7 @@ namespace Adventure
             services.AddScoped<ZoneConnector.Description>();
             services.AddScoped<IslandPortal>();
             services.AddScoped<IslandPortal.Description>();
+            services.AddScoped<AirshipPortal, AirshipPortal>(); //Uses IslandPortal.Description
             services.AddScoped<WorldMapInstance>();
             services.AddScoped<WorldMapInstance.Description>();
             services.AddScoped<ZoneEntrance>();

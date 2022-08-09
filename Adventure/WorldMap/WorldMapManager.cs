@@ -19,6 +19,7 @@ namespace Adventure.WorldMap
         void Update(Clock clock);
         void MovePlayer(in Vector3 loc);
         void SetPlayerVisible(bool visible);
+        Vector3 GetAirshipPortal();
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -116,6 +117,11 @@ namespace Adventure.WorldMap
         public Vector3 GetPortal(int portalIndex)
         {
             return worldMapInstance?.GetPortalLocation(portalIndex) ?? Vector3.Zero;
+        }
+
+        public Vector3 GetAirshipPortal()
+        {
+            return worldMapInstance?.GetAirshipPortalLocation() ?? Vector3.Zero;
         }
 
         public void Update(Clock clock)

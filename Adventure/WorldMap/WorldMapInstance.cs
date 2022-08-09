@@ -57,10 +57,14 @@ namespace Adventure.WorldMap
         private float mapScale;
         private Vector2 mapSize;
         private Vector3[] transforms;
+        private Vector3 airshipStartPoint;
+        private IntVector2 airshipPortal;
 
         public bool PhysicsActive => physicsActive;
 
         public Vector3[] Transforms => transforms;
+
+        public Vector3 AirshipStartPoint => airshipStartPoint;
 
         public Vector2 MapSize => mapSize;
 
@@ -177,6 +181,11 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
+        }
+
+        internal Vector3 GetAirshipPortalLocation()
+        {
+            return mapMesh.PointToVector(airshipPortal.x, airshipPortal.y);
         }
 
         /// <summary>
@@ -430,6 +439,37 @@ namespace Adventure.WorldMap
             usedIslands[map.IslandSizeOrder[1]] = true;
             usedIslands[map.IslandSizeOrder[2]] = true;
 
+            {
+                //Airship island
+                var islandIndex = map.IslandSizeOrder[map.NumIslands - 1];
+                var island = map.IslandInfo[islandIndex];
+                usedIslands[islandIndex] = true;
+                var square = island.islandPoints.First();
+                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+                usedSquares[square.x, square.y] = true;
+                var loc = mapMesh.PointToVector(square.x, square.y);
+                airshipStartPoint = loc;
+
+                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+                usedSquares[square.x, square.y] = true;
+                airshipPortal = square;
+                loc = mapMesh.PointToVector(square.x, square.y);
+
+                var portal = objectResolver.Resolve<AirshipPortal, IslandPortal.Description>(o =>
+                {
+                    o.PortalIndex = -1;
+                    o.MapOffset = loc;
+                    o.Transforms = transforms;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var entrance = new Assets.World.Portal();
+                    o.Sprite = entrance.CreateSprite();
+                    o.SpriteMaterial = entrance.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(portal);
+            }
+
             AddPortal(map.IslandInfo[map.IslandSizeOrder[0]], usedSquares, placementRandom);
             AddPortal(map.IslandInfo[map.IslandSizeOrder[1]], usedSquares, placementRandom);
             AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom);
@@ -629,7 +669,7 @@ namespace Adventure.WorldMap
 
         public bool CanLand(in IntVector2 cell)
         {
-            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell);
+            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell) && cell != airshipPortal;
         }
 
         private void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom)

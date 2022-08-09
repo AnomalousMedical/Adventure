@@ -154,7 +154,7 @@ namespace Adventure.WorldMap
             this.destructionRequest.RequestDestruction();
         }
 
-        private void HandleCollision(CollisionEvent evt)
+        protected virtual void HandleCollision(CollisionEvent evt)
         {
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
@@ -172,6 +172,7 @@ namespace Adventure.WorldMap
         {
             contextMenu.ClearContext(Enter);
             var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
+            //var portalLoc = worldMapManager.GetAirshipPortal();
             worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
         }
 
