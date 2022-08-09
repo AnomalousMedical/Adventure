@@ -15,7 +15,7 @@ namespace Adventure.WorldMap
 
         void MovePlayerToArea(int area);
         void SetupWorldMap();
-        void GoToNextPortal(int portalIndex);
+        Vector3 GetPortal(int portalIndex);
         void Update(Clock clock);
         void MovePlayer(in Vector3 loc);
         void SetPlayerVisible(bool visible);
@@ -113,12 +113,9 @@ namespace Adventure.WorldMap
             });
         }
 
-        public void GoToNextPortal(int portalIndex)
+        public Vector3 GetPortal(int portalIndex)
         {
-            var loc = worldMapInstance?.GetPortalLocation(portalIndex + 1) ?? Vector3.Zero;
-
-            player.SetLocation(loc);
-            player.MakeIdle();
+            return worldMapInstance?.GetPortalLocation(portalIndex) ?? Vector3.Zero;
         }
 
         public void Update(Clock clock)

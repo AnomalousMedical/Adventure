@@ -171,7 +171,8 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            worldMapManager.GoToNextPortal(portalIndex);
+            var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
+            worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
