@@ -24,6 +24,8 @@ namespace Adventure.WorldMap
 
             public Vector3 MapOffset { get; set; }
 
+            public Vector3[] Transforms { get; set; }
+
             public Sprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
@@ -36,7 +38,7 @@ namespace Adventure.WorldMap
         private readonly IWorldMapGameState worldMapGameState;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASInstanceData tlasData;
+        private readonly TLASInstanceData[] tlasData;
         private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
         private readonly Vector3 mapOffset;
@@ -78,12 +80,16 @@ namespace Adventure.WorldMap
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
-            this.tlasData = new TLASInstanceData()
+            this.tlasData = new TLASInstanceData[description.Transforms.Length];
+            for (var i = 0; i < tlasData.Length; i++)
             {
-                InstanceName = RTId.CreateId("ZoneEntrance"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
-            };
+                this.tlasData[i] = new TLASInstanceData()
+                {
+                    InstanceName = RTId.CreateId("ZoneEntrance"),
+                    Mask = RtStructures.OPAQUE_GEOM_MASK,
+                    Transform = new InstanceMatrix(finalPosition + description.Transforms[i], currentOrientation, currentScale)
+                };
+            }
 
             coroutine.RunTask(async () =>
             {
@@ -91,9 +97,14 @@ namespace Adventure.WorldMap
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
 
-                rtInstances.AddTlasBuild(tlasData);
+                foreach (var data in tlasData)
+                {
+                    spriteInstance.UpdateBlas(data);
+                    rtInstances.AddTlasBuild(data);
+                }
+
                 rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                rtInstances.AddSprite(sprite);
             });
         }
 
@@ -131,7 +142,10 @@ namespace Adventure.WorldMap
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
+            foreach (var data in tlasData)
+            {
+                rtInstances.RemoveTlasBuild(data);
+            }
             DestroyPhysics();
         }
 
@@ -142,9 +156,10 @@ namespace Adventure.WorldMap
 
         public void SetZonePosition(in Vector3 zonePosition)
         {
-            currentPosition = zonePosition + mapOffset;
-            currentPosition.y += currentScale.y / 2;
-            this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+            //TODO: not supported / needed, remove
+            //currentPosition = zonePosition + mapOffset;
+            //currentPosition.y += currentScale.y / 2;
+            //this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
         }
 
         private void HandleCollision(CollisionEvent evt)
@@ -169,7 +184,10 @@ namespace Adventure.WorldMap
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
+            foreach (var data in tlasData)
+            {
+                spriteInstance.Bind(data.InstanceName, sbt, tlas, sprite);
+            }
         }
     }
 }

@@ -56,8 +56,11 @@ namespace Adventure.WorldMap
         private List<IntVector2> portalLocations = new List<IntVector2>();
         private float mapScale;
         private Vector2 mapSize;
+        private Vector3[] transforms;
 
         public bool PhysicsActive => physicsActive;
+
+        public Vector3[] Transforms => transforms;
 
         public Vector2 MapSize => mapSize;
 
@@ -96,26 +99,26 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.biomeManager = biomeManager;
             this.map = description.csIslandMaze;
-            var transforms = new[]
+            transforms = new[]
             {
-                new InstanceMatrix(Vector3.Zero, Quaternion.Identity),
-                new InstanceMatrix(new Vector3(0, 0, mapHeight), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(0, 0, -mapHeight), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(mapWidth, 0, 0), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(-mapWidth, 0, 0), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(mapWidth, 0, mapHeight), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(-mapWidth, 0, mapHeight), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(mapWidth, 0, -mapHeight), Quaternion.Identity),
-                new InstanceMatrix(new Vector3(-mapWidth, 0, -mapHeight), Quaternion.Identity),
+                Vector3.Zero,
+                new Vector3(0, 0, mapHeight),
+                new Vector3(0, 0, -mapHeight),
+                new Vector3(mapWidth, 0, 0),
+                new Vector3(-mapWidth, 0, 0),
+                new Vector3(mapWidth, 0, mapHeight),
+                new Vector3(-mapWidth, 0, mapHeight),
+                new Vector3(mapWidth, 0, -mapHeight),
+                new Vector3(-mapWidth, 0, -mapHeight),
             };
-            this.floorInstanceData = new TLASInstanceData[9];
+            this.floorInstanceData = new TLASInstanceData[transforms.Length];
             for(var i = 0; i < floorInstanceData.Length; i++)
             {
                 this.floorInstanceData[i] = new TLASInstanceData()
                 {
                     InstanceName = RTId.CreateId("SceneDungeonFloor"),
                     Mask = RtStructures.OPAQUE_GEOM_MASK,
-                    Transform = transforms[i]
+                    Transform = new InstanceMatrix(transforms[i], Quaternion.Identity)
                 };
             }
 
@@ -449,6 +452,7 @@ namespace Adventure.WorldMap
                     o.ZoneIndex = area.EndZone; //This is a special case, since the start is an empty square
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
+                    o.Transforms = transforms;
                     var entrance = biome.BackgroundItems[0];
                     o.Sprite = entrance.Asset.CreateSprite();
                     o.SpriteMaterial = entrance.Asset.CreateMaterial();
@@ -491,6 +495,7 @@ namespace Adventure.WorldMap
                     o.ZoneIndex = area.StartZone;
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
+                    o.Transforms = transforms;
                     var entrance = biome.BackgroundItems[0];
                     o.Sprite = entrance.Asset.CreateSprite();
                     o.SpriteMaterial = entrance.Asset.CreateMaterial();
@@ -564,6 +569,7 @@ namespace Adventure.WorldMap
                     o.ZoneIndex = area.StartZone;
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
+                    o.Transforms = transforms;
                     var entrance = biome.BackgroundItems[0];
                     o.Sprite = entrance.Asset.CreateSprite();
                     o.SpriteMaterial = entrance.Asset.CreateMaterial();
@@ -590,6 +596,7 @@ namespace Adventure.WorldMap
                     o.ZoneIndex = area.StartZone;
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
+                    o.Transforms = transforms;
                     var entrance = biome.BackgroundItems[0];
                     o.Sprite = entrance.Asset.CreateSprite();
                     o.SpriteMaterial = entrance.Asset.CreateMaterial();
@@ -637,6 +644,7 @@ namespace Adventure.WorldMap
             {
                 o.PortalIndex = index;
                 o.MapOffset = loc;
+                o.Transforms = transforms;
                 o.Translation = currentPosition + o.MapOffset;
                 var entrance = new Assets.World.Portal();
                 o.Sprite = entrance.CreateSprite();

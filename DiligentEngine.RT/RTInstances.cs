@@ -92,6 +92,11 @@ namespace DiligentEngine.RT
         public void AddSprite(ISprite sprite, TLASInstanceData instanceData, SpriteInstance spriteInstance)
         {
             spriteInstance.UpdateBlas(instanceData);
+            AddSprite(sprite);
+        }
+
+        public void AddSprite(ISprite sprite)
+        {
             sprites.Add(sprite);
         }
 

@@ -47,12 +47,7 @@ namespace DiligentEngine.RT.Sprites
             spriteMaterialManager.Return(spriteMaterial);
         }
 
-        /// <summary>
-        /// This will happen before the bind steps and sets up the tlas instance
-        /// build data for this frame. This actually happens during update sprites,
-        /// but the user will call that before render.
-        /// </summary>
-        internal void UpdateBlas(TLASInstanceData tlasInstanceData)
+        public void UpdateBlas(TLASInstanceData tlasInstanceData)
         {
             tlasInstanceData.pBLAS = spritePlaneBLAS.Instance.BLAS.Obj;
         }
