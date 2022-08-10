@@ -1,4 +1,5 @@
 ﻿using Adventure.Exploration.Menu;
+using Adventure.Services;
 using BepuPlugin;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
@@ -13,7 +14,7 @@ namespace Adventure.WorldMap
 {
     class AirshipPortal : IslandPortal
     {
-        public AirshipPortal(RTInstances<IWorldMapGameState> rtInstances, IDestructionRequest destructionRequest, IScopedCoroutine coroutine, IBepuScene<IWorldMapGameState> bepuScene, Description description, ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier, SpriteInstanceFactory spriteInstanceFactory, IContextMenu contextMenu, IWorldMapManager worldMapManager) : base(rtInstances, destructionRequest, coroutine, bepuScene, description, collidableIdentifier, spriteInstanceFactory, contextMenu, worldMapManager)
+        public AirshipPortal(RTInstances<IWorldMapGameState> rtInstances, IDestructionRequest destructionRequest, IScopedCoroutine coroutine, IBepuScene<IWorldMapGameState> bepuScene, Description description, ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier, SpriteInstanceFactory spriteInstanceFactory, IContextMenu contextMenu, IWorldMapManager worldMapManager, Persistence persistence) : base(rtInstances, destructionRequest, coroutine, bepuScene, description, collidableIdentifier, spriteInstanceFactory, contextMenu, worldMapManager, persistence)
         {
         }
 

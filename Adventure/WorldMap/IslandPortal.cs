@@ -36,6 +36,7 @@ namespace Adventure.WorldMap
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IWorldMapManager worldMapManager;
+        private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -60,7 +61,8 @@ namespace Adventure.WorldMap
             ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            IWorldMapManager worldMapManager)
+            IWorldMapManager worldMapManager,
+            Persistence persistence)
         {
             this.sprite = description.Sprite;
             this.portalIndex = description.PortalIndex;
@@ -71,6 +73,7 @@ namespace Adventure.WorldMap
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.worldMapManager = worldMapManager;
+            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -171,8 +174,16 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
-            //var portalLoc = worldMapManager.GetAirshipPortal();
+            Vector3 portalLoc;
+            if (persistence.Current.KeyItems.HasAirshipKey && persistence.Current.Player.AirshipPosition == null)
+            {
+                portalLoc = worldMapManager.GetAirshipPortal();
+            }
+            else
+            {
+                portalLoc = worldMapManager.GetPortal(portalIndex + 1);
+            }
+            
             worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
         }
 

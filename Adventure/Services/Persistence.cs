@@ -38,6 +38,8 @@ namespace Adventure.Services
 
             public PlayerData Player { get; } = new PlayerData();
 
+            public KeyItems KeyItems { get; set; } = new KeyItems();
+
             public TimeData Time { get; } = new TimeData();
 
             public WorldData World { get; set; } = new WorldData();
@@ -110,6 +112,11 @@ namespace Adventure.Services
             public long LootDropGold { get; set; }
 
             public bool InAirship { get; set; }
+        }
+
+        public class KeyItems
+        {
+            public bool HasAirshipKey { get; set; }
         }
 
         public class TimeData
