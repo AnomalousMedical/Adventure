@@ -23,9 +23,7 @@ namespace Adventure.WorldMap
 
     class WorldMapGameState : IWorldMapGameState
     {
-        private readonly ISharpGui sharpGui;
         private readonly RTInstances<IWorldMapGameState> rtInstances;
-        private readonly IScreenPositioner screenPositioner;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
@@ -37,24 +35,16 @@ namespace Adventure.WorldMap
         private readonly IExplorationMenu explorationMenu;
         private readonly EventManager eventManager;
         private IExplorationGameState explorationState;
-        private SharpButton restart = new SharpButton() { Text = "Restart" };
-        private SharpSliderHorizontal zoneSelect;
-        private int currentZone = 0;
-        private SharpText worldMapText = new SharpText("Zone 0") { Color = Color.White };
-        private ILayoutItem layout;
         private IGameState nextState;
 
         public RTInstances Instances => rtInstances;
 
         public WorldMapGameState
         (
-            ISharpGui sharpGui,
             RTInstances<IWorldMapGameState> rtInstances,
-            IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
             Persistence persistence,
-            IScaleHelper scaleHelper,
             IWorldMapManager worldMapManager,
             FlyCameraManager flyCameraManager,
             IBepuScene<IWorldMapGameState> bepuScene,
@@ -64,9 +54,7 @@ namespace Adventure.WorldMap
             EventManager eventManager
         )
         {
-            this.sharpGui = sharpGui;
             this.rtInstances = rtInstances;
-            this.screenPositioner = screenPositioner;
             this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
             this.persistence = persistence;
@@ -77,9 +65,7 @@ namespace Adventure.WorldMap
             this.worldDatabase = worldDatabase;
             this.explorationMenu = explorationMenu;
             this.eventManager = eventManager;
-            worldMapManager.SetupWorldMap();
-            layout = new ColumnLayout(worldMapText, restart) { Margin = new IntPad(scaleHelper.Scaled(10)) };
-            zoneSelect = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 99 };
+            coroutineRunner.RunTask(worldMapManager.SetupWorldMap());
         }
 
         public void Link(IExplorationGameState explorationState)

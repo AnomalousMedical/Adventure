@@ -12,9 +12,8 @@ namespace Adventure.WorldMap
     interface IWorldMapManager
     {
         bool PhysicsActive { get; }
-
         void MovePlayerToArea(int area);
-        void SetupWorldMap();
+        Task SetupWorldMap();
         Vector3 GetPortal(int portalIndex);
         void Update(Clock clock);
         void MovePlayer(in Vector3 loc);
@@ -27,7 +26,6 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
-        private readonly IScopedCoroutine scopedCoroutine;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
         private Airship airship;
@@ -36,14 +34,12 @@ namespace Adventure.WorldMap
         (
             IObjectResolverFactory objectResolverFactory,
             IWorldDatabase worldDatabase,
-            Party party,
-            IScopedCoroutine scopedCoroutine
+            Party party
         )
         {
             this.objectResolver = objectResolverFactory.Create();
             this.worldDatabase = worldDatabase;
             this.party = party;
-            this.scopedCoroutine = scopedCoroutine;
             var playerCharacter = party.ActiveCharacters.FirstOrDefault();
             player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
             {
@@ -88,10 +84,17 @@ namespace Adventure.WorldMap
             player.SetGraphicsActive(visible);
         }
 
-        public void SetupWorldMap()
+        public async Task SetupWorldMap()
         {
-            airship?.RequestDestruction();
             worldMapInstance?.RequestDestruction();
+
+            if(airship == null)
+            {
+                airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
+                {
+                    o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
+                });
+            }
 
             worldMapInstance = objectResolver.Resolve<WorldMapInstance, WorldMapInstance.Description>(o =>
             {
@@ -100,18 +103,10 @@ namespace Adventure.WorldMap
                 o.AreaLocationSeed = worldDatabase.CurrentSeed;
             });
 
-            airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
-            {
-                o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
-                o.Map = worldMapInstance;
-                o.WorldMapManager = this;
-            });
+            await worldMapInstance.WaitForLoad();
 
-            scopedCoroutine.RunTask(async () =>
-            {
-                await worldMapInstance.WaitForLoad();
-                worldMapInstance.SetupPhysics();
-            });
+            airship.SetMap(worldMapInstance);
+            worldMapInstance.SetupPhysics();
         }
 
         public Vector3 GetPortal(int portalIndex)

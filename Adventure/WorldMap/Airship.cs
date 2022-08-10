@@ -27,10 +27,6 @@ namespace Adventure.WorldMap
             public EventLayers EventLayer { get; set; } = EventLayers.Airship;
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
-
-            public WorldMapInstance Map { get; set; }
-
-            public IWorldMapManager WorldMapManager { get; set; }
         }
 
         private readonly TLASInstanceData instanceData;
@@ -59,7 +55,7 @@ namespace Adventure.WorldMap
         private bool physicsCreated = false;
         private Vector3 cameraOffset = new Vector3(0, 3, -12);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 14f);
-        private readonly WorldMapInstance map;
+        private WorldMapInstance map;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -97,12 +93,11 @@ namespace Adventure.WorldMap
             EventManager eventManager,
             CameraMover cameraMover,
             IDestructionRequest destructionRequest,
-            IBackgroundMusicPlayer backgroundMusicPlayer
+            IBackgroundMusicPlayer backgroundMusicPlayer,
+            IWorldMapManager worldMapManager
         )
         {
-            this.worldMapManager = description.WorldMapManager;
-            this.map = description.Map;
-            this.worldRect = new Rect(0, 0, map.MapSize.x, map.MapSize.y);
+            this.worldMapManager = worldMapManager;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -169,22 +164,27 @@ namespace Adventure.WorldMap
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
                 blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
 
-                await map.WaitForLoad();
-
-                if (persistence.Current.Player.InAirship)
-                {
-                    TakeOff(null);
-                }
-                else
-                {
-                    this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, halfScale, 0f);
-                    instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
-                    CreatePhysics();
-                }
-
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });
+        }
+
+        public void SetMap(WorldMapInstance map)
+        {
+            DestroyPhysics();
+
+            this.map = map;
+
+            if (persistence.Current.Player.InAirship)
+            {
+                TakeOff(null);
+            }
+            else
+            {
+                this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, currentScale.y / 2f, 0f);
+                instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+                CreatePhysics();
+            }
         }
 
         public void Dispose()
