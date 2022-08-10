@@ -29,7 +29,7 @@ namespace Adventure.WorldMap
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
         }
 
-        private readonly TLASInstanceData instanceData;
+        private TLASInstanceData[] instanceData;
         private readonly CubeBLAS cubeBLAS;
         private readonly RTInstances<IWorldMapGameState> rtInstances;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -53,6 +53,8 @@ namespace Adventure.WorldMap
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
+        private TaskCompletionSource graphicsReady = new TaskCompletionSource();
+        private bool graphicsActive = false;
         private Vector3 cameraOffset = new Vector3(0, 3, -12);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 14f);
         private WorldMapInstance map;
@@ -138,42 +140,47 @@ namespace Adventure.WorldMap
             landEventLayer = eventManager[description.LandEventLayer];
             SetupInput();
 
-            this.instanceData = new TLASInstanceData()
-            {
-                InstanceName = RTId.CreateId("Airship"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
-                Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
-            };
+            this.instanceData = new TLASInstanceData[0];
 
             coroutine.RunTask(async () =>
             {
-                using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
+                try
+                {
+                    using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.cubeTexture = await textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Metal032_1K", reflective: true));
+                    this.cubeTexture = await textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Metal032_1K", reflective: true));
 
-                var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
+                    var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
 
-                await Task.WhenAll
-                (
-                    cubeBLAS.WaitForLoad(),
-                    primaryHitShaderTask
-                );
+                    await Task.WhenAll
+                    (
+                        cubeBLAS.WaitForLoad(),
+                        primaryHitShaderTask
+                    );
 
-                this.instanceData.pBLAS = cubeBLAS.Instance.BLAS.Obj;
-                this.primaryHitShader = primaryHitShaderTask.Result;
-                blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
+                    this.primaryHitShader = primaryHitShaderTask.Result;
+                    blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
+                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
 
-                rtInstances.AddTlasBuild(instanceData);
-                rtInstances.AddShaderTableBinder(Bind);
+                    graphicsReady.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    graphicsReady.SetException(ex);
+                }
             });
         }
 
-        public void SetMap(WorldMapInstance map)
+        public async Task SetMap(WorldMapInstance map)
         {
             DestroyPhysics();
+            DestroyGraphics();
 
             this.map = map;
+
+            await graphicsReady.Task;
+
+            CreateGraphics();
 
             if (persistence.Current.Player.InAirship)
             {
@@ -182,7 +189,7 @@ namespace Adventure.WorldMap
             else
             {
                 this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, currentScale.y / 2f, 0f);
-                instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+                SyncGraphics();
                 CreatePhysics();
             }
         }
@@ -192,15 +199,59 @@ namespace Adventure.WorldMap
             this.activeTextures.RemoveActiveTexture(this.cubeTexture);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
             textureManager.TryReturn(cubeTexture);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(instanceData);
-
+            DestroyGraphics();
             eventManager.removeEvent(moveForward);
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
+        }
+
+        private void CreateGraphics()
+        {
+            if(!graphicsActive && map != null)
+            {
+                graphicsActive = true;
+
+                this.instanceData = new TLASInstanceData[map.Transforms.Length];
+                for (var i = 0; i < instanceData.Length; i++)
+                {
+                    this.instanceData[i] = new TLASInstanceData()
+                    {
+                        InstanceName = RTId.CreateId("Airship"),
+                        Mask = RtStructures.OPAQUE_GEOM_MASK,
+                        Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale),
+                        pBLAS = cubeBLAS.Instance.BLAS.Obj
+                    };
+                    rtInstances.AddTlasBuild(this.instanceData[i]);
+                }
+
+                rtInstances.AddShaderTableBinder(Bind);
+            }
+        }
+
+        private void DestroyGraphics()
+        {
+            if (graphicsActive)
+            {
+                graphicsActive = false;
+
+                foreach (var data in instanceData)
+                {
+                    rtInstances.RemoveTlasBuild(data);
+                }
+                rtInstances.RemoveShaderTableBinder(Bind);
+            }
+        }
+
+        private void SyncGraphics()
+        {
+            var numTransforms = map.Transforms.Length;
+            for(var i = 0; i < numTransforms; ++i)
+            {
+                instanceData[i].Transform = new InstanceMatrix(currentPosition + map.Transforms[i], currentOrientation, currentScale);
+            }
         }
 
         public void RequestDestruction()
@@ -214,7 +265,10 @@ namespace Adventure.WorldMap
             blasInstanceData.indexOffset = cubeBLAS.Instance.IndexOffset;
             fixed (BlasInstanceData* ptr = &blasInstanceData)
             {
-                primaryHitShader.BindSbt(instanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
+                foreach (var data in instanceData)
+                {
+                    primaryHitShader.BindSbt(data.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
+                }
             }
         }
 
@@ -269,6 +323,7 @@ namespace Adventure.WorldMap
             active = true;
             currentPosition.y = 3.14f;
             DestroyPhysics();
+            SyncGraphics();
             worldMapManager.SetPlayerVisible(false);
             backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
         }
@@ -284,7 +339,7 @@ namespace Adventure.WorldMap
             currentPosition = center;
             currentPosition.y += currentScale.y / 2.0f;
             this.persistence.Current.Player.AirshipPosition = this.currentPosition;
-            instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+            SyncGraphics();
             CreatePhysics();
             worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
             worldMapManager.SetPlayerVisible(true);
@@ -439,7 +494,7 @@ namespace Adventure.WorldMap
 
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
 
-                instanceData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+                SyncGraphics();
                 cameraMover.Position = currentPosition + cameraOffset;
                 cameraMover.Orientation = cameraAngle;
 

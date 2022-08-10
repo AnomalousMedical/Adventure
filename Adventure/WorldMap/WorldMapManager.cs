@@ -104,8 +104,7 @@ namespace Adventure.WorldMap
             });
 
             await worldMapInstance.WaitForLoad();
-
-            airship.SetMap(worldMapInstance);
+            await airship.SetMap(worldMapInstance);
             worldMapInstance.SetupPhysics();
         }
 
