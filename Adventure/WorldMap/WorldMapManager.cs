@@ -70,7 +70,7 @@ namespace Adventure.WorldMap
                 loc = new Vector3(10, 10, 10);
             }
 
-            MovePlayer(loc);
+            MovePlayer(loc + new Vector3(0f, 0f, -0.30f));
         }
 
         public void MovePlayer(in Vector3 loc)
