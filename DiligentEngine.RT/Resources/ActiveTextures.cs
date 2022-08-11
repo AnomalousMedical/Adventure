@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using DiligentEngine.RT.HLSL;
+using DiligentEngine.RT.Sprites;
 using Engine.Resources;
 using System;
 using System.Collections.Generic;
@@ -13,21 +14,28 @@ namespace DiligentEngine.RT.Resources
         class TextureBinding
         {
             public int count;
-            public HLSL.BlasInstanceData data;
+            public int textureSetIndex;
         }
 
         public int MaxTextures => 100; //This can be much higher
         internal List<IDeviceObject> Textures => textures;
 
         private Stack<int> availableSlots;
+        private Stack<int> availableSetSlots;
 
         private Dictionary<CC0TextureResult, TextureBinding> cc0Textures;
         private Dictionary<SpriteMaterial, TextureBinding> spriteTextures;
 
         private List<IDeviceObject> textures;
+        private TextureSet[] textureSets;
         private AutoPtr<ITexture> placeholderTexture;
         private IDeviceObject placeholderTextureDeviceObject;
         private readonly RayTracingRenderer renderer;
+        private readonly GraphicsEngine graphicsEngine;
+        AutoPtr<IBuffer> texSetBuffer;
+        private bool requestBufferRecreate = false;
+
+        public IBuffer TexSetBuffer => texSetBuffer.Obj; //Need to bind this in the shader and setup variables
 
         public ActiveTextures(TextureLoader textureLoader, IResourceProvider<ShaderLoader<RTShaders>> resourceProvider, RayTracingRenderer renderer, GraphicsEngine graphicsEngine)
         {
@@ -45,17 +53,22 @@ namespace DiligentEngine.RT.Resources
             spriteTextures = new Dictionary<SpriteMaterial, TextureBinding>(MaxTextures);
             textures = new List<IDeviceObject>(MaxTextures);
             availableSlots = new Stack<int>(MaxTextures);
+            availableSetSlots = new Stack<int>(MaxTextures);
+            textureSets = new TextureSet[MaxTextures];
             for (var i = 0; i < MaxTextures; ++i)
             {
                 availableSlots.Push(i);
+                availableSetSlots.Push(i);
                 textures.Add(placeholderTextureDeviceObject);
             }
 
             this.renderer = renderer;
+            this.graphicsEngine = graphicsEngine;
         }
 
         public void Dispose()
         {
+            DestroyShaderBuffers();
             placeholderTexture.Dispose();
         }
 
@@ -65,67 +78,67 @@ namespace DiligentEngine.RT.Resources
         /// <param name="texture"></param>
         public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture)
         {
-            TextureBinding binding;
-            if(!cc0Textures.TryGetValue(texture, out binding))
+            return new HLSL.BlasInstanceData()
             {
-                binding = new TextureBinding();
-                cc0Textures.Add(texture, binding);
-                if(texture.BaseColorSRV != null)
-                {
-                    binding.data.baseTexture = GetTextureSlot();
-                    textures[binding.data.baseTexture] = texture.BaseColorSRV;
-                }
-                if (texture.NormalMapSRV != null)
-                {
-                    binding.data.normalTexture = GetTextureSlot();
-                    textures[binding.data.normalTexture] = texture.NormalMapSRV;
-                }
-                if (texture.PhysicalDescriptorMapSRV != null)
-                {
-                    binding.data.physicalTexture = GetTextureSlot();
-                    textures[binding.data.physicalTexture] = texture.PhysicalDescriptorMapSRV;
-                }
-                if (texture.EmissiveSRV != null)
-                {
-                    binding.data.emissiveTexture = GetTextureSlot();
-                    textures[binding.data.emissiveTexture] = texture.EmissiveSRV;
-                }
-                renderer.RequestRebind();
-            }
-            binding.count++;
-            return binding.data;
+                tex0 = AddActiveTexture2(texture),
+            };
         }
 
         public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1)
         {
-            var instance0 = AddActiveTexture(texture0);
-            var instance1 = AddActiveTexture(texture1);
-
-            instance0.u1 = instance1.baseTexture;
-            instance0.u2 = instance1.normalTexture;
-            instance0.u3 = instance1.physicalTexture;
-            instance0.u4 = instance1.emissiveTexture;
-
-            return instance0;
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+            };
         }
 
         public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2)
         {
-            var instance0 = AddActiveTexture(texture0);
-            var instance1 = AddActiveTexture(texture1);
-            var instance2 = AddActiveTexture(texture2);
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+            };
+        }
 
-            instance0.u1 = instance1.baseTexture;
-            instance0.u2 = instance1.normalTexture;
-            instance0.u3 = instance1.physicalTexture;
-            instance0.u4 = instance1.emissiveTexture;
-
-            instance0.v1 = instance2.baseTexture;
-            instance0.v2 = instance2.normalTexture;
-            instance0.v3 = instance2.physicalTexture;
-            instance0.v4 = instance2.emissiveTexture;
-
-            return instance0;
+        public int AddActiveTexture2(CC0TextureResult texture)
+        {
+            TextureBinding binding;
+            if (!cc0Textures.TryGetValue(texture, out binding))
+            {
+                binding = new TextureBinding();
+                cc0Textures.Add(texture, binding);
+                binding.textureSetIndex = GetTextureSetSlot();
+                if (texture.BaseColorSRV != null)
+                {
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].baseTexture = slot;
+                    textures[slot] = texture.BaseColorSRV;
+                }
+                if (texture.NormalMapSRV != null)
+                {
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].normalTexture = slot;
+                    textures[slot] = texture.NormalMapSRV;
+                }
+                if (texture.PhysicalDescriptorMapSRV != null)
+                {
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].physicalTexture = slot;
+                    textures[slot] = texture.PhysicalDescriptorMapSRV;
+                }
+                if (texture.EmissiveSRV != null)
+                {
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].emissiveTexture = slot;
+                    textures[slot] = texture.EmissiveSRV;
+                }
+                RequestTextureSetUpdate();
+            }
+            binding.count++;
+            return binding.textureSetIndex;
         }
 
         /// <summary>
@@ -144,28 +157,30 @@ namespace DiligentEngine.RT.Resources
                 binding.count--;
                 if(binding.count == 0)
                 {
+                    var textureSet = textureSets[binding.textureSetIndex];
                     if (texture.BaseColorSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.baseTexture);
-                        textures[binding.data.baseTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.baseTexture);
+                        textures[textureSet.baseTexture] = placeholderTextureDeviceObject;
                     }
                     if (texture.NormalMapSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.normalTexture);
-                        textures[binding.data.normalTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.normalTexture);
+                        textures[textureSet.normalTexture] = placeholderTextureDeviceObject;
                     }
                     if (texture.PhysicalDescriptorMapSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.physicalTexture);
-                        textures[binding.data.physicalTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.physicalTexture);
+                        textures[textureSet.physicalTexture] = placeholderTextureDeviceObject;
                     }
                     if (texture.EmissiveSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.emissiveTexture);
-                        textures[binding.data.emissiveTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.emissiveTexture);
+                        textures[textureSet.emissiveTexture] = placeholderTextureDeviceObject;
                     }
+                    ReturnTextureSetSlot(binding.textureSetIndex);
                     cc0Textures.Remove(texture);
-                    renderer.RequestRebind();
+                    RequestTextureSetUpdate();
                 }
             }
         }
@@ -176,35 +191,42 @@ namespace DiligentEngine.RT.Resources
         /// <param name="texture"></param>
         public HLSL.BlasInstanceData AddActiveTexture(SpriteMaterial texture)
         {
+            return new HLSL.BlasInstanceData
+            {
+                tex0 = AddActiveTexture2(texture)
+            };
+        }
+
+        public int AddActiveTexture2(SpriteMaterial texture)
+        {
             TextureBinding binding;
             if (!spriteTextures.TryGetValue(texture, out binding))
             {
                 binding = new TextureBinding();
                 spriteTextures.Add(texture, binding);
+                binding.textureSetIndex = GetTextureSetSlot();
                 if (texture.ColorSRV != null)
                 {
-                    binding.data.baseTexture = GetTextureSlot();
-                    textures[binding.data.baseTexture] = texture.ColorSRV;
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].baseTexture = slot;
+                    textures[slot] = texture.ColorSRV;
                 }
                 if (texture.NormalSRV != null)
                 {
-                    binding.data.normalTexture = GetTextureSlot();
-                    textures[binding.data.normalTexture] = texture.NormalSRV;
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].normalTexture = slot;
+                    textures[slot] = texture.NormalSRV;
                 }
                 if (texture.PhysicalSRV != null)
                 {
-                    binding.data.physicalTexture = GetTextureSlot();
-                    textures[binding.data.physicalTexture] = texture.PhysicalSRV;
+                    var slot = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].physicalTexture = slot;
+                    textures[slot] = texture.PhysicalSRV;
                 }
-                //if (texture.EmissiveSRV != null)
-                //{
-                //    binding.data.emissiveTexture = GetTextureSlot();
-                //    textures[binding.data.emissiveTexture] = texture.EmissiveSRV;
-                //}
-                renderer.RequestRebind();
+                RequestTextureSetUpdate();
             }
             binding.count++;
-            return binding.data;
+            return binding.textureSetIndex;
         }
 
         /// <summary>
@@ -223,28 +245,25 @@ namespace DiligentEngine.RT.Resources
                 binding.count--;
                 if (binding.count == 0)
                 {
+                    var textureSet = textureSets[binding.textureSetIndex];
                     if (texture.ColorSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.baseTexture);
-                        textures[binding.data.baseTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.baseTexture);
+                        textures[textureSet.baseTexture] = placeholderTextureDeviceObject;
                     }
                     if (texture.NormalSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.normalTexture);
-                        textures[binding.data.normalTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.normalTexture);
+                        textures[textureSet.normalTexture] = placeholderTextureDeviceObject;
                     }
                     if (texture.PhysicalSRV != null)
                     {
-                        ReturnTextureSlot(binding.data.physicalTexture);
-                        textures[binding.data.physicalTexture] = placeholderTextureDeviceObject;
+                        ReturnTextureSlot(textureSet.physicalTexture);
+                        textures[textureSet.physicalTexture] = placeholderTextureDeviceObject;
                     }
-                    //if (texture.EmissiveSRV != null)
-                    //{
-                    //    ReturnTextureSlot(binding.data.emissiveTexture);
-                    //    textures[binding.data.emissiveTexture] = placeholderTextureDeviceObject;
-                    //}
+                    ReturnTextureSetSlot(binding.textureSetIndex);
                     spriteTextures.Remove(texture);
-                    renderer.RequestRebind();
+                    RequestTextureSetUpdate();
                 }
             }
         }
@@ -261,6 +280,73 @@ namespace DiligentEngine.RT.Resources
         private void ReturnTextureSlot(int slot)
         {
             availableSlots.Push(slot);
+        }
+
+        private int GetTextureSetSlot()
+        {
+            if (availableSetSlots.Count == 0)
+            {
+                throw new InvalidOperationException($"Ran out of texture set slots. The current max is {this.MaxTextures}.");
+            }
+            return availableSetSlots.Pop();
+        }
+
+        private void ReturnTextureSetSlot(int slot)
+        {
+            availableSetSlots.Push(slot);
+        }
+
+        private void RequestTextureSetUpdate()
+        {
+            renderer.RequestRebind();
+            requestBufferRecreate = true;
+        }
+
+        private void DestroyShaderBuffers()
+        {
+            texSetBuffer?.Dispose();
+            texSetBuffer = null;
+        }
+
+        public void UpdateSharedBuffers()
+        {
+            if (requestBufferRecreate)
+            {
+                requestBufferRecreate = false;
+                var barriers = new List<StateTransitionDesc>();
+                var m_pDevice = graphicsEngine.RenderDevice;
+
+                DestroyShaderBuffers();
+
+                // Create attribs vertex buffer
+                unsafe
+                {
+                    if (textureSets.Length == 0)
+                    {
+                        return; //No texture sets, bail
+                    }
+
+                    var BuffDesc = new BufferDesc();
+                    BuffDesc.Name = "Texture set buffer";
+                    BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
+                    BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
+                    BuffDesc.ElementByteStride = (uint)sizeof(TextureSet);
+                    BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
+
+                    BufferData BufData = new BufferData();
+                    fixed (TextureSet* p_vertices = textureSets)
+                    {
+                        BufData.pData = new IntPtr(p_vertices);
+                        BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)textureSets.Length;
+                        texSetBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData)
+                            ?? throw new InvalidOperationException("Cannot create texture set buffer");
+                    }
+
+                    barriers.Add(new StateTransitionDesc { pResource = texSetBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                }
+
+                graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
+            }
         }
     }
 }

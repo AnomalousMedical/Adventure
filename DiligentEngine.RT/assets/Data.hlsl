@@ -5,6 +5,7 @@ StructuredBuffer<uint> $$(G_INDICES);
 ConstantBuffer<BlasInstanceData> instanceData;
 
 Texture2D    $$(G_TEXTURES)[$$(NUM_TEXTURES)];
+StructuredBuffer<TextureSet>   $$(G_TEXTURESETS);
 SamplerState g_SamLinearWrap;
 SamplerState g_SamPointWrap;
 

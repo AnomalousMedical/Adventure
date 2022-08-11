@@ -55,14 +55,23 @@ namespace DiligentEngine.RT.HLSL
         public float u4;//also emissive extras in mesh
         public float v4;
 
-        public int baseTexture;
-        public int normalTexture;
-        public int physicalTexture;
-        public int emissiveTexture;
+        public int tex0;
+        public int tex1;
+        public int tex2;
+        public int tex3;
         public uint indexOffset;
         public uint vertexOffset;
         public uint dispatchType;
         public uint padding;
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TextureSet
+    {
+        public int baseTexture;
+        public int normalTexture;
+        public int physicalTexture;
+        public int emissiveTexture;
     };
 
     public static class BlasInstanceDataConstants
