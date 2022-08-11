@@ -65,6 +65,15 @@ namespace DiligentEngine.RT.HLSL
         public uint padding;
     };
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TextureSet
+    {
+        public int baseTexture;
+        public int normalTexture;
+        public int physicalTexture;
+        public int emissiveTexture;
+    };
+
     public static class BlasInstanceDataConstants
     {
         public const uint MeshData = 0;
