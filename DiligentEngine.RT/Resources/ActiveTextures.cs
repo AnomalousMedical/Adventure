@@ -33,6 +33,10 @@ namespace DiligentEngine.RT.Resources
         private AutoPtr<ITexture> placeholderTexture;
         private IDeviceObject placeholderTextureDeviceObject;
         private readonly RayTracingRenderer renderer;
+        private readonly GraphicsEngine graphicsEngine;
+        AutoPtr<IBuffer> texSetBuffer;
+
+        public IBuffer TexSetBuffer => texSetBuffer.Obj;
 
         public ActiveTextures(TextureLoader textureLoader, IResourceProvider<ShaderLoader<RTShaders>> resourceProvider, RayTracingRenderer renderer, GraphicsEngine graphicsEngine)
         {
@@ -60,10 +64,12 @@ namespace DiligentEngine.RT.Resources
             }
 
             this.renderer = renderer;
+            this.graphicsEngine = graphicsEngine;
         }
 
         public void Dispose()
         {
+            DestroyShaderBuffers();
             placeholderTexture.Dispose();
         }
 
@@ -103,7 +109,7 @@ namespace DiligentEngine.RT.Resources
                     textureSets[binding.textureSetIndex].emissiveTexture = slot;
                     textures[slot] = texture.EmissiveSRV;
                 }
-                renderer.RequestRebind();
+                UpdateSharedBuffers();
             }
             binding.count++;
             return binding.textureSetIndex; //return the index, and get rid of all the overloads, just let the clients call what they need
@@ -180,7 +186,7 @@ namespace DiligentEngine.RT.Resources
                     }
                     ReturnTextureSetSlot(binding.textureSetIndex);
                     cc0Textures.Remove(texture);
-                    renderer.RequestRebind();
+                    UpdateSharedBuffers();
                 }
             }
         }
@@ -215,7 +221,7 @@ namespace DiligentEngine.RT.Resources
                     textureSets[binding.textureSetIndex].physicalTexture = GetTextureSlot();
                     textures[slot] = texture.PhysicalSRV;
                 }
-                renderer.RequestRebind();
+                UpdateSharedBuffers();
             }
             binding.count++;
             return binding.textureSetIndex; //like above
@@ -255,7 +261,7 @@ namespace DiligentEngine.RT.Resources
                     }
                     ReturnTextureSetSlot(binding.textureSetIndex);
                     spriteTextures.Remove(texture);
-                    renderer.RequestRebind();
+                    UpdateSharedBuffers();
                 }
             }
         }
@@ -286,6 +292,51 @@ namespace DiligentEngine.RT.Resources
         private void ReturnTextureSetSlot(int slot)
         {
             availableSetSlots.Push(slot);
+        }
+
+        private void DestroyShaderBuffers()
+        {
+            texSetBuffer?.Dispose();
+            texSetBuffer = null;
+        }
+
+        private void UpdateSharedBuffers()
+        {
+            var barriers = new List<StateTransitionDesc>();
+            var m_pDevice = graphicsEngine.RenderDevice;
+
+            DestroyShaderBuffers();
+
+            // Create attribs vertex buffer
+            unsafe
+            {
+                if (textureSets.Length == 0)
+                {
+                    return; //No texture sets, bail
+                }
+
+                var BuffDesc = new BufferDesc();
+                BuffDesc.Name = "Texture set buffer";
+                BuffDesc.Usage = USAGE.USAGE_IMMUTABLE;
+                BuffDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
+                BuffDesc.ElementByteStride = (uint)sizeof(TextureSet);
+                BuffDesc.Mode = BUFFER_MODE.BUFFER_MODE_STRUCTURED;
+
+                BufferData BufData = new BufferData();
+                fixed (TextureSet* p_vertices = textureSets)
+                {
+                    BufData.pData = new IntPtr(p_vertices);
+                    BufData.DataSize = BuffDesc.Size = BuffDesc.ElementByteStride * (uint)textureSets.Length;
+                    texSetBuffer = m_pDevice.CreateBuffer(BuffDesc, BufData)
+                        ?? throw new InvalidOperationException("Cannot create texture set buffer");
+                }
+
+                barriers.Add(new StateTransitionDesc { pResource = texSetBuffer.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+            }
+
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
+
+            renderer.RequestRebind();
         }
     }
 }
