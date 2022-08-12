@@ -56,8 +56,8 @@ namespace Adventure.WorldMap
         private SpriteInstance spriteInstance;
         private bool graphicsActive = false;
 
-        private Attachment<IZoneManager> mainHandItem;
-        private Attachment<IZoneManager> offHandItem;
+        private Attachment<IWorldMapGameState> mainHandItem;
+        private Attachment<IWorldMapGameState> offHandItem;
 
         private CharacterSheet characterSheet;
 
@@ -514,7 +514,7 @@ namespace Adventure.WorldMap
             mainHandItem?.RequestDestruction();
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -530,7 +530,7 @@ namespace Adventure.WorldMap
             offHandItem?.RequestDestruction();
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
