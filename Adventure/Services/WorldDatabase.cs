@@ -148,11 +148,12 @@ namespace Adventure.Services
         {
             createdZoneSeeds = new List<int>();
             zoneRandom = new Random(newSeed);
+            var biomeRandom = new Random(newSeed);
             currentSeed = newSeed;
             areaBuilders = new List<IAreaBuilder>(27);
             var weaknessRandom = new Random(newSeed);
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
-            areaBuilders = SetupAreaBuilder(monsterInfo).ToList();
+            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom).ToList();
             _worldMap = new WorldMapData(newSeed);
             //Phase 0, 1 is 1 island, 2 is 2 islands + 3 more for the phase 2 bonus areas, everything above phase 2 has its own, except phase 4, which is not in the world
             //also + 1 for the airship island
@@ -164,12 +165,13 @@ namespace Adventure.Services
             //remove extra islands
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom)
         {
             //TODO: Get rid of this function and loop and just write this out
 
             int area = 0;
             AreaBuilder areaBuilder = null;
+            var biomeMax = (int)BiomeType.Max;
 
             //Phase 0
             areaBuilder = new Area0Builder(this, monsterInfo, area++);
@@ -179,6 +181,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 0;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Phase 1
@@ -189,6 +192,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 1;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -198,6 +202,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -207,6 +212,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -215,6 +221,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.IndexInPhase = 4;
             areaBuilder.IncludeStrongElement = false;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Phase 2
@@ -223,6 +230,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 11;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 0;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -230,6 +238,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 13;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 1;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -237,6 +246,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 15;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 2;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -244,6 +254,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 17;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -251,6 +262,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 19;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 4;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -258,6 +270,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 21;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 5;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Phase 3
@@ -266,6 +279,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 23;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 0;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -273,6 +287,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 25;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 1;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -280,6 +295,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 27;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 2;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -287,6 +303,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 29;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -294,6 +311,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 31;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 4;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -301,6 +319,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 33;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 5;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Phase 4
@@ -309,6 +328,7 @@ namespace Adventure.Services
             areaBuilder.EndZone = 36;
             areaBuilder.Phase = 4;
             areaBuilder.IndexInPhase = 0;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Bonus 1
@@ -316,6 +336,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 37;
             areaBuilder.EndZone = 39;
             areaBuilder.Phase = 1;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Bonus 2
@@ -323,18 +344,21 @@ namespace Adventure.Services
             areaBuilder.StartZone = 40;
             areaBuilder.EndZone = 42;
             areaBuilder.Phase = 2;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 43;
             areaBuilder.EndZone = 45;
             areaBuilder.Phase = 2;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 46;
             areaBuilder.EndZone = 48;
             areaBuilder.Phase = 2;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             //Bonus 3
@@ -342,36 +366,42 @@ namespace Adventure.Services
             areaBuilder.StartZone = 49;
             areaBuilder.EndZone = 51;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 52;
             areaBuilder.EndZone = 54;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 55;
             areaBuilder.EndZone = 57;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 58;
             areaBuilder.EndZone = 60;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 61;
             areaBuilder.EndZone = 63;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 64;
             areaBuilder.EndZone = 66;
             areaBuilder.Phase = 3;
+            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             yield return areaBuilder;
         }
     }
