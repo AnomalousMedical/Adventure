@@ -60,7 +60,7 @@ float3 GetSampledNormal(in int mip, in float2 uv)
 float3 GetSampledNormal(in int mip, in float2 uv, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb; //add lookup in gtexturesets of tex and use that index in G_TEXTURES
+	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
 float4 GetPhysical(in int mip, in float2 uv)

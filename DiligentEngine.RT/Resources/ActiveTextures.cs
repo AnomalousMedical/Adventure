@@ -137,7 +137,7 @@ namespace DiligentEngine.RT.Resources
                 UpdateSharedBuffers();
             }
             binding.count++;
-            return binding.textureSetIndex; //return the index, and get rid of all the overloads, just let the clients call what they need
+            return binding.textureSetIndex;
         }
 
         /// <summary>
@@ -207,25 +207,25 @@ namespace DiligentEngine.RT.Resources
                 if (texture.ColorSRV != null)
                 {
                     var slot = GetTextureSlot();
-                    textureSets[binding.textureSetIndex].baseTexture = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].baseTexture = slot;
                     textures[slot] = texture.ColorSRV;
                 }
                 if (texture.NormalSRV != null)
                 {
                     var slot = GetTextureSlot();
-                    textureSets[binding.textureSetIndex].normalTexture = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].normalTexture = slot;
                     textures[slot] = texture.NormalSRV;
                 }
                 if (texture.PhysicalSRV != null)
                 {
                     var slot = GetTextureSlot();
-                    textureSets[binding.textureSetIndex].physicalTexture = GetTextureSlot();
+                    textureSets[binding.textureSetIndex].physicalTexture = slot;
                     textures[slot] = texture.PhysicalSRV;
                 }
                 UpdateSharedBuffers();
             }
             binding.count++;
-            return binding.textureSetIndex; //like above
+            return binding.textureSetIndex;
         }
 
         /// <summary>
