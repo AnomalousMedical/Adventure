@@ -206,7 +206,7 @@ namespace DungeonGenerator
                     if (map[mapX, mapY] != csMapbuilder.EmptyCell)
                     {
                         processedSquares[mapX, mapY] = true;
-                        ProcessSquare(MapUnitY, upperGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                        ProcessSquare(MapUnitY, upperGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder, true);
                     }
                     else
                     {
@@ -230,7 +230,7 @@ namespace DungeonGenerator
                         )
                         {
                             processedSquares[mapX, mapY] = true;
-                            ProcessSquare(0.0f, lowerGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder);
+                            ProcessSquare(0.0f, lowerGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder, false);
                         }
                     }
                 }
@@ -514,7 +514,7 @@ namespace DungeonGenerator
 
         public MeshBLAS FloorMesh => floorMesh;
 
-        private void ProcessSquare(float centerY, float textureIndex, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder)
+        private void ProcessSquare(float centerY, float textureIndex, float halfUnitX, float halfUnitY, float halfUnitZ, int mapWidth, int mapHeight, int[,] map, MapMeshTempSquareInfo[,] tempSquareInfo, float yUvBottom, int mapX, int mapY, csIslandMaze mapbuilder, bool setAsFloor)
         {
             //This is a bit odd, corridors previous points are the previous square, but room previous points are their terminating corrdor square
             //This will work ok with some of the calculations below since rooms are always 0 rotation anyway
@@ -559,7 +559,10 @@ namespace DungeonGenerator
                     bottomRight,
                     textureIndex);
 
-                floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
+                if (setAsFloor)
+                {
+                    floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
+                }
 
                 int test;
 
