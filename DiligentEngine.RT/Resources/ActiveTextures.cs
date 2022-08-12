@@ -20,8 +20,6 @@ namespace DiligentEngine.RT.Resources
         public int MaxTextures => 100; //This can be much higher
         internal List<IDeviceObject> Textures => textures;
 
-        internal TextureSet[] TextureSets => textureSets;
-
         private Stack<int> availableSlots;
         private Stack<int> availableSetSlots;
 
@@ -36,7 +34,7 @@ namespace DiligentEngine.RT.Resources
         private readonly GraphicsEngine graphicsEngine;
         AutoPtr<IBuffer> texSetBuffer;
 
-        public IBuffer TexSetBuffer => texSetBuffer.Obj;
+        public IBuffer TexSetBuffer => texSetBuffer.Obj; //Need to bind this in the shader and setup variables
 
         public ActiveTextures(TextureLoader textureLoader, IResourceProvider<ShaderLoader<RTShaders>> resourceProvider, RayTracingRenderer renderer, GraphicsEngine graphicsEngine)
         {
@@ -79,8 +77,35 @@ namespace DiligentEngine.RT.Resources
         /// <param name="texture"></param>
         public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture)
         {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture),
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+            };
+        }
+
+        public int AddActiveTexture2(CC0TextureResult texture)
+        {
             TextureBinding binding;
-            if(!cc0Textures.TryGetValue(texture, out binding))
+            if (!cc0Textures.TryGetValue(texture, out binding))
             {
                 binding = new TextureBinding();
                 cc0Textures.Add(texture, binding);
@@ -113,38 +138,6 @@ namespace DiligentEngine.RT.Resources
             }
             binding.count++;
             return binding.textureSetIndex; //return the index, and get rid of all the overloads, just let the clients call what they need
-        }
-
-        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1)
-        {
-            var instance0 = AddActiveTexture(texture0);
-            var instance1 = AddActiveTexture(texture1);
-
-            instance0.u1 = instance1.baseTexture;
-            instance0.u2 = instance1.normalTexture;
-            instance0.u3 = instance1.physicalTexture;
-            instance0.u4 = instance1.emissiveTexture;
-
-            return instance0;
-        }
-
-        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2)
-        {
-            var instance0 = AddActiveTexture(texture0);
-            var instance1 = AddActiveTexture(texture1);
-            var instance2 = AddActiveTexture(texture2);
-
-            instance0.u1 = instance1.baseTexture;
-            instance0.u2 = instance1.normalTexture;
-            instance0.u3 = instance1.physicalTexture;
-            instance0.u4 = instance1.emissiveTexture;
-
-            instance0.v1 = instance2.baseTexture;
-            instance0.v2 = instance2.normalTexture;
-            instance0.v3 = instance2.physicalTexture;
-            instance0.v4 = instance2.emissiveTexture;
-
-            return instance0;
         }
 
         /// <summary>
@@ -196,6 +189,14 @@ namespace DiligentEngine.RT.Resources
         /// </summary>
         /// <param name="texture"></param>
         public HLSL.BlasInstanceData AddActiveTexture(SpriteMaterial texture)
+        {
+            return new HLSL.BlasInstanceData
+            {
+                tex0 = AddActiveTexture2(texture)
+            };
+        }
+
+        public int AddActiveTexture2(SpriteMaterial texture)
         {
             TextureBinding binding;
             if (!spriteTextures.TryGetValue(texture, out binding))

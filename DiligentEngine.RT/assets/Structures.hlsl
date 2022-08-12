@@ -1,18 +1,26 @@
 struct BlasInstanceData
 {
-    float2 uv0; //also base color extras in mesh
-    float2 uv1; //also normal extras in mesh
-    float2 uv2; //also physical extras in mesh
-    float2 uv3; //also emissive extras in mesh
+    float2 uv0; //also tex4 (x) and tex5 (y) in mesh
+    float2 uv1; //also tex6 (x) and tex7 (y) in mesh
+    float2 uv2; //also tex8 (x) and tex9 (y) in mesh
+    float2 uv3; //also tex10 (x) and tex11 (y) in mesh
 
-    int baseTexture;
-    int normalTexture;
-    int physicalTexture;
-    int emissiveTexture;
+    int tex0;
+    int tex1;
+    int tex2;
+    int tex3;
     uint indexOffset;
     uint vertexOffset;
     uint dispatchType;
     uint padding;
+};
+
+struct TextureSet
+{
+    int baseTexture;
+    int normalTexture;
+    int physicalTexture;
+    int emissiveTexture;
 };
 
 struct CubeAttribVertex {
