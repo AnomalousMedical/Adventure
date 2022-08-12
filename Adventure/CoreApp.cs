@@ -111,6 +111,8 @@ namespace Adventure
             services.AddScoped<Attachment<IZoneManager>.Description>();
             services.AddScoped<Attachment<IBattleManager>>();
             services.AddScoped<Attachment<IBattleManager>.Description>();
+            services.AddScoped<Attachment<IWorldMapGameState>>();
+            services.AddScoped<Attachment<IWorldMapGameState>.Description>();
             services.AddScoped<IBattleBuilder, BattleBuilder>();
             services.AddScoped<Zone>();
             services.AddScoped<Zone.Description>();
