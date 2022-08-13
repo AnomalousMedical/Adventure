@@ -62,7 +62,7 @@ namespace Adventure.Services
 
         public IntVector2 Location { get; set; }
 
-        public bool PlaceTreasure { get; set; }
+        public bool PlaceTreasure { get; set; } = true;
 
         public bool IncludeWeakElement { get; set; } = true;
 
