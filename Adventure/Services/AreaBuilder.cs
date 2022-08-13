@@ -25,6 +25,8 @@ namespace Adventure.Services
         int Index { get; }
 
         int IndexInPhase { get; }
+
+        IntVector2 Location { get; }
     }
 
     class AreaBuilder : IAreaBuilder
@@ -57,6 +59,8 @@ namespace Adventure.Services
         public IEnumerable<int> GateZones { get; set; }
 
         public BiomeType Biome { get; set; }
+
+        public IntVector2 Location { get; set; }
 
         public bool PlaceTreasure { get; set; }
 

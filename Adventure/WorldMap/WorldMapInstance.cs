@@ -26,7 +26,11 @@ namespace Adventure.WorldMap
 
             public List<IAreaBuilder> Areas { get; set; }
 
-            public int AreaLocationSeed { get; set; }
+            public List<IntVector2> PortalLocations { get; set; }
+
+            public IntVector2 AirshipSquare { get; set; }
+
+            public IntVector2 AirshipPortalSquare { get; set; }
 
             public float MapScale { get; set; } = 1.0f;
         }
@@ -103,6 +107,7 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.biomeManager = biomeManager;
             this.map = description.csIslandMaze;
+
             transforms = new[]
             {
                 Vector3.Zero,
@@ -170,9 +175,7 @@ namespace Adventure.WorldMap
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
-                    var placementRandom = new Random(description.AreaLocationSeed);
-
-                    SetupAreas(description.Areas, placementRandom);
+                    SetupAreas(description.Areas, description.AirshipSquare, description.AirshipPortalSquare, description.PortalLocations);
 
                     loadingTask.SetResult();
                 }
@@ -370,90 +373,14 @@ namespace Adventure.WorldMap
             Console.WriteLine("--------------------------------------------------");
         }
 
-        private IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom, IntVector2 desired)
+        private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare, in IntVector2 airshipPortalSquare, List<IntVector2> portalLocations)
         {
-            if (!usedSquares[desired.x, desired.y])
-            {
-                return desired;
-            }
-
-            return GetUnusedSquare(usedSquares, island, placementRandom);
-        }
-
-        private IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom)
-        { 
-            for (var i = 0; i < 5; ++i)
-            {
-                var next = placementRandom.Next(0, island.Size);
-                var square = island.islandPoints[next];
-                if(!usedSquares[square.x, square.y])
-                {
-                    return square;
-                }
-            }
-
-            foreach(var square in island.islandPoints)
-            {
-                if (!usedSquares[square.x, square.y])
-                {
-                    return square;
-                }
-            }
-
-            //This should not happen
-            throw new InvalidOperationException($"Cannot find unused point on island {island.Id} out of possible {island.Size}");
-        }
-
-        private int GetUnusedIsland(bool[] usedIslands, Random placementRandom)
-        {
-            for (var i = 0; i < 5; ++i)
-            {
-                var next = placementRandom.Next(0, usedIslands.Length);
-                if (!usedIslands[next])
-                {
-                    return next;
-                }
-            }
-
-            for(int i = 0; i < usedIslands.Length; ++i)
-            {
-                if (!usedIslands[i])
-                {
-                    return i;
-                }
-            }
-
-            //This should not happen
-            throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
-        }
-
-        private void SetupAreas(List<IAreaBuilder> areaBuilders, Random placementRandom)
-        {
-            var usedSquares = new bool[map.MapX, map.MapY];
-            var usedIslands = new bool[map.NumIslands];
-
             areaLocations = new IntVector2[areaBuilders.Count];
 
-            //Reserve the 3 largest islands
-            usedIslands[map.IslandSizeOrder[0]] = true;
-            usedIslands[map.IslandSizeOrder[1]] = true;
-            usedIslands[map.IslandSizeOrder[2]] = true;
-
             {
-                //Airship island
-                var islandIndex = map.IslandSizeOrder[map.NumIslands - 1];
-                var island = map.IslandInfo[islandIndex];
-                usedIslands[islandIndex] = true;
-                var square = island.islandPoints.First();
-                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-                usedSquares[square.x, square.y] = true;
-                var loc = mapMesh.PointToVector(square.x, square.y);
-                airshipStartPoint = loc;
-
-                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-                usedSquares[square.x, square.y] = true;
-                airshipPortal = square;
-                loc = mapMesh.PointToVector(square.x, square.y);
+                this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);     
+                this.airshipPortal = airshipPortalSquare;
+                var loc = mapMesh.PointToVector(airshipPortalSquare.x, airshipPortalSquare.y);
 
                 var portal = objectResolver.Resolve<AirshipPortal, IslandPortal.Description>(o =>
                 {
@@ -470,26 +397,39 @@ namespace Adventure.WorldMap
                 placeables.Add(portal);
             }
 
-            AddPortal(map.IslandInfo[map.IslandSizeOrder[0]], usedSquares, placementRandom);
-            AddPortal(map.IslandInfo[map.IslandSizeOrder[1]], usedSquares, placementRandom);
-            AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom);
-
-            foreach (var area in areaBuilders.Where(i => i.Phase == 0))
+            int portalIndex = 0;
+            this.portalLocations = portalLocations;
+            foreach(var square in portalLocations)
             {
-                var islandIndex = map.IslandSizeOrder[0];
-                var island = map.IslandInfo[islandIndex];
-                usedIslands[islandIndex] = true;
-                var square = island.islandPoints.First();
-                square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-                areaLocations[area.Index] = square;
+                var loc = mapMesh.PointToVector(square.x, square.y);
 
+                var portal = objectResolver.Resolve<IslandPortal, IslandPortal.Description>(o =>
+                {
+                    o.PortalIndex = portalIndex;
+                    o.MapOffset = loc;
+                    o.Transforms = transforms;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var entrance = new Assets.World.Portal();
+                    o.Sprite = entrance.CreateSprite();
+                    o.SpriteMaterial = entrance.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(portal);
+
+                ++portalIndex;
+            }
+
+            foreach (var area in areaBuilders)
+            {
+                var square = area.Location;
                 var loc = mapMesh.PointToVector(square.x, square.y);
                 var biome = biomeManager.GetBiome(area.Biome);
+                areaLocations[area.Index] = square;
 
-                usedSquares[square.x, square.y] = true;
                 var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
                 {
-                    o.ZoneIndex = area.EndZone; //This is a special case, since the start is an empty square
+                    o.ZoneIndex = area.Index == 0 ? area.EndZone : area.StartZone; //The first area is a special case, since the start is an empty square inside of it
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
                     o.Transforms = transforms;
@@ -502,149 +442,6 @@ namespace Adventure.WorldMap
                 placeables.Add(entrance);
             }
 
-            foreach (var area in areaBuilders.Where(i => i.Phase == 1))
-            {
-                var islandIndex = map.IslandSizeOrder[0];
-                var island = map.IslandInfo[islandIndex];
-                usedIslands[islandIndex] = true;
-                IntVector2 square;
-
-                switch (area.Index)
-                {
-                    case 1:
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-                        break;
-                    case 2:
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
-                        break;
-                    case 3:
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-                    default:
-                        square = GetUnusedSquare(usedSquares, island, placementRandom);
-                        break;
-                }
-
-                var loc = mapMesh.PointToVector(square.x, square.y);
-                var biome = biomeManager.GetBiome(area.Biome);
-
-                usedSquares[square.x, square.y] = true;
-                areaLocations[area.Index] = square;
-                var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
-                {
-                    o.ZoneIndex = area.StartZone;
-                    o.MapOffset = loc;
-                    o.Translation = currentPosition + o.MapOffset;
-                    o.Transforms = transforms;
-                    var entrance = biome.BackgroundItems[0];
-                    o.Sprite = entrance.Asset.CreateSprite();
-                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-                });
-
-                placeables.Add(entrance);
-            }
-
-            foreach (var area in areaBuilders.Where(i => i.Phase == 2))
-            {
-                int islandIndex;
-                IslandInfo island;
-                IntVector2 square;
-
-                switch (area.IndexInPhase)
-                {
-                    case 0:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-                        break;
-                    case 1:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-                        break;
-                    case 2:
-                        islandIndex = map.IslandSizeOrder[1];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-
-                    case 3:
-                        islandIndex = map.IslandSizeOrder[2];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-                    case 4:
-                        islandIndex = map.IslandSizeOrder[2];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-                        break;
-                    case 5:
-                        islandIndex = map.IslandSizeOrder[2];
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-                        break;
-                    default:
-                        islandIndex = GetUnusedIsland(usedIslands, placementRandom);
-                        island = map.IslandInfo[islandIndex];
-                        square = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-                        break;
-                }
-
-                if (!usedIslands[islandIndex])
-                {
-                    //First visit in this phase, add a portal
-                    AddPortal(island, usedSquares, placementRandom);
-                }
-
-                usedIslands[islandIndex] = true;
-
-                var loc = mapMesh.PointToVector(square.x, square.y);
-                var biome = biomeManager.GetBiome(area.Biome);
-
-                usedSquares[square.x, square.y] = true;
-                areaLocations[area.Index] = square;
-                var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
-                {
-                    o.ZoneIndex = area.StartZone;
-                    o.MapOffset = loc;
-                    o.Translation = currentPosition + o.MapOffset;
-                    o.Transforms = transforms;
-                    var entrance = biome.BackgroundItems[0];
-                    o.Sprite = entrance.Asset.CreateSprite();
-                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-                });
-
-                placeables.Add(entrance);
-            }
-
-            foreach (var area in areaBuilders.Where(i => i.Phase == 3))
-            {
-                var islandIndex = GetUnusedIsland(usedIslands, placementRandom);
-                var island = map.IslandInfo[islandIndex];
-                usedIslands[islandIndex] = true;
-                IntVector2 square = GetUnusedSquare(usedSquares, island, placementRandom);
-
-                var loc = mapMesh.PointToVector(square.x, square.y);
-                var biome = biomeManager.GetBiome(area.Biome);
-
-                usedSquares[square.x, square.y] = true;
-                areaLocations[area.Index] = square;
-                var entrance = objectResolver.Resolve<ZoneEntrance, ZoneEntrance.Description>(o =>
-                {
-                    o.ZoneIndex = area.StartZone;
-                    o.MapOffset = loc;
-                    o.Translation = currentPosition + o.MapOffset;
-                    o.Transforms = transforms;
-                    var entrance = biome.BackgroundItems[0];
-                    o.Sprite = entrance.Asset.CreateSprite();
-                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-                });
-
-                placeables.Add(entrance);
-            }
         }
 
         public IntVector2 GetCellForLocation(Vector3 currentPosition)
@@ -670,29 +467,6 @@ namespace Adventure.WorldMap
         public bool CanLand(in IntVector2 cell)
         {
             return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell) && cell != airshipPortal;
-        }
-
-        private void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom)
-        {
-            var index = portalLocations.Count;
-            var square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
-            portalLocations.Add(square);
-            usedSquares[square.x, square.y] = true;
-            var loc = mapMesh.PointToVector(square.x, square.y);
-
-            var portal = objectResolver.Resolve<IslandPortal, IslandPortal.Description>(o =>
-            {
-                o.PortalIndex = index;
-                o.MapOffset = loc;
-                o.Transforms = transforms;
-                o.Translation = currentPosition + o.MapOffset;
-                var entrance = new Assets.World.Portal();
-                o.Sprite = entrance.CreateSprite();
-                o.SpriteMaterial = entrance.CreateMaterial();
-                o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-            });
-
-            placeables.Add(portal);
         }
     }
 }

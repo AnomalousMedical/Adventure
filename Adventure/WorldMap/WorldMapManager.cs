@@ -100,7 +100,9 @@ namespace Adventure.WorldMap
             {
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
                 o.Areas = worldDatabase.AreaBuilders;
-                o.AreaLocationSeed = worldDatabase.CurrentSeed;
+                o.PortalLocations = worldDatabase.PortalLocations;
+                o.AirshipSquare = worldDatabase.AirshipStartSquare;
+                o.AirshipPortalSquare = worldDatabase.AirshipPortalSquare;
             });
 
             await worldMapInstance.WaitForLoad();

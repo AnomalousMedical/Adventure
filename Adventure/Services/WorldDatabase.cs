@@ -1,4 +1,5 @@
 ﻿using Adventure.Items.Creators;
+using Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,10 @@ namespace Adventure.Services
         IMonsterMaker MonsterMaker { get; }
         WorldMapData WorldMap { get; }
         List<IAreaBuilder> AreaBuilders { get; }
+        List<IntVector2> PortalLocations { get; }
         int CurrentSeed { get; }
+        IntVector2 AirshipStartSquare { get; }
+        IntVector2 AirshipPortalSquare { get; }
     }
 
     class WorldDatabase : IWorldDatabase
@@ -36,6 +40,9 @@ namespace Adventure.Services
         private int currentSeed;
         private Random zoneRandom;
         private readonly Persistence persistence;
+        private List<IntVector2> portalLocations;
+        private IntVector2 airshipStartSquare;
+        private IntVector2 airshipPortalSquare;
 
         public IBiomeManager BiomeManager { get; }
         public SwordCreator SwordCreator { get; }
@@ -50,15 +57,18 @@ namespace Adventure.Services
         public AxeCreator AxeCreator { get; }
         public DaggerCreator DaggerCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
+        public List<IntVector2> PortalLocations => portalLocations;
+        public IntVector2 AirshipStartSquare => airshipStartSquare;
+        public IntVector2 AirshipPortalSquare => airshipPortalSquare;
 
-        private WorldMapData _worldMap;
+        private WorldMapData worldMap;
         public WorldMapData WorldMap
         {
             get
             {
                 CheckSeed();
 
-                return _worldMap;
+                return worldMap;
             }
         }
 
@@ -146,32 +156,66 @@ namespace Adventure.Services
 
         private void Reset(int newSeed)
         {
+            //Setup seeds and randoms
             createdZoneSeeds = new List<int>();
             zoneRandom = new Random(newSeed);
             var biomeRandom = new Random(newSeed);
+            var placementRandom = new Random(newSeed);
             currentSeed = newSeed;
-            areaBuilders = new List<IAreaBuilder>(27);
-            var weaknessRandom = new Random(newSeed);
-            var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
-            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom).ToList();
-            _worldMap = new WorldMapData(newSeed);
-            //Phase 0, 1 is 1 island, 2 is 2 islands + 3 more for the phase 2 bonus areas, everything above phase 2 has its own, except phase 4, which is not in the world
-            //also + 1 for the airship island
-            var numIslands = areaBuilders.Where(i => i.Phase > 2).Count() + 1 + 2 + 3 - 1 + 1;
-            _worldMap.Map.RemoveExtraIslands(numIslands);
+
+            //Setup map
+            worldMap = new WorldMapData(newSeed);
+            var numIslands =  1  //Phase 0, 1 and bonus 1
+                            + 2  //Phase 2
+                            + 3  //Bonus 2
+                            + 6  //Phase 3
+                            + 6  //Bonus 3
+                            + 1; //Airship
+            worldMap.Map.RemoveExtraIslands(numIslands);
+            var map = worldMap.Map;
             //TODO: need to check maps
             //3 largest islands need to have enough spaces for each phase
             //World needs enough islands to cover all zones
-            //remove extra islands
+
+            //Setup areas
+            var weaknessRandom = new Random(newSeed);
+            var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
+            var usedSquares = new bool[map.MapX, map.MapY];
+            var usedIslands = new bool[map.NumIslands];
+            portalLocations = new List<IntVector2>(5);
+
+            //Reserve the 3 largest islands
+            usedIslands[map.IslandSizeOrder[0]] = true;
+            usedIslands[map.IslandSizeOrder[1]] = true;
+            usedIslands[map.IslandSizeOrder[2]] = true;
+
+            SetupAirshipIsland(placementRandom, out airshipStartSquare, out airshipPortalSquare, usedSquares, usedIslands, map);
+            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom, placementRandom, portalLocations, usedSquares, usedIslands, map).ToList();
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom)
+        private static void SetupAirshipIsland(Random placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            //TODO: Get rid of this function and loop and just write this out
+            //Airship Island
+            var islandIndex = map.IslandSizeOrder[map.NumIslands - 1];
+            var island = map.IslandInfo[islandIndex];
+            usedIslands[islandIndex] = true;
+            airshipSquare = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            usedSquares[airshipSquare.x, airshipSquare.y] = true;
+            airshipPortalSquare = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
+        }
 
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        {
             int area = 0;
-            AreaBuilder areaBuilder = null;
+            AreaBuilder areaBuilder;
             var biomeMax = (int)BiomeType.Max;
+
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[0]], usedSquares, placementRandom, portalLocations);
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[1]], usedSquares, placementRandom, portalLocations);
+            AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom, portalLocations);
+
+            var island = map.IslandInfo[map.IslandSizeOrder[0]];
 
             //Phase 0
             areaBuilder = new Area0Builder(this, monsterInfo, area++);
@@ -182,6 +226,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
             yield return areaBuilder;
 
             //Phase 1
@@ -193,6 +238,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -203,6 +249,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -213,6 +260,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -222,15 +270,19 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
             //Phase 2
+            island = map.IslandInfo[map.IslandSizeOrder[1]];
+
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 10;
             areaBuilder.EndZone = 11;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -239,6 +291,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -247,7 +300,10 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
+
+            island = map.IslandInfo[map.IslandSizeOrder[2]];
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 16;
@@ -255,6 +311,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -263,6 +320,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -271,138 +329,243 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
             yield return areaBuilder;
 
             //Phase 3
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 22;
             areaBuilder.EndZone = 23;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 24;
             areaBuilder.EndZone = 25;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 26;
             areaBuilder.EndZone = 27;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 28;
             areaBuilder.EndZone = 29;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 30;
             areaBuilder.EndZone = 31;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 32;
             areaBuilder.EndZone = 33;
             areaBuilder.Phase = 3;
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
-            //Phase 4
-            areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-            areaBuilder.StartZone = 34;
-            areaBuilder.EndZone = 36;
-            areaBuilder.Phase = 4;
-            areaBuilder.IndexInPhase = 0;
-            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            yield return areaBuilder;
+            //Don't return this for now
+            ////Phase 4
+            //areaBuilder = new AreaBuilder(this, monsterInfo, area++);
+            //areaBuilder.StartZone = 34;
+            //areaBuilder.EndZone = 36;
+            //areaBuilder.Phase = 4;
+            //areaBuilder.IndexInPhase = 0;
+            //areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            //yield return areaBuilder;
 
             //Bonus 1
+            island = map.IslandInfo[map.IslandSizeOrder[0]];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 37;
             areaBuilder.EndZone = 39;
             areaBuilder.Phase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
             //Bonus 2
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+            AddPortal(island, usedSquares, placementRandom, portalLocations);
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 40;
             areaBuilder.EndZone = 42;
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+            AddPortal(island, usedSquares, placementRandom, portalLocations);
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 43;
             areaBuilder.EndZone = 45;
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+            AddPortal(island, usedSquares, placementRandom, portalLocations);
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 46;
             areaBuilder.EndZone = 48;
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             yield return areaBuilder;
 
             //Bonus 3
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 49;
             areaBuilder.EndZone = 51;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 52;
             areaBuilder.EndZone = 54;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 55;
             areaBuilder.EndZone = 57;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 58;
             areaBuilder.EndZone = 60;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 61;
             areaBuilder.EndZone = 63;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
 
+            island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 64;
             areaBuilder.EndZone = 66;
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             yield return areaBuilder;
+        }
+
+        private static void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom, List<IntVector2> portalLocations)
+        {
+            var square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
+            portalLocations.Add(square);
+        }
+
+        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom, IntVector2 desired)
+        {
+            if (!usedSquares[desired.x, desired.y])
+            {
+                usedSquares[desired.x, desired.y] = true;
+                return desired;
+            }
+
+            return GetUnusedSquare(usedSquares, island, placementRandom);
+        }
+
+        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom)
+        {
+            for (var i = 0; i < 5; ++i)
+            {
+                var next = placementRandom.Next(0, island.Size);
+                var square = island.islandPoints[next];
+                if (!usedSquares[square.x, square.y])
+                {
+                    usedSquares[square.x, square.y] = true;
+                    return square;
+                }
+            }
+
+            foreach (var square in island.islandPoints)
+            {
+                if (!usedSquares[square.x, square.y])
+                {
+                    usedSquares[square.x, square.y] = true;
+                    return square;
+                }
+            }
+
+            //This should not happen
+            throw new InvalidOperationException($"Cannot find unused point on island {island.Id} out of possible {island.Size}");
+        }
+
+        private static int GetUnusedIsland(bool[] usedIslands, Random placementRandom)
+        {
+            for (var i = 0; i < 5; ++i)
+            {
+                var next = placementRandom.Next(0, usedIslands.Length);
+                if (!usedIslands[next])
+                {
+                    usedIslands[next] = true;
+                    return next;
+                }
+            }
+
+            for (int i = 0; i < usedIslands.Length; ++i)
+            {
+                if (!usedIslands[i])
+                {
+                    usedIslands[i] = true;
+                    return i;
+                }
+            }
+
+            //This should not happen
+            throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
         }
     }
 }
