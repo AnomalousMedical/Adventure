@@ -227,6 +227,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             //Phase 1
@@ -239,6 +240,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -250,6 +252,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -261,6 +264,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -271,6 +275,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             //Phase 2
@@ -283,6 +288,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -292,6 +298,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -301,6 +308,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             island = map.IslandInfo[map.IslandSizeOrder[2]];
@@ -312,6 +320,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -321,6 +330,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -330,6 +340,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             //Phase 3
@@ -417,6 +428,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
             yield return areaBuilder;
 
             //Bonus 2
