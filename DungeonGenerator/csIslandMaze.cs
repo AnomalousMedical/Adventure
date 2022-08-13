@@ -56,6 +56,8 @@ public class csIslandMaze
 
     public int[,] Map;
 
+    public int[,] TextureOffsets;
+
     public int NumIslands { get; private set; }
 
     public List<int> IslandSizeOrder { get; private set; }
@@ -89,7 +91,7 @@ public class csIslandMaze
     {
 
         Map = new int[MapX, MapY];
-
+        TextureOffsets = new int[MapX, MapY];
 
         //go through each cell and use the specified probability to determine if it's open
         for (int x = 0; x < Map.GetLength(0); x++)

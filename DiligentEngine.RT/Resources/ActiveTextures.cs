@@ -103,6 +103,17 @@ namespace DiligentEngine.RT.Resources
             };
         }
 
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+            };
+        }
+
         public int AddActiveTexture2(CC0TextureResult texture)
         {
             TextureBinding binding;

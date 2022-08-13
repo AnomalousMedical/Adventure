@@ -42,6 +42,7 @@ namespace RTIslandGeneratorTest
         CC0TextureResult floorTexture;
         CC0TextureResult wallTexture;
         CC0TextureResult lowerFloorTexture;
+        CC0TextureResult altFloorTexture;
 
         public SceneDungeon
         (
@@ -78,10 +79,12 @@ namespace RTIslandGeneratorTest
                     var floorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
                     var wallTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock029_1K");
                     var lowerFloorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Rock022_1K");
+                    var altFloorTextureDesc = new CCOTextureBindingDescription("cc0Textures/Ground037_1K");
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
                     var lowerFloorTextureTask = textureManager.Checkout(lowerFloorTextureDesc);
+                    var altFloorTextureTask = textureManager.Checkout(altFloorTextureDesc);
 
                     var floorShaderSetup = primaryHitShaderFactory.Checkout();
 
@@ -97,6 +100,13 @@ namespace RTIslandGeneratorTest
                         mapBuilder.makeEdgesEmpty();
                         mapBuilder.findIslands();
 
+                        //Make the biggest island a different biome
+                        var biggestIsland = mapBuilder.IslandInfo[mapBuilder.IslandSizeOrder.First()];
+                        foreach(var i in biggestIsland.islandPoints)
+                        {
+                            mapBuilder.TextureOffsets[i.x, i.y] = 3;
+                        }
+
                         sw.Stop();
 
                         DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
@@ -109,6 +119,7 @@ namespace RTIslandGeneratorTest
                         floorTextureTask,
                         wallTextureTask,
                         lowerFloorTextureTask,
+                        altFloorTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
                         floorShaderSetup
                     );
@@ -117,10 +128,11 @@ namespace RTIslandGeneratorTest
                     this.floorTexture = floorTextureTask.Result;
                     this.wallTexture = wallTextureTask.Result;
                     this.lowerFloorTexture = lowerFloorTextureTask.Result;
+                    this.altFloorTexture = altFloorTextureTask.Result;
 
                     this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture, this.lowerFloorTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture, this.lowerFloorTexture, this.altFloorTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
@@ -144,9 +156,11 @@ namespace RTIslandGeneratorTest
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
             activeTextures.RemoveActiveTexture(lowerFloorTexture);
+            activeTextures.RemoveActiveTexture(altFloorTexture);
             textureManager.TryReturn(floorTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(lowerFloorTexture);
+            textureManager.TryReturn(altFloorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);

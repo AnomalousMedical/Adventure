@@ -70,19 +70,6 @@ namespace DungeonGenerator
             }
         }
 
-        private float upperGroundTextureIndex = 0.5f;
-        public int UpperGroundTextureIndex
-        {
-            get
-            {
-                return (int)upperGroundTextureIndex;
-            }
-            set
-            {
-                upperGroundTextureIndex = value + 0.5f;
-            }
-        }
-
         public IslandMazeMesh(csIslandMaze mapbuilder, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
             MapUnitX = mapUnitX;
@@ -206,7 +193,7 @@ namespace DungeonGenerator
                     if (map[mapX, mapY] != csMapbuilder.EmptyCell)
                     {
                         processedSquares[mapX, mapY] = true;
-                        ProcessSquare(MapUnitY, upperGroundTextureIndex, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder, true);
+                        ProcessSquare(MapUnitY, mapbuilder.TextureOffsets[mapX, mapY] + 0.5f, halfUnitX, halfUnitY, halfUnitZ, mapWidth, mapHeight, map, tempSquareInfo, yUvBottom, mapX, mapY, mapbuilder, true);
                     }
                     else
                     {
