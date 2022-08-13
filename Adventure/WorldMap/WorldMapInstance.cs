@@ -46,7 +46,7 @@ namespace Adventure.WorldMap
         private readonly IBiomeManager biomeManager;
         private readonly csIslandMaze map;
         private readonly IObjectResolver objectResolver;
-        private PrimaryHitShader floorShader;
+        private PrimaryHitShader shader;
         private IslandMazeMesh mapMesh;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private BlasInstanceData floorBlasInstanceData;
@@ -72,9 +72,12 @@ namespace Adventure.WorldMap
 
         public Vector2 MapSize => mapSize;
 
-        CC0TextureResult floorTexture;
-        CC0TextureResult wallTexture;
-        CC0TextureResult lowerFloorTexture;
+        CC0TextureResult countrysideTexture;
+        CC0TextureResult desertTexture;
+        CC0TextureResult snowyTexture;
+        CC0TextureResult forestTexture;
+        CC0TextureResult cliffTexture;
+        CC0TextureResult oceanFloorTexture;
 
         public WorldMapInstance
         (
@@ -136,34 +139,51 @@ namespace Adventure.WorldMap
                 using var destructionBlock = destructionRequest.BlockDestruction();
                 try
                 {
-                    var floorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground037_1K");
-                    var wallTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
-                    var lowerFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
+                    var countrysideTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground037_1K");
+                    var desertTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground025_1K");
+                    var snowyTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Snow006_1K");
+                    var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
+                    var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
+                    var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
 
-                    var floorTextureTask = textureManager.Checkout(floorTextureDesc);
-                    var wallTextureTask = textureManager.Checkout(wallTextureDesc);
-                    var lowerFloorTextureTask = textureManager.Checkout(lowerFloorTextureDesc);
+                    var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
+                    var desertTextureTask = textureManager.Checkout(desertTextureDesc);
+                    var snowyTextureTask = textureManager.Checkout(snowyTextureDesc);
+                    var forestTextureTask = textureManager.Checkout(forestTextureDesc);
+                    var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
+                    var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
 
-                    var floorShaderSetup = primaryHitShaderFactory.Checkout();
+                    var shaderSetup = primaryHitShaderFactory.Checkout();
 
                     await Task.Run(() =>
                     {
-                        mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale);
+                        mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale)
+                        {
+                            WallTextureIndex = 4,
+                            LowerGroundTextureIndex = 5,
+                        };
+                        mapMesh.Build();
                     });
 
                     await Task.WhenAll
                     (
-                        floorTextureTask,
-                        wallTextureTask,
-                        lowerFloorTextureTask,
+                        countrysideTextureTask,
+                        desertTextureTask,
+                        snowyTextureTask,
+                        forestTextureTask,
+                        cliffTextureTask,
+                        oceanFloorTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
-                        floorShaderSetup
+                        shaderSetup
                     );
 
-                    this.floorShader = floorShaderSetup.Result;
-                    this.floorTexture = floorTextureTask.Result;
-                    this.wallTexture = wallTextureTask.Result;
-                    this.lowerFloorTexture = lowerFloorTextureTask.Result;
+                    this.shader = shaderSetup.Result;
+                    this.countrysideTexture = countrysideTextureTask.Result;
+                    this.desertTexture = desertTextureTask.Result;
+                    this.snowyTexture = snowyTextureTask.Result;
+                    this.forestTexture = forestTextureTask.Result;
+                    this.cliffTexture = cliffTextureTask.Result;
+                    this.oceanFloorTexture = oceanFloorTextureTask.Result;
 
                     foreach (var data in floorInstanceData)
                     {
@@ -171,7 +191,7 @@ namespace Adventure.WorldMap
                         rtInstances.AddTlasBuild(data);
                     }
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.floorTexture, this.wallTexture, this.lowerFloorTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.cliffTexture, this.oceanFloorTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
@@ -217,14 +237,20 @@ namespace Adventure.WorldMap
             }
             objectResolver.Dispose();
             DestroyPhysics();
-            activeTextures.RemoveActiveTexture(wallTexture);
-            activeTextures.RemoveActiveTexture(floorTexture);
-            activeTextures.RemoveActiveTexture(lowerFloorTexture);
-            textureManager.TryReturn(floorTexture);
-            textureManager.TryReturn(wallTexture);
-            textureManager.TryReturn(lowerFloorTexture);
+            activeTextures.RemoveActiveTexture(cliffTexture);
+            activeTextures.RemoveActiveTexture(countrysideTexture);
+            activeTextures.RemoveActiveTexture(desertTexture);
+            activeTextures.RemoveActiveTexture(snowyTexture);
+            activeTextures.RemoveActiveTexture(forestTexture);
+            activeTextures.RemoveActiveTexture(oceanFloorTexture);
+            textureManager.TryReturn(countrysideTexture);
+            textureManager.TryReturn(desertTexture);
+            textureManager.TryReturn(snowyTexture);
+            textureManager.TryReturn(forestTexture);
+            textureManager.TryReturn(cliffTexture);
+            textureManager.TryReturn(oceanFloorTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
-            primaryHitShaderFactory.TryReturn(floorShader);
+            primaryHitShaderFactory.TryReturn(shader);
             foreach(var data in floorInstanceData)
             {
                 rtInstances.RemoveTlasBuild(data);
@@ -320,7 +346,7 @@ namespace Adventure.WorldMap
             {
                 foreach (var data in floorInstanceData)
                 {
-                    floorShader.BindSbt(data.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
+                    shader.BindSbt(data.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
                 }
             }
         }

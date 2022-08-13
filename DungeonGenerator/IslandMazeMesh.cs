@@ -72,19 +72,24 @@ namespace DungeonGenerator
 
         public IslandMazeMesh(csIslandMaze mapbuilder, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
+            this.mapbuilder = mapbuilder;
+            this.floorMesh = floorMesh;
             MapUnitX = mapUnitX;
             MapUnitY = mapUnitY;
             MapUnitZ = mapUnitZ;
 
+            //Use the ratio of z to x to determine the uv stride
+            uvXStride = 1.0f;
+            uvYStride = uvXStride * (mapUnitZ / mapUnitX);
+        }
+
+        public void Build() 
+        { 
             var halfUnitX = MapUnitX / 2.0f;
             var halfUnitY = MapUnitY / 2.0f;
             var halfUnitZ = MapUnitZ / 2.0f;
             var mapWidth = mapbuilder.MapX;
             var mapHeight = mapbuilder.MapY;
-
-            //Use the ratio of z to x to determine the uv stride
-            uvXStride = 1.0f;
-            uvYStride = uvXStride * (mapUnitZ / mapUnitX);
 
             var map = mapbuilder.Map;
 
@@ -122,8 +127,6 @@ namespace DungeonGenerator
             var squareCenterMapHeight = mapHeight + 2;
             squareInfo = new MapMeshSquareInfo[squareCenterMapWidth, squareCenterMapHeight];
             MapMeshTempSquareInfo[,] tempSquareInfo = new MapMeshTempSquareInfo[squareCenterMapWidth, squareCenterMapHeight];
-            this.mapbuilder = mapbuilder;
-            this.floorMesh = floorMesh;
 
             //Figure out number of quads
             uint numFloorQuads = 0;

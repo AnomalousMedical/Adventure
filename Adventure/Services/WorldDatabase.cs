@@ -341,6 +341,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -351,6 +352,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -361,6 +363,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -371,6 +374,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -381,6 +385,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -391,6 +396,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             //Don't return this for now
@@ -422,6 +428,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -432,6 +439,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -442,6 +450,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             //Bonus 3
@@ -452,6 +461,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -461,6 +471,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -470,6 +481,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -479,6 +491,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -488,6 +501,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
             island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
@@ -497,6 +511,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
         }
 
@@ -566,6 +581,14 @@ namespace Adventure.Services
 
             //This should not happen
             throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
+        }
+
+        private static void SetIslandBiome(IslandInfo island, csIslandMaze map, BiomeType biome)
+        {
+            foreach(var square in island.islandPoints)
+            {
+                map.TextureOffsets[square.x, square.y] = (int)biome;
+            }
         }
     }
 }
