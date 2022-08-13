@@ -207,6 +207,7 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
+            var filled = new bool[map.MapX, map.MapY];
             int area = 0;
             AreaBuilder areaBuilder;
             var biomeMax = (int)BiomeType.Max;
@@ -227,8 +228,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             //Phase 1
@@ -241,8 +241,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -254,8 +253,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -267,8 +265,7 @@ namespace Adventure.Services
             areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -279,8 +276,7 @@ namespace Adventure.Services
             areaBuilder.IncludeStrongElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             //Phase 2
@@ -293,8 +289,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -304,8 +299,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -315,8 +309,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             island = map.IslandInfo[map.IslandSizeOrder[2]];
@@ -328,7 +321,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -338,8 +331,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -349,8 +341,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             //Phase 3
@@ -438,8 +429,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-            map.TextureOffsets[areaBuilder.Location.x, areaBuilder.Location.y] = (int)areaBuilder.Biome;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location);
+            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             //Bonus 2
@@ -614,8 +604,12 @@ namespace Adventure.Services
             }
         }
 
-        private static void FillSurroundings(csIslandMaze map, BiomeType biome, IntVector2 startPoint)
+        private static void FillSurroundings(csIslandMaze map, BiomeType biome, IntVector2 startPoint, bool[,] filled)
         {
+            //The start point will always be filled out even if its already filled
+            map.TextureOffsets[startPoint.x, startPoint.y] = (int)biome;
+            filled[startPoint.x, startPoint.y] = true;
+
             var nextGeneration = new List<IntVector2>(25);
             var currentGeneration = new List<IntVector2>(25) { startPoint };
 
@@ -626,34 +620,38 @@ namespace Adventure.Services
                     //Check each dir
                     var check = item;
                     ++check.y;
-                    if(check.y < map.MapY && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
+                    if(check.y < map.MapY && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = (int)biome;
+                        filled[check.x, check.y] = true;
                     }
 
                     check = item;
                     --check.y;
-                    if (check.y > 0 && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
+                    if (check.y > 0 && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = (int)biome;
+                        filled[check.x, check.y] = true;
                     }
 
                     check = item;
                     ++check.x;
-                    if (check.x < map.MapX && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
+                    if (check.x < map.MapX && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = (int)biome;
+                        filled[check.x, check.y] = true;
                     }
 
                     check = item;
                     --check.x;
-                    if (check.x > 0 && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
+                    if (check.x > 0 && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = (int)biome;
+                        filled[check.x, check.y] = true;
                     }
                 }
                 currentGeneration = nextGeneration;
