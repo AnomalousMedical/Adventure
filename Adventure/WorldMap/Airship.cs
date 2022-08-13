@@ -177,6 +177,7 @@ namespace Adventure.WorldMap
             DestroyGraphics();
 
             this.map = map;
+            worldRect = new Rect(0, 0, map.MapSize.x, map.MapSize.y);
 
             await graphicsReady.Task;
 
