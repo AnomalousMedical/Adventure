@@ -71,8 +71,8 @@ namespace Adventure
         ButtonEvent jump;
 
         private bool disposed;
-        private Vector3 cameraOffset = new Vector3(0, 3, -12);
-        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 14f);
+        private Vector3 cameraOffset = new Vector3(0, 5, -12);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
