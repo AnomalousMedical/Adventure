@@ -88,6 +88,7 @@ namespace Adventure
                 zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
                 timeClock.DayStarted += TimeClock_DayStarted;
                 timeClock.NightStarted += TimeClock_NightStarted;
+                ZoneManager_ZoneChanged(null);
             }
             else
             {
