@@ -30,6 +30,7 @@ namespace Adventure
         List<BiomeBackgroundItem> BackgroundItems { get; set; }
 
         int MaxBackgroundItemRoll { get; set; }
+        ISpriteAsset EntranceAsset { get; set; }
     }
 
     class Biome : IBiome
@@ -67,6 +68,8 @@ namespace Adventure
         public ISpriteAsset GateAsset { get; set; } = new Assets.World.MetalGate();
 
         public ISpriteAsset KeyAsset { get; set; } = new Assets.World.RoundKey();
+
+        public ISpriteAsset EntranceAsset { get; set; } = new Assets.World.CountryEntrance();
 
         public List<BiomeBackgroundItem> BackgroundItems { get; set; }
 

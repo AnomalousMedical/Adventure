@@ -459,9 +459,9 @@ namespace Adventure.WorldMap
                     o.MapOffset = loc;
                     o.Translation = currentPosition + o.MapOffset;
                     o.Transforms = transforms;
-                    var entrance = biome.BackgroundItems[0];
-                    o.Sprite = entrance.Asset.CreateSprite();
-                    o.SpriteMaterial = entrance.Asset.CreateMaterial();
+                    var entrance = biome.EntranceAsset;
+                    o.Sprite = entrance.CreateSprite();
+                    o.SpriteMaterial = entrance.CreateMaterial();
                     o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
                 });
 
