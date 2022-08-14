@@ -19,6 +19,7 @@ namespace Adventure.WorldMap
         void MovePlayer(in Vector3 loc);
         void SetPlayerVisible(bool visible);
         Vector3 GetAirshipPortal();
+        Task WaitForWorldMapLoad();
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -108,6 +109,11 @@ namespace Adventure.WorldMap
             await worldMapInstance.WaitForLoad();
             await airship.SetMap(worldMapInstance);
             worldMapInstance.SetupPhysics();
+        }
+
+        public Task WaitForWorldMapLoad()
+        {
+            return worldMapInstance?.WaitForLoad() ?? Task.CompletedTask;
         }
 
         public Vector3 GetPortal(int portalIndex)

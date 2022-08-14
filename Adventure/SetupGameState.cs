@@ -15,6 +15,7 @@ namespace Adventure
     class SetupGameState : ISetupGameState
     {
         private readonly IZoneManager zoneManager;
+        private readonly IWorldMapManager worldMapManager;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
@@ -30,6 +31,7 @@ namespace Adventure
         public SetupGameState
         (
             IZoneManager zoneManager,
+            IWorldMapManager worldMapManager,
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
@@ -38,6 +40,7 @@ namespace Adventure
         )
         {
             this.zoneManager = zoneManager;
+            this.worldMapManager = worldMapManager;
             this.coroutineRunner = coroutineRunner;
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
@@ -66,6 +69,13 @@ namespace Adventure
                 {
                     coroutineRunner.RunTask(async () =>
                     {
+                        await worldMapManager.WaitForWorldMapLoad();
+
+                        //TODO: Ideally don't have to wait for zones
+                        await zoneManager.WaitForCurrent();
+                        await zoneManager.WaitForPrevious();
+                        await zoneManager.WaitForNext();
+
                         finished = true;
                     });
                 }
