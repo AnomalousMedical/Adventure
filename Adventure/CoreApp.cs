@@ -166,7 +166,6 @@ namespace Adventure
             services.AddSingleton<ICollidableTypeIdentifier<IExplorationGameState>, CollidableTypeIdentifier<IExplorationGameState>>();
             services.AddSingleton<ICollidableTypeIdentifier<IWorldMapGameState>, CollidableTypeIdentifier<IWorldMapGameState>>();
             services.AddSingleton<IBackgroundMusicPlayer, BackgroundMusicPlayer>();
-            services.AddSingleton<BackgroundMusicManager>();
             services.AddSingleton<ICameraProjector, CameraProjector>();
             services.AddSingleton<IBattleScreenLayout, BattleScreenLayout>();
             services.AddSingleton<IFirstGameStateBuilder, FirstGameStateBuilder>();

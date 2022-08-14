@@ -34,6 +34,7 @@ namespace Adventure.WorldMap
         private readonly IWorldDatabase worldDatabase;
         private readonly IExplorationMenu explorationMenu;
         private readonly EventManager eventManager;
+        private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private IExplorationGameState explorationState;
         private IGameState nextState;
 
@@ -51,7 +52,8 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             IWorldDatabase worldDatabase,
             IExplorationMenu explorationMenu,
-            EventManager eventManager
+            EventManager eventManager,
+            IBackgroundMusicPlayer backgroundMusicPlayer
         )
         {
             this.rtInstances = rtInstances;
@@ -65,6 +67,7 @@ namespace Adventure.WorldMap
             this.worldDatabase = worldDatabase;
             this.explorationMenu = explorationMenu;
             this.eventManager = eventManager;
+            this.backgroundMusicPlayer = backgroundMusicPlayer;
             coroutineRunner.RunTask(worldMapManager.SetupWorldMap());
         }
 
@@ -85,6 +88,7 @@ namespace Adventure.WorldMap
                 {
                     worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
                 }
+                backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Kevin MacLeod - Witch Waltz.ogg");
             }
         }
 

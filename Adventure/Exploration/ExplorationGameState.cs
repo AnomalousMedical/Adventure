@@ -1,15 +1,11 @@
-﻿using BepuPlugin;
+﻿using Adventure.Battle;
+using Adventure.Exploration.Menu;
+using Adventure.WorldMap;
+using BepuPlugin;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
-using Adventure.Battle;
-using Adventure.Exploration.Menu;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Adventure.WorldMap;
 
 namespace Adventure
 {
@@ -28,7 +24,7 @@ namespace Adventure
         void RequestWorldMap();
     }
 
-    class ExplorationGameState : IExplorationGameState
+    class ExplorationGameState : IExplorationGameState, IDisposable
     {
         private readonly IBepuScene<IExplorationGameState> bepuScene;
         private readonly IZoneManager zoneManager;
@@ -36,6 +32,8 @@ namespace Adventure
         private readonly IExplorationMenu explorationMenu;
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
+        private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
+        private readonly ITimeClock timeClock;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -43,14 +41,18 @@ namespace Adventure
 
         public RTInstances Instances => rtInstances;
 
-        public ExplorationGameState(
+        public ExplorationGameState
+        (
             ICoroutineRunner coroutineRunner,
             IBepuScene<IExplorationGameState> bepuScene,
             IZoneManager zoneManager,
             RTInstances<IZoneManager> rtInstances,
             IExplorationMenu explorationMenu,
             IContextMenu contextMenu,
-            EventManager eventManager)
+            EventManager eventManager,
+            IBackgroundMusicPlayer backgroundMusicPlayer,
+            ITimeClock timeClock
+        )
         {
             this.bepuScene = bepuScene;
             this.zoneManager = zoneManager;
@@ -58,7 +60,16 @@ namespace Adventure
             this.explorationMenu = explorationMenu;
             this.contextMenu = contextMenu;
             this.eventManager = eventManager;
+            this.backgroundMusicPlayer = backgroundMusicPlayer;
+            this.timeClock = timeClock;
             coroutineRunner.RunTask(zoneManager.Restart());
+        }
+
+        public void Dispose()
+        {
+            zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
+            timeClock.DayStarted -= TimeClock_DayStarted;
+            timeClock.NightStarted -= TimeClock_NightStarted;
         }
 
         public void Link(IBattleGameState battleState, IWorldMapGameState worldMapState)
@@ -74,6 +85,15 @@ namespace Adventure
             if (active)
             {
                 eventManager[EventLayers.Exploration].makeFocusLayer();
+                zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
+                timeClock.DayStarted += TimeClock_DayStarted;
+                timeClock.NightStarted += TimeClock_NightStarted;
+            }
+            else
+            {
+                zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
+                timeClock.DayStarted -= TimeClock_DayStarted;
+                timeClock.NightStarted -= TimeClock_NightStarted;
             }
         }
 
@@ -127,6 +147,28 @@ namespace Adventure
             }
 
             return nextState;
+        }
+
+        private void TimeClock_NightStarted(TimeClock obj)
+        {
+            var song = zoneManager.Current.Biome.BgMusicNight;
+            backgroundMusicPlayer.SetBackgroundSong(song);
+        }
+
+        private void TimeClock_DayStarted(TimeClock obj)
+        {
+            var song = zoneManager.Current.Biome.BgMusic;
+            backgroundMusicPlayer.SetBackgroundSong(song);
+        }
+
+        private void ZoneManager_ZoneChanged(IZoneManager obj)
+        {
+            var song = zoneManager.Current.Biome.BgMusic;
+            if (!timeClock.IsDay)
+            {
+                song = zoneManager.Current.Biome.BgMusicNight;
+            }
+            backgroundMusicPlayer.SetBackgroundSong(song);
         }
     }
 }
