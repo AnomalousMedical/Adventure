@@ -67,6 +67,7 @@ namespace Adventure
                 FloorTexture = "Graphics/Textures/AmbientCG/Snow006_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Rock022_1K",
                 ReflectFloor = false,
+                EntranceAsset = new SnowyEntrance(),
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
