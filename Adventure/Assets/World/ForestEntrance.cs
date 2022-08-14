@@ -19,6 +19,7 @@ namespace Adventure.Assets.World
             new SpriteMaterialTextureItem(0xffa4b5c2, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //arch (grey)
             new SpriteMaterialTextureItem(0xffdd3c24, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //roof (red)
             new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Ground042_1K", "jpg"), //ground (brown)
+            new SpriteMaterialTextureItem(0xffedb96c, "Graphics/Textures/AmbientCG/Ground025_1K", "jpg"), //ground path (brown)
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
