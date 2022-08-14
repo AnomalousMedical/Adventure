@@ -94,6 +94,7 @@ namespace Adventure
                 },
                 BgMusic = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
                 BgMusicNight = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
+                EntranceAsset = new DesertEntrance(),
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(2, new Cactus())
