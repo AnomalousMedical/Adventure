@@ -92,8 +92,8 @@ namespace Adventure
                 {
                     Asset = new Assets.World.TreasureChest(),
                 },
-                BgMusic = "Music/opengameart/Fantasy_Origins - Cavernous_Desert02.ogg",
-                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                BgMusic = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
+                BgMusicNight = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(2, new Cactus())
@@ -129,6 +129,8 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground042_1K",
+                BgMusic = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
