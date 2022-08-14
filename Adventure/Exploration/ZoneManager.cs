@@ -156,17 +156,17 @@ namespace Adventure
 
         public Task WaitForCurrent()
         {
-            return currentZone?.WaitForGeneration();
+            return currentZone?.WaitForGeneration() ?? Task.CompletedTask;
         }
 
         public Task WaitForNext()
         {
-            return nextZone?.WaitForGeneration();
+            return nextZone?.WaitForGeneration() ?? Task.CompletedTask;
         }
 
         public Task WaitForPrevious()
         {
-            return previousZone?.WaitForGeneration();
+            return previousZone?.WaitForGeneration() ?? Task.CompletedTask;
         }
 
         public Task GoNext()

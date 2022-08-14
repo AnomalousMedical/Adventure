@@ -62,11 +62,23 @@ namespace Adventure
             if (active)
             {
                 finished = false;
-                coroutineRunner.RunTask(async () =>
+                if (persistence.Current.Player.InWorld)
                 {
-                    await zoneManager.WaitForCurrent();
-                    finished = true;
-                });
+                    coroutineRunner.RunTask(async () =>
+                    {
+                        finished = true;
+                    });
+                }
+                else
+                {
+                    coroutineRunner.RunTask(async () =>
+                    {
+                        await zoneManager.WaitForCurrent();
+                        await zoneManager.WaitForPrevious();
+                        await zoneManager.WaitForNext();
+                        finished = true;
+                    });
+                }
             }
         }
 
