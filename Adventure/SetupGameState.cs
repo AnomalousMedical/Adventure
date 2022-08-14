@@ -19,8 +19,11 @@ namespace Adventure
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
-        private readonly RTInstances rtInstances;
+        private readonly RTInstances<IZoneManager> zoneInstances;
+        private readonly RTInstances<IWorldMapGameState> worldInstances;
+        private RTInstances rtInstances;
         private readonly Persistence persistence;
+        private readonly RayTracingRenderer rayTracingRenderer;
         private IGameState nextState;
         private bool finished = false;
 
@@ -35,8 +38,10 @@ namespace Adventure
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<IZoneManager> rtInstances,
-            Persistence persistence
+            RTInstances<IZoneManager> zoneInstances,
+            RTInstances<IWorldMapGameState> worldInstances,
+            Persistence persistence,
+            RayTracingRenderer rayTracingRenderer
         )
         {
             this.zoneManager = zoneManager;
@@ -44,8 +49,10 @@ namespace Adventure
             this.coroutineRunner = coroutineRunner;
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
-            this.rtInstances = rtInstances;
+            this.zoneInstances = zoneInstances;
+            this.worldInstances = worldInstances;
             this.persistence = persistence;
+            this.rayTracingRenderer = rayTracingRenderer;
         }
 
         public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
@@ -65,30 +72,24 @@ namespace Adventure
             if (active)
             {
                 finished = false;
-                if (persistence.Current.Player.InWorld)
+                coroutineRunner.RunTask(async () =>
                 {
-                    coroutineRunner.RunTask(async () =>
+                    if (persistence.Current.Player.InWorld)
                     {
+                        rtInstances = worldInstances;
                         await worldMapManager.WaitForWorldMapLoad();
-
-                        //TODO: Ideally don't have to wait for zones
-                        await zoneManager.WaitForCurrent();
-                        await zoneManager.WaitForPrevious();
-                        await zoneManager.WaitForNext();
-
-                        finished = true;
-                    });
-                }
-                else
-                {
-                    coroutineRunner.RunTask(async () =>
+                    }
+                    else
                     {
+                        rtInstances = zoneInstances;
                         await zoneManager.WaitForCurrent();
                         await zoneManager.WaitForPrevious();
                         await zoneManager.WaitForNext();
-                        finished = true;
-                    });
-                }
+                    }
+
+                    await rayTracingRenderer.WaitForPipelineRebuild();
+                    finished = true;
+                });
             }
         }
 

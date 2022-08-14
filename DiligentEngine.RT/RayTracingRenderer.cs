@@ -31,6 +31,7 @@ namespace DiligentEngine.RT
         uint lastNumInstances = 0;
         bool rebuildPipeline = true;
         bool rebindShaderResources;
+        private TaskCompletionSource pipelineRebuildTask = new TaskCompletionSource();
 
         public event Action<RayTracingPipelineStateCreateInfo> OnSetupCreateInfo;
 
@@ -65,6 +66,11 @@ namespace DiligentEngine.RT
         {
             m_pSBT?.Dispose();
             DestroyPSO();
+        }
+
+        public Task WaitForPipelineRebuild()
+        {
+            return pipelineRebuildTask.Task;
         }
 
         private void DestroyPSO()
@@ -246,6 +252,7 @@ namespace DiligentEngine.RT
                 m_InstanceBuffer = null;
 
                 CreateRayTracingPSO();
+                pipelineRebuildTask.SetResult(); //Don't have to worry about exceptions since its gone at this point if that happens anyway
                 rebuildPipeline = false;
                 rebindShaderResources = true;
             }
@@ -501,6 +508,10 @@ namespace DiligentEngine.RT
 
         public void AddShaderResourceBinder(ShaderResourceBinder binder)
         {
+            if (pipelineRebuildTask.Task.IsCompleted)
+            {
+                pipelineRebuildTask = new TaskCompletionSource();
+            }
             rebuildPipeline = true;
             shaderResourceBinders.Add(binder);
         }
