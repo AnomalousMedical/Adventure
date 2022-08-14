@@ -1,5 +1,6 @@
 ﻿using Adventure.Battle;
 using Adventure.Exploration.Menu;
+using Adventure.Services;
 using Adventure.WorldMap;
 using BepuPlugin;
 using DiligentEngine.RT;
@@ -51,7 +52,8 @@ namespace Adventure
             IContextMenu contextMenu,
             EventManager eventManager,
             IBackgroundMusicPlayer backgroundMusicPlayer,
-            ITimeClock timeClock
+            ITimeClock timeClock,
+            Persistence persistence
         )
         {
             this.bepuScene = bepuScene;
@@ -62,7 +64,10 @@ namespace Adventure
             this.eventManager = eventManager;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
             this.timeClock = timeClock;
-            coroutineRunner.RunTask(zoneManager.Restart());
+            if (!persistence.Current.Player.InWorld)
+            {
+                coroutineRunner.RunTask(zoneManager.Restart());
+            }
         }
 
         public void Dispose()
