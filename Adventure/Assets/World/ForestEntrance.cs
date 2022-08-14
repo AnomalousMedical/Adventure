@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 
 namespace Adventure.Assets.World
 {
-    class CountryEntrance : ISpriteAsset
+    class ForestEntrance : ISpriteAsset
     {
-        private const string colorMap = "Graphics/Sprites/Anomalous/World/CountryEntrance.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/World/ForestEntrance.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff406d1e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"), //leaves and ground (green)
-            new SpriteMaterialTextureItem(0xff7b532e, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"), //tree trunk
+            new SpriteMaterialTextureItem(0xff0e3d32, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff89d860, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"), 
+            new SpriteMaterialTextureItem(0xff6c2c17, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"), //tree trunk (brown)
             new SpriteMaterialTextureItem(0xffa4b5c2, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //arch (grey)
-            new SpriteMaterialTextureItem(0xff0a9210, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //roof (green)
-            new SpriteMaterialTextureItem(0xffedb96c, "Graphics/Textures/AmbientCG/Ground025_1K", "jpg"), //ground (brown)
+            new SpriteMaterialTextureItem(0xffdd3c24, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //roof (red)
+            new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Ground042_1K", "jpg"), //ground (brown)
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

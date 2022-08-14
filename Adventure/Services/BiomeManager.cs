@@ -133,6 +133,7 @@ namespace Adventure
                 WallTexture = "Graphics/Textures/AmbientCG/Ground042_1K",
                 BgMusic = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
                 BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                EntranceAsset = new ForestEntrance(),
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
