@@ -469,7 +469,7 @@ namespace Anomalous.OSPlatform
                 createInternalResourcesCB = new ModifyResourcesCB(window.createInternalResources);
                 destroyInternalResourcesCB = new ModifyResourcesCB(window.destroyInternalResources);
 
-                NativeOSWindow_setCallbacks(window._NativePtr, deleteCB, sizedCB, closedCB, closedCB, activateCB, createInternalResourcesCB, destroyInternalResourcesCB);
+                NativeOSWindow_setCallbacks(window._NativePtr, deleteCB, sizedCB, closingCB, closedCB, activateCB, createInternalResourcesCB, destroyInternalResourcesCB);
             }
 
             public void Dispose()
