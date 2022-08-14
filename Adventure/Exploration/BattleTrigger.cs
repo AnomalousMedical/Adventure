@@ -127,6 +127,11 @@ namespace Adventure
 
         public void BattleWon()
         {
+            if (IsBoss)
+            {
+                explorationGameState.LevelUpWorld();
+            }
+
             state.Dead = true;
             SetState(description, persistence, state);
             persistenceWriter.Save();

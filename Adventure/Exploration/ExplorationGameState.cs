@@ -6,6 +6,7 @@ using BepuPlugin;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
+using RpgMath;
 using System;
 
 namespace Adventure
@@ -23,6 +24,7 @@ namespace Adventure
         void RequestBattle(BattleTrigger battleTrigger = null);
         void SetExplorationEvent(Func<Clock, bool> explorationEvent);
         void RequestWorldMap();
+        void LevelUpWorld();
     }
 
     class ExplorationGameState : IExplorationGameState, IDisposable
@@ -35,6 +37,9 @@ namespace Adventure
         private readonly EventManager eventManager;
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private readonly ITimeClock timeClock;
+        private readonly Persistence persistence;
+        private readonly IWorldDatabase worldDatabase;
+        private readonly ILevelCalculator levelCalculator;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -53,7 +58,9 @@ namespace Adventure
             EventManager eventManager,
             IBackgroundMusicPlayer backgroundMusicPlayer,
             ITimeClock timeClock,
-            Persistence persistence
+            Persistence persistence,
+            IWorldDatabase worldDatabase,
+            ILevelCalculator levelCalculator
         )
         {
             this.bepuScene = bepuScene;
@@ -64,6 +71,9 @@ namespace Adventure
             this.eventManager = eventManager;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
             this.timeClock = timeClock;
+            this.persistence = persistence;
+            this.worldDatabase = worldDatabase;
+            this.levelCalculator = levelCalculator;
             if (!persistence.Current.Player.InWorld)
             {
                 coroutineRunner.RunTask(zoneManager.Restart());
@@ -153,6 +163,22 @@ namespace Adventure
             }
 
             return nextState;
+        }
+
+        public void LevelUpWorld()
+        {
+            var current = persistence.Current.World.Level;
+            var levelDelta = worldDatabase.GetLevelDelta(current);
+            current += levelDelta;
+            persistence.Current.World.Level = current;
+            foreach (var sheet in persistence.Current.Party.Members)
+            {
+                while (sheet.CharacterSheet.Level < current)
+                {
+                    //TODO: Change how characters level, for now just use "fighter"
+                    sheet.CharacterSheet.LevelUpFighter(levelCalculator);
+                }
+            }
         }
 
         private void TimeClock_NightStarted(TimeClock obj)

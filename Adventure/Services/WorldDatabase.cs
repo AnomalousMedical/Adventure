@@ -12,6 +12,8 @@ namespace Adventure.Services
     {
         int GetZoneSeed(int index);
         IAreaBuilder GetAreaBuilder(int zoneIndex);
+        int GetLevelDelta(int area);
+
         IBiomeManager BiomeManager { get; }
         SwordCreator SwordCreator { get; }
         SpearCreator SpearCreator { get; }
@@ -60,6 +62,29 @@ namespace Adventure.Services
         public List<IntVector2> PortalLocations => portalLocations;
         public IntVector2 AirshipStartSquare => airshipStartSquare;
         public IntVector2 AirshipPortalSquare => airshipPortalSquare;
+
+        public int GetLevelDelta(int currentLevel)
+        {
+            //This assumes 27 areas, after that no more leveling
+
+            if(currentLevel >= 99)
+            {
+                return 0;
+            }
+            
+            if(currentLevel < 30)
+            {
+                return 3;
+            }
+
+            var delta = 4;
+            if(currentLevel + delta > 99)
+            {
+                delta = 99 - currentLevel;
+            }
+
+            return delta;
+        }
 
         private WorldMapData worldMap;
         public WorldMapData WorldMap
@@ -165,7 +190,7 @@ namespace Adventure.Services
 
             //Setup map
             worldMap = new WorldMapData(newSeed);
-            var numIslands =  1  //Phase 0, 1 and bonus 1
+            var numIslands = 1  //Phase 0, 1 and bonus 1
                             + 2  //Phase 2
                             + 3  //Bonus 2
                             + 6  //Phase 3
@@ -598,7 +623,7 @@ namespace Adventure.Services
 
         private static void SetIslandBiome(IslandInfo island, csIslandMaze map, BiomeType biome)
         {
-            foreach(var square in island.islandPoints)
+            foreach (var square in island.islandPoints)
             {
                 map.TextureOffsets[square.x, square.y] = (int)biome;
             }
@@ -613,14 +638,14 @@ namespace Adventure.Services
             var nextGeneration = new List<IntVector2>(25);
             var currentGeneration = new List<IntVector2>(25) { startPoint };
 
-            for(var gen = 0; gen < 4 && currentGeneration.Count > 0; ++gen)
+            for (var gen = 0; gen < 4 && currentGeneration.Count > 0; ++gen)
             {
-                foreach(var item in currentGeneration)
+                foreach (var item in currentGeneration)
                 {
                     //Check each dir
                     var check = item;
                     ++check.y;
-                    if(check.y < map.MapY && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
+                    if (check.y < map.MapY && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = (int)biome;

@@ -27,6 +27,7 @@ namespace Adventure.Exploration.Menu
         private readonly ILevelCalculator levelCalculator;
         private readonly PhilipRootMenu philipRoot;
         private readonly FlyCameraManager flyCameraManager;
+        private readonly Persistence persistence;
         SharpButton goNextLevel = new SharpButton() { Text = "Next Stage" };
         SharpButton goPreviousLevel = new SharpButton() { Text = "Previous Stage" };
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
@@ -34,6 +35,7 @@ namespace Adventure.Exploration.Menu
         SharpButton goWorld = new SharpButton() { Text = "Go World" };
         SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
         SharpButton philip = new SharpButton() { Text = "Philip" };
+        SharpButton levelWorld = new SharpButton() { Text = "Level World" };
         SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
@@ -50,7 +52,8 @@ namespace Adventure.Exploration.Menu
             Party party,
             ILevelCalculator levelCalculator,
             PhilipRootMenu philipRoot,
-            FlyCameraManager flyCameraManager
+            FlyCameraManager flyCameraManager,
+            Persistence persistence
         )
         {
             this.sharpGui = sharpGui;
@@ -63,19 +66,20 @@ namespace Adventure.Exploration.Menu
             this.levelCalculator = levelCalculator;
             this.philipRoot = philipRoot;
             this.flyCameraManager = flyCameraManager;
+            this.persistence = persistence;
             currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
-            averageLevel.Text = $"Zone: {zoneManager.Current?.Index} Level: {party.GetAverageLevel()} Enemy: {zoneManager.Current?.EnemyLevel}";
+            averageLevel.Text = $"Zone: {zoneManager.Current?.Index} Level: {party.GetAverageLevel()} Enemy: {persistence.Current.World.Level}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";
             toggleCamera.Text = flyCameraManager.Enabled ? "Disable Fly Camera" : "Enable Fly Camera";
 
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip), new RowLayout(goStart, goEnd, goWorld), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip, levelWorld), new RowLayout(goStart, goEnd, goWorld), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
@@ -93,12 +97,17 @@ namespace Adventure.Exploration.Menu
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
 
-            if (sharpGui.Button(philip, gamepad, navUp: battle.Id, navDown: goStart.Id))
+            if (sharpGui.Button(philip, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: levelWorld.Id, navRight: levelWorld.Id))
             {
                 explorationMenu.RequestSubMenu(philipRoot, gamepad);
             }
 
-            if(sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
+            if (sharpGui.Button(levelWorld, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
+            {
+                explorationGameState.LevelUpWorld();
+            }
+
+            if (sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
