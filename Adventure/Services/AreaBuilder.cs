@@ -64,6 +64,8 @@ namespace Adventure.Services
 
         public bool PlaceTreasure { get; set; } = true;
 
+        public int TreasureLevel { get; set; } = 3;
+
         public bool IncludeWeakElement { get; set; } = true;
 
         public bool IncludeStrongElement { get; set; } = true;
@@ -126,35 +128,35 @@ namespace Adventure.Services
                 switch (zoneIndex % 3)
                 {
                     case 0:
-                        weapon = worldDatabase.SwordCreator.CreateNormal(o.EnemyLevel);
+                        weapon = worldDatabase.SwordCreator.CreateNormal(TreasureLevel);
                         break;
                     case 1:
-                        weapon = worldDatabase.FireStaffCreator.CreateNormal(o.EnemyLevel);
+                        weapon = worldDatabase.FireStaffCreator.CreateNormal(TreasureLevel);
                         break;
                     case 2:
-                        weapon = worldDatabase.AxeCreator.CreateNormal(o.EnemyLevel);
+                        weapon = worldDatabase.AxeCreator.CreateNormal(TreasureLevel);
                         break;
                 }
 
                 treasures.Add(new Treasure(weapon));
 
-                treasures.Add(new Treasure(worldDatabase.ShieldCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.ShieldCreator.CreateNormal(TreasureLevel)));
 
                 //These don't really do anything right now
                 //var acc = new InventoryItem(accessoryCreator.CreateNormal(o.EnemyLevel), nameof(Items.Actions.EquipAccessory));
                 //treasures.Add(new Treasure(acc));
 
-                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(TreasureLevel)));
 
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()));
 
                 o.StealTreasure = new List<ITreasure>()
                 {
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel))
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel))
                 };
 
                 var uniqueStealTreasure = new List<ITreasure>();
@@ -173,13 +175,13 @@ namespace Adventure.Services
                     switch (element.Key)
                     {
                         case Element.Slashing:
-                            bossWeaknessTreasure = new Treasure(worldDatabase.SwordCreator.CreateEpic(o.EnemyLevel));
+                            bossWeaknessTreasure = new Treasure(worldDatabase.SwordCreator.CreateEpic(TreasureLevel));
                             break;
                         case Element.Piercing:
-                            bossWeaknessTreasure = new Treasure(worldDatabase.SpearCreator.CreateEpic(o.EnemyLevel));
+                            bossWeaknessTreasure = new Treasure(worldDatabase.SpearCreator.CreateEpic(TreasureLevel));
                             break;
                         case Element.Bludgeoning:
-                            bossWeaknessTreasure = new Treasure(worldDatabase.MaceCreator.CreateEpic(o.EnemyLevel));
+                            bossWeaknessTreasure = new Treasure(worldDatabase.MaceCreator.CreateEpic(TreasureLevel));
                             break;
                     }
 
@@ -206,7 +208,7 @@ namespace Adventure.Services
 
                     if (staffCreator != null)
                     {
-                        var elementalStaff = new Treasure(staffCreator.CreateEpic(o.EnemyLevel));
+                        var elementalStaff = new Treasure(staffCreator.CreateEpic(TreasureLevel));
                         var storageLoc = treasureRandom.Next(2);
                         switch (storageLoc)
                         {
@@ -227,7 +229,7 @@ namespace Adventure.Services
 
                     if (staffCreator != null)
                     {
-                        var elementalStaff = new Treasure(staffCreator.CreateEpic(o.EnemyLevel));
+                        var elementalStaff = new Treasure(staffCreator.CreateEpic(TreasureLevel));
                         var storageLoc = treasureRandom.Next(2);
                         switch (storageLoc)
                         {
@@ -243,7 +245,7 @@ namespace Adventure.Services
 
                 if (zoneIndex % 3 == 0)
                 {
-                    uniqueStealTreasure.Add(new Treasure(worldDatabase.DaggerCreator.CreateNormal(o.EnemyLevel)));
+                    uniqueStealTreasure.Add(new Treasure(worldDatabase.DaggerCreator.CreateNormal(TreasureLevel)));
                 }
             }
 
@@ -274,6 +276,7 @@ namespace Adventure.Services
             if (zoneIndex == 0)
             {
                 o.EnemyLevel = 1;
+                TreasureLevel = 3;
                 o.MaxMainCorridorBattles = 1;
                 o.MakePhilip = false;
                 o.MakeRest = false;
@@ -284,19 +287,20 @@ namespace Adventure.Services
                 var treasures = new List<ITreasure>();
                 o.Treasure = treasures;
 
-                treasures.Add(new Treasure(worldDatabase.SwordCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.FireStaffCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.AxeCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.SpearCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.MaceCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.SwordCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.FireStaffCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.AxeCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.SpearCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.MaceCreator.CreateNormal(TreasureLevel)));
                                            
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()));
             }
             else if (zoneIndex == 1)
             {
                 o.EnemyLevel = 3;
+                TreasureLevel = 3;
                 o.MakePhilip = false;
                 o.MakeRest = true;
                 o.MakeBoss = true;
@@ -307,30 +311,30 @@ namespace Adventure.Services
                 var treasures = new List<ITreasure>();
                 o.Treasure = treasures;
 
-                treasures.Add(new Treasure(worldDatabase.ShieldCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.DaggerCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.ShieldCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.DaggerCreator.CreateNormal(TreasureLevel)));
 
                 //Change some of these to the other armor types
-                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.ArmorCreator.CreateNormal(TreasureLevel)));
 
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)));
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(o.EnemyLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()));
 
                 o.BossUniqueStealTreasure = new List<ITreasure>()
                 {
                     //This should be element based, so give out what is good in the next area
-                    new Treasure(worldDatabase.SwordCreator.CreateEpic(o.EnemyLevel))
+                    new Treasure(worldDatabase.SwordCreator.CreateEpic(TreasureLevel))
                 };
 
                 //You get the dagger in this zone, so some of this is missable
                 o.StealTreasure = new List<ITreasure>()
                 {
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(o.EnemyLevel))
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel))
                 };
             }
         }
