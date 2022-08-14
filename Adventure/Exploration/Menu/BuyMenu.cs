@@ -274,7 +274,7 @@ Lck: {characterData.CharacterSheet.Luck}
 
         private IEnumerable<ShopEntry> ShopItems()
         {
-            var level = zoneManager.Current.EnemyLevel;
+            var level = persistence.Current.World.Level;
 
             yield return potionCreator.CreateManaPotionShopEntry(level);
 

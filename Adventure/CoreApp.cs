@@ -179,7 +179,6 @@ namespace Adventure
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
             services.AddSingleton<PhilipRootMenu>();
-            services.AddSingleton<LevelUpMenu>();
             services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<ItemMenu>();

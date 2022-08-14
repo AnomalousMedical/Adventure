@@ -15,10 +15,8 @@ namespace Adventure.Exploration.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private readonly LevelUpMenu levelUpMenu;
         private readonly BuyMenu buyMenu;
         private readonly RestManager restManager;
-        SharpButton levelUp = new SharpButton() { Text = "Level Up" };
         SharpButton buy = new SharpButton() { Text = "Buy" };
         SharpButton rest = new SharpButton() { Text = "Rest" };
         SharpButton goodbye = new SharpButton() { Text = "Goodbye" };
@@ -28,7 +26,6 @@ namespace Adventure.Exploration.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            LevelUpMenu levelUpMenu,
             BuyMenu buyMenu,
             RestManager restManager
         )
@@ -36,10 +33,8 @@ namespace Adventure.Exploration.Menu
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
-            this.levelUpMenu = levelUpMenu;
             this.buyMenu = buyMenu;
             this.restManager = restManager;
-            levelUpMenu.PreviousMenu = this;
             buyMenu.PreviousMenu = this;
         }
 
@@ -48,18 +43,13 @@ namespace Adventure.Exploration.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(levelUp, buy, rest, goodbye) { Margin = new IntPad(10) }
+               new ColumnLayout(buy, rest, goodbye) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(levelUp, gamepad, navUp: goodbye.Id, navDown: buy.Id))
-            {
-                explorationMenu.RequestSubMenu(levelUpMenu, gamepad);
-            }
-
-            if (sharpGui.Button(buy, gamepad, navUp: levelUp.Id, navDown: rest.Id))
+            if (sharpGui.Button(buy, gamepad, navUp: goodbye.Id, navDown: rest.Id))
             {
                 explorationMenu.RequestSubMenu(buyMenu, gamepad);
             }
@@ -69,7 +59,7 @@ namespace Adventure.Exploration.Menu
                 restManager.Rest(explorationGameState);
             }
 
-            if (sharpGui.Button(goodbye, gamepad, navUp: rest.Id, navDown: levelUp.Id) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(goodbye, gamepad, navUp: rest.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
