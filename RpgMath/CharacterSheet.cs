@@ -16,14 +16,28 @@ namespace RpgMath
         public static CharacterSheet CreateStartingFighter(Random random)
         {
             var s = new CharacterSheet();
-            s.Hp = random.Next((int)s.FighterHp - 30, (int)s.FighterHp + 50);
-            s.Mp = random.Next((int)s.FighterMp - 1, (int)s.FighterMp + 3);
-            s.BaseStrength = random.Next((int)s.FighterStrength - 1, (int)s.FighterStrength + 2);
-            s.BaseMagic = random.Next((int)s.FighterMagic - 2, (int)s.FighterMagic + 1);
-            s.BaseVitality = random.Next((int)s.FighterVitality - 1, (int)s.FighterVitality + 2);
-            s.BaseSpirit = random.Next((int)s.FighterSpirit - 1, (int)s.FighterSpirit + 2);
+
+            s.HpRank = 1;
+            s.MpRank = 1;
+            s.StrengthRank = 0;
+            s.VitalityRank = 2;
+            s.MagicRank = 23;
+            s.SpiritRank = 14;
+
+            s.DexterityRank = 26;
+            s.LuckRank = 0;
+
+            s.Hp = 300;
+            s.Mp = 8;
+            s.BaseStrength = 18;
+            s.BaseMagic = 9;
+            s.BaseVitality = 14;
+            s.BaseSpirit = 9;
+
+            MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
             s.BaseLuck = random.Next(12, 15);
+
             s.CurrentHp = s.Hp;
             s.CurrentMp = s.Mp;
             return s;
@@ -32,17 +46,41 @@ namespace RpgMath
         public static CharacterSheet CreateStartingMage(Random random)
         {
             var s = new CharacterSheet();
-            s.Hp = random.Next((int)s.MageHp - 10, (int)s.MageHp + 30);
-            s.Mp = random.Next((int)s.MageMp - 1, (int)s.MageMp + 7);
-            s.BaseStrength = random.Next((int)s.MageStrength - 2, (int)s.MageStrength + 1);
-            s.BaseMagic = random.Next((int)s.MageMagic - 1, (int)s.MageMagic + 3);
-            s.BaseVitality = random.Next((int)s.MageVitality - 1, (int)s.MageVitality + 2);
-            s.BaseSpirit = random.Next((int)s.MageSpirit - 1, (int)s.MageSpirit + 2);
+
+            s.HpRank = 3;
+            s.MpRank = 3;
+            s.StrengthRank = 23;
+            s.VitalityRank = 20;
+            s.MagicRank = 0;
+            s.SpiritRank = 1;
+
+            s.DexterityRank = 26;
+            s.LuckRank = 0;
+
+            s.Hp = 300;
+            s.Mp = 8;
+            s.BaseStrength = 9;
+            s.BaseMagic = 18;
+            s.BaseVitality = 11;
+            s.BaseSpirit = 14;
+
+            MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
             s.BaseLuck = random.Next(12, 15);
+
             s.CurrentHp = s.Hp;
             s.CurrentMp = s.Mp;
             return s;
+        }
+
+        private static void MixStats(Random random, CharacterSheet s)
+        {
+            s.Hp = random.Next((int)s.Hp - 30, (int)s.Hp + 50);
+            s.Mp = random.Next((int)s.Mp - 1, (int)s.Mp + 3);
+            s.BaseStrength = random.Next((int)s.BaseStrength - 1, (int)s.BaseStrength + 2);
+            s.BaseMagic = random.Next((int)s.BaseMagic - 2, (int)s.BaseMagic + 1);
+            s.BaseVitality = random.Next((int)s.BaseVitality - 1, (int)s.BaseVitality + 2);
+            s.BaseSpirit = random.Next((int)s.BaseSpirit - 1, (int)s.BaseSpirit + 2);
         }
 
         public const int MaxLevel = 99;
@@ -51,39 +89,15 @@ namespace RpgMath
 
         public long Hp { get; set; }
 
-        public long FighterHp { get; set; } = 300;
-
-        public long MageHp { get; set; } = 180;
-
         public long Mp { get; set; }
-
-        public long FighterMp { get; set; } = 15;
-
-        public long MageMp { get; set; } = 25;
 
         public long BaseStrength { get; set; }
 
-        public long FighterStrength { get; set; } = 18;
-
-        public long MageStrength { get; set; } = 9;
-
         public long BaseVitality { get; set; }
-
-        public long FighterVitality { get; set; } = 14;
-
-        public long MageVitality { get; set; } = 11;
 
         public long BaseMagic { get; set; }
 
-        public long FighterMagic { get; set; } = 9;
-
-        public long MageMagic { get; set; } = 18;
-
         public long BaseSpirit { get; set; }
-
-        public long FighterSpirit { get; set; } = 9;
-
-        public long MageSpirit { get; set; } = 14;
 
         /// <summary>
         /// This is used to determine base battle timing. Raise it with the dex equation but don't ever modify it by anything.
@@ -242,63 +256,12 @@ namespace RpgMath
             }
         }
 
-        public void LevelUpMage(ILevelCalculator levelCalculator)
-        {
-            var hp = MageHp;
-            var mp = MageMp;
-            var strength = MageStrength;
-            var magic = MageMagic;
-            var vitality = MageVitality;
-            var spirit = MageSpirit;
-
-            LevelStats(levelCalculator);
-
-            hp = MageHp - hp;
-            mp = MageMp - mp;
-            strength = MageStrength - strength;
-            magic = MageMagic - magic;
-            vitality = MageVitality - vitality;
-            spirit = MageSpirit - spirit;
-
-            Hp += hp;
-            Mp += mp;
-            CurrentHp += hp;
-            CurrentMp += mp;
-            BaseStrength += strength;
-            BaseMagic += magic;
-            BaseVitality += vitality;
-            BaseSpirit += spirit;
-        }
-
-        public void LevelUpFighter(ILevelCalculator levelCalculator)
-        {
-            var hp = FighterHp;
-            var mp = FighterMp;
-            var strength = FighterStrength;
-            var magic = FighterMagic;
-            var vitality = FighterVitality;
-            var spirit = FighterSpirit;
-
-            LevelStats(levelCalculator);
-
-            hp = FighterHp - hp;
-            mp = FighterMp - mp;
-            strength = FighterStrength - strength;
-            magic = FighterMagic - magic;
-            vitality = FighterVitality - vitality;
-            spirit = FighterSpirit - spirit;
-
-            Hp += hp;
-            Mp += mp;
-            CurrentHp += hp;
-            CurrentMp += mp;
-            BaseStrength += strength;
-            BaseMagic += magic;
-            BaseVitality += vitality;
-            BaseSpirit += spirit;
-        }
-
-        private void LevelStats(ILevelCalculator levelCalculator)
+        /// <summary>
+        /// Level up, this will always increase stats even if the max level
+        /// has been reached, so something else must prevent that if desired.
+        /// </summary>
+        /// <param name="levelCalculator"></param>
+        public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;
             if (Level > MaxLevel)
@@ -306,23 +269,35 @@ namespace RpgMath
                 Level = MaxLevel;
             }
 
-            MageHp += levelCalculator.ComputeHpGain(Level, 3, MageHp);
-            MageMp += levelCalculator.ComputeMpGain(Level, 3, MageMp);
-            MageStrength += levelCalculator.ComputePrimaryStatGain(Level, 23, MageStrength);
-            MageVitality += levelCalculator.ComputePrimaryStatGain(Level, 20, MageVitality);
-            MageMagic += levelCalculator.ComputePrimaryStatGain(Level, 0, MageMagic);
-            MageSpirit += levelCalculator.ComputePrimaryStatGain(Level, 1, MageSpirit);
+            Hp += levelCalculator.ComputeHpGain(Level, HpRank, Hp);
+            Mp += levelCalculator.ComputeMpGain(Level, MpRank, Mp);
+            BaseStrength += levelCalculator.ComputePrimaryStatGain(Level, StrengthRank, BaseStrength);
+            BaseVitality += levelCalculator.ComputePrimaryStatGain(Level, VitalityRank, BaseVitality);
+            BaseMagic += levelCalculator.ComputePrimaryStatGain(Level, MagicRank, BaseMagic);
+            BaseSpirit += levelCalculator.ComputePrimaryStatGain(Level, SpiritRank, BaseSpirit);
 
-            FighterHp += levelCalculator.ComputeHpGain(Level, 1, FighterHp);
-            FighterMp += levelCalculator.ComputeMpGain(Level, 1, FighterMp);
-            FighterStrength += levelCalculator.ComputePrimaryStatGain(Level, 0, FighterStrength);
-            FighterVitality += levelCalculator.ComputePrimaryStatGain(Level, 2, FighterVitality);
-            FighterMagic += levelCalculator.ComputePrimaryStatGain(Level, 23, FighterMagic);
-            FighterSpirit += levelCalculator.ComputePrimaryStatGain(Level, 14, FighterSpirit);
+            BaseDexterity += levelCalculator.ComputePrimaryStatGain(Level, DexterityRank, BaseDexterity);
+            BaseLuck += levelCalculator.ComputeLuckGain(Level, LuckRank, BaseLuck);
 
-            BaseDexterity += levelCalculator.ComputePrimaryStatGain(Level, 26, BaseDexterity);
-            BaseLuck += levelCalculator.ComputeLuckGain(Level, 0, BaseLuck);
+            CurrentHp = Hp;
+            CurrentMp = Mp;
         }
+
+        public int HpRank { get; set; }
+
+        public int MpRank { get; set; }
+
+        public int StrengthRank { get; set; }
+
+        public int VitalityRank { get; set; }
+
+        public int MagicRank { get; set; }
+
+        public int SpiritRank { get; set; }
+
+        public int DexterityRank { get; set; }
+
+        public int LuckRank { get; set; }
 
         public Resistance GetResistance(Element element)
         {

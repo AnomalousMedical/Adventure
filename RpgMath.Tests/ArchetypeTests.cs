@@ -17,26 +17,16 @@ namespace RpgMath.Tests
             this.output = output;
         }
 
-        [Theory]
-        [InlineData(99, 0)]
-        [InlineData(0, 99)]
-        [InlineData(50, 50)]
-        [InlineData(30, 70)]
-        [InlineData(70, 30)]
-        public void LevelUpStartFighter(int fighterLevels, int magicLevels)
+        [Fact]
+        public void LevelUpStartFighter()
         {
             var levelCalculator = new LevelCalculator();
             var random = new Random(0);
             var character = CharacterSheet.CreateStartingFighter(random);
 
-            for (int i = 0; i < fighterLevels; i++)
+            for (int i = 0; i < 100; i++)
             {
-                character.LevelUpFighter(levelCalculator);
-            }
-
-            for(var i = 0; i < magicLevels; i++)
-            {
-                character.LevelUpMage(levelCalculator);
+                character.LevelUp(levelCalculator);
             }
 
             output.WriteLine($"Level {character.Level}");
@@ -54,26 +44,16 @@ namespace RpgMath.Tests
             output.WriteLine($"Luck {character.Luck}");
         }
 
-        [Theory]
-        [InlineData(99, 0)]
-        [InlineData(0, 99)]
-        [InlineData(50, 50)]
-        [InlineData(30, 70)]
-        [InlineData(70, 30)]
-        public void LevelUpStartMage(int fighterLevels, int magicLevels)
+        [Fact]
+        public void LevelUpStartMage()
         {
             var levelCalculator = new LevelCalculator();
             var random = new Random(0);
             var character = CharacterSheet.CreateStartingMage(random);
 
-            for (int i = 0; i < fighterLevels; i++)
+            for (int i = 0; i < 100; i++)
             {
-                character.LevelUpFighter(levelCalculator);
-            }
-
-            for (var i = 0; i < magicLevels; i++)
-            {
-                character.LevelUpMage(levelCalculator);
+                character.LevelUp(levelCalculator);
             }
 
             output.WriteLine($"Level {character.Level}");
