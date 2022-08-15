@@ -23,7 +23,7 @@ namespace Adventure.Items.Creators
         protected override IEnumerable<String> GetSpells(int level)
         {
             yield return nameof(Gravity);
-            if(level > 18)
+            if(level > 15)
             {
                 yield return nameof(GravityBlast);
             }
