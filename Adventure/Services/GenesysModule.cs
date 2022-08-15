@@ -56,7 +56,7 @@ namespace Adventure.Services
             }
 
             {
-                var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
+                var sheet = CharacterSheet.CreateStartingThief(characterRandom);
                 sheet.Name = "Stabby McStabface";
                 var hero = new Persistence.CharacterData()
                 {
@@ -68,7 +68,7 @@ namespace Adventure.Services
             }
 
             {
-                var sheet = CharacterSheet.CreateStartingMage(characterRandom);
+                var sheet = CharacterSheet.CreateStartingSage(characterRandom);
                 sheet.Name = "Wendy";
                 var hero = new Persistence.CharacterData()
                 {

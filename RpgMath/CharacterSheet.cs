@@ -47,7 +47,7 @@ namespace RpgMath
         {
             var s = new CharacterSheet();
 
-            s.HpRank = 3;
+            s.HpRank = 7;
             s.MpRank = 3;
             s.StrengthRank = 23;
             s.VitalityRank = 20;
@@ -63,6 +63,66 @@ namespace RpgMath
             s.BaseMagic = 18;
             s.BaseVitality = 11;
             s.BaseSpirit = 14;
+
+            MixStats(random, s);
+            s.BaseDexterity = random.Next(5, 9);
+            s.BaseLuck = random.Next(12, 15);
+
+            s.CurrentHp = s.Hp;
+            s.CurrentMp = s.Mp;
+            return s;
+        }
+
+        public static CharacterSheet CreateStartingThief(Random random)
+        {
+            var s = new CharacterSheet();
+
+            s.HpRank = 8;
+            s.MpRank = 8;
+            s.StrengthRank = 11;
+            s.VitalityRank = 7;
+            s.MagicRank = 17;
+            s.SpiritRank = 15;
+
+            s.DexterityRank = 26;
+            s.LuckRank = 8;
+
+            s.Hp = 300;
+            s.Mp = 8;
+            s.BaseStrength = 9;
+            s.BaseMagic = 18;
+            s.BaseVitality = 11;
+            s.BaseSpirit = 14;
+
+            MixStats(random, s);
+            s.BaseDexterity = random.Next(5, 9);
+            s.BaseLuck = random.Next(12, 15);
+
+            s.CurrentHp = s.Hp;
+            s.CurrentMp = s.Mp;
+            return s;
+        }
+
+        public static CharacterSheet CreateStartingSage(Random random)
+        {
+            var s = new CharacterSheet();
+
+            s.HpRank = 3;
+            s.MpRank = 7;
+            s.StrengthRank = 21;
+            s.VitalityRank = 4;
+            s.MagicRank = 6;
+            s.SpiritRank = 4;
+
+            s.DexterityRank = 26;
+            s.LuckRank = 7;
+
+            s.Hp = 300;
+            s.Mp = 8;
+            s.BaseStrength = 9;
+            s.BaseMagic = 10;
+            s.BaseVitality = 11;
+            s.BaseSpirit = 11;
 
             MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
