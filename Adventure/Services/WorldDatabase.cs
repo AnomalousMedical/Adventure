@@ -260,7 +260,6 @@ namespace Adventure.Services
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
             areaBuilder.TreasureLevel = 3;
-            areaBuilder.EnemyWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
