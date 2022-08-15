@@ -1,5 +1,6 @@
 ﻿using Adventure.Items.Creators;
 using Engine;
+using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,6 @@ namespace Adventure.Services
         SpearCreator SpearCreator { get; }
         MaceCreator MaceCreator { get; }
         ShieldCreator ShieldCreator { get; }
-        FireStaffCreator FireStaffCreator { get; }
         ElementalStaffCreator ElementalStaffCreator { get; }
         AccessoryCreator AccessoryCreator { get; }
         ArmorCreator ArmorCreator { get; }
@@ -51,7 +51,6 @@ namespace Adventure.Services
         public SpearCreator SpearCreator { get; }
         public MaceCreator MaceCreator { get; }
         public ShieldCreator ShieldCreator { get; }
-        public FireStaffCreator FireStaffCreator { get; }
         public ElementalStaffCreator ElementalStaffCreator { get; }
         public AccessoryCreator AccessoryCreator { get; }
         public ArmorCreator ArmorCreator { get; }
@@ -67,18 +66,18 @@ namespace Adventure.Services
         {
             //This assumes 27 areas, after that no more leveling
 
-            if(currentLevel >= 99)
+            if (currentLevel >= 99)
             {
                 return 0;
             }
-            
-            if(currentLevel < 30)
+
+            if (currentLevel < 30)
             {
                 return 3;
             }
 
             var delta = 4;
-            if(currentLevel + delta > 99)
+            if (currentLevel + delta > 99)
             {
                 delta = 99 - currentLevel;
             }
@@ -118,7 +117,6 @@ namespace Adventure.Services
             SpearCreator spearCreator,
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
-            FireStaffCreator fireStaffCreator,
             ElementalStaffCreator elementalStaffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
@@ -134,7 +132,6 @@ namespace Adventure.Services
             SpearCreator = spearCreator;
             MaceCreator = maceCreator;
             ShieldCreator = shieldCreator;
-            FireStaffCreator = fireStaffCreator;
             ElementalStaffCreator = elementalStaffCreator;
             AccessoryCreator = accessoryCreator;
             ArmorCreator = armorCreator;
@@ -186,6 +183,8 @@ namespace Adventure.Services
             zoneRandom = new Random(newSeed);
             var biomeRandom = new Random(newSeed);
             var placementRandom = new Random(newSeed);
+            var elementalRandom = new Random(newSeed);
+            var treasureRandom = new Random(newSeed);
             currentSeed = newSeed;
 
             //Setup map
@@ -215,7 +214,7 @@ namespace Adventure.Services
             usedIslands[map.IslandSizeOrder[2]] = true;
 
             SetupAirshipIsland(placementRandom, out airshipStartSquare, out airshipPortalSquare, usedSquares, usedIslands, map);
-            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom, placementRandom, portalLocations, usedSquares, usedIslands, map).ToList();
+            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom, placementRandom, elementalRandom, treasureRandom, portalLocations, usedSquares, usedIslands, map).ToList();
         }
 
         private static void SetupAirshipIsland(Random placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
@@ -230,7 +229,7 @@ namespace Adventure.Services
             usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, Random elementalRandom, Random treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             var filled = new bool[map.MapX, map.MapY];
             int area = 0;
@@ -244,28 +243,50 @@ namespace Adventure.Services
             var island = map.IslandInfo[map.IslandSizeOrder[0]];
 
             //Phase 0
-            areaBuilder = new Area0Builder(this, monsterInfo, area++);
+            areaBuilder = new Area0Builder(this, monsterInfo, area++)
+            {
+                StartingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd)
+            };
             areaBuilder.StartZone = 0;
             areaBuilder.EndZone = 1;
             areaBuilder.Phase = 0;
             areaBuilder.IndexInPhase = 0;
-            areaBuilder.IncludeStrongElement = false;
-            areaBuilder.IncludeWeakElement = false;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            areaBuilder.TreasureLevel = 3;
+            areaBuilder.EnemyWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
             //Phase 1
+            var phase1EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            var phase1BonusWeakElement = GetDifferentElement(elementalRandom, phase1EndWeakElement);
+            var phase1TreasureLevel = 16;
+            var phase1UniqueTreasures = new List<Treasure>();
+            phase1UniqueTreasures.Add(new Treasure(SwordCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(SpearCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(MaceCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(AxeCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ShieldCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1EndWeakElement).CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1BonusWeakElement).CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
+            var phase1StolenTreasures = new List<Treasure>();
+            phase1StolenTreasures.Add(new Treasure(DaggerCreator.CreateEpic(phase1TreasureLevel)));
+
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 2;
             areaBuilder.EndZone = 3;
             areaBuilder.Phase = 1;
             areaBuilder.IndexInPhase = 1;
-            areaBuilder.IncludeStrongElement = false;
-            areaBuilder.IncludeWeakElement = false;
+            areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -274,10 +295,11 @@ namespace Adventure.Services
             areaBuilder.EndZone = 5;
             areaBuilder.Phase = 1;
             areaBuilder.IndexInPhase = 2;
-            areaBuilder.IncludeStrongElement = false;
-            areaBuilder.IncludeWeakElement = false;
+            areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -286,10 +308,11 @@ namespace Adventure.Services
             areaBuilder.EndZone = 7;
             areaBuilder.Phase = 1;
             areaBuilder.IndexInPhase = 3;
-            areaBuilder.IncludeStrongElement = false;
-            areaBuilder.IncludeWeakElement = false;
+            areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -298,9 +321,12 @@ namespace Adventure.Services
             areaBuilder.EndZone = 9;
             areaBuilder.Phase = 1;
             areaBuilder.IndexInPhase = 4;
-            areaBuilder.IncludeStrongElement = false;
+            areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.EnemyWeakElement = phase1EndWeakElement;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -454,6 +480,9 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.Treasure = phase1UniqueTreasures; //This is the remainder of the phase 1 treasure
+            areaBuilder.EnemyWeakElement = phase1BonusWeakElement;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -551,6 +580,22 @@ namespace Adventure.Services
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
+        }
+
+        private static Element GetDifferentElement(Random elementalRandom, Element notThisElement)
+        {
+            var otherElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            int retry = 0;
+            while (otherElement == notThisElement)
+            {
+                otherElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                if (retry++ > 10)
+                {
+                    otherElement = (Element)(((int)notThisElement + 1) % (int)Element.MagicEnd);
+                }
+            }
+
+            return otherElement;
         }
 
         private static void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom, List<IntVector2> portalLocations)
@@ -682,6 +727,14 @@ namespace Adventure.Services
                 currentGeneration = nextGeneration;
                 nextGeneration = new List<IntVector2>(25);
             }
+        }
+
+        private T RemoveRandomItem<T>(List<T> items, Random random)
+        {
+            var index = random.Next(items.Count);
+            var item = items[index];
+            items.RemoveAt(index);
+            return item;
         }
     }
 }
