@@ -231,6 +231,12 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, Random elementalRandom, Random treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
+            //TODO: Add enemy strengths and weaknesses in phase 2, 3
+            //TODO: finish phase 2, 3 and bonus 2, 3
+            //TODO: change treasure to be based off an item level, not the current enemy level
+            //TODO: setup gates
+            //TODO: Randomize zones by placing squares in a list then pulling the squares out
+
             var filled = new bool[map.MapX, map.MapY];
             int area = 0;
             AreaBuilder areaBuilder;
