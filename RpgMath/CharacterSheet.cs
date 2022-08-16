@@ -89,8 +89,8 @@ namespace RpgMath
 
             s.Hp = 300;
             s.Mp = 8;
-            s.BaseStrength = 9;
-            s.BaseMagic = 18;
+            s.BaseStrength = 15;
+            s.BaseMagic = 11;
             s.BaseVitality = 11;
             s.BaseSpirit = 14;
 
