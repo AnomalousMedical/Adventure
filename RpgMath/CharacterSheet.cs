@@ -57,8 +57,8 @@ namespace RpgMath
             s.DexterityRank = 26;
             s.LuckRank = 0;
 
-            s.Hp = 300;
-            s.Mp = 8;
+            s.Hp = 180;
+            s.Mp = 25;
             s.BaseStrength = 9;
             s.BaseMagic = 18;
             s.BaseVitality = 11;
@@ -117,8 +117,8 @@ namespace RpgMath
             s.DexterityRank = 26;
             s.LuckRank = 7;
 
-            s.Hp = 300;
-            s.Mp = 8;
+            s.Hp = 180;
+            s.Mp = 25;
             s.BaseStrength = 9;
             s.BaseMagic = 10;
             s.BaseVitality = 11;
