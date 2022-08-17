@@ -86,6 +86,9 @@ namespace Adventure.Services
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
             var monsterRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue));
+            var zoneTreasureRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue)); //This determines if this zone gets part of an area's treasure by rolling its index
+            var treasureZoneStart = StartZone;
+            var treasureZoneEnd = EndZone + 1;
 
             o.Index = zoneIndex;
             o.Width = 50;
@@ -113,22 +116,30 @@ namespace Adventure.Services
 
             if (PlaceTreasure) 
             { 
-                var treasures = new List<ITreasure>(Treasure ?? Enumerable.Empty<Treasure>());
-                o.Treasure = treasures;
+                o.Treasure = new List<ITreasure>(
+                    Treasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
+                    ?? Enumerable.Empty<ITreasure>())
+                {
+                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
+                    new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)),
+                    new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()),
+                };
 
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)));
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)));
-                treasures.Add(new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()));
-
-                o.StealTreasure = new List<ITreasure>(StealTreasure ?? Enumerable.Empty<Treasure>())
+                o.StealTreasure = new List<ITreasure>(
+                    StealTreasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
+                    ?? Enumerable.Empty<ITreasure>())
                 {
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel))
                 };
 
-                o.UniqueStealTreasure = UniqueStealTreasure;
-                o.BossUniqueStealTreasure = BossUniqueStealTreasure;
+                o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
+
+                if (o.MakeBoss) //This assumes 1 boss per area
+                {
+                    o.BossUniqueStealTreasure = BossUniqueStealTreasure;
+                }
             }
 
             if (EnemyWeakElement != Element.None && EnemyStrongElement != Element.None && EnemyWeakElement == EnemyStrongElement)

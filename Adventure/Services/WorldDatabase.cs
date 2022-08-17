@@ -236,6 +236,7 @@ namespace Adventure.Services
             //TODO: change treasure to be based off an item level, not the current enemy level
             //TODO: setup gates
             //TODO: Randomize zones by placing squares in a list then pulling the squares out
+            //TODO: Every boss should have unique steal treasure for permanent stat boosts
 
             var filled = new bool[map.MapX, map.MapY];
             int area = 0;
