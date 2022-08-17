@@ -86,7 +86,7 @@ namespace Adventure.Services
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
             var monsterRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue));
-            var zoneTreasureRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue)); //This determines if this zone gets part of an area's treasure by rolling its index
+            var areaTreasureRandom = new Random(worldDatabase.CurrentSeed + Index); //This determines if this zone gets part of an area's treasure by rolling its index, it must be the same per area
             var treasureZoneStart = StartZone;
             var treasureZoneEnd = EndZone + 1;
 
@@ -117,7 +117,7 @@ namespace Adventure.Services
             if (PlaceTreasure) 
             { 
                 o.Treasure = new List<ITreasure>(
-                    Treasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
+                    Treasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
                     ?? Enumerable.Empty<ITreasure>())
                 {
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
@@ -126,7 +126,7 @@ namespace Adventure.Services
                 };
 
                 o.StealTreasure = new List<ITreasure>(
-                    StealTreasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
+                    StealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
                     ?? Enumerable.Empty<ITreasure>())
                 {
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
@@ -134,7 +134,7 @@ namespace Adventure.Services
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel))
                 };
 
-                o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => zoneTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
+                o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
 
                 if (o.MakeBoss) //This assumes 1 boss per area
                 {
