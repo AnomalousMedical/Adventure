@@ -122,7 +122,6 @@ namespace Adventure.Services
                 {
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
                     new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateFerrymansBribe()),
                 };
 
                 o.StealTreasure = new List<ITreasure>(

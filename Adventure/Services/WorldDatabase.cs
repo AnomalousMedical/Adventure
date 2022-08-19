@@ -280,8 +280,10 @@ namespace Adventure.Services
             phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateEpic(phase1TreasureLevel)));
-            var phase1StolenTreasures = new List<Treasure>();
-            phase1StolenTreasures.Add(new Treasure(DaggerCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
             areaBuilder.StartZone = 2;
@@ -337,6 +339,7 @@ namespace Adventure.Services
             yield return areaBuilder;
 
             //Phase 2
+            //In phase 2 everything should be strong against the boss weapon from the previous phase
             island = map.IslandInfo[map.IslandSizeOrder[1]];
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -486,7 +489,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), new Treasure(DaggerCreator.CreateEpic(phase1TreasureLevel)) };
             areaBuilder.Treasure = phase1UniqueTreasures; //This is the remainder of the phase 1 treasure
             areaBuilder.EnemyWeakElement = phase1BonusWeakElement;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
