@@ -3,14 +3,18 @@ using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
+    enum PlotItems
+    {
+        PortalKey0,
+        PortalKey1,
+        PortalKey2,
+        PortalKey3,
+        AirshipKey
+    }
 
     class Persistence
     {
@@ -22,35 +26,39 @@ namespace Adventure.Services
 
         public class GameState
         {
-            public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+            public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
-            public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+            public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
-            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueStolenTreasure { get; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
+            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
 
-            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueBossStolenTreasure { get; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
+            public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueBossStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
 
-            public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
+            public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; init; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
 
-            public PersistenceEntry<Key.PersistenceData> Keys { get; } = new PersistenceEntry<Key.PersistenceData>();
+            public PersistenceEntry<Key.PersistenceData> Keys { get; init; } = new PersistenceEntry<Key.PersistenceData>();
 
-            public ZoneData Zone { get; } = new ZoneData();
+            public ZoneData Zone { get; init; } = new ZoneData();
 
-            public PlayerData Player { get; } = new PlayerData();
+            public PlayerData Player { get; init; } = new PlayerData();
 
-            public KeyItems KeyItems { get; set; } = new KeyItems();
+            public HashSet<PlotItems> PlotItems { get; init; } = new HashSet<PlotItems>();
 
-            public TimeData Time { get; } = new TimeData();
+            public TimeData Time { get; init; } = new TimeData();
 
-            public WorldData World { get; set; } = new WorldData();
+            public WorldData World { get; init; } = new WorldData();
 
-            public PartyData Party { get; set; } = new PartyData();
+            public PartyData Party { get; init; } = new PartyData();
         }
 
         public class PersistenceEntry<T>
                 where T : struct
         {
-            public Dictionary<int, Dictionary<int, T>> Entries => entryDictionary;
+            public Dictionary<int, Dictionary<int, T>> Entries
+            {
+                get { return entryDictionary; }
+                init { entryDictionary = value; }
+            }
 
             private Dictionary<int, Dictionary<int, T>> entryDictionary = new Dictionary<int, Dictionary<int, T>>();
 
@@ -112,11 +120,6 @@ namespace Adventure.Services
             public long LootDropGold { get; set; }
 
             public bool InAirship { get; set; }
-        }
-
-        public class KeyItems
-        {
-            public bool HasAirshipKey { get; set; }
         }
 
         public class TimeData

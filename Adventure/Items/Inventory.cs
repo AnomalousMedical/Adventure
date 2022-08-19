@@ -1,6 +1,5 @@
 ﻿using Adventure.Battle;
 using Engine;
-using Newtonsoft.Json.Linq;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -43,7 +42,7 @@ namespace Adventure.Items
 
     class Inventory
     {
-        public List<InventoryItem> Items { get; } = new List<InventoryItem>();
+        public List<InventoryItem> Items { get; init; } = new List<InventoryItem>();
 
         public void Use(InventoryItem item, CharacterSheet target)
         {

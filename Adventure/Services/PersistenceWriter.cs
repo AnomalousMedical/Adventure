@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Adventure.Services
@@ -22,16 +23,16 @@ namespace Adventure.Services
     {
         private Persistence persistence;
         private readonly ILogger<PersistenceWriter> logger;
-        private JsonSerializer serializer;
         private HashSet<object> saveBlockers = new HashSet<object>();
+        private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
+        {
+            Converters = { new JsonStringEnumConverter() },
+            WriteIndented = true,
+        };
 
         public PersistenceWriter(ILogger<PersistenceWriter> logger)
         {
             this.logger = logger;
-            serializer = new JsonSerializer()
-            {
-                Formatting = Formatting.Indented,
-            };
         }
 
         public void Dispose()
@@ -50,8 +51,8 @@ namespace Adventure.Services
             }
 
             var outFile = GetSaveFile();
-            using var stream = new StreamWriter(File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None));
-            serializer.Serialize(stream, persistence);
+            using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+            JsonSerializer.Serialize(stream, persistence, jsonSerializerOptions);
             logger.LogInformation($"Wrote save to '{outFile}'.");
         }
 
@@ -80,8 +81,8 @@ namespace Adventure.Services
             else
             {
                 logger.LogInformation($"Loading save from '{outFile}'.");
-                using var stream = new JsonTextReader(new StreamReader(File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read)));
-                persistence = serializer.Deserialize<Persistence>(stream);
+                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                persistence = JsonSerializer.Deserialize<Persistence>(stream, jsonSerializerOptions);
             }
 
             return persistence;

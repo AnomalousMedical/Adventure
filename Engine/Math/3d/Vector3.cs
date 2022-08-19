@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Globalization;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Engine
 {
@@ -38,12 +38,15 @@ namespace Engine
 
         #region Fields
 
+        [JsonInclude]
         [FieldOffset(0)]
         public float x;
-        
+
+        [JsonInclude]
         [FieldOffset(4)]
         public float y;
 
+        [JsonInclude]
         [FieldOffset(8)]
         public float z;
 

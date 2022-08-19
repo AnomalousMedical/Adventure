@@ -175,7 +175,7 @@ namespace Adventure.WorldMap
         {
             contextMenu.ClearContext(Enter);
             Vector3 portalLoc;
-            if (persistence.Current.KeyItems.HasAirshipKey && persistence.Current.Player.AirshipPosition == null)
+            if (persistence.Current.Player.AirshipPosition == null && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
             {
                 portalLoc = worldMapManager.GetAirshipPortal();
             }

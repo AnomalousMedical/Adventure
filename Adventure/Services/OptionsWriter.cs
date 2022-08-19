@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Adventure.Services
@@ -15,15 +15,14 @@ namespace Adventure.Services
     class OptionsWriter : IDisposable
     {
         private Options options;
-        private JsonSerializer serializer;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
+        {
+            Converters = { new JsonStringEnumConverter() },
+            WriteIndented = true,
+        };
 
         public OptionsWriter()
         {
-            serializer = new JsonSerializer()
-            {
-                Formatting = Formatting.Indented,
-            };
-            serializer.Converters.Add(new StringEnumConverter());
         }
 
         public void Dispose()
@@ -38,8 +37,8 @@ namespace Adventure.Services
             if (options == null) { return; }
 
             var outFile = GetFile();
-            using var stream = new StreamWriter(File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None));
-            serializer.Serialize(stream, options);
+            using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+            JsonSerializer.Serialize(stream, options, jsonSerializerOptions);
         }
 
         public Options Load()
@@ -52,8 +51,8 @@ namespace Adventure.Services
             }
             else
             {
-                using var stream = new JsonTextReader(new StreamReader(File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read)));
-                options = serializer.Deserialize<Options>(stream);
+                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                options = JsonSerializer.Deserialize<Options>(stream, jsonSerializerOptions);
             }
 
             var configBuilder = new ConfigurationBuilder();
