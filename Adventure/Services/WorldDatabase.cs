@@ -233,8 +233,6 @@ namespace Adventure.Services
         {
             //TODO: Add enemy strengths and weaknesses in phase 2, 3
             //TODO: finish phase 2, 3 and bonus 2, 3
-            //TODO: change treasure to be based off an item level, not the current enemy level
-            //TODO: setup gates
             //TODO: Randomize zones by placing squares in a list then pulling the squares out
             //TODO: Every boss should have unique steal treasure for permanent stat boosts
 
@@ -487,6 +485,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 37;
             areaBuilder.EndZone = 39;
             areaBuilder.Phase = 1;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), new Treasure(DaggerCreator.CreateEpic(phase1TreasureLevel)) };
@@ -502,6 +501,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 40;
             areaBuilder.EndZone = 42;
             areaBuilder.Phase = 2;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -513,6 +513,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 43;
             areaBuilder.EndZone = 45;
             areaBuilder.Phase = 2;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -524,6 +525,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 46;
             areaBuilder.EndZone = 48;
             areaBuilder.Phase = 2;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -535,6 +537,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 49;
             areaBuilder.EndZone = 51;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -545,6 +548,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 52;
             areaBuilder.EndZone = 54;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -555,6 +559,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 55;
             areaBuilder.EndZone = 57;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -565,6 +570,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 58;
             areaBuilder.EndZone = 60;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -575,6 +581,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 61;
             areaBuilder.EndZone = 63;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
@@ -585,6 +592,7 @@ namespace Adventure.Services
             areaBuilder.StartZone = 64;
             areaBuilder.EndZone = 66;
             areaBuilder.Phase = 3;
+            areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             SetIslandBiome(island, map, areaBuilder.Biome);
