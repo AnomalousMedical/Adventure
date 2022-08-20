@@ -80,28 +80,61 @@ namespace Adventure
             }
 
             changingZone = true;
+            Zone holdZone = null;
+            var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
 
-            if(previousZone != null)
+            if (previousZone != null)
             {
                 await previousZone.WaitForGeneration();
-                previousZone.RequestDestruction();
+                if (previousZone.Index == currentZoneIndex)
+                {
+                    holdZone = previousZone;
+                    holdZone.SetPosition(new Vector3(0, 0, 0));
+                }
+                else
+                {
+                    previousZone.RequestDestruction();
+                }
             }
 
             if(currentZone != null)
             {
                 await currentZone.WaitForGeneration();
-                currentZone.RequestDestruction();
+                if (currentZone.Index == currentZoneIndex)
+                {
+                    holdZone = currentZone;
+                    currentZone.ResetPlaceables();
+                    currentZone.DestroyPhysics();
+                }
+                else
+                {
+                    currentZone.RequestDestruction();
+                }
             }
 
             if(nextZone != null)
             {
                 await nextZone.WaitForGeneration();
-                nextZone.RequestDestruction();
+                if (nextZone.Index == currentZoneIndex)
+                {
+                    holdZone = nextZone;
+                    holdZone.SetPosition(new Vector3(0, 0, 0));
+                }
+                else
+                {
+                    nextZone.RequestDestruction();
+                }
             }
 
-            var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
-            currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
-            await currentZone.WaitForGeneration();
+            if (holdZone != null)
+            {
+                currentZone = holdZone;
+            }
+            else
+            {
+                currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
+                await currentZone.WaitForGeneration();
+            }
 
             if (currentZone.LoadNextLevel)
             {
