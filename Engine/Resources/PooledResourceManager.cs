@@ -90,7 +90,9 @@ namespace Engine
                 };
                 keysToEntries[key] = entry;
             }
-            
+
+            ++entry.count; //It is important to keep this before any awaits
+
             if(entry.task != null)
             {
                 //This block can potentially happen multiple times all on the main thread.
@@ -105,7 +107,6 @@ namespace Engine
                 pooledToEntries[entry.pooled] = entry;
             }
 
-            ++entry.count;
             return entry.pooled;
         }
 
