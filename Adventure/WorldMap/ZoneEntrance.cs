@@ -171,7 +171,7 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            worldMapGameState.RequestZone(zoneIndex);
+            worldMapGameState.EnterZone(zoneIndex);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

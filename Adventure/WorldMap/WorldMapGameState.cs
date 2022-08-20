@@ -18,7 +18,7 @@ namespace Adventure.WorldMap
     interface IWorldMapGameState : IGameState
     {
         void Link(IExplorationGameState explorationState);
-        void RequestZone(int zoneIndex);
+        void EnterZone(int zoneIndex);
     }
 
     class WorldMapGameState : IWorldMapGameState
@@ -92,10 +92,12 @@ namespace Adventure.WorldMap
             }
         }
 
-        public void RequestZone(int zoneIndex)
+        public void EnterZone(int zoneIndex)
         {
             persistence.Current.Player.Position = null;
             persistence.Current.Zone.CurrentIndex = zoneIndex;
+            persistence.Current.Player.RespawnZone = zoneIndex;
+            persistence.Current.Player.RespawnPosition = null;
             persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
             coroutineRunner.RunTask(zoneManager.Restart());
             nextState = this.explorationState;
