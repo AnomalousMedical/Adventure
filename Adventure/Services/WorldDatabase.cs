@@ -293,6 +293,7 @@ namespace Adventure.Services
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.PlotItem = PlotItems.PortalKey0;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -306,6 +307,7 @@ namespace Adventure.Services
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.PlotItem = PlotItems.PortalKey1;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -319,6 +321,7 @@ namespace Adventure.Services
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.PlotItem = PlotItems.PortalKey2;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -332,6 +335,7 @@ namespace Adventure.Services
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
+            areaBuilder.PlotItem = PlotItems.PortalKey3;
             areaBuilder.EnemyWeakElement = phase1EndWeakElement;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;

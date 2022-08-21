@@ -150,6 +150,8 @@ namespace Adventure
             public IEnumerable<ITreasure> UniqueStealTreasure { get; set; }
 
             public IEnumerable<ITreasure> BossUniqueStealTreasure { get; set; }
+
+            public PlotItems? PlotItem { get; set; }
         }
 
         private readonly RTInstances<IZoneManager> rtInstances;
@@ -189,6 +191,7 @@ namespace Adventure
         private IEnumerable<ITreasure> treasure;
         private bool connectPreviousToWorld;
         private bool connectNextToWorld;
+        private PlotItems? plotItem;
 
         private Task zoneGenerationTask;
         private Vector3 mapUnits;
@@ -230,6 +233,7 @@ namespace Adventure
             Persistence persistence
         )
         {
+            this.plotItem = description.PlotItem;
             this.connectPreviousToWorld = description.ConnectPreviousToWorld;
             this.connectNextToWorld = description.ConnectNextToWorld;
             this.startEnd = description.StartEnd;
@@ -668,6 +672,23 @@ namespace Adventure
                     o.Translation = currentPosition + o.MapOffset;
                 });
                 this.placeables.Add(philip);
+            }
+
+            //The plot item goes in the exit corridor, not the room
+            if (this.plotItem != null)
+            {
+                var point = mapMesh.MapBuilder.EastConnector.Value;
+                var plotItemPlaceable = objectResolver.Resolve<PlotItemPlaceable, PlotItemPlaceable.Description>(o =>
+                {
+                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
+                    o.Translation = currentPosition + o.MapOffset + new Vector3(2.25f, 0f, 0f);
+                    var gateAsset = biome.KeyAsset;
+                    o.Sprite = gateAsset.CreateSprite();
+                    o.SpriteMaterial = gateAsset.CreateMaterial();
+                    o.Scale = new Vector3(2f, 2f, 1f);
+                    o.PlotItem = this.plotItem.Value;
+                });
+                placeables.Add(plotItemPlaceable);
             }
 
             //The boss goes in the exit corridor, not the room

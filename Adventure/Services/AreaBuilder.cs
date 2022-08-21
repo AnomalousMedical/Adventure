@@ -66,6 +66,8 @@ namespace Adventure.Services
 
         public int TreasureLevel { get; set; } = 3;
 
+        public PlotItems? PlotItem { get; set; }
+
         public Element EnemyWeakElement { get; set; } = Element.None;
 
         public Element EnemyStrongElement { get; set; } = Element.None;
@@ -108,6 +110,11 @@ namespace Adventure.Services
             o.MakeRest = false;
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
+
+            if(zoneIndex == EndZone && PlotItem != null)
+            {
+                o.PlotItem = PlotItem;
+            }
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);
             var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).ToList();

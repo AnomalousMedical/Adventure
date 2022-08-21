@@ -14,65 +14,71 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.WorldMap
+namespace Adventure
 {
-    class IslandPortal : IDisposable, IWorldMapPlaceable
+    class PlotItemPlaceable : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
-            public int PortalIndex { get; set; }
+            public int ZoneIndex { get; set; }
+
+            public int InstanceId { get; set; }
 
             public Vector3 MapOffset { get; set; }
-
-            public Vector3[] Transforms { get; set; }
 
             public Sprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
+
+            public PlotItems PlotItem { get; set; }
         }
 
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<IZoneManager> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
-        private readonly IWorldMapManager worldMapManager;
         private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
-        private readonly TLASInstanceData[] tlasData;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
-        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
+        private readonly TLASInstanceData tlasData;
+        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
-        private int portalIndex;
+        private bool graphicsCreated = false;
+        private int zoneIndex;
+        private int instanceId;
+        private bool taken = false;
+        private PlotItems plotItem;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public IslandPortal(
-            RTInstances<IWorldMapGameState> rtInstances,
+        public PlotItemPlaceable(
+            RTInstances<IZoneManager> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
-            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            IWorldMapManager worldMapManager,
             Persistence persistence)
         {
             this.sprite = description.Sprite;
-            this.portalIndex = description.PortalIndex;
+            this.zoneIndex = description.ZoneIndex;
+            this.instanceId = description.InstanceId;
+            this.plotItem = description.PlotItem;
+            this.taken = persistence.Current.PlotItems.Contains(plotItem);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
-            this.worldMapManager = worldMapManager;
             this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
@@ -83,40 +89,36 @@ namespace Adventure.WorldMap
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
-            this.tlasData = new TLASInstanceData[description.Transforms.Length];
-            for (var i = 0; i < tlasData.Length; i++)
+            this.tlasData = new TLASInstanceData()
             {
-                this.tlasData[i] = new TLASInstanceData()
-                {
-                    InstanceName = RTId.CreateId("IslandPortal"),
-                    Mask = RtStructures.OPAQUE_GEOM_MASK,
-                    Transform = new InstanceMatrix(finalPosition + description.Transforms[i], currentOrientation, currentScale)
-                };
-            }
+                InstanceName = RTId.CreateId("Key"),
+                Mask = RtStructures.OPAQUE_GEOM_MASK,
+                Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
+            };
 
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
-
-                foreach (var data in tlasData)
+                if (!taken)
                 {
-                    spriteInstance.UpdateBlas(data);
-                    rtInstances.AddTlasBuild(data);
-                }
+                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
 
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
+                    rtInstances.AddTlasBuild(tlasData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+
+                    graphicsCreated = true;
+                }
             });
         }
 
         public void CreatePhysics()
         {
-            if (!physicsCreated)
+            if (!taken && !physicsCreated)
             {
                 physicsCreated = true;
-                var shape = new Box(0.25f, 1000, 0.25f); //TODO: Each one creates its own, try to load from resources
+                var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
                 shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
                 staticHandle = bepuScene.Simulation.Statics.Add(
@@ -142,14 +144,20 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
-            spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            foreach (var data in tlasData)
-            {
-                rtInstances.RemoveTlasBuild(data);
-            }
+            DestroyGraphics();
             DestroyPhysics();
+        }
+
+        private void DestroyGraphics()
+        {
+            if (graphicsCreated)
+            {
+                spriteInstanceFactory.TryReturn(spriteInstance);
+                rtInstances.RemoveSprite(sprite);
+                rtInstances.RemoveShaderTableBinder(Bind);
+                rtInstances.RemoveTlasBuild(tlasData);
+                graphicsCreated = false;
+            }
         }
 
         public void RequestDestruction()
@@ -157,44 +165,42 @@ namespace Adventure.WorldMap
             this.destructionRequest.RequestDestruction();
         }
 
-        protected virtual void HandleCollision(CollisionEvent evt)
+        public void SetZonePosition(in Vector3 zonePosition)
         {
-            if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
-               || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
+            currentPosition = zonePosition + mapOffset;
+            currentPosition.y += currentScale.y / 2;
+            this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+        }
+
+        private void HandleCollision(CollisionEvent evt)
+        {
+            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
+             || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Enter", Enter, player.GamepadId);
+                if (!taken)
+                {
+                    contextMenu.HandleContext("Take", Take, player.GamepadId);
+                }
             }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
         {
-            contextMenu.ClearContext(Enter);
+            contextMenu.ClearContext(Take);
         }
 
-        private void Enter(ContextMenuArgs args)
+        private void Take(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(Enter);
-            if (persistence.Current.Player.AirshipPosition == null && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
-            {
-                var portalLoc = worldMapManager.GetAirshipPortal();
-                worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
-            }
-            else if (persistence.Current.PlotItems.Contains(PlotItems.PortalKey0)
-                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey1)
-                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey2)
-                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey3))
-            {
-                var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
-                worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
-            }
+            contextMenu.ClearContext(Take);
+            taken = true;
+            persistence.Current.PlotItems.Add(plotItem);
+            DestroyGraphics();
+            DestroyPhysics();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            foreach (var data in tlasData)
-            {
-                spriteInstance.Bind(data.InstanceName, sbt, tlas, sprite);
-            }
+            spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
         }
     }
 }
