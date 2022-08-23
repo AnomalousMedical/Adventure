@@ -528,6 +528,16 @@ namespace Adventure.Battle
                     return true;
                 }
 
+                Vector3 attackStartPosition;
+                if (guiActive)
+                {
+                    attackStartPosition = ActivePosition;
+                }
+                else
+                {
+                    attackStartPosition = this.startPosition;
+                }
+
                 //If there is an effect, just let it run
                 if (skillEffect != null && !skillEffect.Finished)
                 {
@@ -545,7 +555,7 @@ namespace Adventure.Battle
                 {
                     sprite.SetAnimation("left");
                     target = battleManager.ValidateTarget(this, target);
-                    start = this.startPosition;
+                    start = attackStartPosition;
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
                 }
@@ -579,7 +589,7 @@ namespace Adventure.Battle
                     mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
 
                     start = GetAttackLocation(target);
-                    end = this.startPosition;
+                    end = attackStartPosition;
                     interpolate = remainingTime / (float)standEndTime;
                 }
 
@@ -587,6 +597,7 @@ namespace Adventure.Battle
 
                 if (remainingTime < 0)
                 {
+                    this.currentPosition = end;
                     sprite.SetAnimation("stand-left");
                     if (deactivatePlayer)
                     {
