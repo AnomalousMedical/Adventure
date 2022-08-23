@@ -20,37 +20,12 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public InventoryItem CreateNormal(int level)
+        public InventoryItem CreateCounterAttack()
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var accessory = new Equipment
             {
-                Name = $"{name.Adjective} Accessory"
-            };
-
-            return CreateInventoryItem(accessory);
-        }
-
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var accessory = new Equipment
-            {
-                Name = $"{name.Adjective} Epic Accessory"
-            };
-
-            return CreateInventoryItem(accessory);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var accessory = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary Accessory"
+                Name = $"Counter attack accessory",
+                SpecialEffects = new[] { BattleSpecialEffects.Counterattack }
             };
 
             return CreateInventoryItem(accessory);

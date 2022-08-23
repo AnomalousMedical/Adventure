@@ -347,7 +347,7 @@ namespace Adventure.Battle
                     var target = await battleManager.GetTarget(false);
                     if (target != null)
                     {
-                        Melee(target, attack, false);
+                        Melee(target, attack, false, true);
                     }
                 });
                 didSomething = true;
@@ -394,7 +394,7 @@ namespace Adventure.Battle
                     Cast(target, skill);
                     break;
                 case SkillAttackStyle.Melee:
-                    Melee(target, skill, false);
+                    Melee(target, skill, false, true);
                     break;
             }
         }
@@ -505,7 +505,7 @@ namespace Adventure.Battle
             });
         }
 
-        private void Melee(IBattleTarget target, ISkill skill, bool queueFront)
+        private void Melee(IBattleTarget target, ISkill skill, bool queueFront, bool deactivatePlayer)
         {
             var swingEnd = Quaternion.Identity;
             var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
@@ -517,7 +517,10 @@ namespace Adventure.Battle
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
             ISkillEffect skillEffect = null;
-            battleManager.DeactivateCurrentPlayer();
+            if (deactivatePlayer)
+            {
+                battleManager.DeactivateCurrentPlayer();
+            }
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -585,7 +588,10 @@ namespace Adventure.Battle
                 if (remainingTime < 0)
                 {
                     sprite.SetAnimation("stand-left");
-                    TurnComplete();
+                    if (deactivatePlayer)
+                    {
+                        TurnComplete();
+                    }
                     done = true;
                 }
 
@@ -762,7 +768,7 @@ namespace Adventure.Battle
             var counter = characterSheet.EquippedItems().Where(i => i.SpecialEffects?.Contains(BattleSpecialEffects.Counterattack) == true).Any();
             if (counter)
             {
-                Melee(attacker, counterAttack, true);
+                Melee(attacker, counterAttack, true, false);
             }
         }
 
