@@ -90,7 +90,8 @@ namespace Adventure.Battle
 
         private Vector3 startPosition;
 
-        private Skills.Attack attack = new Skills.Attack();
+        private static readonly Skills.Attack attack = new Skills.Attack();
+        private static readonly Skills.CounterAttack counterAttack = new Skills.CounterAttack();
 
         public class Description : SceneObjectDesc
         {
@@ -346,7 +347,7 @@ namespace Adventure.Battle
                     var target = await battleManager.GetTarget(false);
                     if (target != null)
                     {
-                        Attack(target);
+                        Melee(target, attack, false);
                     }
                 });
                 didSomething = true;
@@ -372,11 +373,6 @@ namespace Adventure.Battle
             return didSomething;
         }
 
-        private void Attack(IBattleTarget target)
-        {
-            Melee(target, attack);
-        }
-
         private Vector3 GetAttackLocation(IBattleTarget target)
         {
             var totalScale = sprite.BaseScale * currentScale;
@@ -398,7 +394,7 @@ namespace Adventure.Battle
                     Cast(target, skill);
                     break;
                 case SkillAttackStyle.Melee:
-                    Melee(target, skill);
+                    Melee(target, skill, false);
                     break;
             }
         }
@@ -509,7 +505,7 @@ namespace Adventure.Battle
             });
         }
 
-        private void Melee(IBattleTarget target, ISkill skill)
+        private void Melee(IBattleTarget target, ISkill skill, bool queueFront)
         {
             var swingEnd = Quaternion.Identity;
             var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
@@ -596,7 +592,7 @@ namespace Adventure.Battle
                 Sprite_FrameChanged(sprite);
 
                 return done;
-            });
+            }, queueFront);
         }
 
         private void UseItem(IBattleTarget target, InventoryItem item)
@@ -758,6 +754,15 @@ namespace Adventure.Battle
                 battleManager.PlayerDead(this);
                 characterTimer.TurnTimerActive = false;
                 characterTimer.Reset();
+            }
+        }
+
+        public void AttemptMeleeCounter(IBattleTarget attacker)
+        {
+            var counter = characterSheet.EquippedItems().Where(i => i.SpecialEffects?.Contains(BattleSpecialEffects.Counterattack) == true).Any();
+            if (counter)
+            {
+                Melee(attacker, counterAttack, true);
             }
         }
 

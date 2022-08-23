@@ -23,7 +23,7 @@ namespace Adventure.Battle
         bool Active { get; }
 
         void AddToActivePlayers(BattlePlayer player);
-        void Attack(IBattleTarget attacker, IBattleTarget target);
+        void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter);
         void ChangeBlockingStatus(IBattleTarget blocker);
         Task<IBattleTarget> GetTarget(bool targetPlayers);
 
@@ -36,7 +36,7 @@ namespace Adventure.Battle
         /// Called by everything to start the turn.
         /// </summary>
         /// <param name="turn"></param>
-        void QueueTurn(Func<Clock, bool> turn);
+        void QueueTurn(Func<Clock, bool> turn, bool queueFront = false);
 
         /// <summary>
         /// Set battle mode active / inactive.
@@ -102,7 +102,8 @@ namespace Adventure.Battle
         private List<BattlePlayer> players = new List<BattlePlayer>(4);
         private List<DamageNumber> numbers = new List<DamageNumber>(10);
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
-        private Queue<Func<Clock, bool>> turnQueue = new Queue<Func<Clock, bool>>(30);
+        private List<Func<Clock, bool>> turnQueue = new List<Func<Clock, bool>>(30);
+        private Func<Clock, bool> currentTurn = null;
 
         private TargetCursor cursor;
 
@@ -272,10 +273,14 @@ namespace Adventure.Battle
             var result = IBattleManager.Result.ContinueBattle;
             if (turnQueue.Count > 0)
             {
-                var turn = turnQueue.Peek();
-                if (turn.Invoke(clock) && turnQueue.Count > 0)
+                if(currentTurn == null)
                 {
-                    turnQueue.Dequeue();
+                    currentTurn = turnQueue[0];
+                }
+                if (currentTurn.Invoke(clock))
+                {
+                    turnQueue.Remove(currentTurn);
+                    currentTurn = null;
                 }
             }
 
@@ -523,13 +528,14 @@ namespace Adventure.Battle
             return blocker;
         }
 
-        public void Attack(IBattleTarget attacker, IBattleTarget target)
+        public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter)
         {
             target = ValidateTarget(attacker, target);
 
             if (damageCalculator.PhysicalHit(attacker.Stats, target.Stats))
             {
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
+                var randomizeDamage = true;
 
                 foreach (var attackElement in attacker.Stats.AttackElements)
                 {
@@ -540,16 +546,22 @@ namespace Adventure.Battle
                         //This is enough to handle death and recovery for any element.
                         //The damage returned will be the number needed to apply the effect
                         //and we just want to stop modifying it immediately and apply it
+                        randomizeDamage = false;
                         break;
                     }
                 }
 
-                //TODO: This may not be the best spot for this since it will randomize the death
-                //and recovery values too
-                damage = damageCalculator.RandomVariation(damage);
+                if (randomizeDamage)
+                {
+                    damage = damageCalculator.RandomVariation(damage);
+                }
 
                 AddDamageNumber(target, damage);
                 target.ApplyDamage(damageCalculator, damage);
+                if (!isCounter && !target.IsDead)
+                {
+                    target.AttemptMeleeCounter(attacker);
+                }
                 HandleDeath(target);
             }
             else
@@ -620,9 +632,16 @@ namespace Adventure.Battle
             activePlayers.Dequeue();
         }
 
-        public void QueueTurn(Func<Clock, bool> turn)
+        public void QueueTurn(Func<Clock, bool> turn, bool queueFront = false)
         {
-            this.turnQueue.Enqueue(turn);
+            if (queueFront)
+            {
+                this.turnQueue.Insert(0, turn);
+            }
+            else
+            {
+                this.turnQueue.Add(turn);
+            }
         }
 
         public void AddToActivePlayers(BattlePlayer player)

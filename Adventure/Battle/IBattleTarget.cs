@@ -35,5 +35,7 @@ namespace Adventure.Battle
         void MoveToBlock(in Vector3 position);
         
         void MoveToStart();
+
+        void AttemptMeleeCounter(IBattleTarget attacker);
     }
 }

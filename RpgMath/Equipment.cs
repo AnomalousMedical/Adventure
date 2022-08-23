@@ -56,6 +56,8 @@ namespace RpgMath
 
         public IEnumerable<Element> AttackElements { get; set; }
 
+        public IEnumerable<BattleSpecialEffects> SpecialEffects { get; set; }
+
         public Guid? Id { get; set; }
 
         public void EnsureEquipmentId()
