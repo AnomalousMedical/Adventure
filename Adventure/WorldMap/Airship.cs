@@ -186,6 +186,7 @@ namespace Adventure.WorldMap
             if (persistence.Current.Player.InAirship)
             {
                 TakeOff(null);
+                cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
             }
             else
             {

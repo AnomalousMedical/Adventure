@@ -199,7 +199,10 @@ namespace Adventure.WorldMap
             characterMover.sprint = true;
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
-            cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
+            if (!persistence.Current.Player.InAirship)
+            {
+                cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
+            }
 
             coroutine.RunTask(async () =>
             {
@@ -275,7 +278,10 @@ namespace Adventure.WorldMap
 
         public void CenterCamera()
         {
-            cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
+            if (!persistence.Current.Player.InAirship)
+            {
+                cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
+            }
         }
 
         private void SetupInput()
@@ -398,28 +404,8 @@ namespace Adventure.WorldMap
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
+            this.currentPosition = location;
             cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
-        }
-
-        /// <summary>
-        /// Restoring the location from persistence is a special case.
-        /// If there is nothing in the persistence the safetyPosition is used.
-        /// </summary>
-        /// <param name="safetyPosition"></param>
-        public void RestorePersistedLocation(in Vector3 safetyPosition)
-        {
-            var location = persistence.Current.Player.WorldPosition;
-            if (location == null)
-            {
-                SetLocation(safetyPosition);
-            }
-            else
-            {
-                bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
-                this.characterMover.SetLocation(location.Value.ToSystemNumerics());
-                bepuScene.AddToInterpolation(characterMover.BodyHandle);
-                cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
-            }
         }
 
         public Vector3 GetLocation()
