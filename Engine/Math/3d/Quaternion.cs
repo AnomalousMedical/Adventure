@@ -278,7 +278,7 @@ namespace Engine
         /// <param name="q">Destination quaternion</param>
         /// <param name="t">Time factor 0-1</param>
         /// <returns></returns>
-        public Quaternion lerp(ref Quaternion q, ref float t)
+        public Quaternion lerp(in Quaternion q, in float t)
         {
             return new Quaternion(x + (q.x - x) * t,
                 y + (q.y - y) * t,
@@ -297,9 +297,9 @@ namespace Engine
         /// <param name="q">Destination quaternion</param>
         /// <param name="t">Time factor 0-1</param>
         /// <returns></returns>
-        public Quaternion nlerp(ref Quaternion q, ref float t)
+        public Quaternion nlerp(in Quaternion q, in float t)
         {
-            return lerp(ref q, ref t).normalized();
+            return lerp(q, t).normalized();
         }
 
         /// <summary>

@@ -496,8 +496,7 @@ namespace Adventure.WorldMap
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
 
                 SyncGraphics();
-                cameraMover.Position = currentPosition + cameraOffset;
-                cameraMover.Orientation = cameraAngle;
+                cameraMover.SetInterpolatedGoalPosition(currentPosition + cameraOffset, cameraAngle);
 
                 var cell = map.GetCellForLocation(currentPosition);
                 if (map.CanLand(cell))

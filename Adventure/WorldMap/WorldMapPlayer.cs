@@ -199,6 +199,7 @@ namespace Adventure.WorldMap
             characterMover.sprint = true;
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
+            cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
 
             coroutine.RunTask(async () =>
             {
@@ -270,6 +271,11 @@ namespace Adventure.WorldMap
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
             this.sprite.SetAnimation("down");
+        }
+
+        public void CenterCamera()
+        {
+            cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
         }
 
         private void SetupInput()
@@ -392,6 +398,7 @@ namespace Adventure.WorldMap
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
+            cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
         }
 
         /// <summary>
@@ -411,6 +418,7 @@ namespace Adventure.WorldMap
                 bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
+                cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
             }
         }
 
@@ -430,8 +438,7 @@ namespace Adventure.WorldMap
             this.persistence.Current.Player.WorldPosition = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
-            cameraMover.Position = this.currentPosition + cameraOffset;
-            cameraMover.Orientation = cameraAngle;
+            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
 
             var movementDir = characterMover.movementDirection;
             if (movementDir.Y > 0.3f)

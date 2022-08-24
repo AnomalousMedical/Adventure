@@ -98,8 +98,9 @@ namespace Adventure
 
             var pRTV = swapChain.GetCurrentBackBufferRTV();
             var pDSV = swapChain.GetDepthBufferDSV();
-            
-            bool clearRenderTarget = rayTracingRenderer.Render(rtInstances, cameraMover.Position, cameraMover.Orientation);
+
+            cameraMover.GetPosition(clock, out var camPos, out var camRot);
+            bool clearRenderTarget = rayTracingRenderer.Render(rtInstances, camPos, camRot);
             immediateContext.SetRenderTarget(pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
             if (clearRenderTarget)

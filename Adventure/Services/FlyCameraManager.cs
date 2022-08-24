@@ -33,8 +33,7 @@ namespace Adventure.Services
             if (Enabled)
             {
                 flyCamera.UpdateInput(clock);
-                cameraMover.Position = flyCamera.Position;
-                cameraMover.Orientation = flyCamera.Orientation;
+                cameraMover.SetPosition(flyCamera.Position, flyCamera.Orientation);
             }
         }
     }

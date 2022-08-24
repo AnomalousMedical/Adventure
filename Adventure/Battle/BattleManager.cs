@@ -211,8 +211,7 @@ namespace Adventure.Battle
                     turnTimer.Restart(0, baseDexTotal);
 
                     eventManager[EventLayers.Battle].OnUpdate += eventManager_OnUpdate;
-                    cameraMover.Position = new Vector3(-1.0354034f, 2.958224f, -12.394701f);
-                    cameraMover.Orientation = new Quaternion(0.057467595f, 0.0049917176f, -0.00028734046f, 0.9983348f);
+                    cameraMover.SetPosition(new Vector3(-1.0354034f, 2.958224f, -12.394701f), new Quaternion(0.057467595f, 0.0049917176f, -0.00028734046f, 0.9983348f));
 
                     var instantAttackChance = targetRandom.Next(100);
                     if (instantAttackChance < 3)

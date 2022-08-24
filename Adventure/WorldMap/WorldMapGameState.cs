@@ -88,6 +88,7 @@ namespace Adventure.WorldMap
                 {
                     worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
                 }
+                worldMapManager.CenterCamera();
                 backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Kevin MacLeod - Witch Waltz.ogg");
             }
         }

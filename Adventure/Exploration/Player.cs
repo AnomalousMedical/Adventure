@@ -368,6 +368,7 @@ namespace Adventure
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
+            cameraMover.SetPosition(finalLoc + cameraOffset, cameraAngle);
         }
 
         /// <summary>
@@ -387,6 +388,7 @@ namespace Adventure
                 bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
+                cameraMover.SetPosition(location.Value + cameraOffset, cameraAngle);
             }
         }
 
@@ -406,8 +408,7 @@ namespace Adventure
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
-            cameraMover.Position = this.currentPosition + cameraOffset;
-            cameraMover.Orientation = cameraAngle;
+            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
 
             var movementDir = characterMover.movementDirection;
             if (movementDir.Y > 0.3f)

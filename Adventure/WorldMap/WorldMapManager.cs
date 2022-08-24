@@ -20,6 +20,7 @@ namespace Adventure.WorldMap
         void SetPlayerVisible(bool visible);
         Vector3 GetAirshipPortal();
         Task WaitForWorldMapLoad();
+        void CenterCamera();
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -83,6 +84,11 @@ namespace Adventure.WorldMap
         public void SetPlayerVisible(bool visible)
         {
             player.SetGraphicsActive(visible);
+        }
+
+        public void CenterCamera()
+        {
+            player.CenterCamera();
         }
 
         public async Task SetupWorldMap()
