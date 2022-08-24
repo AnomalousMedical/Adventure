@@ -29,6 +29,11 @@ namespace Adventure
             Orientation = orientation;
         }
 
+        public void OffsetCurrentPosition(in Vector3 offset)
+        {
+            CurrentPosition += offset;
+        }
+
         public void GetPosition(Clock clock, out Vector3 position, out Quaternion orientation)
         {
             if (this.CurrentPosition.HasValue)

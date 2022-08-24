@@ -475,24 +475,28 @@ namespace Adventure.WorldMap
                 currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
                 currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
 
+                var offset = new Vector3(0, 0, 0);
                 if(currentPosition.x < worldRect.Left)
                 {
-                    currentPosition.x += worldRect.Width;
+                    offset.x = worldRect.Width;
                 }
                 else if (currentPosition.x > worldRect.Right)
                 {
-                    currentPosition.x -= worldRect.Width;
+                    offset.x = -worldRect.Width;
                 }
 
                 //There is a quadrandt mismatch, rects are in the third and the world is in the first
                 if(currentPosition.z < worldRect.Top)
                 {
-                    currentPosition.z += worldRect.Height;
+                    offset.z = worldRect.Height;
                 }
                 if(currentPosition.z > worldRect.Bottom)
                 {
-                    currentPosition.z -= worldRect.Height;
+                    offset.z = -worldRect.Height;
                 }
+
+                currentPosition += offset;
+                cameraMover.OffsetCurrentPosition(offset);
 
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
 
