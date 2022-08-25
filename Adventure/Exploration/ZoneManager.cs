@@ -161,6 +161,7 @@ namespace Adventure
             foreach(var player in players)
             {
                 player?.RestorePersistedLocation(currentZone.PlayerEntryPoint);
+                player?.CenterCamera();
             }
 
             ZoneChanged?.Invoke(this);
@@ -255,9 +256,15 @@ namespace Adventure
             var playerOffset = new Vector3(-150f, previousOffset.y, previousOffset.z);
             playerLoc += playerOffset;
             sky.CelestialOffset += playerOffset;
+            var offsetCamera = true;
             foreach (var player in players)
             {
                 player?.SetLocation(playerLoc);
+                if (offsetCamera)
+                {
+                    player.OffsetCamera(playerOffset);
+                    offsetCamera = false;
+                }
             }
 
             ZoneChanged?.Invoke(this);
@@ -331,9 +338,15 @@ namespace Adventure
             var playerOffset = new Vector3(150f, nextOffset.y, nextOffset.z);
             playerLoc += playerOffset;
             sky.CelestialOffset += playerOffset;
+            var offsetCamera = true;
             foreach (var player in players)
             {
                 player?.SetLocation(playerLoc);
+                if (offsetCamera)
+                {
+                    player.OffsetCamera(playerOffset);
+                    offsetCamera = false;
+                }
             }
 
             ZoneChanged?.Invoke(this);
@@ -366,6 +379,7 @@ namespace Adventure
                 {
                     player.SetLocation(currentZone.StartPoint);
                     player.StopMovement();
+                    player.CenterCamera();
                 }
             }
         }
@@ -378,6 +392,7 @@ namespace Adventure
                 {
                     player.SetLocation(currentZone.EndPoint);
                     player.StopMovement();
+                    player.CenterCamera();
                 }
             }
         }

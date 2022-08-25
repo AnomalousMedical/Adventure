@@ -368,7 +368,17 @@ namespace Adventure
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
-            cameraMover.SetPosition(finalLoc + cameraOffset, cameraAngle);
+            this.currentPosition = finalLoc;
+        }
+
+        public void CenterCamera()
+        {
+            cameraMover.SetPosition(currentPosition + cameraOffset, cameraAngle);
+        }
+
+        public void OffsetCamera(in Vector3 offset)
+        {
+            cameraMover.OffsetCurrentPosition(offset);
         }
 
         /// <summary>
@@ -388,7 +398,7 @@ namespace Adventure
                 bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
-                cameraMover.SetPosition(location.Value + cameraOffset, cameraAngle);
+                this.currentPosition = location.Value;
             }
         }
 
