@@ -153,11 +153,19 @@ namespace RpgMath
 
         public long BaseStrength { get; set; }
 
+        public long BonusStrength { get; set; }
+
         public long BaseVitality { get; set; }
+
+        public long BonusVitality { get; set; }
 
         public long BaseMagic { get; set; }
 
+        public long BonusMagic { get; set; }
+
         public long BaseSpirit { get; set; }
+
+        public long BonusSpirit { get; set; }
 
         /// <summary>
         /// This is used to determine base battle timing. Raise it with the dex equation but don't ever modify it by anything.
@@ -269,19 +277,19 @@ namespace RpgMath
 
         public long CurrentMp { get; set; }
 
-        public long Attack => BaseStrength + EquippedItems().Sum(i => i.Strength + i.Attack);
+        public long Attack => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength + i.Attack);
 
         public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent);
 
-        public long Defense => BaseVitality + EquippedItems().Sum(i => i.Vitality + i.Defense);
+        public long Defense => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality + i.Defense);
 
         public long DefensePercent => EquippedItems().Sum(i => i.DefensePercent);
 
-        public long MagicAttack => BaseMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack);
+        public long MagicAttack => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack);
 
         public long MagicAttackPercent => EquippedItems().Sum(i => i.MagicAttackPercent);
 
-        public long MagicDefense => BaseSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense);
+        public long MagicDefense => BaseSpirit + BonusSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense);
 
         public long MagicDefensePercent => EquippedItems().Sum(i => i.MagicDefensePercent);
 

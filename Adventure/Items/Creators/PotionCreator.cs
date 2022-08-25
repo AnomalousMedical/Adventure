@@ -81,6 +81,82 @@ namespace Adventure.Items.Creators
             return item;
         }
 
+        public InventoryItem CreateStrengthBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(StrengthBoost),
+            };
 
+            item.Number = 1;
+            item.Name = "Strength Boost";
+
+            return item;
+        }
+
+        public InventoryItem CreateMagicBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(MagicBoost),
+            };
+
+            item.Number = 1;
+            item.Name = "Magic Boost";
+
+            return item;
+        }
+
+        public InventoryItem CreateSpiritBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(SpiritBoost),
+            };
+
+            item.Number = 1;
+            item.Name = "Spirit Boost";
+
+            return item;
+        }
+
+        public InventoryItem CreateVitalityBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(VitalityBoost),
+            };
+
+            item.Number = 1;
+            item.Name = "Vitality Boost";
+
+            return item;
+        }
+
+        public InventoryItem CreateDexterityBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(DexterityBoost),
+            };
+
+            item.Number = 1;
+            item.Name = "Dexterity Boost";
+
+            return item;
+        }
+
+        public InventoryItem CreateLuckBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(LuckBoost),
+            };
+
+            item.Number = 1;
+            item.Name = "Luck Boost";
+
+            return item;
+        }
     }
 }
