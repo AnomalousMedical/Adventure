@@ -437,6 +437,12 @@ namespace Adventure
             }
         }
 
+        public void CheckZoneConnectorCollision(in Vector3 testPoint)
+        {
+            previousZoneConnector?.DetectCollision(testPoint);
+            nextZoneConnector?.DetectCollision(testPoint);
+        }
+
         public IBiome Biome => biome;
 
         public int EnemyLevel => enemyLevel;

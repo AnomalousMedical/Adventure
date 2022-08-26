@@ -27,22 +27,16 @@ namespace Adventure
         }
 
         private readonly IDestructionRequest destructionRequest;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly IExplorationGameState explorationGameState;
-        private StaticHandle staticHandle;
-        private TypedIndex shapeIndex;
         private bool goPrevious;
         private bool goWorld;
+        private Rect collisionRect;
 
         public ZoneConnector(
             IDestructionRequest destructionRequest,
-            IScopedCoroutine coroutine,
-            IBepuScene<IExplorationGameState> bepuScene,
             Description description,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
             IExplorationGameState explorationGameState)
@@ -50,28 +44,17 @@ namespace Adventure
             this.goWorld = description.GoWorld;
             this.goPrevious = description.GoPrevious;
             this.destructionRequest = destructionRequest;
-            this.bepuScene = bepuScene;
-            this.collidableIdentifier = collidableIdentifier;
             this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
             this.explorationGameState = explorationGameState;
-            var shape = new Box(description.Scale.x, description.Scale.y, description.Scale.z); //TODO: Each one creates its own, try to load from resources
-            shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
-
-            staticHandle = bepuScene.Simulation.Statics.Add(
-                new StaticDescription(
-                    new System.Numerics.Vector3(description.Translation.x, description.Translation.y, description.Translation.z),
-                    new System.Numerics.Quaternion(description.Orientation.x, description.Orientation.y, description.Orientation.z, description.Orientation.w),
-                    new CollidableDescription(shapeIndex, 0.1f)));
-
-            bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), HandleCollision);
+            var halfScale = description.Scale / 2f;
+            this.collisionRect = new Rect(description.Translation.x - halfScale.x, description.Translation.z - halfScale.z, description.Scale.x + halfScale.x, description.Scale.z + halfScale.z);
+            
         }
 
         public void Dispose()
         {
-            bepuScene.UnregisterCollisionListener(new CollidableReference(staticHandle));
-            bepuScene.Simulation.Shapes.Remove(shapeIndex);
-            bepuScene.Simulation.Statics.Remove(staticHandle);
+
         }
 
         public void RequestDestruction()
@@ -79,34 +62,35 @@ namespace Adventure
             this.destructionRequest.RequestDestruction();
         }
 
-        private void HandleCollision(CollisionEvent evt)
+        public void DetectCollision(in Vector3 testPoint)
         {
-            //Don't want to do this during the physics update. Trigger to run later.
-
-            if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
-                || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
+            if(testPoint.x > collisionRect.Left && testPoint.x < collisionRect.Right
+                && testPoint.z > collisionRect.Top && testPoint.z < collisionRect.Bottom)
             {
-                coroutineRunner.RunTask(async () =>
+                HandleZoneChange(testPoint);
+            }
+        }
+
+        private void HandleZoneChange(Vector3 playerLoc)
+        {
+            coroutineRunner.RunTask(async () =>
+            {
+                if (this.goWorld)
                 {
-                    if (this.goWorld)
+                    explorationGameState.RequestWorldMap();
+                }
+                else
+                {
+                    if (this.goPrevious)
                     {
-                        explorationGameState.RequestWorldMap();
+                        await zoneManager.GoPrevious(playerLoc);
                     }
                     else
                     {
-                        var playerLoc = player.GetLocation();
-
-                        if (this.goPrevious)
-                        {
-                            await zoneManager.GoPrevious(playerLoc);
-                        }
-                        else
-                        {
-                            await zoneManager.GoNext(playerLoc);
-                        }
+                        await zoneManager.GoNext(playerLoc);
                     }
-                });
-            }            
+                }
+            });
         }
     }
 }

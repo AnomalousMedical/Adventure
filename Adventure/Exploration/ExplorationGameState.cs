@@ -158,6 +158,7 @@ namespace Adventure
                 if (zoneManager.Current?.PhysicsActive == true)
                 {
                     bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                    zoneManager.Update();
                 }
                 contextMenu.Update();
             }

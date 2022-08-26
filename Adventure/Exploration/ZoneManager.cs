@@ -32,6 +32,7 @@ namespace Adventure
         void ResetPlaceables();
         Vector3 GetPlayerLoc();
         void ManagePlayers();
+        void Update();
     }
 
     class ZoneManager : IDisposable, IZoneManager
@@ -440,6 +441,20 @@ namespace Adventure
                     {
                         players[i].RequestDestruction();
                         players[i] = null;
+                    }
+                }
+            }
+        }
+
+        public void Update()
+        {
+            if (currentZone != null)
+            {
+                foreach(var player in players)
+                {
+                    if(player != null)
+                    {
+                        currentZone.CheckZoneConnectorCollision(player.GetLocation());
                     }
                 }
             }
