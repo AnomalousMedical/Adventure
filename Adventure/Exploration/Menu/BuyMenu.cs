@@ -99,7 +99,6 @@ namespace Adventure.Exploration.Menu
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
-        private readonly AxeCreator axeCreator;
         private readonly DaggerCreator daggerCreator;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
@@ -130,7 +129,6 @@ namespace Adventure.Exploration.Menu
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
-            AxeCreator axeCreator,
             DaggerCreator daggerCreator
         )
         {
@@ -153,7 +151,6 @@ namespace Adventure.Exploration.Menu
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;
-            this.axeCreator = axeCreator;
             this.daggerCreator = daggerCreator;
         }
 
@@ -353,8 +350,6 @@ Lck: {characterData.CharacterSheet.Luck}
             yield return swordCreator.CreateShopEntry(level);
             yield return spearCreator.CreateShopEntry(level);
             yield return maceCreator.CreateShopEntry(level);
-
-            yield return axeCreator.CreateShopEntry(level);
             
             yield return shieldCreator.CreateShopEntry(level);
             

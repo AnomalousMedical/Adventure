@@ -190,7 +190,7 @@ namespace Adventure.Services
 
                 treasures.Add(new Treasure(worldDatabase.SwordCreator.CreateNormal(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.ElementalStaffCreator.GetStaffCreator(StartingElementStaff).CreateNormal(TreasureLevel)));
-                treasures.Add(new Treasure(worldDatabase.AxeCreator.CreateNormal(TreasureLevel)));
+                treasures.Add(new Treasure(worldDatabase.BookCreator.CreateCure(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.SpearCreator.CreateNormal(TreasureLevel)));
                 treasures.Add(new Treasure(worldDatabase.MaceCreator.CreateNormal(TreasureLevel)));
                                            

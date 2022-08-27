@@ -24,7 +24,6 @@ namespace Adventure.Services
         AccessoryCreator AccessoryCreator { get; }
         ArmorCreator ArmorCreator { get; }
         PotionCreator PotionCreator { get; }
-        AxeCreator AxeCreator { get; }
         DaggerCreator DaggerCreator { get; }
         IMonsterMaker MonsterMaker { get; }
         WorldMapData WorldMap { get; }
@@ -33,6 +32,7 @@ namespace Adventure.Services
         int CurrentSeed { get; }
         IntVector2 AirshipStartSquare { get; }
         IntVector2 AirshipPortalSquare { get; }
+        BookCreator BookCreator { get; }
     }
 
     class WorldDatabase : IWorldDatabase
@@ -55,8 +55,8 @@ namespace Adventure.Services
         public AccessoryCreator AccessoryCreator { get; }
         public ArmorCreator ArmorCreator { get; }
         public PotionCreator PotionCreator { get; }
-        public AxeCreator AxeCreator { get; }
         public DaggerCreator DaggerCreator { get; }
+        public BookCreator BookCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
         public List<IntVector2> PortalLocations => portalLocations;
         public IntVector2 AirshipStartSquare => airshipStartSquare;
@@ -121,8 +121,8 @@ namespace Adventure.Services
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
-            AxeCreator axeCreator,
-            DaggerCreator daggerCreator
+            DaggerCreator daggerCreator,
+            BookCreator bookCreator
         )
         {
             this.persistence = persistence;
@@ -136,8 +136,8 @@ namespace Adventure.Services
             AccessoryCreator = accessoryCreator;
             ArmorCreator = armorCreator;
             PotionCreator = potionCreator;
-            AxeCreator = axeCreator;
             DaggerCreator = daggerCreator;
+            BookCreator = bookCreator;
             Reset(persistence.Current.World.Seed);
         }
 
@@ -270,7 +270,7 @@ namespace Adventure.Services
             phase1UniqueTreasures.Add(new Treasure(SwordCreator.CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(SpearCreator.CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(MaceCreator.CreateEpic(phase1TreasureLevel)));
-            phase1UniqueTreasures.Add(new Treasure(AxeCreator.CreateEpic(phase1TreasureLevel)));
+            phase1UniqueTreasures.Add(new Treasure(BookCreator.CreateCure(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(ShieldCreator.CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1EndWeakElement).CreateEpic(phase1TreasureLevel)));
             phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));

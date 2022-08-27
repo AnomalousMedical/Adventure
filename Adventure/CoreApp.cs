@@ -200,7 +200,7 @@ namespace Adventure
             services.AddSingleton<AccessoryCreator>();
             services.AddSingleton<ArmorCreator>();
             services.AddSingleton<PotionCreator>();
-            services.AddSingleton<AxeCreator>();
+            services.AddSingleton<BookCreator>();
             services.AddSingleton<DaggerCreator>();
             services.AddSingleton<ElementalStaffCreator>();
             services.AddSingleton<BuyMenu>();
