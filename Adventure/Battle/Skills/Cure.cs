@@ -21,6 +21,12 @@ namespace Adventure.Battle.Skills
 
             source.CurrentMp -= MpCost;
 
+            if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
+            {
+                //Mp is taken, but nothing is done if cure can't be cast.
+                return;
+            }
+
             if(target.CurrentHp == 0)
             {
                 return;
@@ -40,6 +46,12 @@ namespace Adventure.Battle.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
+            if(attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
+            {
+                battleManager.AddDamageNumber(attacker, "Cannot cast cure", Color.Red);
+                return new SkillEffect(true);
+            }
+
             target = battleManager.ValidateTarget(attacker, target);
             var damage = battleManager.DamageCalculator.Cure(attacker.Stats, 5);
             damage = battleManager.DamageCalculator.RandomVariation(damage);

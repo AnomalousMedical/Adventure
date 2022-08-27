@@ -27,7 +27,7 @@ namespace Adventure.Items.Creators
         {
             var name = nameGenerator.GetLevelName(level);
 
-            var axe = new Equipment
+            var book = new Equipment
             {
                 Name = $"{name.Adjective} Cure Spells",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
@@ -36,7 +36,7 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Slashing }
             };
 
-            return CreateInventoryItem(axe);
+            return CreateInventoryItem(book);
         }
 
         private IEnumerable<String> GetCureSpells(int level)
