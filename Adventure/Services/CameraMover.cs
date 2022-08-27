@@ -32,6 +32,7 @@ namespace Adventure
         public void OffsetCurrentPosition(in Vector3 offset)
         {
             CurrentPosition += offset;
+            Position += offset;
         }
 
         public void GetPosition(Clock clock, out Vector3 position, out Quaternion orientation)

@@ -369,6 +369,9 @@ namespace Adventure
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
+            this.persistence.Current.Player.Position = this.currentPosition;
+            this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+            Sprite_FrameChanged(sprite);
         }
 
         public void CenterCamera()
@@ -399,6 +402,9 @@ namespace Adventure
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
                 this.currentPosition = location.Value;
+                this.persistence.Current.Player.Position = this.currentPosition;
+                this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+                Sprite_FrameChanged(sprite);
             }
         }
 
