@@ -125,6 +125,8 @@ namespace Adventure.Services
         public class TimeData
         {
             public long? Current { get; set; }
+
+            public long Total { get; set; }
         }
 
         public class WorldData

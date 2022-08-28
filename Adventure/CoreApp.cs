@@ -88,6 +88,7 @@ namespace Adventure
             services.AddSingleton<FlyCameraManager>();
             services.AddSingleton<SceneTestUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();
+            services.AddSingleton<PlayedTimeService>();
             services.AddSingleton<IDebugGui, DebugGui>();
             services.AddSingleton<IRootMenu, RootMenu>();
             services.AddSingleton<IBattleGameState, BattleGameState>();

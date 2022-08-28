@@ -30,6 +30,7 @@ namespace Adventure
         private readonly CameraMover cameraMover;
         private readonly RTCameraAndLight cameraAndLight;
         private readonly LightManager lightManager;
+        private readonly PlayedTimeService playedTimeService;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -44,7 +45,8 @@ namespace Adventure
             FlyCameraManager flyCameraManager,
             CameraMover cameraMover,
             RTCameraAndLight cameraAndLight,
-            LightManager lightManager
+            LightManager lightManager,
+            PlayedTimeService playedTimeService
         )
         {
 
@@ -59,6 +61,7 @@ namespace Adventure
             this.cameraMover = cameraMover;
             this.cameraAndLight = cameraAndLight;
             this.lightManager = lightManager;
+            this.playedTimeService = playedTimeService;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -76,6 +79,7 @@ namespace Adventure
         public unsafe void sendUpdate(Clock clock)
         {
             timeClock.Update(clock);
+            playedTimeService.Update(clock);
             sharpGui.Begin(clock);
 
             var nextState = this.gameState.Update(clock);
