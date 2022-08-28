@@ -32,6 +32,10 @@ namespace Adventure
         public void OffsetCurrentPosition(in Vector3 offset)
         {
             CurrentPosition += offset;
+        }
+
+        public void OffsetPosition(in Vector3 offset)
+        {
             Position += offset;
         }
 

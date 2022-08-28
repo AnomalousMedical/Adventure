@@ -382,6 +382,7 @@ namespace Adventure
         public void OffsetCamera(in Vector3 offset)
         {
             cameraMover.OffsetCurrentPosition(offset);
+            cameraMover.OffsetPosition(offset);
         }
 
         /// <summary>
