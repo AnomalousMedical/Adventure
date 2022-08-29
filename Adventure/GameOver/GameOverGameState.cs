@@ -63,6 +63,7 @@ namespace Adventure.GameOver
                 persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
                 persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
                 persistence.Current.BattleTriggers.ClearData();
+                persistence.Current.Party.Undefeated = false;
                 if (persistence.Current.Party.Gold > 0)
                 {
                     persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();

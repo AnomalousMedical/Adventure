@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Services;
+using Engine;
 using Engine.Platform;
 using SharpGui;
 using System;
@@ -23,11 +24,14 @@ namespace Adventure.Exploration.Menu
         private readonly SkillMenu skillMenu;
         private readonly PlayerMenu playerMenu;
         private readonly OptionsMenu optionsMenu;
-
+        private readonly Persistence persistence;
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
         SharpButton options = new SharpButton() { Text = "Options" };
         SharpButton debug = new SharpButton() { Text = "Debug" };
+
+        SharpText undefeated = new SharpText() { Text = "Undefeated", Color = Color.White };
+        SharpText timePlayed = new SharpText() { Color = Color.White };
 
         public RootMenu(
             ISharpGui sharpGui,
@@ -36,7 +40,8 @@ namespace Adventure.Exploration.Menu
             ItemMenu itemMenu,
             SkillMenu skillMenu,
             PlayerMenu playerMenu,
-            OptionsMenu optionsMenu)
+            OptionsMenu optionsMenu,
+            Persistence persistence)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
@@ -45,10 +50,28 @@ namespace Adventure.Exploration.Menu
             this.skillMenu = skillMenu;
             this.playerMenu = playerMenu;
             this.optionsMenu = optionsMenu;
+            this.persistence = persistence;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
         {
+            var time = TimeSpan.FromMilliseconds(persistence.Current.Time.Total * Clock.MicroToMilliseconds);
+            timePlayed.Text = $"{(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
+
+            var infoLayout =
+              new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+              new MaxWidthLayout(scaleHelper.Scaled(300),
+              new ColumnLayout(undefeated, timePlayed) { Margin = new IntPad(10) }
+            ));
+            var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
+            infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
+
+            sharpGui.Text(timePlayed);
+            if (persistence.Current.Party.Undefeated)
+            {
+                sharpGui.Text(undefeated);
+            }
+
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),

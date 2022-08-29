@@ -167,6 +167,8 @@ namespace Adventure.Services
             public List<CharacterData> Members { get; set; } = new List<CharacterData>();
 
             public long Gold { get; set; }
+
+            public bool Undefeated { get; set; } = true;
         }
     }
 }
