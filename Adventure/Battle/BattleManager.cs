@@ -202,7 +202,7 @@ namespace Adventure.Battle
 
                     backgroundMusicPlayer.SetBattleTrack(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
-                    var baseDexTotal = 0;
+                    var baseDexTotal = 0L;
                     foreach(var player in players)
                     {
                         baseDexTotal += player.BaseDexterity;

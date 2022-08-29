@@ -86,7 +86,7 @@ namespace Adventure.Battle
 
         public GamepadId GamepadId => gamepadId;
 
-        public int BaseDexterity { get; internal set; }
+        public long BaseDexterity => characterSheet.BaseDexterity;
 
         private Vector3 startPosition;
 
