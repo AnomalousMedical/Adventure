@@ -378,6 +378,7 @@ namespace RpgMath
         {
             this.CurrentHp = Hp;
             this.CurrentMp = Mp;
+            this.Buffs.Clear();
         }
     }
 }
