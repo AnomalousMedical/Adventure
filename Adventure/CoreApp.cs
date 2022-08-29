@@ -89,6 +89,7 @@ namespace Adventure
             services.AddSingleton<SceneTestUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();
             services.AddSingleton<PlayedTimeService>();
+            services.AddSingleton<BuffManager>();
             services.AddSingleton<IDebugGui, DebugGui>();
             services.AddSingleton<IRootMenu, RootMenu>();
             services.AddSingleton<IBattleGameState, BattleGameState>();
