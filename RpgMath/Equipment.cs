@@ -24,10 +24,6 @@ namespace RpgMath
 
         public long MagicDefensePercent { get; set; }
 
-        public long Hp { get; set; }
-
-        public long Mp { get; set; }
-
         public long Strength { get; set; }
 
         public long Vitality { get; set; }
@@ -49,8 +45,6 @@ namespace RpgMath
         public int InventorySlots { get; set; }
 
         public string Sprite { get; set; }
-
-        public int PalletSeed { get; set; }
 
         public IEnumerable<String> Skills { get; set; }
 
