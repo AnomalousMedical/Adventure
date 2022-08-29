@@ -32,7 +32,7 @@ namespace Adventure.Battle.Skills
                 return;
             }
 
-            var damage = damageCalculator.Cure(source, 5);
+            var damage = damageCalculator.Cure(source, Amount);
             damage = damageCalculator.RandomVariation(damage);
 
             damage *= -1; //Make it healing
@@ -48,12 +48,12 @@ namespace Adventure.Battle.Skills
         {
             if(attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
-                battleManager.AddDamageNumber(attacker, "Cannot cast cure", Color.Red);
+                battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
                 return new SkillEffect(true);
             }
 
             target = battleManager.ValidateTarget(attacker, target);
-            var damage = battleManager.DamageCalculator.Cure(attacker.Stats, 5);
+            var damage = battleManager.DamageCalculator.Cure(attacker.Stats, Amount);
             damage = battleManager.DamageCalculator.RandomVariation(damage);
 
             damage *= -1; //Make it healing
@@ -93,10 +93,32 @@ namespace Adventure.Battle.Skills
 
         public bool DefaultTargetPlayers => true;
 
-        public string Name => "Cure";
+        public string Name { get; init; } = "Cure";
 
-        public long MpCost => 5;
+        public long MpCost { get; init; } = 5;
+
+        public long Amount { get; init; } = 5;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
+    }
+
+    class MegaCure : Cure
+    {
+        public MegaCure()
+        {
+            MpCost = 24;
+            Amount = 35;
+            Name = "Mega Cure";
+        }
+    }
+
+    class UltraCure : Cure
+    {
+        public UltraCure()
+        {
+            MpCost = 64;
+            Amount = 130;
+            Name = "Ultra Cure";
+        }
     }
 }

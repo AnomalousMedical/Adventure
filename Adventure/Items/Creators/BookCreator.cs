@@ -42,6 +42,14 @@ namespace Adventure.Items.Creators
         private IEnumerable<String> GetCureSpells(int level)
         {
             yield return nameof(Cure);
+            if (level > 28)
+            {
+                yield return nameof(MegaCure);
+            }
+            if (level > 43)
+            {
+                yield return nameof(UltraCure);
+            }
         }
 
         private InventoryItem CreateInventoryItem(Equipment equipment)
