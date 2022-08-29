@@ -22,6 +22,7 @@ namespace RpgMath
         long BlockPercent { get; }
         IEnumerable<string> Skills { get; }
         IEnumerable<Element> AttackElements { get; }
+        List<CharacterBuff> Buffs { get; }
 
         Resistance GetResistance(Element element);
     }

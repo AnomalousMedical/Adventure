@@ -44,7 +44,7 @@ namespace RpgMath
         /// <summary>
         /// The character's entire dexterity score.
         /// </summary>
-        public long TotalDex { get; set; }
+        public Func<long> TotalDex { get; set; }
 
         /// <summary>
         /// Set this to true while the character is running or waiting for their turn.
@@ -77,7 +77,7 @@ namespace RpgMath
             cTimer += 68;
             if (TurnTimerActive)
             {
-                turnTimer += TotalDex * vTimerIncrease / normalSpeed;
+                turnTimer += TotalDex() * vTimerIncrease / normalSpeed;
             }
             if (turnTimer > TurnTimerUnit)
             {

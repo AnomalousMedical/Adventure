@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RpgMath
 {
-    public class Buff
+    public class CharacterBuff
     {
         public String Name { get; set; }
 
@@ -41,5 +41,7 @@ namespace RpgMath
         public IEnumerable<Element> AttackElements { get; set; }
 
         public long TimeRemaining { get; set; }
+
+        public int BuffTypeId { get; set; }
     }
 }

@@ -307,7 +307,7 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance) + Buffs.Sum(i => i.CritChance);
 
-        public List<Buff> Buffs { get; set; } = new List<Buff>();
+        public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
 
         public IEnumerable<String> Skills
         {

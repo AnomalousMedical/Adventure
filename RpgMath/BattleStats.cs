@@ -46,6 +46,8 @@ namespace RpgMath
 
         public IEnumerable<string> Skills => Enumerable.Empty<string>();
 
+        public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //These are not hooked up to the stats
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))

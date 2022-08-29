@@ -163,7 +163,7 @@ namespace Adventure.Battle
 
             turnTimer.AddTimer(characterTimer);
             characterTimer.TurnReady += CharacterTimer_TurnReady;
-            characterTimer.TotalDex = characterSheet.Dexterity;
+            characterTimer.TotalDex = () => characterSheet.Dexterity;
 
             sprite = new FrameEventSprite(playerSpriteInfo.Animations);
             sprite.FrameChanged += Sprite_FrameChanged;

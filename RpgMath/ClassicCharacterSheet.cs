@@ -115,6 +115,8 @@ namespace RpgMath
 
         public IEnumerable<string> Skills => Enumerable.Empty<string>();
 
+        public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //Not hooked up
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;
