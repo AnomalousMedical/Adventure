@@ -267,7 +267,7 @@ namespace Adventure.Battle.Skills
 
         public Haste()
         {
-            Amount = 255;
+            Amount = 100;
             Name = "Haste";
             MpCost = 65;
         }
