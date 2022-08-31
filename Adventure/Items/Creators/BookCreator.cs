@@ -32,8 +32,7 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Cure Spells",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(FancyBook),
-                Skills = GetCureSpells(level),
-                AttackElements = new[] { Element.Slashing }
+                Skills = GetCureSpells(level)
             };
 
             return CreateInventoryItem(book);

@@ -453,7 +453,10 @@ namespace Adventure.Battle
                 if (remainingTime > standStartTime)
                 {
                     sprite.SetAnimation("stand-left");
-                    target = battleManager.ValidateTarget(this, target);
+                    if (!battleManager.IsStillValidTarget(target))
+                    {
+                        target = battleManager.ValidateTarget(this, target);
+                    }
                     start = this.startPosition;
                     end = target.MeleeAttackLocation;
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
