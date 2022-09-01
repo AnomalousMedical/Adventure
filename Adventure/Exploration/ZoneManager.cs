@@ -33,6 +33,7 @@ namespace Adventure
         Vector3 GetPlayerLoc();
         void ManagePlayers();
         void Update();
+        void CenterCamera();
     }
 
     class ZoneManager : IDisposable, IZoneManager
@@ -370,6 +371,17 @@ namespace Adventure
                 worldManager.SetupZone(zoneIndex, o);
                 o.Translation = translation;
             });
+        }
+
+        public void CenterCamera()
+        {
+            foreach (var player in players)
+            {
+                if (player != null)
+                {
+                    player.CenterCamera();
+                }
+            }
         }
 
         public void GoStartPoint()
