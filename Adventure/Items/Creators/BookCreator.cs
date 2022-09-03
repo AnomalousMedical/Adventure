@@ -25,11 +25,11 @@ namespace Adventure.Items.Creators
 
         public InventoryItem CreateCure(int level)
         {
-            var name = nameGenerator.GetLevelName(level);
+            var name = nameGenerator.GetBookLevelName(level);
 
             var book = new Equipment
             {
-                Name = $"{name.Adjective} Cure Spells",
+                Name = $"{name.Adjective} Restoration",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(FancyBook),
                 Skills = GetCureSpells(level)
@@ -41,14 +41,34 @@ namespace Adventure.Items.Creators
         private IEnumerable<String> GetCureSpells(int level)
         {
             yield return nameof(Cure);
-            if (level > 28)
+            if (level > 40)
             {
                 yield return nameof(MegaCure);
             }
-            if (level > 43)
+            if (level > 60)
             {
                 yield return nameof(UltraCure);
             }
+        }
+
+        public InventoryItem CreateReanimation(int level)
+        {
+            var name = nameGenerator.GetLevelName(level);
+
+            var book = new Equipment
+            {
+                Name = $"{name.Adjective} Reanimation",
+                MagicAttack = equipmentCurve.GetAttack(name.Level),
+                Sprite = nameof(FancyBook),
+                Skills = GetReanimationSpells(level)
+            };
+
+            return CreateInventoryItem(book);
+        }
+
+        private IEnumerable<String> GetReanimationSpells(int level)
+        {
+            yield return nameof(Reanimate);
         }
 
         private InventoryItem CreateInventoryItem(Equipment equipment)

@@ -72,7 +72,7 @@ namespace Adventure.Items.Creators
         {
             var item = new InventoryItem
             {
-                Action = nameof(Resurrect),
+                Action = nameof(Revive),
             };
 
             item.Number = 25;

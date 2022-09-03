@@ -390,6 +390,7 @@ namespace Adventure.Services
             phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
             phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
             phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateReanimation(phase2TreasureLevel)));
             phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateCounterAttack()));
 
             var phase2UniqueStolenTreasures = new List<Treasure>();

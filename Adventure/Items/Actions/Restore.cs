@@ -109,7 +109,7 @@ namespace Adventure.Items.Actions
         }
     }
 
-    class Resurrect : IInventoryAction
+    class Revive : IInventoryAction
     {
         public bool AllowTargetChange => false;
 
