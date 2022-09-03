@@ -14,8 +14,6 @@ namespace Adventure.Items.Creators
 {
     interface IStaffCreator
     {
-        InventoryItem CreateEpic(int level);
-        InventoryItem CreateLegendary(int level);
         InventoryItem CreateNormal(int level);
         ShopEntry CreateShopEntry(int level);
     }
@@ -50,46 +48,6 @@ namespace Adventure.Items.Creators
             {
                 Name = $"{name.Adjective} {typeName} Staff",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
-                MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(name.Level) / 3,
-                AttackPercent = 35,
-                Sprite = sprite,
-                Skills = GetSpells(level),
-                TwoHanded = true,
-                AttackElements = new[] { Element.Bludgeoning }
-            };
-
-            return CreateInventoryItem(staff);
-        }
-
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var staff = new Equipment
-            {
-                Name = $"{name.Adjective} Epic {typeName} Staff",
-                MagicAttack = equipmentCurve.GetAttack(name.Level + 6),
-                MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(name.Level) / 3,
-                AttackPercent = 35,
-                Sprite = sprite,
-                Skills = GetSpells(level),
-                TwoHanded = true,
-                AttackElements = new[] { Element.Bludgeoning }
-            };
-
-            return CreateInventoryItem(staff);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var staff = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary {typeName} Staff",
-                MagicAttack = equipmentCurve.GetAttack(name.Level + 12),
                 MagicAttackPercent = 100,
                 Attack = equipmentCurve.GetAttack(name.Level) / 3,
                 AttackPercent = 35,

@@ -45,36 +45,6 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(sword);
         }
 
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var sword = new Equipment
-            {
-                Name = $"{name.Adjective} Epic Dagger",
-                Attack = equipmentCurve.GetAttack(name.Level + 6),
-                Sprite = nameof(DaggerNew),
-                Skills = GetSkills(level)
-            };
-
-            return CreateInventoryItem(sword);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var sword = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary Dagger",
-                Attack = equipmentCurve.GetAttack(name.Level + 12),
-                Sprite = nameof(DaggerNew),
-                Skills = GetSkills(level),
-            };
-
-            return CreateInventoryItem(sword);
-        }
-
         private IEnumerable<String> GetSkills(int level)
         {
             yield return nameof(Steal);

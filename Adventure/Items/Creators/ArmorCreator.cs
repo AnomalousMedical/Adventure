@@ -34,34 +34,6 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var armor = new Equipment
-            {
-                Name = $"{name.Adjective} Epic Armor",
-                Defense = equipmentCurve.GetDefense(name.Level + 6),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 6)
-            };
-
-            return CreateInventoryItem(armor);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var armor = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary Armor",
-                Defense = equipmentCurve.GetDefense(name.Level + 12),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 12)
-            };
-
-            return CreateInventoryItem(armor);
-        }
-
         private InventoryItem CreateInventoryItem(Equipment equipment)
         {
             return new InventoryItem(equipment, nameof(EquipBody));

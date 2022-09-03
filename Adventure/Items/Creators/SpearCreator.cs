@@ -45,38 +45,6 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(spear);
         }
 
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var spear = new Equipment
-            {
-                Name = $"{name.Adjective} Epic Spear",
-                Attack = equipmentCurve.GetAttack(name.Level + 6),
-                AttackPercent = 100,
-                Sprite = nameof(Spear2Old),
-                AttackElements = new[] { Element.Piercing }
-            };
-
-            return CreateInventoryItem(spear);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var spear = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary Spear",
-                Attack = equipmentCurve.GetAttack(name.Level + 12),
-                AttackPercent = 100,
-                Sprite = nameof(Spear2Old),
-                AttackElements = new[] { Element.Piercing }
-            };
-
-            return CreateInventoryItem(spear);
-        }
-
         private InventoryItem CreateInventoryItem(Equipment equipment)
         {
             return new InventoryItem(equipment, nameof(EquipMainHand));

@@ -227,11 +227,10 @@ namespace Adventure.Services
 
                 o.BossUniqueStealTreasure = new List<ITreasure>(BossUniqueStealTreasure ?? Enumerable.Empty<Treasure>())
                 {
-                    //This should be element based, so give out what is good in the next area
-                    new Treasure(worldDatabase.SwordCreator.CreateEpic(TreasureLevel))
+                    new Treasure(worldDatabase.SwordCreator.CreateNormal(TreasureLevel + 6))
                 };
 
-                //You get the dagger in this zone, so some of this is missable
+                //You get the dagger in this zone, so some of this is missable at first
                 o.StealTreasure = new List<ITreasure>(StealTreasure ?? Enumerable.Empty<Treasure>())
                 {
                     new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),

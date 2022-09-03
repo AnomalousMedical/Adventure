@@ -46,40 +46,6 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(shield);
         }
 
-        public InventoryItem CreateEpic(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var shield = new Equipment
-            {
-                Name = $"{name.Adjective} Epic Shield",
-                Defense = equipmentCurve.GetDefense(name.Level + 6),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 6),
-                Sprite = nameof(ShieldOfReflection),
-                Skills = new[] { "Block" },
-                BlockPercent = 80, //TODO: Figure out how to give out block percent
-            };
-
-            return CreateInventoryItem(shield);
-        }
-
-        public InventoryItem CreateLegendary(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
-            var shield = new Equipment
-            {
-                Name = $"{name.Adjective} Legendary Shield",
-                Defense = equipmentCurve.GetDefense(name.Level + 12),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level + 12),
-                Sprite = nameof(ShieldOfReflection),
-                Skills = new[] { "Block" },
-                BlockPercent = 80, //TODO: Figure out how to give out block percent
-            };
-
-            return CreateInventoryItem(shield);
-        }
-
         private InventoryItem CreateInventoryItem(Equipment equipment)
         {
             return new InventoryItem(equipment, nameof(EquipOffHand));
