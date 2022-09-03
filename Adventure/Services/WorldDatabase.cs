@@ -64,19 +64,8 @@ namespace Adventure.Services
 
         public int GetLevelDelta(int currentLevel)
         {
-            //This assumes 27 areas, after that no more leveling
-
-            if (currentLevel >= 99)
-            {
-                return 0;
-            }
-
-            if (currentLevel < 30)
-            {
-                return 3;
-            }
-
-            var delta = 4;
+            //Based off 20 areas
+            var delta = 5;
             if (currentLevel + delta > 99)
             {
                 delta = 99 - currentLevel;
