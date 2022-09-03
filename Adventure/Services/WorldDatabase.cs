@@ -375,7 +375,44 @@ namespace Adventure.Services
             yield return areaBuilder;
 
             //Phase 2
-            //In phase 2 everything should be strong against the boss weapon from the previous phase
+            var phase2EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+            var phase2BonusWeakElement = GetDifferentElement(elementalRandom, phase2EndWeakElement);
+            var phase2TreasureLevel = 49;
+            var phase2UniqueTreasures = new List<Treasure>();
+            phase2UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateCure(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase2EndWeakElement).CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateCounterAttack()));
+
+            var phase2UniqueStolenTreasures = new List<Treasure>();
+            phase2UniqueStolenTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase2BonusWeakElement).CreateNormal(phase2TreasureLevel)));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+            phase2UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase2TreasureLevel)));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
+            phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
+
             island = map.IslandInfo[map.IslandSizeOrder[1]];
 
             areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -385,6 +422,8 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -393,8 +432,11 @@ namespace Adventure.Services
             areaBuilder.EndZone = 13;
             areaBuilder.Phase = 2;
             areaBuilder.IndexInPhase = 1;
+            areaBuilder.PlotItem = PlotItems.AirshipKey;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -405,6 +447,8 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -417,6 +461,8 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -427,6 +473,8 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -437,6 +485,8 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 5;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
 
@@ -542,6 +592,8 @@ namespace Adventure.Services
             areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
@@ -554,6 +606,8 @@ namespace Adventure.Services
             areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
@@ -566,6 +620,8 @@ namespace Adventure.Services
             areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
             areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Treasure = new[] { RemoveRandomItem(phase2UniqueTreasures, treasureRandom) };
+            areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom), RemoveRandomItem(phase2UniqueStolenTreasures, treasureRandom) };
             SetIslandBiome(island, map, areaBuilder.Biome);
             yield return areaBuilder;
 
