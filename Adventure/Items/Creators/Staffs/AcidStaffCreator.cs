@@ -23,15 +23,15 @@ namespace Adventure.Items.Creators
         protected override IEnumerable<String> GetSpells(int level)
         {
             yield return nameof(Acid);
-            if(level > 15)
+            if(level > SpellLevels.Blast)
             {
                 yield return nameof(AcidBlast);
             }
-            if (level > 28)
+            if (level > SpellLevels.Lash)
             {
                 yield return nameof(AcidLash);
             }
-            if (level > 38)
+            if (level > SpellLevels.Tempest)
             {
                 yield return nameof(AcidTempest);
             }

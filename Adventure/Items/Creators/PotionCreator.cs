@@ -23,12 +23,12 @@ namespace Adventure.Items.Creators
                 Action = nameof(RestoreMp),
             };
 
-            if (level < 30)
+            if (level < SpellLevels.Regular)
             {
                 item.Number = 25;
                 item.Name = "Mana Potion";
             }
-            else if (level < 65)
+            else if (level < SpellLevels.Big)
             {
                 item.Number = 75;
                 item.Name = "Big Mana Potion";
@@ -49,12 +49,12 @@ namespace Adventure.Items.Creators
                 Action = nameof(RestoreHp),
             };
 
-            if (level < 30)
+            if (level < SpellLevels.Regular)
             {
                 item.Number = 50;
                 item.Name = "Health Potion";
             }
-            else if (level < 65)
+            else if (level < SpellLevels.Big)
             {
                 item.Number = 300;
                 item.Name = "Big Health Potion";

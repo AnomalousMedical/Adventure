@@ -48,15 +48,15 @@ namespace Adventure.Items
 
         public NameResult GetLevelName(int level)
         {
-            if (level < 10)
+            if (level < SpellLevels.Busted)
             {
                 return new NameResult("Busted", 1, 100);
             }
-            else if (level < 40)
+            else if (level < SpellLevels.Common)
             {
                 return new NameResult("Common", 30, 175);
             }
-            else if (level < 60)
+            else if (level < SpellLevels.Superior)
             {
                 return new NameResult("Superior", 50, 225);
             }
@@ -68,11 +68,11 @@ namespace Adventure.Items
 
         public NameResult GetBookLevelName(int level)
         {
-            if (level < 40)
+            if (level < SpellLevels.LittleBookOf)
             {
                 return new NameResult("Little Book of", 1, 100);
             }
-            else if (level < 60)
+            else if (level < SpellLevels.BookOf)
             {
                 return new NameResult("Book of", 40, 125);
             }

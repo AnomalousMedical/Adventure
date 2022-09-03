@@ -272,7 +272,7 @@ namespace Adventure.Services
             {
                 var phase1EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase1BonusWeakElement = GetDifferentElement(elementalRandom, phase1EndWeakElement);
-                var phase1TreasureLevel = 22;
+                var phase1TreasureLevel = 25;
                 var phase1UniqueTreasures = new List<Treasure>();
                 phase1UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase1TreasureLevel)));
                 phase1UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase1TreasureLevel)));
@@ -384,7 +384,7 @@ namespace Adventure.Services
                 //TODO: This is really just a placeholder
                 var phase2EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase2BonusWeakElement = GetDifferentElement(elementalRandom, phase2EndWeakElement);
-                var phase2TreasureLevel = 49;
+                var phase2TreasureLevel = 60;
                 var phase2UniqueTreasures = new List<Treasure>();
                 phase2UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel)));
@@ -519,7 +519,7 @@ namespace Adventure.Services
                 //TODO: This is really just a placeholder
                 var phase3EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase3BonusWeakElement = GetDifferentElement(elementalRandom, phase3EndWeakElement);
-                var phase3TreasureLevel = 49;
+                var phase3TreasureLevel = 99;
                 var phase3UniqueTreasures = new List<Treasure>();
                 phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel)));

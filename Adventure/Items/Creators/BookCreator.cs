@@ -41,11 +41,11 @@ namespace Adventure.Items.Creators
         private IEnumerable<String> GetCureSpells(int level)
         {
             yield return nameof(Cure);
-            if (level > 40)
+            if (level > SpellLevels.MegaCure)
             {
                 yield return nameof(MegaCure);
             }
-            if (level > 60)
+            if (level > SpellLevels.UltraCure)
             {
                 yield return nameof(UltraCure);
             }
