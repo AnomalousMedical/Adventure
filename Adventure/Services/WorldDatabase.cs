@@ -229,6 +229,14 @@ namespace Adventure.Services
             usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
         }
 
+        private IntVector2 GetSquare(List<IntVector2> items, Random random)
+        {
+            var index = random.Next(items.Count);
+            var square = items[index];
+            items.RemoveAt(index);
+            return square;
+        }
+
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, Random elementalRandom, Random treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             //TODO: Add enemy strengths and weaknesses in phase 2, 3
@@ -246,6 +254,15 @@ namespace Adventure.Services
             AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom, portalLocations);
 
             var island = map.IslandInfo[map.IslandSizeOrder[0]];
+            var firstIslandSquares = new List<IntVector2>
+            {
+                GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost),
+                GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost),
+                GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost),
+                GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost),
+                GetUnusedSquare(usedSquares, island, placementRandom),
+                GetUnusedSquare(usedSquares, island, placementRandom)
+            };
 
             //Phase 0
             areaBuilder = new Area0Builder(this, monsterInfo, area++)
@@ -257,7 +274,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 0;
             areaBuilder.IndexInPhase = 0;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.TreasureLevel = 3;
             FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
             yield return areaBuilder;
@@ -307,7 +324,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 1;
             areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueStolenTreasures, treasureRandom) };
             areaBuilder.PlotItem = PlotItems.PortalKey0;
@@ -321,7 +338,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 2;
             areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueStolenTreasures, treasureRandom) };
             areaBuilder.PlotItem = PlotItems.PortalKey1;
@@ -335,7 +352,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 3;
             areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueStolenTreasures, treasureRandom) };
             areaBuilder.PlotItem = PlotItems.PortalKey2;
@@ -349,7 +366,7 @@ namespace Adventure.Services
             areaBuilder.IndexInPhase = 4;
             areaBuilder.TreasureLevel = 16;
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.Treasure = new[] { RemoveRandomItem(phase1UniqueTreasures, treasureRandom), RemoveRandomItem(phase1UniqueTreasures, treasureRandom) };
             areaBuilder.UniqueStealTreasure = new[] { RemoveRandomItem(phase1UniqueStolenTreasures, treasureRandom) };
             areaBuilder.PlotItem = PlotItems.PortalKey3;
@@ -508,7 +525,7 @@ namespace Adventure.Services
             areaBuilder.Phase = 1;
             areaBuilder.GateZones = new[] { areaBuilder.StartZone, areaBuilder.StartZone + 1 };
             areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
             areaBuilder.UniqueStealTreasure = phase1UniqueStolenTreasures;
             areaBuilder.Treasure = phase1UniqueTreasures; //This is the remainder of the phase 1 treasure
             areaBuilder.EnemyWeakElement = phase1BonusWeakElement;
