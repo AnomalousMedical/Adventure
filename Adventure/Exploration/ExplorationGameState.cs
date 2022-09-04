@@ -177,7 +177,6 @@ namespace Adventure
             {
                 while (sheet.CharacterSheet.Level < current)
                 {
-                    //TODO: Change how characters level, for now just use "fighter"
                     sheet.CharacterSheet.LevelUp(levelCalculator);
                 }
             }
