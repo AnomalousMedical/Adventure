@@ -13,13 +13,13 @@ namespace Adventure.Assets.Players
         {
             SpriteMaterialDescription = new SpriteMaterialDescription
             (
-                colorMap: "Graphics/Sprites/LastGuardian/Players/amg1_full4.png",
+                colorMap: "Graphics/Sprites/Anomalous/Players/Mage.png",
                 materials: new HashSet<SpriteMaterialTextureItem>
                 {
-                    new SpriteMaterialTextureItem(0xffa854ff, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xff909090, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xff8c4800, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
-                    new SpriteMaterialTextureItem(0xffffe254, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+                    new SpriteMaterialTextureItem(0xffb30cb9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+                    new SpriteMaterialTextureItem(0xffb21829, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                    new SpriteMaterialTextureItem(0xff2a1903, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
+                    new SpriteMaterialTextureItem(0xff5f3500, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
                 }
             );
         }
