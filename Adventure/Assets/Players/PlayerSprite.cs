@@ -84,14 +84,14 @@ namespace Adventure.Assets.Players
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(3, 23, -0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(26, 20, -0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 20, -0.01f, 32, 32), //Left Hand
                     }
                 },
                 new SpriteFrame(SpriteStepX * 1, SpriteStepY * 1, SpriteStepX * 2, SpriteStepY * 2)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(6, 20, -0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 20, -0.01f, 32, 32), //Right Hand
                         SpriteFrameAttachment.FromFramePosition(29, 23, -0.01f, 32, 32), //Left Hand
                     }
                 } )
@@ -101,7 +101,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(26, 20, +0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 20, +0.01f, 32, 32), //Right Hand
                         SpriteFrameAttachment.FromFramePosition(3, 23, +0.01f, 32, 32), //Left Hand
                     }
                 },
@@ -110,7 +110,7 @@ namespace Adventure.Assets.Players
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(29, 23, +0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(6, 20, +0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 20, +0.01f, 32, 32), //Left Hand
                     }
                 } )
             },
