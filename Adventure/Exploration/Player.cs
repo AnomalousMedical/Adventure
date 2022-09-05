@@ -515,25 +515,20 @@ namespace Adventure
         {
             var frame = obj.GetCurrentFrame();
 
+            Vector3 offest;
             var scale = sprite.BaseScale * this.currentScale;
 
-            if (mainHandItem != null)
-            {
-                var primaryAttach = frame.Attachments[this.primaryHand];
-                var offset = scale * primaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                mainHandItem.SetPosition(offset, this.currentOrientation, scale);
-                mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var primaryAttach = frame.Attachments[this.primaryHand];
+            var offset = scale * primaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            mainHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
 
-            if (offHandItem != null)
-            {
-                var secondaryAttach = frame.Attachments[this.secondaryHand];
-                var offset = scale * secondaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                offHandItem.SetPosition(offset, this.currentOrientation, scale);
-                offHandHand?.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var secondaryAttach = frame.Attachments[this.secondaryHand];
+            offset = scale * secondaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            offHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            offHandHand?.SetPosition(offset, this.currentOrientation, scale);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
@@ -554,20 +549,20 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
-                if (characterSheet.MainHand.ShowHand)
-                {
-                    mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
-                    {
-                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
-                        {
-                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
-                        };
-                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
-                    });
-                }
-                Sprite_AnimationChanged(sprite);
-                Sprite_FrameChanged(sprite);
             }
+            if (characterSheet.MainHand?.ShowHand != false)
+            {
+                mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                {
+                    o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                    {
+                        BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                    };
+                    o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                });
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
         }
 
         private void OnOffHandModified(CharacterSheet obj)
@@ -583,20 +578,20 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
-                if (characterSheet.OffHand.ShowHand)
-                {
-                    offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
-                    {
-                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
-                        {
-                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
-                        };
-                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
-                    });
-                }
-                Sprite_AnimationChanged(sprite);
-                Sprite_FrameChanged(sprite);
             }
+            if (characterSheet.OffHand?.ShowHand != false)
+            {
+                offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                {
+                    o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                    {
+                        BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                    };
+                    o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                });
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
         }
     }
 }
