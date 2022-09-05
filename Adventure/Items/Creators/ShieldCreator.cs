@@ -40,7 +40,8 @@ namespace Adventure.Items.Creators
                 MagicDefense = equipmentCurve.GetMDefense(name.Level),
                 Sprite = nameof(ShieldOfReflection),
                 Skills = new[] { "Block" },
-                BlockPercent = 80, //TODO: Figure out how to give out block percent
+                BlockPercent = 80,
+                ShowHand = false,
             };
 
             return CreateInventoryItem(shield);

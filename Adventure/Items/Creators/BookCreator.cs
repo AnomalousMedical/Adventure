@@ -32,7 +32,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Restoration",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(FancyBook),
-                Skills = GetCureSpells(level)
+                Skills = GetCureSpells(level),
+                ShowHand = false,
             };
 
             return CreateInventoryItem(book);
@@ -60,7 +61,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Reanimation",
                 MagicAttack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(FancyBook),
-                Skills = GetReanimationSpells(level)
+                Skills = GetReanimationSpells(level),
+                ShowHand = false,
             };
 
             return CreateInventoryItem(book);
