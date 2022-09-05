@@ -56,8 +56,11 @@ namespace Adventure.WorldMap
         private SpriteInstance spriteInstance;
         private bool graphicsActive = false;
 
+        private IPlayerSprite playerSpriteInfo;
         private Attachment<IWorldMapGameState> mainHandItem;
         private Attachment<IWorldMapGameState> offHandItem;
+        private Attachment<IWorldMapGameState> mainHandHand;
+        private Attachment<IWorldMapGameState> offHandHand;
 
         private CharacterSheet characterSheet;
 
@@ -112,7 +115,7 @@ namespace Adventure.WorldMap
             IAssetFactory assetFactory
         )
         {
-            var playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
+            playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
             this.characterSheet = description.CharacterSheet;
@@ -219,7 +222,9 @@ namespace Adventure.WorldMap
                 SetGraphicsActive(!persistence.Current.Player.InAirship);
 
                 sprite.FrameChanged += Sprite_FrameChanged;
+                sprite.AnimationChanged += Sprite_AnimationChanged;
                 Sprite_FrameChanged(sprite);
+                Sprite_AnimationChanged(sprite);
             });
         }
 
@@ -243,6 +248,7 @@ namespace Adventure.WorldMap
             bepuScene.DestroyCharacterMover(characterMover);
             bepuScene.Simulation.Shapes.Remove(shapeIndex);
             sprite.FrameChanged -= Sprite_FrameChanged;
+            sprite.AnimationChanged -= Sprite_AnimationChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             SetGraphicsActive(false);
             objectResolver.Dispose();
@@ -474,27 +480,53 @@ namespace Adventure.WorldMap
             }
         }
 
+        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        {
+            if (mainHandHand != null)
+            {
+                switch (primaryHand)
+                {
+                    case Player.RightHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case Player.LeftHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+
+            if (offHandHand != null)
+            {
+                switch (secondaryHand)
+                {
+                    case Player.RightHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case Player.LeftHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+        }
+
         private void Sprite_FrameChanged(FrameEventSprite obj)
         {
             var frame = obj.GetCurrentFrame();
 
+            Vector3 offset;
             var scale = sprite.BaseScale * this.currentScale;
 
-            if (mainHandItem != null)
-            {
-                var primaryAttach = frame.Attachments[this.primaryHand];
-                var offset = scale * primaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                mainHandItem.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var primaryAttach = frame.Attachments[this.primaryHand];
+            offset = scale * primaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            mainHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
 
-            if(offHandItem != null)
-            {
-                var secondaryAttach = frame.Attachments[this.secondaryHand];
-                var offset = scale * secondaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                offHandItem.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var secondaryAttach = frame.Attachments[this.secondaryHand];
+            offset = scale * secondaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            offHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            offHandHand?.SetPosition(offset, this.currentOrientation, scale);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
@@ -505,6 +537,7 @@ namespace Adventure.WorldMap
         private void OnMainHandModified(CharacterSheet obj)
         {
             mainHandItem?.RequestDestruction();
+            mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
@@ -514,13 +547,35 @@ namespace Adventure.WorldMap
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
-                Sprite_FrameChanged(sprite);
             }
+
+            if (characterSheet.MainHand?.ShowHand != false)
+            {
+                if (mainHandHand == null)
+                {
+                    mainHandHand = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (mainHandHand != null)
+            {
+                mainHandHand.RequestDestruction();
+                mainHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
         }
 
         private void OnOffHandModified(CharacterSheet obj)
         {
             offHandItem?.RequestDestruction();
+            offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
                 offHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
@@ -530,8 +585,29 @@ namespace Adventure.WorldMap
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
-                Sprite_FrameChanged(sprite);
             }
+
+            if (characterSheet.OffHand?.ShowHand != false)
+            {
+                if (offHandHand == null)
+                {
+                    offHandHand = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (offHandHand != null)
+            {
+                offHandHand.RequestDestruction();
+                offHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
         }
     }
 }

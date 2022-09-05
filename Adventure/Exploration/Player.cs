@@ -515,11 +515,11 @@ namespace Adventure
         {
             var frame = obj.GetCurrentFrame();
 
-            Vector3 offest;
+            Vector3 offset;
             var scale = sprite.BaseScale * this.currentScale;
 
             var primaryAttach = frame.Attachments[this.primaryHand];
-            var offset = scale * primaryAttach.translate;
+            offset = scale * primaryAttach.translate;
             offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
             mainHandItem?.SetPosition(offset, this.currentOrientation, scale);
             mainHandHand?.SetPosition(offset, this.currentOrientation, scale);

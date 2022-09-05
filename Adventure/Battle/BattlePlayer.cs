@@ -43,6 +43,8 @@ namespace Adventure.Battle
         private Attachment<IBattleManager> mainHandItem;
         private Attachment<IBattleManager> offHandItem;
         private Attachment<IBattleManager> castEffect;
+        private Attachment<IBattleManager> mainHandHand;
+        private Attachment<IBattleManager> offHandHand;
 
         private SharpButton attackButton = new SharpButton() { Text = "Attack" };
         private SharpButton skillsButton = new SharpButton() { Text = "Skills" };
@@ -167,18 +169,13 @@ namespace Adventure.Battle
 
             sprite = new FrameEventSprite(playerSpriteInfo.Animations);
             sprite.FrameChanged += Sprite_FrameChanged;
+            sprite.AnimationChanged += Sprite_AnimationChanged;
             sprite.SetAnimation("stand-left");
 
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
             var startPos = description.Translation;
             startPos.y += halfScale;
-
-            characterSheet.OnMainHandModified += OnMainHandModified;
-            characterSheet.OnOffHandModified += OnOffHandModified;
-
-            OnMainHandModified(characterSheet);
-            OnOffHandModified(characterSheet);
 
             this.startPosition = startPos;
             this.currentPosition = startPos;
@@ -191,6 +188,12 @@ namespace Adventure.Battle
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale)
             };
+
+            characterSheet.OnMainHandModified += OnMainHandModified;
+            characterSheet.OnOffHandModified += OnOffHandModified;
+
+            OnMainHandModified(characterSheet);
+            OnOffHandModified(characterSheet);
 
             Sprite_FrameChanged(sprite);
 
@@ -251,6 +254,7 @@ namespace Adventure.Battle
             battleScreenLayout.InfoColumn.Remove(infoRowLayout);
             characterTimer.TurnReady -= CharacterTimer_TurnReady;
             sprite.FrameChanged -= Sprite_FrameChanged;
+            sprite.AnimationChanged -= Sprite_AnimationChanged;
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
@@ -729,33 +733,59 @@ namespace Adventure.Battle
             destructionRequest.RequestDestruction();
         }
 
+        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        {
+            if (mainHandHand != null)
+            {
+                switch (primaryHand)
+                {
+                    case Player.RightHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case Player.LeftHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+
+            if (offHandHand != null)
+            {
+                switch (secondaryHand)
+                {
+                    case Player.RightHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case Player.LeftHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+        }
+
         private void Sprite_FrameChanged(FrameEventSprite obj)
         {
             var frame = obj.GetCurrentFrame();
 
+            Vector3 offset;
             var scale = sprite.BaseScale * this.currentScale;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, scale);
 
-            if(mainHandItem != null)
-            {
-                var primaryAttach = frame.Attachments[this.primaryHand];
-                var offset = scale * primaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                mainHandItem.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var primaryAttach = frame.Attachments[this.primaryHand];
+            offset = scale * primaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            mainHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
 
-            if(offHandItem != null)
-            {
-                var secondaryAttach = frame.Attachments[this.secondaryHand];
-                var offset = scale * secondaryAttach.translate;
-                offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
-                offHandItem.SetPosition(offset, this.currentOrientation, scale);
-            }
+            var secondaryAttach = frame.Attachments[this.secondaryHand];
+            offset = scale * secondaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+            offHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            offHandHand?.SetPosition(offset, this.currentOrientation, scale);
 
-            if(castEffect != null)
+            if (castEffect != null)
             {
-                var secondaryAttach = frame.Attachments[this.secondaryHand];
-                var offset = scale * secondaryAttach.translate;
+                var castAttach = frame.Attachments[this.secondaryHand];
+                offset = scale * castAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
                 castEffect.SetPosition(offset, this.currentOrientation, scale);
             }
@@ -850,6 +880,7 @@ namespace Adventure.Battle
         private void OnMainHandModified(CharacterSheet obj)
         {
             mainHandItem?.RequestDestruction();
+            mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
@@ -860,12 +891,35 @@ namespace Adventure.Battle
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+
+            if (characterSheet.MainHand?.ShowHand != false)
+            {
+                if (mainHandHand == null)
+                {
+                    mainHandHand = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (mainHandHand != null)
+            {
+                mainHandHand.RequestDestruction();
+                mainHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
             UpdateSkills();
         }
 
         private void OnOffHandModified(CharacterSheet obj)
         {
             offHandItem?.RequestDestruction();
+            offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
                 offHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
@@ -876,6 +930,28 @@ namespace Adventure.Battle
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+
+            if (characterSheet.OffHand?.ShowHand != false)
+            {
+                if (offHandHand == null)
+                {
+                    offHandHand = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (offHandHand != null)
+            {
+                offHandHand.RequestDestruction();
+                offHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
             UpdateSkills();
         }
 
