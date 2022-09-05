@@ -46,6 +46,8 @@ namespace RpgMath
 
         public string Sprite { get; set; }
 
+        public bool ShowHand { get; set; } = true;
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

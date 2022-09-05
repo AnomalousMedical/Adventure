@@ -121,6 +121,11 @@ namespace Adventure
             this.additionalRotation = additionalRotation;
         }
 
+        public void SetAnimation(String name)
+        {
+            sprite.SetAnimation(name);
+        }
+
         public void SetPosition(in Vector3 parentPosition, in Quaternion parentRotation, in Vector3 parentScale)
         {
             var frame = sprite.GetCurrentFrame();

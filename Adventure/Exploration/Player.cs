@@ -53,6 +53,10 @@ namespace Adventure
         private Attachment<IZoneManager> mainHandItem;
         private Attachment<IZoneManager> offHandItem;
 
+        private IPlayerSprite playerSpriteInfo;
+        private Attachment<IZoneManager> mainHandHand;
+        private Attachment<IZoneManager> offHandHand;
+
         private CharacterSheet characterSheet;
 
         private CharacterMover characterMover;
@@ -106,7 +110,7 @@ namespace Adventure
             IAssetFactory assetFactory
         )
         {
-            var playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
+            playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
             this.characterSheet = description.CharacterSheet;
@@ -487,14 +491,20 @@ namespace Adventure
                 var offset = scale * primaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
                 mainHandItem.SetPosition(offset, this.currentOrientation, scale);
+                if(mainHandHand != null)
+                {
+                    mainHandHand.SetAnimation(sprite.CurrentAnimationName + "-hand");
+                    mainHandHand.SetPosition(offset, this.currentOrientation, scale);
+                }
             }
 
-            if(offHandItem != null)
+            if (offHandItem != null)
             {
                 var secondaryAttach = frame.Attachments[this.secondaryHand];
                 var offset = scale * secondaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
                 offHandItem.SetPosition(offset, this.currentOrientation, scale);
+                offHandHand?.SetPosition(offset, this.currentOrientation, scale);
             }
         }
 
@@ -506,6 +516,7 @@ namespace Adventure
         private void OnMainHandModified(CharacterSheet obj)
         {
             mainHandItem?.RequestDestruction();
+            mainHandHand?.RequestDestruction();
             if (characterSheet.MainHand?.Sprite != null)
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
@@ -515,6 +526,18 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
+                if (characterSheet.MainHand.ShowHand)
+                {
+                    mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = this.sprite.BaseScale
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                    mainHandHand.SetAnimation(sprite.CurrentAnimationName + "-hand");
+                }
                 Sprite_FrameChanged(sprite);
             }
         }
