@@ -11,7 +11,7 @@ namespace Adventure.Assets.Players
     public abstract class PlayerSprite : IPlayerSprite
     {
         const float SpriteWidth = 128f;
-        const float SpriteHeight = 96f;
+        const float SpriteHeight = 70f;
         const float SpriteStepX = 32f / SpriteWidth;
         const float SpriteStepY = 32f / SpriteHeight;
 
