@@ -214,7 +214,9 @@ namespace Adventure
                 rtInstances.AddShaderTableBinder(Bind);
                 rtInstances.AddSprite(sprite, tlasData, spriteInstance);
 
+                sprite.AnimationChanged += Sprite_AnimationChanged;
                 sprite.FrameChanged += Sprite_FrameChanged;
+                Sprite_AnimationChanged(sprite);
                 Sprite_FrameChanged(sprite);
             });
         }
@@ -239,6 +241,7 @@ namespace Adventure
             bepuScene.DestroyCharacterMover(characterMover);
             bepuScene.Simulation.Shapes.Remove(shapeIndex);
             sprite.FrameChanged -= Sprite_FrameChanged;
+            sprite.AnimationChanged -= Sprite_AnimationChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
@@ -479,6 +482,11 @@ namespace Adventure
             }
         }
 
+        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        {
+            mainHandHand?.SetAnimation(obj.CurrentAnimationName + "-hand");
+        }
+
         private void Sprite_FrameChanged(FrameEventSprite obj)
         {
             var frame = obj.GetCurrentFrame();
@@ -491,11 +499,7 @@ namespace Adventure
                 var offset = scale * primaryAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
                 mainHandItem.SetPosition(offset, this.currentOrientation, scale);
-                if(mainHandHand != null)
-                {
-                    mainHandHand.SetAnimation(sprite.CurrentAnimationName + "-hand");
-                    mainHandHand.SetPosition(offset, this.currentOrientation, scale);
-                }
+                mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
             }
 
             if (offHandItem != null)
@@ -536,8 +540,8 @@ namespace Adventure
                         };
                         o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
                     });
-                    mainHandHand.SetAnimation(sprite.CurrentAnimationName + "-hand");
                 }
+                Sprite_AnimationChanged(sprite);
                 Sprite_FrameChanged(sprite);
             }
         }

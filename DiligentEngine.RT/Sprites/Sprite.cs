@@ -161,6 +161,7 @@ namespace DiligentEngine.RT.Sprites
 
         public Vector3 BaseScale = Vector3.ScaleIdentity;
 
+        public event Action<FrameEventSprite> AnimationChanged;
         public event Action<FrameEventSprite> FrameChanged;
 
         public FrameEventSprite()
@@ -203,6 +204,8 @@ namespace DiligentEngine.RT.Sprites
             frameTime = 0;
             duration = current.duration;
             frame = 0;
+
+            AnimationChanged?.Invoke(this);
         }
 
         public void Update(Clock clock)
