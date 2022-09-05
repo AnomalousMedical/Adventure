@@ -254,19 +254,37 @@ namespace Adventure.Services
             };
 
             //Phase 0
-            areaBuilder = new Area0Builder(this, monsterInfo, area++)
             {
-                StartingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd)
-            };
-            areaBuilder.StartZone = 0;
-            areaBuilder.EndZone = 1;
-            areaBuilder.Phase = 0;
-            areaBuilder.IndexInPhase = 0;
-            areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
-            areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
-            areaBuilder.TreasureLevel = 3;
-            FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
-            yield return areaBuilder;
+                var startingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                var phase0TreasureLevel = 3;
+                var phase0UniqueTreasures = new List<Treasure>();
+                phase0UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(startingElementStaff).CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(BookCreator.CreateCure(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel)));
+
+                phase0UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
+
+                phase0UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel)));
+
+                //Change some of these to the other armor types
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase0TreasureLevel)));
+
+                areaBuilder = new AreaBuilder(this, monsterInfo, area++);
+                areaBuilder.StartZone = 0;
+                areaBuilder.EndZone = 0;
+                areaBuilder.Phase = 0;
+                areaBuilder.IndexInPhase = 0;
+                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
+                areaBuilder.TreasureLevel = 3;
+                areaBuilder.Treasure = phase0UniqueTreasures;
+                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
+                yield return areaBuilder;
+            }
 
             //Phase 1
             {
