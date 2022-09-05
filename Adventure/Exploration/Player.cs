@@ -560,7 +560,7 @@ namespace Adventure
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
-                            BaseScale = this.sprite.BaseScale
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
                         };
                         o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
                     });
@@ -589,7 +589,7 @@ namespace Adventure
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
-                            BaseScale = this.sprite.BaseScale
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
                         };
                         o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
                     });

@@ -10,8 +10,10 @@ namespace Adventure.Assets.Players
 {
     public abstract class PlayerSprite : IPlayerSprite
     {
-        const float SpriteStepX = 32f / 128f;
-        const float SpriteStepY = 32f / 96f;
+        const float SpriteWidth = 128f;
+        const float SpriteHeight = 96f;
+        const float SpriteStepX = 32f / SpriteWidth;
+        const float SpriteStepY = 32f / SpriteHeight;
 
         const int spriteWalkFrameSpeed = (int)(0.2f * Clock.SecondsToMicro);
 
@@ -173,184 +175,184 @@ namespace Adventure.Assets.Players
             
             //Right Hand
             { "stand-down-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-left-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-right-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-up-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "down-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "up-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "right-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "left-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "cast-left-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "cast-right-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 0, SpriteStepY * 2, SpriteStepX * 1, SpriteStepY * 3)
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             
             //Left Hand
             { "stand-down-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-left-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-right-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "stand-up-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "down-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "up-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "right-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "left-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "cast-left-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
             { "cast-right-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
-                new SpriteFrame(SpriteStepX * 1, SpriteStepY * 2, SpriteStepX * 2, SpriteStepY * 3)
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
