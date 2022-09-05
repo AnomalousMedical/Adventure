@@ -484,7 +484,31 @@ namespace Adventure
 
         private void Sprite_AnimationChanged(FrameEventSprite obj)
         {
-            mainHandHand?.SetAnimation(obj.CurrentAnimationName + "-hand");
+            if (mainHandHand != null)
+            {
+                switch (primaryHand)
+                {
+                    case RightHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case LeftHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+
+            if (offHandHand != null)
+            {
+                switch (secondaryHand)
+                {
+                    case RightHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case LeftHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
         }
 
         private void Sprite_FrameChanged(FrameEventSprite obj)
@@ -549,6 +573,7 @@ namespace Adventure
         private void OnOffHandModified(CharacterSheet obj)
         {
             offHandItem?.RequestDestruction();
+            offHandHand?.RequestDestruction();
             if (characterSheet.OffHand?.Sprite != null)
             {
                 offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
@@ -558,6 +583,18 @@ namespace Adventure
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
+                if (characterSheet.OffHand.ShowHand)
+                {
+                    offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = this.sprite.BaseScale
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+                Sprite_AnimationChanged(sprite);
                 Sprite_FrameChanged(sprite);
             }
         }
