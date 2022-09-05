@@ -43,8 +43,8 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 23, -0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(29, 23, -0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 21, -0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 21, -0.01f, 32, 32), //Left Hand
                     }
                 } )
             },
@@ -73,8 +73,8 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(29, 23, +0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(3, 23, +0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 21, +0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 21, +0.01f, 32, 32), //Left Hand
                     }
                 } )
             },
@@ -83,7 +83,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(3, 23, -0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 22, -0.01f, 32, 32), //Right Hand
                         SpriteFrameAttachment.FromFramePosition(29, 20, -0.01f, 32, 32), //Left Hand
                     }
                 },
@@ -92,7 +92,7 @@ namespace Adventure.Assets.Players
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(3, 20, -0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(29, 23, -0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 22, -0.01f, 32, 32), //Left Hand
                     }
                 } )
             },
@@ -102,14 +102,14 @@ namespace Adventure.Assets.Players
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(29, 20, +0.01f, 32, 32), //Right Hand
-                        SpriteFrameAttachment.FromFramePosition(3, 23, +0.01f, 32, 32), //Left Hand
+                        SpriteFrameAttachment.FromFramePosition(3, 22, +0.01f, 32, 32), //Left Hand
                     }
                 },
                 new SpriteFrame(SpriteStepX * 0, SpriteStepY * 1, SpriteStepX * 1, SpriteStepY * 2)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(29, 23, +0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(29, 22, +0.01f, 32, 32), //Right Hand
                         SpriteFrameAttachment.FromFramePosition(3, 20, +0.01f, 32, 32), //Left Hand
                     }
                 } )
@@ -177,7 +177,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -186,7 +186,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -195,7 +195,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -204,7 +204,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -213,7 +213,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -222,7 +222,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -231,7 +231,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -240,7 +240,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -249,7 +249,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
@@ -258,7 +258,7 @@ namespace Adventure.Assets.Players
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(2, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 32, 32), //Center of hand, aligns to above hand centers
                     }
                 } )
             },
