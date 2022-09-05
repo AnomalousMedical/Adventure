@@ -282,6 +282,7 @@ namespace Adventure.Services
                 areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
                 areaBuilder.TreasureLevel = 3;
                 areaBuilder.Treasure = phase0UniqueTreasures;
+                areaBuilder.StartEnd = true;
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
             }
@@ -327,7 +328,7 @@ namespace Adventure.Services
 
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 2;
-                areaBuilder.EndZone = 3;
+                areaBuilder.EndZone = 2;
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.TreasureLevel = 16;
@@ -341,7 +342,7 @@ namespace Adventure.Services
 
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 4;
-                areaBuilder.EndZone = 5;
+                areaBuilder.EndZone = 4;
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.TreasureLevel = 16;
@@ -355,7 +356,7 @@ namespace Adventure.Services
 
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 6;
-                areaBuilder.EndZone = 7;
+                areaBuilder.EndZone = 6;
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 3;
                 areaBuilder.TreasureLevel = 16;
@@ -369,7 +370,7 @@ namespace Adventure.Services
 
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 8;
-                areaBuilder.EndZone = 9;
+                areaBuilder.EndZone = 8;
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 4;
                 areaBuilder.TreasureLevel = 16;

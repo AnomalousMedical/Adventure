@@ -82,6 +82,12 @@ namespace Adventure.Services
 
         public IEnumerable<ITreasure> BossUniqueStealTreasure { get; set; }
 
+        /// <summary>
+        /// This is mostly a special case for the 1st zone. It makes you start at the end instead
+        /// of the start, since the game starts in the first zone.
+        /// </summary>
+        public bool StartEnd { get; set; }
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, Random initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -110,6 +116,7 @@ namespace Adventure.Services
             o.MakeRest = false;
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
+            o.StartEnd = StartEnd;
 
             if(zoneIndex == EndZone && PlotItem != null)
             {
