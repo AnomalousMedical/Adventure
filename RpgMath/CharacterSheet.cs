@@ -277,25 +277,33 @@ namespace RpgMath
 
         public long CurrentMp { get; set; }
 
+        public long TotalStrength => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength) + Buffs.Sum(i => i.Strength);
+
         public long Attack => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength + i.Attack) + Buffs.Sum(i => i.Strength + i.Attack);
 
         public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent);
+
+        public long TotalVitality => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality) + Buffs.Sum(i => i.Vitality);
 
         public long Defense => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality + i.Defense) + Buffs.Sum(i => i.Vitality + i.Defense);
 
         public long DefensePercent => EquippedItems().Sum(i => i.DefensePercent) + Buffs.Sum(i => i.DefensePercent);
 
+        public long TotalMagic => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic) + Buffs.Sum(i => i.Magic);
+
         public long MagicAttack => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack) + Buffs.Sum(i => i.Magic + i.MagicAttack);
 
         public long MagicAttackPercent => EquippedItems().Sum(i => i.MagicAttackPercent) + Buffs.Sum(i => i.MagicAttackPercent);
+
+        public long TotalSpirit => BaseSpirit + BonusSpirit + EquippedItems().Sum(i => i.Spirit) + Buffs.Sum(i => i.Spirit);
 
         public long MagicDefense => BaseSpirit + BonusSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense) + Buffs.Sum(i => i.Spirit + i.MagicDefense);
 
         public long MagicDefensePercent => EquippedItems().Sum(i => i.MagicDefensePercent) + Buffs.Sum(i => i.MagicDefensePercent);
 
-        public long Dexterity => BaseDexterity + BonusDexterity + EquippedItems().Sum(i => i.Dexterity) + Buffs.Sum(i => i.Dexterity);
+        public long TotalDexterity => BaseDexterity + BonusDexterity + EquippedItems().Sum(i => i.Dexterity) + Buffs.Sum(i => i.Dexterity);
 
-        public long Luck => BaseLuck + BonusLuck + EquippedItems().Sum(i => i.Luck) + Buffs.Sum(i => i.Luck);
+        public long TotalLuck => BaseLuck + BonusLuck + EquippedItems().Sum(i => i.Luck) + Buffs.Sum(i => i.Luck);
 
         public int InventorySize => 6 + EquippedItems().Sum(i => i.InventorySlots);
 

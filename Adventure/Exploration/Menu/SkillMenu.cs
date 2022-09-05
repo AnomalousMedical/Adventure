@@ -116,12 +116,12 @@ Def%:  {characterData.CharacterSheet.DefensePercent}
 MDef:  {characterData.CharacterSheet.MagicDefense}
 MDef%: {characterData.CharacterSheet.MagicDefensePercent}
  
-Str: {characterData.CharacterSheet.BaseStrength}
-Mag: {characterData.CharacterSheet.BaseMagic}
-Vit: {characterData.CharacterSheet.BaseVitality}
-Spr: {characterData.CharacterSheet.BaseSpirit}
-Dex: {characterData.CharacterSheet.BaseDexterity}
-Lck: {characterData.CharacterSheet.Luck}
+Str: {characterData.CharacterSheet.TotalStrength}
+Mag: {characterData.CharacterSheet.TotalMagic}
+Vit: {characterData.CharacterSheet.TotalVitality}
+Spr: {characterData.CharacterSheet.TotalSpirit}
+Dex: {characterData.CharacterSheet.TotalDexterity}
+Lck: {characterData.CharacterSheet.TotalLuck}
  ";
 
                 foreach(var item in characterData.CharacterSheet.EquippedItems())

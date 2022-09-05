@@ -14,8 +14,8 @@ namespace RpgMath
         long MagicAttackPercent { get; }
         long MagicDefense { get; }
         long MagicDefensePercent { get; }
-        long Dexterity { get; }
-        long Luck { get; }
+        long TotalDexterity { get; }
+        long TotalLuck { get; }
         bool AllowLuckyEvade { get; }
         long Level { get; }
         long ExtraCritChance { get; }

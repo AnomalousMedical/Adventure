@@ -40,8 +40,8 @@ namespace RpgMath.Tests
             output.WriteLine($"Defense {character.Defense}");
             output.WriteLine($"Magic Defense {character.MagicDefense}");
 
-            output.WriteLine($"Dexterity {character.Dexterity}");
-            output.WriteLine($"Luck {character.Luck}");
+            output.WriteLine($"Dexterity {character.TotalDexterity}");
+            output.WriteLine($"Luck {character.TotalLuck}");
         }
 
         [Fact]
@@ -67,8 +67,8 @@ namespace RpgMath.Tests
             output.WriteLine($"Defense {character.Defense}");
             output.WriteLine($"Magic Defense {character.MagicDefense}");
 
-            output.WriteLine($"Dexterity {character.Dexterity}");
-            output.WriteLine($"Luck {character.Luck}");
+            output.WriteLine($"Dexterity {character.TotalDexterity}");
+            output.WriteLine($"Luck {character.TotalLuck}");
         }
 
         [Fact]
@@ -94,8 +94,8 @@ namespace RpgMath.Tests
             output.WriteLine($"Defense {character.Defense}");
             output.WriteLine($"Magic Defense {character.MagicDefense}");
 
-            output.WriteLine($"Dexterity {character.Dexterity}");
-            output.WriteLine($"Luck {character.Luck}");
+            output.WriteLine($"Dexterity {character.TotalDexterity}");
+            output.WriteLine($"Luck {character.TotalLuck}");
         }
 
         [Fact]
@@ -121,8 +121,8 @@ namespace RpgMath.Tests
             output.WriteLine($"Defense {character.Defense}");
             output.WriteLine($"Magic Defense {character.MagicDefense}");
 
-            output.WriteLine($"Dexterity {character.Dexterity}");
-            output.WriteLine($"Luck {character.Luck}");
+            output.WriteLine($"Dexterity {character.TotalDexterity}");
+            output.WriteLine($"Luck {character.TotalLuck}");
         }
     }
 }

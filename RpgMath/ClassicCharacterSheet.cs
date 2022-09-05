@@ -97,9 +97,9 @@ namespace RpgMath
 
         public long BaseDexterity => Archetype.BaseDexterity;
 
-        public long Dexterity => Archetype.BaseDexterity + Archetype.BonusDexterity + EquippedItems().Sum(i => i.Dexterity);
+        public long TotalDexterity => Archetype.BaseDexterity + Archetype.BonusDexterity + EquippedItems().Sum(i => i.Dexterity);
 
-        public long Luck => Archetype.BaseLuck + Archetype.BonusLuck + EquippedItems().Sum(i => i.Luck);
+        public long TotalLuck => Archetype.BaseLuck + Archetype.BonusLuck + EquippedItems().Sum(i => i.Luck);
 
         public long BlockPercent => EquippedItems().Sum(i => i.BlockPercent);
 

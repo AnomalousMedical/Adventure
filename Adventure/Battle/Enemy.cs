@@ -75,7 +75,7 @@ namespace Adventure.Battle
 
             turnTimer.AddTimer(characterTimer);
             characterTimer.TurnReady += CharacterTimer_TurnReady;
-            characterTimer.TotalDex = () => Stats.Dexterity;
+            characterTimer.TotalDex = () => Stats.TotalDexterity;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;

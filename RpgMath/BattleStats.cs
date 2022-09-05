@@ -28,9 +28,9 @@ namespace RpgMath
 
         public long MagicDefensePercent { get; set; }
 
-        public long Dexterity { get; set; }
+        public long TotalDexterity { get; set; }
 
-        public long Luck { get; set; }
+        public long TotalLuck { get; set; }
 
         public bool AllowLuckyEvade { get; set; }
 

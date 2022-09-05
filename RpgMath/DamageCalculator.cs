@@ -14,16 +14,16 @@ namespace RpgMath
 
         public bool PhysicalHit(IBattleStats attacker, IBattleStats target)
         {
-            long hitPct = ((attacker.Dexterity / 4L) + attacker.AttackPercent) + attacker.DefensePercent - target.DefensePercent;
+            long hitPct = ((attacker.TotalDexterity / 4L) + attacker.AttackPercent) + attacker.DefensePercent - target.DefensePercent;
             long luckRoll = (long)random.Next(100);
             //Lucky hit
-            if (luckRoll < attacker.Luck / 4)
+            if (luckRoll < attacker.TotalLuck / 4)
             {
                 hitPct = 255;
             }
             else if (target.AllowLuckyEvade)
             {
-                long evadeChance = target.Luck / 4 - attacker.Luck / 4;
+                long evadeChance = target.TotalLuck / 4 - attacker.TotalLuck / 4;
                 if (luckRoll < evadeChance)
                 {
                     hitPct = 0;
@@ -36,7 +36,7 @@ namespace RpgMath
 
         public bool CriticalHit(IBattleStats attacker, IBattleStats target)
         {
-            long critPct = (attacker.Luck + attacker.Level - target.Level) / 4 + attacker.ExtraCritChance;
+            long critPct = (attacker.TotalLuck + attacker.Level - target.Level) / 4 + attacker.ExtraCritChance;
             var rand = (long)random.Next(65536) * 99 / 65535 + 1;
             return rand < critPct;
         }

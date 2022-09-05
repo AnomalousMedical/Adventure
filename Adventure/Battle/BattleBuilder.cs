@@ -50,8 +50,8 @@ namespace Adventure.Battle
                     MagicAttackPercent = curve.GetMagicAttackPercent(level, enemyType),
                     MagicDefensePercent = curve.GetMagicDefensePercent(level, enemyType),
                     MagicDefense = curve.GetMagicDefense(level, enemyType),
-                    Dexterity = curve.GetDexterity(level, enemyType),
-                    Luck = curve.GetLuck(level, enemyType),
+                    TotalDexterity = curve.GetDexterity(level, enemyType),
+                    TotalLuck = curve.GetLuck(level, enemyType),
                     Level = level,
                     Resistances = biomeEnemy.Resistances
                 };
@@ -86,8 +86,8 @@ namespace Adventure.Battle
                         MagicAttackPercent = curve.GetMagicAttackPercent(level, enemyType),
                         MagicDefensePercent = curve.GetMagicDefensePercent(level, enemyType),
                         MagicDefense = curve.GetMagicDefense(level, enemyType),
-                        Dexterity = curve.GetDexterity(level, enemyType),
-                        Luck = curve.GetLuck(level, enemyType),
+                        TotalDexterity = curve.GetDexterity(level, enemyType),
+                        TotalLuck = curve.GetLuck(level, enemyType),
                         Level = level,
                         Resistances = biomeEnemy.Resistances
                     };
