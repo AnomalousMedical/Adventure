@@ -539,7 +539,7 @@ namespace Adventure
         private void OnMainHandModified(CharacterSheet obj)
         {
             mainHandItem?.RequestDestruction();
-            mainHandHand?.RequestDestruction();
+            mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
                 mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
@@ -550,16 +550,25 @@ namespace Adventure
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+
             if (characterSheet.MainHand?.ShowHand != false)
             {
-                mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                if (mainHandHand == null)
                 {
-                    o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                    mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                     {
-                        BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
-                    };
-                    o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
-                });
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if(mainHandHand != null)
+            {
+                mainHandHand.RequestDestruction();
+                mainHandHand = null;
             }
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
@@ -568,7 +577,7 @@ namespace Adventure
         private void OnOffHandModified(CharacterSheet obj)
         {
             offHandItem?.RequestDestruction();
-            offHandHand?.RequestDestruction();
+            offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
                 offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
@@ -579,16 +588,25 @@ namespace Adventure
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
             }
+
             if (characterSheet.OffHand?.ShowHand != false)
             {
-                offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                if (offHandHand == null)
                 {
-                    o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                    offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
                     {
-                        BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
-                    };
-                    o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
-                });
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if(offHandHand != null)
+            {
+                offHandHand.RequestDestruction();
+                offHandHand = null;
             }
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
