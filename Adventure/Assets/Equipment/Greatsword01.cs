@@ -39,7 +39,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(6, 25, 0, 32, 32), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(7, 24, 0, 32, 32), //Center of grip
                     }
                 } )
             },
