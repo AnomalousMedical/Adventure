@@ -15,7 +15,8 @@ namespace Adventure.Battle.Skills
     class Steal : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
-        {            
+        {
+            battleManager.AddDamageNumber(target, "Stealing", Color.White);
             return objectResolver.Resolve<StealEffect>();
         }
 
