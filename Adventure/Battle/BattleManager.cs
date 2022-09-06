@@ -54,7 +54,7 @@ namespace Adventure.Battle
 
         void HandleDeath(IBattleTarget target);
 
-        public void AddDamageNumber(IBattleTarget target, long damage);
+        public void AddDamageNumber(IBattleTarget target, long damage, bool isCritical = false);
 
         public void AddDamageNumber(IBattleTarget target, String damage, Color color);
 
@@ -550,12 +550,19 @@ namespace Adventure.Battle
                     }
                 }
 
+                bool isCritical = false;
                 if (randomizeDamage)
                 {
                     damage = damageCalculator.RandomVariation(damage);
+
+                    isCritical = damageCalculator.CriticalHit(attacker.Stats, target.Stats);
+                    if (isCritical)
+                    {
+                        damage *= 2;
+                    }
                 }
 
-                AddDamageNumber(target, damage);
+                AddDamageNumber(target, damage, isCritical);
                 target.ApplyDamage(damageCalculator, damage);
                 if (!isCounter && !target.IsDead)
                 {
@@ -607,12 +614,12 @@ namespace Adventure.Battle
             return Enumerable.Empty<IBattleTarget>();
         }
 
-        public void AddDamageNumber(IBattleTarget target, long damage)
+        public void AddDamageNumber(IBattleTarget target, long damage, bool isCritical = false)
         {
-            var color = Color.White;
+            var color = isCritical ? Color.Yellow : Color.White;
             if(damage < 0)
             {
-                color = Color.Green;
+                color = isCritical ? Color.LightBlue : Color.Green;
                 damage *= -1;
             }
             AddDamageNumber(target, damage.ToString(), color);
