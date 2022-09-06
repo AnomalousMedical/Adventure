@@ -62,10 +62,6 @@ namespace Adventure.Services
 
         public IntVector2 Location { get; set; }
 
-        public bool PlaceTreasure { get; set; } = true;
-
-        public int TreasureLevel { get; set; } = 3;
-
         public PlotItems? PlotItem { get; set; }
 
         public Element EnemyWeakElement { get; set; } = Element.None;
@@ -128,31 +124,13 @@ namespace Adventure.Services
             regularMonsters = biomeMonsters;
             bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
 
-            if (PlaceTreasure) 
-            { 
-                o.Treasure = new List<ITreasure>(
-                    Treasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
-                    ?? Enumerable.Empty<ITreasure>())
-                {
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateHealthPotion(TreasureLevel)),
-                };
+            o.Treasure = Treasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
+            o.StealTreasure = StealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
+            o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
 
-                o.StealTreasure = new List<ITreasure>(
-                    StealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex)
-                    ?? Enumerable.Empty<ITreasure>())
-                {
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel)),
-                    new Treasure(worldDatabase.PotionCreator.CreateManaPotion(TreasureLevel))
-                };
-
-                o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
-
-                if (o.MakeBoss) //This assumes 1 boss per area
-                {
-                    o.BossUniqueStealTreasure = BossUniqueStealTreasure;
-                }
+            if (o.MakeBoss) //This assumes 1 boss per area
+            {
+                o.BossUniqueStealTreasure = BossUniqueStealTreasure;
             }
 
             if (EnemyWeakElement != Element.None && EnemyStrongElement != Element.None && EnemyWeakElement == EnemyStrongElement)
