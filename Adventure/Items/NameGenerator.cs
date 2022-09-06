@@ -68,7 +68,11 @@ namespace Adventure.Items
 
         public NameResult GetBookLevelName(int level)
         {
-            if (level < SpellLevels.LittleBookOf)
+            if (level < SpellLevels.TatteredBookOf)
+            {
+                return new NameResult("Tattered Book of", 1, 100);
+            }
+            else if (level < SpellLevels.LittleBookOf)
             {
                 return new NameResult("Little Book of", 1, 100);
             }

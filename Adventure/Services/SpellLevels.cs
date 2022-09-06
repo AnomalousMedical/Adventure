@@ -15,6 +15,7 @@ namespace Adventure
         public const int MegaCure = 40;
         public const int UltraCure = 70;
 
+        public const int TatteredBookOf = 10;
         public const int LittleBookOf = 40;
         public const int BookOf = 70;
 
