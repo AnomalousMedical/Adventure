@@ -187,7 +187,6 @@ namespace Adventure
         private bool makeGate;
         private int enemyLevel;
         private int maxMainCorridorBattles;
-        private bool startEnd;
         private IEnumerable<ITreasure> treasure;
         private bool connectPreviousToWorld;
         private bool connectNextToWorld;
@@ -200,7 +199,7 @@ namespace Adventure
         private Vector3 startPointLocal;
         private Vector3 currentPosition;
 
-        public Vector3 PlayerEntryPoint => startEnd ? EndPoint : StartPoint;
+        public bool StartEnd { get; init; }
 
         public Vector3 StartPoint => startPointLocal + currentPosition;
         public Vector3 EndPoint => endPointLocal + currentPosition;
@@ -236,7 +235,7 @@ namespace Adventure
             this.plotItem = description.PlotItem;
             this.connectPreviousToWorld = description.ConnectPreviousToWorld;
             this.connectNextToWorld = description.ConnectNextToWorld;
-            this.startEnd = description.StartEnd;
+            this.StartEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
             this.index = description.Index;

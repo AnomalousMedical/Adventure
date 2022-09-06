@@ -162,7 +162,7 @@ namespace Adventure
 
             foreach(var player in players)
             {
-                player?.RestorePersistedLocation(currentZone.PlayerEntryPoint);
+                player?.RestorePersistedLocation(currentZone.StartPoint, currentZone.EndPoint, currentZone.StartEnd);
                 player?.CenterCamera();
             }
 

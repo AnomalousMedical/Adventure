@@ -120,6 +120,8 @@ namespace Adventure.Services
             public long LootDropGold { get; set; }
 
             public bool InAirship { get; set; }
+
+            public bool Started { get; set; }
         }
 
         public class TimeData

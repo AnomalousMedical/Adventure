@@ -394,15 +394,24 @@ namespace Adventure
 
         /// <summary>
         /// Restoring the location from persistence is a special case.
-        /// If there is nothing in the persistence the safetyPosition is used.
+        /// If there is nothing in the persistence the safetyPosition is used either from
+        /// the front or the end position. If the player has never started the game before
+        /// they will be forced to the start position.
         /// </summary>
-        /// <param name="safetyPosition"></param>
-        public void RestorePersistedLocation(in Vector3 safetyPosition)
+        public void RestorePersistedLocation(in Vector3 startSafetyPosition, in Vector3 endSafetyPosition, bool startEnd)
         {
             var location = persistence.Current.Player.Position;
             if (location == null)
             {
-                SetLocation(safetyPosition);
+                if (persistence.Current.Player.Started)
+                {
+                    SetLocation(startEnd ? endSafetyPosition : startSafetyPosition);
+                }
+                else
+                {
+                    SetLocation(startSafetyPosition);
+                    persistence.Current.Player.Started = true;
+                }
             }
             else
             {
