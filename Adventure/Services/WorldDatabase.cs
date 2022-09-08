@@ -272,9 +272,10 @@ namespace Adventure.Services
                 phase0UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel)));
                 phase0UniqueTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel)));
 
-                //Change some of these to the other armor types
-                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase0TreasureLevel)));
-                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase0TreasureLevel)));
+                phase0UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase0TreasureLevel)));
 
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 0;
@@ -302,10 +303,10 @@ namespace Adventure.Services
                 phase1UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel)));
                 phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1EndWeakElement).CreateNormal(phase1TreasureLevel)));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase1TreasureLevel)));
-                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase1TreasureLevel)));
-                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase1TreasureLevel)));
-                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase1TreasureLevel)));
+                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel)));
+                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel)));
+                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel)));
+                phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel)));
 
                 var phase1UniqueStolenTreasures = new List<Treasure>();
                 phase1UniqueStolenTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1BonusWeakElement).CreateNormal(phase1TreasureLevel)));
@@ -478,10 +479,10 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase2EndWeakElement).CreateNormal(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
-                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
-                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
-                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase2TreasureLevel)));
+                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel)));
+                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel)));
+                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel)));
+                phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateReanimation(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateCounterAttack()));
 
@@ -707,10 +708,10 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase3EndWeakElement).CreateNormal(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase3TreasureLevel)));
-                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase3TreasureLevel)));
-                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase3TreasureLevel)));
-                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateNormal(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateReanimation(phase3TreasureLevel)));
 
                 var phase3UniqueStolenTreasures = new List<Treasure>();
