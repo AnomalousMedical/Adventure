@@ -361,6 +361,7 @@ namespace Adventure.Battle
         private bool UpdateRootMenu(ISharpGui sharpGui, bool didSomething)
         {
             battleScreenLayout.LayoutBattleMenu(attackButton, skillsButton, itemButton, defendButton);
+            attackButton.Text = characterSheet.AtPowerMax ? "Catalyze" : "Attack";
 
             if (sharpGui.Button(attackButton, gamepadId, navUp: defendButton.Id, navDown: skillsButton.Id))
             {
@@ -369,7 +370,15 @@ namespace Adventure.Battle
                     var target = await battleManager.GetTarget(false);
                     if (target != null)
                     {
-                        Melee(target, attack, false, true);
+                        if (characterSheet.AtPowerMax)
+                        {
+                            characterSheet.PowerGauge = 0;
+                            Melee(target, attack, true, true);
+                        }
+                        else
+                        {
+                            Melee(target, attack, false, true);
+                        }
                     }
                 });
                 didSomething = true;
