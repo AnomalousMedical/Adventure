@@ -57,7 +57,7 @@ namespace Adventure.Battle.Skills
 
         public void Update(Clock clock)
         {
-            battleManager.Attack(attacker, target, isCounter);
+            battleManager.Attack(attacker, target, isCounter, target.TryBlock());
             Finished = true;
         }
     }

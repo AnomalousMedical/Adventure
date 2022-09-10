@@ -122,7 +122,7 @@ namespace Adventure.Battle
             IBattleTarget guard = null;
             bool findGuard = true;
             bool blockSpamPrevention = true;
-            bool block = false;
+            bool blocked = false;
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -156,23 +156,14 @@ namespace Adventure.Battle
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
                     if (target.TryBlock())
                     {
-                        if (block)
+                        if (blocked)
                         {
-                            block = false;
+                            blocked = false;
                             blockSpamPrevention = false;
-                            battleManager.AddDamageNumber(target, "Block Spam", Engine.Color.White);
                         }
                         else
                         {
-                            block = blockSpamPrevention;
-                            if (block)
-                            {
-                                battleManager.AddDamageNumber(target, "Block", Engine.Color.White);
-                            }
-                            else
-                            {
-                                battleManager.AddDamageNumber(target, "Block Spam", Engine.Color.White);
-                            }
+                            blocked = blockSpamPrevention;
                         }
                     }
                 }
@@ -187,7 +178,7 @@ namespace Adventure.Battle
                     if (needsAttack && remainingTime < swingTime)
                     {
                         needsAttack = false;
-                        battleManager.Attack(this, target, false);
+                        battleManager.Attack(this, target, false, blocked);
                     }
                 }
                 else
