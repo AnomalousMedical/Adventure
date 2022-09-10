@@ -178,7 +178,7 @@ namespace RpgMath
             return rand < hitPct;
         }
 
-        public long LimitGain(IBattleStats target, long damage)
+        public long PowerGaugeGain(IBattleStats target, long damage)
         {
             if(damage < 1)
             {

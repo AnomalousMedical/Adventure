@@ -5,12 +5,12 @@ using Xunit.Abstractions;
 
 namespace RpgMath.Tests
 {
-    public class LimitTests
+    public class PowerGaugeTests
     {
 
         private readonly ITestOutputHelper output;
 
-        public LimitTests(ITestOutputHelper output)
+        public PowerGaugeTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -21,7 +21,7 @@ namespace RpgMath.Tests
         public void PhysicalDamageEqualLevel(long damage)
         {
             var calc = new DamageCalculator();
-            var result = calc.LimitGain(Characters.level10, damage);
+            var result = calc.PowerGaugeGain(Characters.level10, damage);
             output.WriteLine(result.ToString());
         }
     }

@@ -317,11 +317,11 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance) + Buffs.Sum(i => i.CritChance);
 
-        public long Limit { get; set; }
+        public long PowerGauge { get; set; }
 
-        public float LimitPct => Math.Min(Limit / 255f, 1.0f);
+        public float PowerGaugePct => Math.Min(PowerGauge / 255f, 1.0f);
 
-        public bool AtLimit => Limit >= 255;
+        public bool AtPowerMax => PowerGauge >= 255;
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
 

@@ -52,7 +52,7 @@ namespace Adventure.Battle
         private SharpButton defendButton = new SharpButton() { Text = "Defend" };
 
         private SharpProgressHorizontal turnProgress = new SharpProgressHorizontal();
-        private SharpProgressHorizontal limitProgress = new SharpProgressHorizontal();
+        private SharpProgressHorizontal powerProgress = new SharpProgressHorizontal();
         private SharpText name = new SharpText() { Color = Color.White };
         private SharpText currentHp = new SharpText() { Color = Color.White };
         private SharpText currentMp = new SharpText() { Color = Color.White };
@@ -164,12 +164,12 @@ namespace Adventure.Battle
             UpdateSkills();
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
-            limitProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
+            powerProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
                 new FixedWidthLayout(scaleHelper.Scaled(240), name),
                 new FixedWidthLayout(scaleHelper.Scaled(165), currentHp),
                 new FixedWidthLayout(scaleHelper.Scaled(125), currentMp),
-                new FixedWidthLayout(scaleHelper.Scaled(210), limitProgress),
+                new FixedWidthLayout(scaleHelper.Scaled(210), powerProgress),
                 new FixedWidthLayout(scaleHelper.Scaled(210), turnProgress));
             battleScreenLayout.InfoColumn.Add(infoRowLayout);
 
@@ -301,7 +301,7 @@ namespace Adventure.Battle
             sharpGui.Text(currentHp);
             sharpGui.Text(currentMp);
             sharpGui.Progress(turnProgress, characterTimer.TurnTimerPct);
-            sharpGui.Progress(limitProgress, characterSheet.LimitPct);
+            sharpGui.Progress(powerProgress, characterSheet.PowerGaugePct);
         }
 
         public enum MenuMode
@@ -815,12 +815,12 @@ namespace Adventure.Battle
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
-            characterSheet.Limit += calculator.LimitGain(characterSheet, damage);
+            characterSheet.PowerGauge += calculator.PowerGaugeGain(characterSheet, damage);
 
             //Player died from applied damage
             if (IsDead)
             {
-                characterSheet.Limit = 0;
+                characterSheet.PowerGauge = 0;
                 battleManager.PlayerDead(this);
                 characterTimer.TurnTimerActive = false;
                 characterTimer.Reset();

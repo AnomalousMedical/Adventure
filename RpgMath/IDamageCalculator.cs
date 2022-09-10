@@ -13,6 +13,6 @@
         long Physical(IBattleStats attacker, IBattleStats target, long power);
         bool PhysicalHit(IBattleStats attacker, IBattleStats target);
         long RandomVariation(long damage);
-        long LimitGain(IBattleStats target, long damage);
+        long PowerGaugeGain(IBattleStats target, long damage);
     }
 }
