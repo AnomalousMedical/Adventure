@@ -48,6 +48,8 @@ namespace RpgMath
 
         public bool ShowHand { get; set; } = true;
 
+        public bool AllowActiveBlock { get; set; }
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

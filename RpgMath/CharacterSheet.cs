@@ -273,6 +273,8 @@ namespace RpgMath
             }
         }
 
+        public bool CanBlock => OffHand?.AllowActiveBlock == true || MainHand?.AllowActiveBlock == true || Accessory?.AllowActiveBlock == true || Body?.AllowActiveBlock == true;
+
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }
