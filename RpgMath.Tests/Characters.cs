@@ -20,7 +20,7 @@ namespace RpgMath.Tests
             TotalDexterity = 13,
             TotalLuck = 19,
             Level = 10,
-            BlockPercent = 60,
+            GuardPercent = 60,
         };
 
         public static readonly IBattleStats level20 = new BattleStats()
@@ -36,7 +36,7 @@ namespace RpgMath.Tests
             TotalDexterity = 22,
             TotalLuck = 20,
             Level = 20,
-            BlockPercent = 60,
+            GuardPercent = 60,
         };
 
         public static readonly IBattleStats level30 = new BattleStats()
@@ -52,7 +52,7 @@ namespace RpgMath.Tests
             TotalDexterity = 30,
             TotalLuck = 21,
             Level = 30,
-            BlockPercent = 60,
+            GuardPercent = 60,
         };
 
         public static readonly IBattleStats level40 = new BattleStats()
@@ -68,7 +68,7 @@ namespace RpgMath.Tests
             TotalDexterity = 38,
             TotalLuck = 22,
             Level = 40,
-            BlockPercent = 80,
+            GuardPercent = 80,
         };
 
         public static readonly IBattleStats level50 = new BattleStats()
@@ -84,7 +84,7 @@ namespace RpgMath.Tests
             TotalDexterity = 46,
             TotalLuck = 23,
             Level = 50,
-            BlockPercent = 80,
+            GuardPercent = 80,
         };
 
         public static readonly IBattleStats level60 = new BattleStats()
@@ -100,7 +100,7 @@ namespace RpgMath.Tests
             TotalDexterity = 51,
             TotalLuck = 23,
             Level = 60,
-            BlockPercent = 80,
+            GuardPercent = 80,
         };
 
         public static readonly IBattleStats level70 = new BattleStats()
@@ -116,7 +116,7 @@ namespace RpgMath.Tests
             TotalDexterity = 53,
             TotalLuck = 24,
             Level = 70,
-            BlockPercent = 100,
+            GuardPercent = 100,
         };
 
         public static readonly IBattleStats level80 = new BattleStats()
@@ -132,7 +132,7 @@ namespace RpgMath.Tests
             TotalDexterity = 55,
             TotalLuck = 25,
             Level = 80,
-            BlockPercent = 100,
+            GuardPercent = 100,
         };
 
         public static readonly IBattleStats level90 = new BattleStats()
@@ -148,7 +148,7 @@ namespace RpgMath.Tests
             TotalDexterity = 57,
             TotalLuck = 26,
             Level = 90,
-            BlockPercent = 100,
+            GuardPercent = 100,
         };
 
         public static readonly IBattleStats level99 = new BattleStats()
@@ -164,7 +164,7 @@ namespace RpgMath.Tests
             TotalDexterity = 59,
             TotalLuck = 26,
             Level = 99,
-            BlockPercent = 100,
+            GuardPercent = 100,
         };
     }
 }

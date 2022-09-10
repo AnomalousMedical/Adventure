@@ -32,7 +32,7 @@ namespace Adventure.Battle
 
         void TakeMp(long mp);
 
-        void MoveToBlock(in Vector3 position);
+        void MoveToGuard(in Vector3 position);
         
         void MoveToStart();
 

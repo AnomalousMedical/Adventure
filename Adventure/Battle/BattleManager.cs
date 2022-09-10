@@ -70,7 +70,7 @@ namespace Adventure.Battle
         public IEnumerable<ITreasure> Steal();
         IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target);
         BattlePlayer GetActivePlayer();
-        IBattleTarget GetBlocker(IBattleTarget attacker, IBattleTarget target);
+        IBattleTarget GetGuard(IBattleTarget attacker, IBattleTarget target);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -111,7 +111,7 @@ namespace Adventure.Battle
         private String backgroundMusic;
         private Func<IEnumerable<ITreasure>> stealCb;
 
-        private readonly List<IBattleTarget> blockingPlayers = new List<IBattleTarget>();
+        private readonly List<IBattleTarget> guardingPlayers = new List<IBattleTarget>();
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
@@ -504,27 +504,27 @@ namespace Adventure.Battle
             return false;
         }
 
-        public IBattleTarget GetBlocker(IBattleTarget attacker, IBattleTarget target)
+        public IBattleTarget GetGuard(IBattleTarget attacker, IBattleTarget target)
         {
-            IBattleTarget blocker = null;
-            var blockers = Enumerable.Empty<IBattleTarget>();
+            IBattleTarget guard = null;
+            var guards = Enumerable.Empty<IBattleTarget>();
             switch (target.BattleTargetType)
             {
                 case BattleTargetType.Enemy:
                     break;
                 case BattleTargetType.Player:
-                    blockers = blockingPlayers;
+                    guards = guardingPlayers;
                     break;
             }
 
-            if (!blockers.Contains(target))
+            if (!guards.Contains(target))
             {
-                blocker = blockers
-                    .Where(i => damageCalculator.Block(attacker.Stats, i.Stats))
+                guard = guards
+                    .Where(i => damageCalculator.Guard(attacker.Stats, i.Stats))
                     .FirstOrDefault();
             }
 
-            return blocker;
+            return guard;
         }
 
         public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter)
@@ -594,7 +594,7 @@ namespace Adventure.Battle
                 }
                 else if (target.BattleTargetType == BattleTargetType.Player)
                 {
-                    blockingPlayers.Remove(target);
+                    guardingPlayers.Remove(target);
                 }
             }
         }
@@ -688,7 +688,7 @@ namespace Adventure.Battle
             cursor.Cancel();
             turnQueue.Clear();
             activePlayers.Clear();
-            blockingPlayers.Clear();
+            guardingPlayers.Clear();
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;
@@ -703,13 +703,13 @@ namespace Adventure.Battle
             switch (blocker.BattleTargetType)
             {
                 case BattleTargetType.Player:
-                    if (blockingPlayers.Contains(blocker))
+                    if (guardingPlayers.Contains(blocker))
                     {
-                        blockingPlayers.Remove(blocker);
+                        guardingPlayers.Remove(blocker);
                     }
                     else
                     {
-                        blockingPlayers.Add(blocker);
+                        guardingPlayers.Add(blocker);
                     }
                     break;
                 case BattleTargetType.Enemy:

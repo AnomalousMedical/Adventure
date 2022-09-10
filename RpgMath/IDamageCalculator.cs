@@ -4,7 +4,7 @@
     {
         long ApplyDamage(long damage, long currentHp, long maxHp);
         long ApplyResistance(long damage, Resistance resistance);
-        bool Block(IBattleStats attacker, IBattleStats blocker);
+        bool Guard(IBattleStats attacker, IBattleStats blocker);
         bool CriticalHit(IBattleStats attacker, IBattleStats target);
         long Cure(IBattleStats caster, long power);
         long Item(IBattleStats target, long power);

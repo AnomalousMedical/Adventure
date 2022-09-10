@@ -867,7 +867,7 @@ namespace Adventure.Battle
             currentMp.UpdateText(GetCurrentMpText());
         }
 
-        public void MoveToBlock(in Vector3 position)
+        public void MoveToGuard(in Vector3 position)
         {
             this.currentPosition = position;
             Sprite_FrameChanged(sprite);

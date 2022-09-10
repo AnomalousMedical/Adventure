@@ -40,7 +40,8 @@ namespace Adventure.Items.Creators
                 MagicDefense = equipmentCurve.GetMDefense(name.Level),
                 Sprite = nameof(ShieldOfReflection),
                 Skills = new[] { "Block" },
-                BlockPercent = 80,
+                GuardPercent = 80,
+                AllowActiveBlock = true,
                 ShowHand = false,
             };
 

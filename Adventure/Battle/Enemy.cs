@@ -119,8 +119,8 @@ namespace Adventure.Battle
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
             var target = battleManager.GetRandomPlayer();
-            IBattleTarget blocker = null;
-            bool findBlocker = true;
+            IBattleTarget guard = null;
+            bool findGuard = true;
             bool blockSpamPrevention = true;
             bool block = false;
             battleManager.QueueTurn(c =>
@@ -136,14 +136,14 @@ namespace Adventure.Battle
                 Vector3 end;
                 float interpolate;
 
-                if (findBlocker)
+                if (findGuard)
                 {
-                    findBlocker = false;
-                    blocker = battleManager.GetBlocker(this, target);
-                    if (blocker != null)
+                    findGuard = false;
+                    guard = battleManager.GetGuard(this, target);
+                    if (guard != null)
                     {
-                        blocker.MoveToBlock(target.MeleeAttackLocation);
-                        target = blocker;
+                        guard.MoveToGuard(target.MeleeAttackLocation);
+                        target = guard;
                     }
                 }
 
@@ -207,7 +207,7 @@ namespace Adventure.Battle
                 {
                     sprite.SetAnimation("stand-left");
                     TurnComplete();
-                    blocker?.MoveToStart();
+                    guard?.MoveToStart();
                     done = true;
                 }
 
@@ -276,7 +276,7 @@ namespace Adventure.Battle
             }
         }
 
-        public void MoveToBlock(in Vector3 position)
+        public void MoveToGuard(in Vector3 position)
         {
             this.currentPosition = position;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);

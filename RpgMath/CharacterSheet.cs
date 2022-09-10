@@ -309,7 +309,7 @@ namespace RpgMath
 
         public int InventorySize => 6 + EquippedItems().Sum(i => i.InventorySlots);
 
-        public long BlockPercent => EquippedItems().Sum(i => i.BlockPercent);
+        public long GuardPercent => EquippedItems().Sum(i => i.GuardPercent);
 
         public bool AllowLuckyEvade => true;
 

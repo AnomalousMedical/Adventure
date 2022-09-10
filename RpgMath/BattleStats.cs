@@ -38,7 +38,7 @@ namespace RpgMath
 
         public long ExtraCritChance { get; set; }
 
-        public long BlockPercent { get; set; }
+        public long GuardPercent { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; } = Enumerable.Empty<Element>();
 
