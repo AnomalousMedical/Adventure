@@ -63,6 +63,7 @@ namespace Adventure.Battle
         private readonly ILevelCalculator levelCalculator;
         private readonly IAssetFactory assetFactory;
         private readonly ISkillFactory skillFactory;
+        private readonly EventManager eventManager;
 
         public IBattleStats Stats => this.characterSheet;
 
@@ -95,6 +96,9 @@ namespace Adventure.Battle
         private static readonly Skills.Attack attack = new Skills.Attack();
         private static readonly Skills.CounterAttack counterAttack = new Skills.CounterAttack();
 
+        ButtonEvent contextTriggerKeyboard;
+        ButtonEvent contextTriggerJoystick;
+
         public class Description : SceneObjectDesc
         {
             public int PrimaryHand = Player.RightHand;
@@ -124,8 +128,14 @@ namespace Adventure.Battle
             IXpCalculator xpCalculator,
             ILevelCalculator levelCalculator,
             IAssetFactory assetFactory,
-            ISkillFactory skillFactory)
+            ISkillFactory skillFactory,
+            EventManager eventManager)
         {
+            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_LCONTROL });
+            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new [] { GamepadButtonCode.XInput_RTrigger });
+            eventManager.addEvent(contextTriggerKeyboard);
+            eventManager.addEvent(contextTriggerJoystick);
+
             this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
             this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -135,6 +145,7 @@ namespace Adventure.Battle
             this.levelCalculator = levelCalculator;
             this.assetFactory = assetFactory;
             this.skillFactory = skillFactory;
+            this.eventManager = eventManager;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.destructionRequest = destructionRequest;
@@ -249,6 +260,9 @@ namespace Adventure.Battle
         {
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
+
+            eventManager.removeEvent(contextTriggerKeyboard);
+            eventManager.removeEvent(contextTriggerJoystick);
 
             turnTimer.RemoveTimer(characterTimer);
             battleScreenLayout.InfoColumn.Remove(infoRowLayout);
@@ -959,6 +973,11 @@ namespace Adventure.Battle
         {
             this.skills.Clear();
             this.skills.AddRange(characterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
+        }
+
+        public bool TryBlock()
+        {
+            return contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown;
         }
     }
 }

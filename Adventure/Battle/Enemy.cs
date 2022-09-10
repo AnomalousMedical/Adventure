@@ -121,6 +121,8 @@ namespace Adventure.Battle
             var target = battleManager.GetRandomPlayer();
             IBattleTarget blocker = null;
             bool findBlocker = true;
+            bool blockSpamPrevention = true;
+            bool block = false;
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -152,6 +154,27 @@ namespace Adventure.Battle
                     start = this.startPosition;
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                    if (target.TryBlock())
+                    {
+                        if (block)
+                        {
+                            block = false;
+                            blockSpamPrevention = false;
+                            battleManager.AddDamageNumber(target, "Block Spam", Engine.Color.White);
+                        }
+                        else
+                        {
+                            block = blockSpamPrevention;
+                            if (block)
+                            {
+                                battleManager.AddDamageNumber(target, "Block", Engine.Color.White);
+                            }
+                            else
+                            {
+                                battleManager.AddDamageNumber(target, "Block Spam", Engine.Color.White);
+                            }
+                        }
+                    }
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -280,6 +303,11 @@ namespace Adventure.Battle
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
+        }
+
+        public bool TryBlock()
+        {
+            return false;
         }
     }
 }
