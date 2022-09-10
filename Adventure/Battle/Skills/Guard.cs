@@ -12,15 +12,15 @@ using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
-    class Block : ISkill
+    class Guard : ISkill
     {
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             battleManager.ChangeBlockingStatus(attacker);
-            return objectResolver.Resolve<BlockEffect>();
+            return objectResolver.Resolve<GuardEffect>();
         }
 
-        public string Name => "Block";
+        public string Name => "Guard";
 
         public bool NeedsTarget => false;
 
@@ -29,9 +29,9 @@ namespace Adventure.Battle.Skills
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }
 
-    class BlockEffect : ISkillEffect
+    class GuardEffect : ISkillEffect
     {
-        public BlockEffect()
+        public GuardEffect()
         {
         }
 

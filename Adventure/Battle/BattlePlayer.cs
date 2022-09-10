@@ -131,7 +131,7 @@ namespace Adventure.Battle
             ISkillFactory skillFactory,
             EventManager eventManager)
         {
-            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_LCONTROL });
+            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_SPACE });
             this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new [] { GamepadButtonCode.XInput_RTrigger });
             eventManager.addEvent(contextTriggerKeyboard);
             eventManager.addEvent(contextTriggerJoystick);

@@ -153,7 +153,7 @@ namespace Adventure
             services.AddScoped<BattleItemMenu>();
             services.AddScoped<StealEffect>();
             services.AddScoped<AttackEffect>();
-            services.AddScoped<BlockEffect>();
+            services.AddScoped<GuardEffect>();
             services.AddSingleton<TreasureMenu>();
             services.AddSingleton<LightManager>();
             services.AddSingleton<IZoneManager, ZoneManager>();
