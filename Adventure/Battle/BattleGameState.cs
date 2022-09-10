@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Items.Creators;
+using Adventure.Services;
 
 namespace Adventure.Battle
 {
@@ -26,6 +27,8 @@ namespace Adventure.Battle
         private readonly Party party;
         private readonly PotionCreator potionCreator;
         private readonly EventManager eventManager;
+        private readonly IPersistenceWriter persistenceWriter;
+        private readonly object saveBlock = new object();
         private IGameState gameOverState;
         private IGameState returnState;
         private BattleTrigger battleTrigger;
@@ -37,7 +40,8 @@ namespace Adventure.Battle
             RTInstances<IBattleManager> rtInstances,
             Party party,
             PotionCreator potionCreator,
-            EventManager eventManager
+            EventManager eventManager,
+            IPersistenceWriter persistenceWriter
         )
         {
             this.battleManager = battleManager;
@@ -45,6 +49,7 @@ namespace Adventure.Battle
             this.party = party;
             this.potionCreator = potionCreator;
             this.eventManager = eventManager;
+            this.persistenceWriter = persistenceWriter;
         }
 
         public RTInstances Instances => rtInstances;
@@ -64,6 +69,7 @@ namespace Adventure.Battle
         {
             if (active)
             {
+                persistenceWriter.AddSaveBlock(saveBlock);
                 eventManager[EventLayers.Battle].makeFocusLayer();
                 int battleSeed;
                 int level;
@@ -103,6 +109,11 @@ namespace Adventure.Battle
                 }
 
                 battleManager.SetupBattle(battleSeed, level, boss, stealCb, triggerEnemy);
+            }
+            else
+            {
+                persistenceWriter.RemoveSaveBlock(saveBlock);
+                persistenceWriter.Save();
             }
             battleManager.SetActive(active);
         }

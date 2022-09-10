@@ -49,7 +49,6 @@ namespace Adventure
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
         private readonly Persistence persistence;
-        private readonly IPersistenceWriter persistenceWriter;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -78,8 +77,7 @@ namespace Adventure
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IExplorationGameState explorationGameState,
-            Persistence persistence,
-            IPersistenceWriter persistenceWriter)
+            Persistence persistence)
         {
             state = GetState(description, persistence);
 
@@ -95,7 +93,6 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.explorationGameState = explorationGameState;
             this.persistence = persistence;
-            this.persistenceWriter = persistenceWriter;
             this.mapOffset = description.MapOffset;
             this.TriggerEnemy = description.TriggerEnemy;
 
@@ -134,7 +131,6 @@ namespace Adventure
 
             state.Dead = true;
             SetState(description, persistence, state);
-            persistenceWriter.Save();
             DestroyPhysics();
             RemoveGraphics();
         }
