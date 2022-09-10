@@ -78,7 +78,7 @@ namespace Adventure.Battle.Skills
             damage = battleManager.DamageCalculator.RandomVariation(damage);
 
             battleManager.AddDamageNumber(target, damage);
-            target.ApplyDamage(battleManager.DamageCalculator, damage);
+            target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
         }
 
         public string Name { get; }

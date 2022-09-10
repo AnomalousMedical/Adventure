@@ -23,7 +23,7 @@ namespace Adventure.Battle
         bool Active { get; }
 
         void AddToActivePlayers(BattlePlayer player);
-        void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked);
+        void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool isPower);
         void ChangeBlockingStatus(IBattleTarget blocker);
         Task<IBattleTarget> GetTarget(bool targetPlayers);
 
@@ -527,7 +527,7 @@ namespace Adventure.Battle
             return guard;
         }
 
-        public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked)
+        public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool isPower)
         {
             target = ValidateTarget(attacker, target);
 
@@ -564,10 +564,14 @@ namespace Adventure.Battle
                     {
                         damage /= 2;
                     }
+                    if (isPower)
+                    {
+                        damage *= 2;
+                    }
                 }
 
                 AddDamageNumber(target, damage, isCritical);
-                target.ApplyDamage(damageCalculator, damage);
+                target.ApplyDamage(attacker, damageCalculator, damage);
                 if (!isCounter && !target.IsDead)
                 {
                     target.AttemptMeleeCounter(attacker);

@@ -178,7 +178,7 @@ namespace Adventure.Battle
                     if (needsAttack && remainingTime < swingTime)
                     {
                         needsAttack = false;
-                        battleManager.Attack(this, target, false, blocked);
+                        battleManager.Attack(this, target, false, blocked, false);
                     }
                 }
                 else
@@ -239,7 +239,7 @@ namespace Adventure.Battle
             rtInstances.RemoveTlasBuild(tlasData);
         }
 
-        public void ApplyDamage(IDamageCalculator calculator, long damage)
+        public void ApplyDamage(IBattleTarget attacker, IDamageCalculator calculator, long damage)
         {
             currentHp = calculator.ApplyDamage(damage, currentHp, Stats.Hp);
         }

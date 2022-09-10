@@ -63,7 +63,7 @@ namespace Adventure.Battle.Skills
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
             
             battleManager.AddDamageNumber(target, damage);
-            target.ApplyDamage(battleManager.DamageCalculator, damage);
+            target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
             var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>

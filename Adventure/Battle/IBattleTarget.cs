@@ -22,7 +22,7 @@ namespace Adventure.Battle
 
         public void RequestDestruction();
 
-        public void ApplyDamage(IDamageCalculator calculator, long damage);
+        public void ApplyDamage(IBattleTarget attacker, IDamageCalculator calculator, long damage);
 
         public bool IsDead { get; }
 

@@ -96,6 +96,7 @@ namespace Adventure.Battle
 
         private static readonly Skills.Attack attack = new Skills.Attack();
         private static readonly Skills.CounterAttack counterAttack = new Skills.CounterAttack();
+        private static readonly Skills.PowerAttack powerAttack = new Skills.PowerAttack();
 
         ButtonEvent contextTriggerKeyboard;
         ButtonEvent contextTriggerJoystick;
@@ -373,7 +374,7 @@ namespace Adventure.Battle
                         if (characterSheet.AtPowerMax)
                         {
                             characterSheet.PowerGauge = 0;
-                            Melee(target, attack, true, true);
+                            Melee(target, powerAttack, true, true);
                         }
                         else
                         {
@@ -818,13 +819,16 @@ namespace Adventure.Battle
             }
         }
 
-        public void ApplyDamage(IDamageCalculator calculator, long damage)
+        public void ApplyDamage(IBattleTarget attacker, IDamageCalculator calculator, long damage)
         {
             if (IsDead) { return; } //Do nothing if dead
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
-            characterSheet.PowerGauge += calculator.PowerGaugeGain(characterSheet, damage);
+            if (attacker.BattleTargetType == BattleTargetType.Enemy)
+            {
+                characterSheet.PowerGauge += calculator.PowerGaugeGain(characterSheet, damage);
+            }
 
             //Player died from applied damage
             if (IsDead)
