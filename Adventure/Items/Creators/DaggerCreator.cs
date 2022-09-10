@@ -39,7 +39,8 @@ namespace Adventure.Items.Creators
                 Name = $"{name.Adjective} Dagger",
                 Attack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(DaggerNew),
-                Skills = GetSkills(level)
+                Skills = GetSkills(level),
+                AllowActiveBlock = level > 74
             };
 
             return CreateInventoryItem(sword);

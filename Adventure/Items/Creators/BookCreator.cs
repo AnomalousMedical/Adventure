@@ -34,6 +34,7 @@ namespace Adventure.Items.Creators
                 Sprite = nameof(FancyBook),
                 Skills = GetCureSpells(level),
                 ShowHand = false,
+                AllowActiveBlock = level > 74
             };
 
             return CreateInventoryItem(book);
