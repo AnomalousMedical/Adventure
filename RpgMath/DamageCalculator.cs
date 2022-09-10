@@ -180,8 +180,13 @@ namespace RpgMath
 
         public long LimitGain(IBattleStats target, long damage)
         {
+            if(damage < 1)
+            {
+                return 0;
+            }
+
             long statusFactor = 1;
-            long lNum = 324; //This can be per character, this is about 107% damage taken to get a full bar
+            long lNum = 202; //This can be per character, this is about 67% damage taken to get a full bar
 
             var unitsGained = ((300 * damage / target.Hp) * 256 * statusFactor / lNum);
 

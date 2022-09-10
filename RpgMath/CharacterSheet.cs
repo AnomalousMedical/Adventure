@@ -319,6 +319,8 @@ namespace RpgMath
 
         public long Limit { get; set; }
 
+        public float LimitPct => Math.Min(Limit / 255f, 1.0f);
+
         public bool AtLimit => Limit >= 255;
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
