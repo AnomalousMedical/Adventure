@@ -40,7 +40,7 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(DaggerNew),
                 Skills = GetSkills(level),
-                AllowActiveBlock = level > 74
+                AllowActiveBlock = level > SpellLevels.Superior
             };
 
             return CreateInventoryItem(sword);
