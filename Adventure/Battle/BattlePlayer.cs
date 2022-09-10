@@ -811,10 +811,12 @@ namespace Adventure.Battle
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
+            characterSheet.Limit += calculator.LimitGain(characterSheet, damage);
 
             //Player died from applied damage
             if (IsDead)
             {
+                characterSheet.Limit = 0;
                 battleManager.PlayerDead(this);
                 characterTimer.TurnTimerActive = false;
                 characterTimer.Reset();

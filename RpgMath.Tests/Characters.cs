@@ -21,6 +21,8 @@ namespace RpgMath.Tests
             TotalLuck = 19,
             Level = 10,
             GuardPercent = 60,
+            Hp = 200,
+            Mp = 20
         };
 
         public static readonly IBattleStats level20 = new BattleStats()
@@ -37,6 +39,8 @@ namespace RpgMath.Tests
             TotalLuck = 20,
             Level = 20,
             GuardPercent = 60,
+            Hp = 400,
+            Mp = 40
         };
 
         public static readonly IBattleStats level30 = new BattleStats()
@@ -53,6 +57,8 @@ namespace RpgMath.Tests
             TotalLuck = 21,
             Level = 30,
             GuardPercent = 60,
+            Hp = 800,
+            Mp = 80
         };
 
         public static readonly IBattleStats level40 = new BattleStats()
@@ -69,6 +75,8 @@ namespace RpgMath.Tests
             TotalLuck = 22,
             Level = 40,
             GuardPercent = 80,
+            Hp = 2000,
+            Mp = 200
         };
 
         public static readonly IBattleStats level50 = new BattleStats()
@@ -85,6 +93,8 @@ namespace RpgMath.Tests
             TotalLuck = 23,
             Level = 50,
             GuardPercent = 80,
+            Hp = 4000,
+            Mp = 300
         };
 
         public static readonly IBattleStats level60 = new BattleStats()
@@ -101,6 +111,8 @@ namespace RpgMath.Tests
             TotalLuck = 23,
             Level = 60,
             GuardPercent = 80,
+            Hp = 5000,
+            Mp = 400
         };
 
         public static readonly IBattleStats level70 = new BattleStats()
@@ -117,6 +129,8 @@ namespace RpgMath.Tests
             TotalLuck = 24,
             Level = 70,
             GuardPercent = 100,
+            Hp = 6000,
+            Mp = 600
         };
 
         public static readonly IBattleStats level80 = new BattleStats()
@@ -133,6 +147,8 @@ namespace RpgMath.Tests
             TotalLuck = 25,
             Level = 80,
             GuardPercent = 100,
+            Hp = 7000,
+            Mp = 700
         };
 
         public static readonly IBattleStats level90 = new BattleStats()
@@ -149,6 +165,8 @@ namespace RpgMath.Tests
             TotalLuck = 26,
             Level = 90,
             GuardPercent = 100,
+            Hp = 8000,
+            Mp = 800
         };
 
         public static readonly IBattleStats level99 = new BattleStats()
@@ -165,6 +183,8 @@ namespace RpgMath.Tests
             TotalLuck = 26,
             Level = 99,
             GuardPercent = 100,
+            Hp = 9000,
+            Mp = 900
         };
     }
 }

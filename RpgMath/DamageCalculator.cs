@@ -177,5 +177,15 @@ namespace RpgMath
             var rand = (long)random.Next(65536) * 99 / 65535 + 1;
             return rand < hitPct;
         }
+
+        public long LimitGain(IBattleStats target, long damage)
+        {
+            long statusFactor = 1;
+            long lNum = 324; //This can be per character, this is about 107% damage taken to get a full bar
+
+            var unitsGained = ((300 * damage / target.Hp) * 256 * statusFactor / lNum);
+
+            return unitsGained;
+        }
     }
 }
