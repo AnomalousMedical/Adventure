@@ -52,5 +52,25 @@ namespace Adventure.Items.Creators
         {
             return new InventoryItem(equipment, nameof(EquipOffHand));
         }
+
+        private long GetGuardPercent(int level)
+        {
+            if (level < SpellLevels.Busted)
+            {
+                return 60L;
+            }
+            else if (level < SpellLevels.Common)
+            {
+                return 70L;
+            }
+            else if (level < SpellLevels.Superior)
+            {
+                return 80L;
+            }
+            else
+            {
+                return 90L;
+            }
+        }
     }
 }
