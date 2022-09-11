@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace RpgMath
 {
@@ -178,6 +179,7 @@ namespace RpgMath
 
         public long BonusLuck { get; set; }
 
+        [JsonIgnore]
         public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
 
 
@@ -273,58 +275,80 @@ namespace RpgMath
             }
         }
 
+        [JsonIgnore]
         public bool CanBlock => OffHand?.AllowActiveBlock == true || MainHand?.AllowActiveBlock == true || Accessory?.AllowActiveBlock == true || Body?.AllowActiveBlock == true;
 
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }
 
+        [JsonIgnore]
         public long TotalStrength => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength) + Buffs.Sum(i => i.Strength);
 
+        [JsonIgnore]
         public long Attack => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength + i.Attack) + Buffs.Sum(i => i.Strength + i.Attack);
 
+        [JsonIgnore]
         public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent);
 
+        [JsonIgnore]
         public long TotalVitality => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality) + Buffs.Sum(i => i.Vitality);
 
+        [JsonIgnore]
         public long Defense => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality + i.Defense) + Buffs.Sum(i => i.Vitality + i.Defense);
 
+        [JsonIgnore]
         public long DefensePercent => EquippedItems().Sum(i => i.DefensePercent) + Buffs.Sum(i => i.DefensePercent);
 
+        [JsonIgnore]
         public long TotalMagic => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic) + Buffs.Sum(i => i.Magic);
 
+        [JsonIgnore]
         public long MagicAttack => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack) + Buffs.Sum(i => i.Magic + i.MagicAttack);
-
+        
+        [JsonIgnore]
         public long MagicAttackPercent => EquippedItems().Sum(i => i.MagicAttackPercent) + Buffs.Sum(i => i.MagicAttackPercent);
 
+        [JsonIgnore]
         public long TotalSpirit => BaseSpirit + BonusSpirit + EquippedItems().Sum(i => i.Spirit) + Buffs.Sum(i => i.Spirit);
 
+        [JsonIgnore]
         public long MagicDefense => BaseSpirit + BonusSpirit + EquippedItems().Sum(i => i.Spirit + i.MagicDefense) + Buffs.Sum(i => i.Spirit + i.MagicDefense);
 
+        [JsonIgnore]
         public long MagicDefensePercent => EquippedItems().Sum(i => i.MagicDefensePercent) + Buffs.Sum(i => i.MagicDefensePercent);
 
+        [JsonIgnore]
         public long TotalDexterity => BaseDexterity + BonusDexterity + EquippedItems().Sum(i => i.Dexterity) + Buffs.Sum(i => i.Dexterity);
 
+        [JsonIgnore]
         public long TotalLuck => BaseLuck + BonusLuck + EquippedItems().Sum(i => i.Luck) + Buffs.Sum(i => i.Luck);
 
+        [JsonIgnore]
         public int InventorySize => 6 + EquippedItems().Sum(i => i.InventorySlots);
 
+        [JsonIgnore]
         public long GuardPercent => EquippedItems().Sum(i => i.GuardPercent);
 
+        [JsonIgnore]
         public bool AllowLuckyEvade => true;
 
         public long Level { get; set; } = 1;
 
+        [JsonIgnore]
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance) + Buffs.Sum(i => i.CritChance);
 
         public long PowerGauge { get; set; }
 
+        [JsonIgnore]
         public float PowerGaugePct => Math.Min(PowerGauge / 255f, 1.0f);
 
+        [JsonIgnore]
         public bool AtPowerMax => PowerGauge >= 255;
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
 
+        [JsonIgnore]
         public IEnumerable<String> Skills
         {
             get
