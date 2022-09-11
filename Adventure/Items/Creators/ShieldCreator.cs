@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
+using Adventure.Battle.Skills;
 using Adventure.Exploration.Menu;
 using Adventure.Items.Actions;
 using RpgMath;
@@ -39,8 +40,8 @@ namespace Adventure.Items.Creators
                 Defense = equipmentCurve.GetDefense(name.Level),
                 MagicDefense = equipmentCurve.GetMDefense(name.Level),
                 Sprite = nameof(ShieldOfReflection),
-                Skills = new[] { "Block" },
-                GuardPercent = 80,
+                Skills = new[] { nameof(Guard) },
+                GuardPercent = GetGuardPercent(level),
                 AllowActiveBlock = true,
                 ShowHand = false,
             };
