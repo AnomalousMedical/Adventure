@@ -36,8 +36,14 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(name.Level),
                 Sprite = nameof(DaggerNew),
                 Skills = GetSkills(level),
-                AllowActiveBlock = level > SpellLevels.Superior
+                AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block
             };
+
+            if(level > SpellLevels.Common)
+            {
+                //Superior and above gets counter
+                sword.SpecialEffects = new[] { BattleSpecialEffects.Counterattack };
+            }
 
             return CreateInventoryItem(sword);
         }
