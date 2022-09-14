@@ -1,4 +1,4 @@
-﻿using Adventure.Exploration.Menu;
+﻿using Adventure.Menu;
 using Adventure.Services;
 using BepuPlugin;
 using DiligentEngine.RT;

@@ -6,7 +6,7 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
-using Adventure.Exploration.Menu;
+using Adventure.Menu;
 using Adventure.Services;
 using SharpGui;
 using System;

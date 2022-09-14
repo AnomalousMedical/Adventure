@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Exploration.Menu
+namespace Adventure.Menu
 {
     class ConfirmBuyMenu
     {

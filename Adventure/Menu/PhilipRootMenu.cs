@@ -1,4 +1,4 @@
-﻿using Adventure.Exploration.Menu;
+﻿using Adventure.Menu;
 using Engine;
 using Engine.Platform;
 using SharpGui;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Exploration.Menu
+namespace Adventure.Menu
 {
     class PhilipRootMenu : IExplorationSubMenu
     {

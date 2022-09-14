@@ -1,5 +1,5 @@
 ﻿using Adventure.Battle;
-using Adventure.Exploration.Menu;
+using Adventure.Menu;
 using Adventure.Services;
 using Adventure.WorldMap;
 using BepuPlugin;

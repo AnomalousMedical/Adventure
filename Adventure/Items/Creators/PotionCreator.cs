@@ -1,11 +1,5 @@
-﻿using Adventure.Exploration.Menu;
-using Adventure.Items.Actions;
-using SharpGui;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Adventure.Items.Actions;
+using Adventure.Menu;
 
 namespace Adventure.Items.Creators
 {

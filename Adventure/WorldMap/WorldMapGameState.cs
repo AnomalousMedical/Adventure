@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.CameraMovement;
 using BepuPlugin;
-using Adventure.Exploration.Menu;
+using Adventure.Menu;
 
 namespace Adventure.WorldMap
 {

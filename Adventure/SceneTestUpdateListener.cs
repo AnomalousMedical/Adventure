@@ -4,7 +4,6 @@ using DiligentEngine.RT;
 using Engine;
 using Engine.CameraMovement;
 using Engine.Platform;
-using Adventure.Exploration.Menu;
 using Adventure.Services;
 using SharpGui;
 using System;

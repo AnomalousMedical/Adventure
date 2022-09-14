@@ -1,4 +1,4 @@
-﻿using Adventure.Exploration.Menu;
+﻿using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;

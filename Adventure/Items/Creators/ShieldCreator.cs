@@ -1,14 +1,8 @@
 ﻿using Adventure.Assets.Equipment;
 using Adventure.Battle.Skills;
-using Adventure.Exploration.Menu;
 using Adventure.Items.Actions;
+using Adventure.Menu;
 using RpgMath;
-using SharpGui;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
