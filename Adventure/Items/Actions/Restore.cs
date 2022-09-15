@@ -11,13 +11,13 @@ namespace Adventure.Items.Actions
 {
     class RestoreHp : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
 
             if (target.CurrentHp == 0) { return; }
 
-            target.CurrentHp += item.Number.Value;
+            target.CurrentHp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
             if(target.CurrentHp > target.Hp)
             {
                 target.CurrentHp = target.Hp;
@@ -29,7 +29,7 @@ namespace Adventure.Items.Actions
             inventory.Items.Remove(item);
 
             target = battleManager.ValidateTarget(attacker, target);
-            var damage = item.Number.Value;
+            var damage = item.Number.Value + (long)(item.Number.Value * attacker.Stats.TotalItemUsageBonus);
 
             damage *= -1; //Make it healing
 
@@ -61,13 +61,13 @@ namespace Adventure.Items.Actions
 
     class RestoreMp : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
 
             if (target.CurrentHp == 0) { return; }
 
-            target.CurrentMp += item.Number.Value;
+            target.CurrentMp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
             if (target.CurrentMp > target.Mp)
             {
                 target.CurrentMp = target.Mp;
@@ -79,7 +79,7 @@ namespace Adventure.Items.Actions
             inventory.Items.Remove(item);
 
             target = battleManager.ValidateTarget(attacker, target);
-            var damage = item.Number.Value;
+            var damage = item.Number.Value + (long)(item.Number.Value * attacker.Stats.TotalItemUsageBonus);
 
             damage *= -1; //Make it healing
 
@@ -113,18 +113,18 @@ namespace Adventure.Items.Actions
     {
         public bool AllowTargetChange => false;
 
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
 
             if (target.CurrentHp != 0) { return; }
 
-            target.CurrentHp += GetStartHp(target.Hp, item.Number.Value);
+            target.CurrentHp += GetStartHp(target.Hp, item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus));
         }
 
         private long GetStartHp(long maxHp, long value)
         {
-            return (long)(maxHp * value * 0.01f);
+            return Math.Min((long)(maxHp * value * 0.01f), maxHp);
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
@@ -135,7 +135,7 @@ namespace Adventure.Items.Actions
             {
                 target = battleManager.ValidateTarget(attacker, target);
             }
-            var damage = GetStartHp(target.Stats.Hp, item.Number.Value);
+            var damage = GetStartHp(target.Stats.Hp, item.Number.Value + (long)(item.Number.Value * attacker.Stats.TotalItemUsageBonus));
 
             damage *= -1; //Make it healing
 

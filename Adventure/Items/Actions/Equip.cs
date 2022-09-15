@@ -11,7 +11,7 @@ namespace Adventure.Items.Actions
 {
     class EquipMainHand : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);
@@ -42,7 +42,7 @@ namespace Adventure.Items.Actions
 
     class EquipOffHand : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);
@@ -73,7 +73,7 @@ namespace Adventure.Items.Actions
 
     class EquipAccessory : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);
@@ -104,7 +104,7 @@ namespace Adventure.Items.Actions
 
     class EquipBody : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);

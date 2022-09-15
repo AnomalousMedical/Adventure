@@ -36,7 +36,7 @@ namespace Adventure.Items
     {
         bool AllowTargetChange => true;
 
-        void Use(InventoryItem item, Inventory inventory, CharacterSheet target);
+        void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target);
         void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
     }
 
@@ -44,7 +44,7 @@ namespace Adventure.Items
     {
         public List<InventoryItem> Items { get; init; } = new List<InventoryItem>();
 
-        public void Use(InventoryItem item, CharacterSheet target)
+        public void Use(InventoryItem item, CharacterSheet attacker, CharacterSheet target)
         {
             if(item.Action == null)
             {
@@ -53,7 +53,7 @@ namespace Adventure.Items
             }
 
             var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
-            action.Use(item, this, target);
+            action.Use(item, this, attacker, target);
         }
         
         public IInventoryAction CreateAction(InventoryItem item)

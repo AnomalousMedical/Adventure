@@ -50,6 +50,8 @@ namespace RpgMath
 
         public bool AllowActiveBlock { get; set; }
 
+        public float ItemUsageBonus { get; set; }
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

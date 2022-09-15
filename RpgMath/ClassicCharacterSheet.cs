@@ -111,6 +111,8 @@ namespace RpgMath
 
         public long ExtraCritChance => EquippedItems().Sum(i => i.CritChance);
 
+        public float TotalItemUsageBonus { get; set; }
+
         public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
 
         public IEnumerable<string> Skills => Enumerable.Empty<string>();

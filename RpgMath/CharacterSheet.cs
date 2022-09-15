@@ -94,6 +94,7 @@ namespace RpgMath
             s.BaseMagic = 11;
             s.BaseVitality = 11;
             s.BaseSpirit = 14;
+            s.BaseItemUsageBonus = 0.5f;
 
             MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
@@ -178,6 +179,11 @@ namespace RpgMath
         public long BaseLuck { get; set; }
 
         public long BonusLuck { get; set; }
+
+        public float BaseItemUsageBonus { get; set; }
+
+        [JsonIgnore]
+        public float TotalItemUsageBonus => BaseItemUsageBonus + EquippedItems().Sum(i => i.ItemUsageBonus);
 
         [JsonIgnore]
         public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();

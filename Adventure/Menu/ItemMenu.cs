@@ -96,14 +96,14 @@ namespace Adventure.Menu
                     IsTransfer = false;
                     if(SelectedItem.Equipment != null)
                     {
-                        characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet);
+                        characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet, characterData.CharacterSheet);
                         SelectedItem = null;
                     }
                     else
                     {
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
-                            characterData.Inventory.Use(SelectedItem, i.CharacterSheet);
+                            characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet, i.CharacterSheet);
                         }))
                         .ToList();
                     }
@@ -232,6 +232,7 @@ Def:   {characterData.CharacterSheet.Defense}
 Def%:  {characterData.CharacterSheet.DefensePercent}
 MDef:  {characterData.CharacterSheet.MagicDefense}
 MDef%: {characterData.CharacterSheet.MagicDefensePercent}
+Item%: {characterData.CharacterSheet.TotalItemUsageBonus * 100f}
  
 Str: {characterData.CharacterSheet.TotalStrength}
 Mag: {characterData.CharacterSheet.TotalMagic}

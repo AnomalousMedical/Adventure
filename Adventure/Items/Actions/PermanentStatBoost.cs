@@ -11,7 +11,7 @@ namespace Adventure.Items.Actions
 {
     abstract class PermanentStatBoost : IInventoryAction
     {
-        public void Use(InventoryItem item, Inventory inventory, CharacterSheet target)
+        public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
             RaiseStat(item, target);
