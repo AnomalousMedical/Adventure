@@ -113,6 +113,8 @@ namespace RpgMath
 
         public float TotalItemUsageBonus { get; set; }
 
+        public float TotalHealingBonus { get; set; }
+
         public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
 
         public IEnumerable<string> Skills => Enumerable.Empty<string>();

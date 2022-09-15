@@ -88,7 +88,8 @@ namespace RpgMath
         public long Cure(IBattleStats caster, long power)
         {
             long baseDamage = 6L * (caster.MagicAttack + caster.Level);
-            return baseDamage + 22L * power;
+            long damage = baseDamage + 22L * power;
+            return damage + (long)(damage * caster.TotalHealingBonus);
         }
 
         /// <summary>

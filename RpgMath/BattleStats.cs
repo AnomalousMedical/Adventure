@@ -42,6 +42,8 @@ namespace RpgMath
 
         public float TotalItemUsageBonus { get; set; }
 
+        public float TotalHealingBonus { get; set; }
+
         public IEnumerable<Element> AttackElements { get; set; } = Enumerable.Empty<Element>();
 
         public Dictionary<Element, Resistance> Resistances { get; set; }

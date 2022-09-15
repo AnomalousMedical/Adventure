@@ -125,6 +125,7 @@ namespace RpgMath
             s.BaseMagic = 10;
             s.BaseVitality = 11;
             s.BaseSpirit = 11;
+            s.BaseHealingBonus = 0.2f;
 
             MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
@@ -184,6 +185,11 @@ namespace RpgMath
 
         [JsonIgnore]
         public float TotalItemUsageBonus => BaseItemUsageBonus + EquippedItems().Sum(i => i.ItemUsageBonus);
+
+        public float BaseHealingBonus { get; set; }
+
+        [JsonIgnore]
+        public float TotalHealingBonus => BaseHealingBonus + EquippedItems().Sum(i => i.HealingBonus);
 
         [JsonIgnore]
         public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
