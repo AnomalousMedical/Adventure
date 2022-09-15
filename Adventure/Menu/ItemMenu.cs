@@ -232,7 +232,7 @@ Def:   {characterData.CharacterSheet.Defense}
 Def%:  {characterData.CharacterSheet.DefensePercent}
 MDef:  {characterData.CharacterSheet.MagicDefense}
 MDef%: {characterData.CharacterSheet.MagicDefensePercent}
-Item%: {characterData.CharacterSheet.TotalItemUsageBonus * 100f}
+Item%: {characterData.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
  
 Str: {characterData.CharacterSheet.TotalStrength}
 Mag: {characterData.CharacterSheet.TotalMagic}
