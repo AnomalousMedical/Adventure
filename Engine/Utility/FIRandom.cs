@@ -36,40 +36,11 @@ using System.Threading.Tasks;
 
 namespace Engine
 {
-    public partial class FIRandom
-    {
-        /// <summary>Base type for all generator implementations that plug into the base Random.</summary>
-        internal abstract class ImplBase
-        {
-            public abstract double Sample();
-
-            public abstract int Next();
-
-            public abstract int Next(int maxValue);
-
-            public abstract int Next(int minValue, int maxValue);
-
-            public abstract long NextInt64();
-
-            public abstract long NextInt64(long maxValue);
-
-            public abstract long NextInt64(long minValue, long maxValue);
-
-            public abstract float NextSingle();
-
-            public abstract double NextDouble();
-
-            public abstract void NextBytes(byte[] buffer);
-
-            public abstract void NextBytes(Span<byte> buffer);
-        }
-    }
-
     /// <summary>
     /// Represents a pseudo-random number generator, which is an algorithm that produces a sequence of numbers
     /// that meet certain statistical requirements for randomness.
     /// </summary>
-    public partial class FIRandom
+    public sealed class FIRandom
     {
         /// <summary>The underlying generator implementation.</summary>
         /// <remarks>
@@ -79,7 +50,7 @@ namespace Engine
         /// overrides are called anywhere they were being called previously.  But if the instance is the base type and is constructed
         /// with the default constructor, we have a lot of flexibility as to how to optimize the performance and quality of the generator.
         /// </remarks>
-        private readonly ImplBase _impl;
+        private readonly Net5CompatSeedImpl _impl;
 
         /// <summary>Initializes a new instance of the Random class, using the specified seed value.</summary>
         /// <param name="Seed">
@@ -94,7 +65,7 @@ namespace Engine
 
         /// <summary>Returns a non-negative random integer.</summary>
         /// <returns>A 32-bit signed integer that is greater than or equal to 0 and less than <see cref="int.MaxValue"/>.</returns>
-        public virtual int Next()
+        public int Next()
         {
             int result = _impl.Next();
             AssertInRange(result, 0, int.MaxValue);
@@ -108,7 +79,7 @@ namespace Engine
         /// includes 0 but not <paramref name="maxValue"/>. However, if <paramref name="maxValue"/> equals 0, <paramref name="maxValue"/> is returned.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxValue"/> is less than 0.</exception>
-        public virtual int Next(int maxValue)
+        public int Next(int maxValue)
         {
             if (maxValue < 0)
             {
@@ -128,7 +99,7 @@ namespace Engine
         /// but not <paramref name="maxValue"/>. If minValue equals <paramref name="maxValue"/>, <paramref name="minValue"/> is returned.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minValue"/> is greater than <paramref name="maxValue"/>.</exception>
-        public virtual int Next(int minValue, int maxValue)
+        public int Next(int minValue, int maxValue)
         {
             if (minValue > maxValue)
             {
@@ -142,7 +113,7 @@ namespace Engine
 
         /// <summary>Returns a non-negative random integer.</summary>
         /// <returns>A 64-bit signed integer that is greater than or equal to 0 and less than <see cref="long.MaxValue"/>.</returns>
-        public virtual long NextInt64()
+        public long NextInt64()
         {
             long result = _impl.NextInt64();
             AssertInRange(result, 0, long.MaxValue);
@@ -156,7 +127,7 @@ namespace Engine
         /// includes 0 but not <paramref name="maxValue"/>. However, if <paramref name="maxValue"/> equals 0, <paramref name="maxValue"/> is returned.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxValue"/> is less than 0.</exception>
-        public virtual long NextInt64(long maxValue)
+        public long NextInt64(long maxValue)
         {
             if (maxValue < 0)
             {
@@ -176,7 +147,7 @@ namespace Engine
         /// but not <paramref name="maxValue"/>. If minValue equals <paramref name="maxValue"/>, <paramref name="minValue"/> is returned.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minValue"/> is greater than <paramref name="maxValue"/>.</exception>
-        public virtual long NextInt64(long minValue, long maxValue)
+        public long NextInt64(long minValue, long maxValue)
         {
             if (minValue > maxValue)
             {
@@ -190,7 +161,7 @@ namespace Engine
 
         /// <summary>Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.</summary>
         /// <returns>A single-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
-        public virtual float NextSingle()
+        public float NextSingle()
         {
             float result = _impl.NextSingle();
             AssertInRange(result);
@@ -199,7 +170,7 @@ namespace Engine
 
         /// <summary>Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.</summary>
         /// <returns>A double-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
-        public virtual double NextDouble()
+        public double NextDouble()
         {
             double result = _impl.NextDouble();
             AssertInRange(result);
@@ -209,7 +180,7 @@ namespace Engine
         /// <summary>Fills the elements of a specified array of bytes with random numbers.</summary>
         /// <param name="buffer">The array to be filled with random numbers.</param>
         /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
-        public virtual void NextBytes(byte[] buffer)
+        public void NextBytes(byte[] buffer)
         {
             if (buffer is null)
             {
@@ -221,11 +192,11 @@ namespace Engine
 
         /// <summary>Fills the elements of a specified span of bytes with random numbers.</summary>
         /// <param name="buffer">The array to be filled with random numbers.</param>
-        public virtual void NextBytes(Span<byte> buffer) => _impl.NextBytes(buffer);
+        public void NextBytes(Span<byte> buffer) => _impl.NextBytes(buffer);
 
         /// <summary>Returns a random floating-point number between 0.0 and 1.0.</summary>
         /// <returns>A double-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
-        protected virtual double Sample()
+        private double Sample()
         {
             double result = _impl.Sample();
             AssertInRange(result);
@@ -256,27 +227,25 @@ namespace Engine
         {
             Debug.Assert(result >= 0.0 && result < 1.0, $"Expected 0.0 <= {result} < 1.0");
         }
-    }
-    public partial class FIRandom
-    {
+    
         /// <summary>
         /// Provides an implementation used for compatibility with cases where a seed is specified
         /// and thus the sequence produced historically could have been relied upon.
         /// </summary>
-        private sealed class Net5CompatSeedImpl : ImplBase
+        private sealed class Net5CompatSeedImpl
         {
             private CompatPrng _prng; // mutable struct; do not make this readonly
 
             public Net5CompatSeedImpl(int seed) =>
                 _prng = new CompatPrng(seed);
 
-            public override double Sample() => _prng.Sample();
+            public double Sample() => _prng.Sample();
 
-            public override int Next() => _prng.InternalSample();
+            public int Next() => _prng.InternalSample();
 
-            public override int Next(int maxValue) => (int)(_prng.Sample() * maxValue);
+            public int Next(int maxValue) => (int)(_prng.Sample() * maxValue);
 
-            public override int Next(int minValue, int maxValue)
+            public int Next(int minValue, int maxValue)
             {
                 long range = (long)maxValue - minValue;
                 return range <= int.MaxValue ?
@@ -284,7 +253,7 @@ namespace Engine
                     (int)((long)(_prng.GetSampleForLargeRange() * range) + minValue);
             }
 
-            public override long NextInt64()
+            public long NextInt64()
             {
                 while (true)
                 {
@@ -299,7 +268,7 @@ namespace Engine
                 }
             }
 
-            public override long NextInt64(long maxValue) => NextInt64(0, maxValue);
+            public long NextInt64(long maxValue) => NextInt64(0, maxValue);
 
             /// <summary>Returns the integer (ceiling) log of the specified value, base 2.</summary>
             /// <param name="value">The value.</param>
@@ -314,7 +283,7 @@ namespace Engine
                 return result;
             }
 
-            public override long NextInt64(long minValue, long maxValue)
+            public long NextInt64(long minValue, long maxValue)
             {
                 ulong exclusiveRange = (ulong)(maxValue - minValue);
 
@@ -343,13 +312,13 @@ namespace Engine
                 (((ulong)(uint)Next(1 << 22)) << 22) |
                 (((ulong)(uint)Next(1 << 20)) << 44);
 
-            public override double NextDouble() => _prng.Sample();
+            public double NextDouble() => _prng.Sample();
 
-            public override float NextSingle() => (float)_prng.Sample();
+            public float NextSingle() => (float)_prng.Sample();
 
-            public override void NextBytes(byte[] buffer) => _prng.NextBytes(buffer);
+            public void NextBytes(byte[] buffer) => _prng.NextBytes(buffer);
 
-            public override void NextBytes(Span<byte> buffer) => _prng.NextBytes(buffer);
+            public void NextBytes(Span<byte> buffer) => _prng.NextBytes(buffer);
         }
 
         /// <summary>
