@@ -275,23 +275,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
 
             yield return potionCreator.CreateManaPotionShopEntry(level);
 
-            if (level > 89)
-            {
-                foreach (var item in CreateShopLevel(90))
-                {
-                    yield return item;
-                }
-            }
-
-            if (level > 79)
-            {
-                foreach (var item in CreateShopLevel(80))
-                {
-                    yield return item;
-                }
-            }
-
-            if (level > 69)
+            if (level > 59)
             {
                 foreach (var item in CreateShopLevel(70))
                 {
@@ -299,49 +283,12 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                 }
             }
 
-            if (level > 59)
-            {
-                foreach (var item in CreateShopLevel(60))
-                {
-                    yield return item;
-                }
-            }
-
-            if (level > 49)
-            {
-                foreach (var item in CreateShopLevel(50))
-                {
-                    yield return item;
-                }
-            }
-
-            if (level > 39)
+            if (level > 29)
             {
                 foreach (var item in CreateShopLevel(40))
                 {
                     yield return item;
                 }
-            }
-
-            if (level > 29)
-            {
-                foreach (var item in CreateShopLevel(30))
-                {
-                    yield return item;
-                }
-            }
-
-            if (level > 19)
-            {
-                foreach (var item in CreateShopLevel(20))
-                {
-                    yield return item;
-                }
-            }
-
-            foreach (var item in CreateShopLevel(10))
-            {
-                yield return item;
             }
         }
 
