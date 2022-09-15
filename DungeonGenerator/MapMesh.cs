@@ -69,7 +69,7 @@ namespace DungeonGenerator
             }
         }
 
-        public MapMesh(csMapbuilder mapbuilder, Random random, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
+        public MapMesh(csMapbuilder mapbuilder, FIRandom random, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
         {
             if (mapbuilder.AllowOtherCorridors)
             {

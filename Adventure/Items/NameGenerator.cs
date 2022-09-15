@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Adventure.Items
 {
     interface INameGenerator
     {
-        string Generate(Random random, List<string> section1, string separator1 = " ", List<string> section2 = null, string separator2 = " ", List<string> section3 = null, string separator3 = " ", List<string> section4 = null, string separator4 = " ", List<string> section5 = null);
+        string Generate(FIRandom random, List<string> section1, string separator1 = " ", List<string> section2 = null, string separator2 = " ", List<string> section3 = null, string separator3 = " ", List<string> section4 = null, string separator4 = " ", List<string> section5 = null);
         NameResult GetLevelName(int level);
         NameResult GetBookLevelName(int level);
     }
@@ -21,7 +22,7 @@ namespace Adventure.Items
         /// Generate a name from given lists of strings. This will always call next on the passed random 5 times
         /// no matter how many sections are passed. Each section gets a space in between.
         /// </summary>
-        public String Generate(Random random, List<String> section1, string separator1 = " ", List<String> section2 = null, string separator2 = " ", List<String> section3 = null, string separator3 = " ", List<String> section4 = null, string separator4 = " ", List<String> section5 = null)
+        public String Generate(FIRandom random, List<String> section1, string separator1 = " ", List<String> section2 = null, string separator2 = " ", List<String> section3 = null, string separator3 = " ", List<String> section4 = null, string separator4 = " ", List<String> section5 = null)
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(section1[random.Next(section1.Count)]);
@@ -33,7 +34,7 @@ namespace Adventure.Items
             return stringBuilder.ToString();
         }
 
-        private static void AddSection(Random random, String separator, List<string> section, StringBuilder stringBuilder)
+        private static void AddSection(FIRandom random, String separator, List<string> section, StringBuilder stringBuilder)
         {
             if (section != null)
             {

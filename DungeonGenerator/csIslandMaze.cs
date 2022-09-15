@@ -45,7 +45,7 @@ public class csIslandMaze
     public const int EmptyCell = 0;
     public const int RoomCell = 1;
 
-    private Random r;
+    private FIRandom r;
 
     public int Neighbours { get; set; }
     public int Iterations { get; set; }
@@ -64,7 +64,7 @@ public class csIslandMaze
 
     public List<IslandInfo> IslandInfo { get; private set; }
 
-    public csIslandMaze(Random random)
+    public csIslandMaze(FIRandom random)
     {
         this.r = random;
         Neighbours = 4;

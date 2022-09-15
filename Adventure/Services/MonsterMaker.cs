@@ -1,5 +1,6 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.Enemies;
+using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Adventure.Services
 {
     interface IMonsterMaker
     {
-        List<MonsterInfo> CreateBaseMonsters(Random random);
+        List<MonsterInfo> CreateBaseMonsters(FIRandom random);
         void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element weakElement, Element resistElement);
     }
 
@@ -45,7 +46,7 @@ namespace Adventure.Services
         /// </summary>
         /// <param name="random"></param>
         /// <returns></returns>
-        public List<MonsterInfo> CreateBaseMonsters(Random random)
+        public List<MonsterInfo> CreateBaseMonsters(FIRandom random)
         {
             var monsters = new List<MonsterInfo>();
             var availableElements = new List<Element>();

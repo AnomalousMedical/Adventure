@@ -86,7 +86,7 @@ namespace RTDungeonGeneratorTest
                     {
                         var sw = new Stopwatch();
                         sw.Start();
-                        var random = new Random(description.Seed);
+                        var random = new FIRandom(description.Seed);
                         var mapBuilder = new csMapbuilder(random, 50, 50);
                         mapBuilder.CorridorSpace = 10;
                         mapBuilder.RoomDistance = 3;

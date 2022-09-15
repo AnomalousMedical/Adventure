@@ -12,7 +12,7 @@ namespace Adventure.Services
 {
     interface IAreaBuilder
     {
-        void SetupZone(int zoneIndex, Zone.Description o, Random initRandom);
+        void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom);
 
         int StartZone { get; }
 
@@ -84,13 +84,13 @@ namespace Adventure.Services
         /// </summary>
         public bool StartEnd { get; set; }
 
-        public virtual void SetupZone(int zoneIndex, Zone.Description o, Random initRandom)
+        public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
             o.LevelSeed = initRandom.Next(int.MinValue, int.MaxValue);
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
-            var monsterRandom = new Random(initRandom.Next(int.MinValue, int.MaxValue));
-            var areaTreasureRandom = new Random(worldDatabase.CurrentSeed + Index); //This determines if this zone gets part of an area's treasure by rolling its index, it must be the same per area
+            var monsterRandom = new FIRandom(initRandom.Next(int.MinValue, int.MaxValue));
+            var areaTreasureRandom = new FIRandom(worldDatabase.CurrentSeed + Index); //This determines if this zone gets part of an area's treasure by rolling its index, it must be the same per area
             var treasureZoneStart = StartZone;
             var treasureZoneEnd = EndZone + 1;
 

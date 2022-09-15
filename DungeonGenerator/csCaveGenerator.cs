@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using Engine;
 
 using Rectangle = Engine.IntRect;
 using Point = Engine.IntVector2;
@@ -18,7 +19,7 @@ namespace maze
     class csCaveGenerator
     {
 
-        private Random rnd;
+        private FIRandom rnd;
 
         #region properties
 
@@ -112,7 +113,7 @@ namespace maze
         /// <summary>
         /// Constructor
         /// </summary>
-        public csCaveGenerator(Random random)
+        public csCaveGenerator(FIRandom random)
         {
             rnd = random;
             Neighbours = 4;

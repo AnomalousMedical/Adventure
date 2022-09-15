@@ -29,7 +29,6 @@ namespace RTBepuDemo
         private readonly RTInstances rtInstances;
         private IObjectResolver objectResolver;
         private List<BodyPositionSync> bodyPositionSyncs = new List<BodyPositionSync>();
-        private Random Random = new Random();
 
         private long nextCubeSpawnTime = long.MaxValue;
         private long nextCubeSpawnFrequency = 1 * Clock.SecondsToMicro;

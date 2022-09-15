@@ -10,8 +10,8 @@ namespace Adventure.Battle
 {
     interface IBattleBuilder
     {
-        IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level);
-        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level, BiomeEnemy triggerEnemy);
+        IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, FIRandom random, int level);
+        IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, FIRandom random, int level, BiomeEnemy triggerEnemy);
     }
 
     class BattleBuilder : IBattleBuilder
@@ -28,7 +28,7 @@ namespace Adventure.Battle
             enemyLocations.Add(new Vector3(-2.5f, 0f,  6f));
         }
 
-        public IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level)
+        public IEnumerable<Enemy> CreateBoss(IObjectResolver objectResolver, Party party, IBiome biome, FIRandom random, int level)
         {
             yield return objectResolver.Resolve<Enemy, Enemy.Desc>(c =>
             {
@@ -61,7 +61,7 @@ namespace Adventure.Battle
             });
         }
 
-        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, Random random, int level, BiomeEnemy triggerEnemy)
+        public IEnumerable<Enemy> CreateEnemies(IObjectResolver objectResolver, Party party, IBiome biome, FIRandom random, int level, BiomeEnemy triggerEnemy)
         {
             var index = 0;
             foreach(var enemyType in GetEnemyBudget(level, random))
@@ -99,7 +99,7 @@ namespace Adventure.Battle
             }
         }
 
-        public IEnumerable<EnemyType> GetEnemyBudget(int level, Random random)
+        public IEnumerable<EnemyType> GetEnemyBudget(int level, FIRandom random)
         {
             const int extremelyRare = 5;
             const int rare = 15;
@@ -230,7 +230,7 @@ namespace Adventure.Battle
             }
         }
 
-        public EnemyType GetEnemyType(int level, Random random)
+        public EnemyType GetEnemyType(int level, FIRandom random)
         {
             const int extremelyRare = 5;
             const int rare = 15;

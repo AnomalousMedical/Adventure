@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace RpgMath.Tests
         public void LevelUpStartFighter()
         {
             var levelCalculator = new LevelCalculator();
-            var random = new Random(0);
+            var random = new FIRandom(0);
             var character = CharacterSheet.CreateStartingFighter(random);
 
             for (int i = 0; i < 100; i++)
@@ -48,7 +49,7 @@ namespace RpgMath.Tests
         public void LevelUpStartMage()
         {
             var levelCalculator = new LevelCalculator();
-            var random = new Random(0);
+            var random = new FIRandom(0);
             var character = CharacterSheet.CreateStartingMage(random);
 
             for (int i = 0; i < 100; i++)
@@ -75,7 +76,7 @@ namespace RpgMath.Tests
         public void LevelUpStartThief()
         {
             var levelCalculator = new LevelCalculator();
-            var random = new Random(0);
+            var random = new FIRandom(0);
             var character = CharacterSheet.CreateStartingThief(random);
 
             for (int i = 0; i < 100; i++)
@@ -102,7 +103,7 @@ namespace RpgMath.Tests
         public void LevelUpStartSage()
         {
             var levelCalculator = new LevelCalculator();
-            var random = new Random(0);
+            var random = new FIRandom(0);
             var character = CharacterSheet.CreateStartingSage(random);
 
             for (int i = 0; i < 100; i++)

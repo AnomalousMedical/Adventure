@@ -174,7 +174,7 @@ namespace Adventure.Battle
                 currentZ -= 2;
             }
 
-            var rand = new Random(battleSeed);
+            var rand = new FIRandom(battleSeed);
             IEnumerable<Enemy> createEnemies;
             if (boss)
             {
@@ -435,7 +435,7 @@ namespace Adventure.Battle
             });
 
             var biome = levelManager.Current.Biome;
-            var bgItemsRandom = new Random(levelManager.Current.Index); //TODO: Get better, but still consistent seed for here
+            var bgItemsRandom = new FIRandom(levelManager.Current.Index); //TODO: Get better, but still consistent seed for here
 
             if (biome.BackgroundItems.Count > 0)
             {

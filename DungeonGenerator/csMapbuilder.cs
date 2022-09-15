@@ -171,9 +171,9 @@ namespace RogueLikeMapBuilder
         private UInt16 currentRoomCell = RoomCell;
         private UInt16 currentCorridorCell = CorridorCell;
         private UInt16 currentOtherCorridorCell = OtherCorridorCell;
-        private Random rnd;
+        private FIRandom rnd;
 
-        public csMapbuilder(Random random, int x, int y)
+        public csMapbuilder(FIRandom random, int x, int y)
         {
             this.rnd = random;
             Map_Size = new Size(x, y);

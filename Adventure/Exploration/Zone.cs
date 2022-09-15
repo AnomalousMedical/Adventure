@@ -282,7 +282,7 @@ namespace Adventure
                 {
                     var sw = new Stopwatch();
                     sw.Start();
-                    var random = new Random(description.LevelSeed);
+                    var random = new FIRandom(description.LevelSeed);
                     var mapBuilder = new csMapbuilder(random, description.Width, description.Height)
                     {
                         BreakOut = description.BreakOut,
@@ -363,7 +363,7 @@ namespace Adventure
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();
-                var enemyRandom = new Random(enemySeed);
+                var enemyRandom = new FIRandom(enemySeed);
                 var usedCorridors = new HashSet<int>();
 
                 var battleTriggers = new List<BattleTrigger>();
@@ -568,7 +568,7 @@ namespace Adventure
             }
         }
 
-        private void SetupCorridors(Random enemyRandom, HashSet<int> usedCorridors, List<BattleTrigger> battleTriggers)
+        private void SetupCorridors(FIRandom enemyRandom, HashSet<int> usedCorridors, List<BattleTrigger> battleTriggers)
         {
             var corridorStartIndex = 0;
             var corridors = mapMesh.MapBuilder.Corridors;
@@ -604,7 +604,7 @@ namespace Adventure
             }
         }
 
-        private void PopulateCorridor(Random enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex, int maxPossibleFights, List<BattleTrigger> battleTriggers)
+        private void PopulateCorridor(FIRandom enemyRandom, HashSet<int> usedCorridors, int corridorStartIndex, int currentIndex, int maxPossibleFights, List<BattleTrigger> battleTriggers)
         {
             var numSquares = currentIndex - corridorStartIndex;
             var maxFights = Math.Min(Math.Max(numSquares / 10, 2), maxPossibleFights);
@@ -653,7 +653,7 @@ namespace Adventure
             }
         }
 
-        private void SetupRooms(Random enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack)
+        private void SetupRooms(FIRandom enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack)
         {
             //The order of everything in this function is important to ensure all treasure can be distributed
 
@@ -863,7 +863,7 @@ namespace Adventure
             placeKey = false;
         }
 
-        private void PlaceKeySafety(Random enemyRandom, HashSet<int> usedCorridors)
+        private void PlaceKeySafety(FIRandom enemyRandom, HashSet<int> usedCorridors)
         {
             //if we got here without placing the key, place it in a corridor, the player removes its physics
             if (placeKey)
@@ -893,7 +893,7 @@ namespace Adventure
             }
         }
 
-        private void AddStolenTreasure(Description description, Random enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger, Stack<ITreasure> treasureStack)
+        private void AddStolenTreasure(Description description, FIRandom enemyRandom, List<BattleTrigger> battleTriggers, BattleTrigger bossBattleTrigger, Stack<ITreasure> treasureStack)
         {
             var stealTreasure = description.StealTreasure ?? Enumerable.Empty<ITreasure>();
             var bossStealTreasure = description.BossStealTreasure ?? Enumerable.Empty<ITreasure>();
@@ -965,7 +965,7 @@ namespace Adventure
             }
         }
 
-        private void CreateBackgroundItems(Random bgItemsRandom, IBiome biome)
+        private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome)
         {
             //var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)

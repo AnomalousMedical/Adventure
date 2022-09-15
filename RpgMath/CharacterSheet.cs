@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace RpgMath
             AttackPercent = 95
         };
 
-        public static CharacterSheet CreateStartingFighter(Random random)
+        public static CharacterSheet CreateStartingFighter(FIRandom random)
         {
             var s = new CharacterSheet();
 
@@ -44,7 +45,7 @@ namespace RpgMath
             return s;
         }
 
-        public static CharacterSheet CreateStartingMage(Random random)
+        public static CharacterSheet CreateStartingMage(FIRandom random)
         {
             var s = new CharacterSheet();
 
@@ -74,7 +75,7 @@ namespace RpgMath
             return s;
         }
 
-        public static CharacterSheet CreateStartingThief(Random random)
+        public static CharacterSheet CreateStartingThief(FIRandom random)
         {
             var s = new CharacterSheet();
 
@@ -105,7 +106,7 @@ namespace RpgMath
             return s;
         }
 
-        public static CharacterSheet CreateStartingSage(Random random)
+        public static CharacterSheet CreateStartingSage(FIRandom random)
         {
             var s = new CharacterSheet();
 
@@ -136,7 +137,7 @@ namespace RpgMath
             return s;
         }
 
-        private static void MixStats(Random random, CharacterSheet s)
+        private static void MixStats(FIRandom random, CharacterSheet s)
         {
             s.Hp = random.Next((int)s.Hp - 30, (int)s.Hp + 50);
             s.Mp = random.Next((int)s.Mp - 1, (int)s.Mp + 3);

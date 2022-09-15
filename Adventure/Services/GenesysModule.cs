@@ -1,4 +1,5 @@
-﻿using RpgMath;
+﻿using Engine;
+using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Adventure.Services
             var gameState = new Persistence.GameState();
             gameState.World.Seed = seed;
             gameState.World.Level = 1;
-            var characterRandom = new Random(seed);
+            var characterRandom = new FIRandom(seed);
 
             {
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);

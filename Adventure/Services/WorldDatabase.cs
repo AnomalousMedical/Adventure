@@ -40,7 +40,7 @@ namespace Adventure.Services
         private List<IAreaBuilder> areaBuilders;
         private List<int> createdZoneSeeds;
         private int currentSeed;
-        private Random zoneRandom;
+        private FIRandom zoneRandom;
         private readonly Persistence persistence;
         private List<IntVector2> portalLocations;
         private IntVector2 airshipStartSquare;
@@ -169,11 +169,11 @@ namespace Adventure.Services
         {
             //Setup seeds and randoms
             createdZoneSeeds = new List<int>();
-            zoneRandom = new Random(newSeed);
-            var biomeRandom = new Random(newSeed);
-            var placementRandom = new Random(newSeed);
-            var elementalRandom = new Random(newSeed);
-            var treasureRandom = new Random(newSeed);
+            zoneRandom = new FIRandom(newSeed);
+            var biomeRandom = new FIRandom(newSeed);
+            var placementRandom = new FIRandom(newSeed);
+            var elementalRandom = new FIRandom(newSeed);
+            var treasureRandom = new FIRandom(newSeed);
             currentSeed = newSeed;
 
             //Setup map
@@ -191,7 +191,7 @@ namespace Adventure.Services
             //World needs enough islands to cover all zones
 
             //Setup areas
-            var weaknessRandom = new Random(newSeed);
+            var weaknessRandom = new FIRandom(newSeed);
             var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
             var usedSquares = new bool[map.MapX, map.MapY];
             var usedIslands = new bool[map.NumIslands];
@@ -206,7 +206,7 @@ namespace Adventure.Services
             areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom, placementRandom, elementalRandom, treasureRandom, portalLocations, usedSquares, usedIslands, map).ToList();
         }
 
-        private static void SetupAirshipIsland(Random placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private static void SetupAirshipIsland(FIRandom placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             //Airship Island
             var islandIndex = map.IslandSizeOrder[map.NumIslands - 1];
@@ -218,7 +218,7 @@ namespace Adventure.Services
             usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
         }
 
-        private IntVector2 GetSquare(List<IntVector2> items, Random random)
+        private IntVector2 GetSquare(List<IntVector2> items, FIRandom random)
         {
             var index = random.Next(items.Count);
             var square = items[index];
@@ -226,7 +226,7 @@ namespace Adventure.Services
             return square;
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, Random biomeRandom, Random placementRandom, Random elementalRandom, Random treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             //TODO: Add enemy strengths and weaknesses in phase 2, 3
             //TODO: finish phase 2, 3 and bonus 2, 3
@@ -924,7 +924,7 @@ namespace Adventure.Services
             }
         }
 
-        private static Element GetDifferentElement(Random elementalRandom, Element notThisElement)
+        private static Element GetDifferentElement(FIRandom elementalRandom, Element notThisElement)
         {
             var otherElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
             int retry = 0;
@@ -940,13 +940,13 @@ namespace Adventure.Services
             return otherElement;
         }
 
-        private static void AddPortal(IslandInfo island, bool[,] usedSquares, Random placementRandom, List<IntVector2> portalLocations)
+        private static void AddPortal(IslandInfo island, bool[,] usedSquares, FIRandom placementRandom, List<IntVector2> portalLocations)
         {
             var square = GetUnusedSquare(usedSquares, island, placementRandom, island.Northmost);
             portalLocations.Add(square);
         }
 
-        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom, IntVector2 desired)
+        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, FIRandom placementRandom, IntVector2 desired)
         {
             if (!usedSquares[desired.x, desired.y])
             {
@@ -957,7 +957,7 @@ namespace Adventure.Services
             return GetUnusedSquare(usedSquares, island, placementRandom);
         }
 
-        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, Random placementRandom)
+        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, FIRandom placementRandom)
         {
             for (var i = 0; i < 5; ++i)
             {
@@ -983,7 +983,7 @@ namespace Adventure.Services
             throw new InvalidOperationException($"Cannot find unused point on island {island.Id} out of possible {island.Size}");
         }
 
-        private static int GetUnusedIsland(bool[] usedIslands, Random placementRandom)
+        private static int GetUnusedIsland(bool[] usedIslands, FIRandom placementRandom)
         {
             for (var i = 0; i < 5; ++i)
             {
@@ -1071,7 +1071,7 @@ namespace Adventure.Services
             }
         }
 
-        private T RemoveRandomItem<T>(List<T> items, Random random)
+        private T RemoveRandomItem<T>(List<T> items, FIRandom random)
         {
             var index = random.Next(items.Count);
             var item = items[index];

@@ -35,7 +35,7 @@ namespace Adventure
         public void SetupZone(int zoneIndex, Zone.Description o)
         {
             o.EnemyLevel = persistence.Current.World.Level;
-            var initRandom = new Random(worldDatabase.GetZoneSeed(zoneIndex));
+            var initRandom = new FIRandom(worldDatabase.GetZoneSeed(zoneIndex));
             var areaBuilder = worldDatabase.GetAreaBuilder(zoneIndex);
             areaBuilder.SetupZone(zoneIndex, o, initRandom);
         }

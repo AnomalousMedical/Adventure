@@ -15,7 +15,7 @@ namespace Adventure.Services
 
         public WorldMapData(int seed)
         {
-            var random = new Random(seed);
+            var random = new FIRandom(seed);
             var mapBuilder = new csIslandMaze(random);
             mapBuilder.Iterations = 85000;
 

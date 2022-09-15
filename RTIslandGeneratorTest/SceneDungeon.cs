@@ -92,7 +92,7 @@ namespace RTIslandGeneratorTest
                     {
                         var sw = new Stopwatch();
                         sw.Start();
-                        var random = new Random(description.Seed);
+                        var random = new FIRandom(description.Seed);
                         var mapBuilder = new csIslandMaze(random);
                         mapBuilder.Iterations = 85000;
 
