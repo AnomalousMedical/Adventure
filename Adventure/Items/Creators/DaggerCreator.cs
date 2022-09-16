@@ -39,9 +39,9 @@ namespace Adventure.Items.Creators
                 AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block
             };
 
-            if(level > SpellLevels.Common)
+            if(level > SpellLevels.Superior)
             {
-                //Superior and above gets counter
+                //Flawless and above gets counter
                 sword.SpecialEffects = new[] { BattleSpecialEffects.Counterattack };
             }
 
