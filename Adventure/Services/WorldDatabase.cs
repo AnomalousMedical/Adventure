@@ -485,6 +485,8 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateReanimation(phase2TreasureLevel)));
                 phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateCounterAttack()));
+                phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateItemUsage(phase2TreasureLevel)));
+                phase2UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateHealing(phase2TreasureLevel)));
 
                 var phase2UniqueStolenTreasures = new List<Treasure>();
                 phase2UniqueStolenTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase2BonusWeakElement).CreateNormal(phase2TreasureLevel)));
@@ -713,6 +715,8 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel)));
                 phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateReanimation(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateItemUsage(phase3TreasureLevel)));
+                phase3UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateHealing(phase3TreasureLevel)));
 
                 var phase3UniqueStolenTreasures = new List<Treasure>();
                 phase3UniqueStolenTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase3BonusWeakElement).CreateNormal(phase3TreasureLevel)));
@@ -734,7 +738,6 @@ namespace Adventure.Services
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(AccessoryCreator.CreateCounterAttack())); //TODO: Note this is a 2nd counter attack
 
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
