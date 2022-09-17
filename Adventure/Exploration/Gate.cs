@@ -30,13 +30,13 @@ namespace Adventure
             public int InstanceId { get; set; }
         }
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly Description description;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly IContextMenu contextMenu;
@@ -58,10 +58,10 @@ namespace Adventure
 
         public Gate
         (
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<ZoneScene> bepuScene,
             Description description,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,

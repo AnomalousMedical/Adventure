@@ -154,11 +154,11 @@ namespace Adventure
             public PlotItems? PlotItem { get; set; }
         }
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly RayTracingRenderer renderer;
         private readonly Persistence persistence;
         private readonly IDestructionRequest destructionRequest;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -220,7 +220,7 @@ namespace Adventure
         (
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<ZoneScene> bepuScene,
             Description description,
             ILogger<Zone> logger,
             IObjectResolverFactory objectResolverFactory,
@@ -228,7 +228,7 @@ namespace Adventure
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             RayTracingRenderer renderer,
             Persistence persistence
         )

@@ -34,11 +34,11 @@ namespace Adventure
         public const int RightHand = 0;
         public const int LeftHand = 1;
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
@@ -50,12 +50,12 @@ namespace Adventure
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
 
-        private Attachment<IZoneManager> mainHandItem;
-        private Attachment<IZoneManager> offHandItem;
+        private Attachment<ZoneScene> mainHandItem;
+        private Attachment<ZoneScene> offHandItem;
 
         private IPlayerSprite playerSpriteInfo;
-        private Attachment<IZoneManager> mainHandHand;
-        private Attachment<IZoneManager> offHandHand;
+        private Attachment<ZoneScene> mainHandHand;
+        private Attachment<ZoneScene> offHandHand;
 
         private CharacterSheet characterSheet;
 
@@ -96,12 +96,12 @@ namespace Adventure
 
         public Player
         (
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<ZoneScene> bepuScene,
             EventManager eventManager,
             Description description,
             CameraMover cameraMover,
@@ -551,7 +551,7 @@ namespace Adventure
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -564,7 +564,7 @@ namespace Adventure
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -589,7 +589,7 @@ namespace Adventure
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -602,7 +602,7 @@ namespace Adventure
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<IZoneManager>, Attachment<IZoneManager>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {

@@ -29,9 +29,9 @@ namespace Adventure
 
     class ExplorationGameState : IExplorationGameState, IDisposable
     {
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly IZoneManager zoneManager;
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IExplorationMenu explorationMenu;
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
@@ -49,9 +49,9 @@ namespace Adventure
 
         public ExplorationGameState
         (
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<ZoneScene> bepuScene,
             IZoneManager zoneManager,
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             IExplorationMenu explorationMenu,
             IContextMenu contextMenu,
             EventManager eventManager,

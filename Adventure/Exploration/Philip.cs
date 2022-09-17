@@ -32,7 +32,7 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; } = Gargoyle.CreateMaterial();
         }
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
@@ -43,7 +43,7 @@ namespace Adventure
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
-        private readonly IBepuScene<IExplorationGameState> bepuScene;
+        private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
@@ -56,10 +56,10 @@ namespace Adventure
         private Vector3 currentScale;
 
         public Philip(
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene<IExplorationGameState> bepuScene,
+            IBepuScene<ZoneScene> bepuScene,
             Description description,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,

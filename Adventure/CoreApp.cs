@@ -77,7 +77,7 @@ namespace Adventure
             {
                 o.EventLayer = EventLayers.Exploration;
             });
-            services.AddBepuPlugin<IExplorationGameState>()
+            services.AddBepuPlugin<ZoneScene>()
                     .AddBepuSceneType<WorldMapScene>();
 
             services.AddRpgMath();
@@ -107,13 +107,13 @@ namespace Adventure
             services.AddScoped<BattlePlayer.Description>();
             services.AddScoped<Enemy>();
             services.AddScoped<Enemy.Desc>();
-            services.AddSingleton<RTInstances<IZoneManager>>();
+            services.AddSingleton<RTInstances<ZoneScene>>();
             services.AddSingleton<RTInstances<BattleScene>>();
             services.AddSingleton<RTInstances<WorldMapScene>>();
             services.AddSingleton<RTInstances<EmptyScene>>();
             services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
-            services.AddScoped<Attachment<IZoneManager>>();
-            services.AddScoped<Attachment<IZoneManager>.Description>();
+            services.AddScoped<Attachment<ZoneScene>>();
+            services.AddScoped<Attachment<ZoneScene>.Description>();
             services.AddScoped<Attachment<BattleScene>>();
             services.AddScoped<Attachment<BattleScene>.Description>();
             services.AddScoped<Attachment<WorldMapScene>>();

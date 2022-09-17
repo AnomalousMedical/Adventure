@@ -17,7 +17,7 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        private readonly RTInstances<IZoneManager> rtInstances;
+        private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
@@ -31,7 +31,7 @@ namespace Adventure
         private Vector3 currentScale;
 
         public BackgroundItem(
-            RTInstances<IZoneManager> rtInstances,
+            RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             Description description,

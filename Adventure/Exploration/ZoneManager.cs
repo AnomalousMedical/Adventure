@@ -62,7 +62,7 @@ namespace Adventure
             IWorldManager worldManager,
             IObjectResolverFactory objectResolverFactory,
             Persistence persistence,
-            IBepuScene<IExplorationGameState> bepuScene, //Inject this so it is created earlier and destroyed later
+            IBepuScene<ZoneScene> bepuScene, //Inject this so it is created earlier and destroyed later
             Sky sky
         )
         {

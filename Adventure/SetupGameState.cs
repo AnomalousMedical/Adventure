@@ -19,7 +19,7 @@ namespace Adventure
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
-        private readonly RTInstances<IZoneManager> zoneInstances;
+        private readonly RTInstances<ZoneScene> zoneInstances;
         private readonly RTInstances<WorldMapScene> worldInstances;
         private RTInstances rtInstances;
         private readonly Persistence persistence;
@@ -43,7 +43,7 @@ namespace Adventure
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<IZoneManager> zoneInstances,
+            RTInstances<ZoneScene> zoneInstances,
             RTInstances<WorldMapScene> worldInstances,
             Persistence persistence,
             RayTracingRenderer rayTracingRenderer,
