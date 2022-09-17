@@ -181,6 +181,8 @@ namespace Adventure.WorldMap
 
             await graphicsReady.Task;
 
+            this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, currentScale.y / 2f, 0f);
+
             CreateGraphics();
 
             if (persistence.Current.Player.InAirship)
@@ -190,7 +192,7 @@ namespace Adventure.WorldMap
             }
             else
             {
-                this.currentPosition = persistence.Current.Player.AirshipPosition ?? map.AirshipStartPoint + new Vector3(0f, currentScale.y / 2f, 0f);
+                Land(null);
                 SyncGraphics();
                 CreatePhysics();
             }
