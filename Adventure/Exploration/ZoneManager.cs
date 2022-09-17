@@ -21,7 +21,7 @@ namespace Adventure
         Task GoNext(Vector3 triggerLoc);
         Task GoPrevious();
         Task GoPrevious(Vector3 triggerLoc);
-        Task Restart();
+        Task Restart(bool allowHoldZone = true);
         Task WaitForCurrent();
         Task WaitForNext();
         Task WaitForPrevious();
@@ -73,7 +73,7 @@ namespace Adventure
             this.sky = sky;
         }
 
-        public async Task Restart()
+        public async Task Restart(bool allowHoldZone = true)
         {
             if (changingZone)
             {
@@ -83,11 +83,12 @@ namespace Adventure
             changingZone = true;
             Zone holdZone = null;
             var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
+            int? holdZoneIndex = allowHoldZone ? currentZoneIndex : null;
 
             if (previousZone != null)
             {
                 await previousZone.WaitForGeneration();
-                if (previousZone.Index == currentZoneIndex)
+                if (previousZone.Index == holdZoneIndex)
                 {
                     holdZone = previousZone;
                     holdZone.SetPosition(new Vector3(0, 0, 0));
@@ -101,7 +102,7 @@ namespace Adventure
             if(currentZone != null)
             {
                 await currentZone.WaitForGeneration();
-                if (currentZone.Index == currentZoneIndex)
+                if (currentZone.Index == holdZoneIndex)
                 {
                     holdZone = currentZone;
                     currentZone.ResetPlaceables();
@@ -116,7 +117,7 @@ namespace Adventure
             if(nextZone != null)
             {
                 await nextZone.WaitForGeneration();
-                if (nextZone.Index == currentZoneIndex)
+                if (nextZone.Index == holdZoneIndex)
                 {
                     holdZone = nextZone;
                     holdZone.SetPosition(new Vector3(0, 0, 0));

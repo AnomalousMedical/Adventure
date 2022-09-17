@@ -75,6 +75,8 @@ namespace Adventure
             {
                 finished = false;
 
+                var lastSeed = persistence.Current?.World.Seed;
+
                 this.persistenceWriter.Load();
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
@@ -91,7 +93,7 @@ namespace Adventure
                     {
                         this.nextState = explorationGameState;
                         rtInstances = zoneInstances;
-                        await zoneManager.Restart();
+                        await zoneManager.Restart(lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
                         await zoneManager.WaitForPrevious();
                         await zoneManager.WaitForNext();
