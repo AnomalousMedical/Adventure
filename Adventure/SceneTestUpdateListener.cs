@@ -31,6 +31,7 @@ namespace Adventure
         private readonly LightManager lightManager;
         private readonly PlayedTimeService playedTimeService;
         private readonly BuffManager buffManager;
+        private readonly IGameStateRequestor gameStateRequestor;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -47,7 +48,8 @@ namespace Adventure
             RTCameraAndLight cameraAndLight,
             LightManager lightManager,
             PlayedTimeService playedTimeService,
-            BuffManager buffManager
+            BuffManager buffManager,
+            IGameStateRequestor gameStateRequestor
         )
         {
 
@@ -64,6 +66,7 @@ namespace Adventure
             this.lightManager = lightManager;
             this.playedTimeService = playedTimeService;
             this.buffManager = buffManager;
+            this.gameStateRequestor = gameStateRequestor;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -85,7 +88,7 @@ namespace Adventure
             buffManager.Update(clock);
             sharpGui.Begin(clock);
 
-            var nextState = this.gameState.Update(clock);
+            var nextState = gameStateRequestor.GetRequestedGameState() ?? this.gameState.Update(clock);
             if (nextState != this.gameState)
             {
                 this.gameState.SetActive(false);

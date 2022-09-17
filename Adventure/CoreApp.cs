@@ -108,6 +108,7 @@ namespace Adventure
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
             services.AddSingleton<RTInstances<IWorldMapGameState>>();
+            services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();
             services.AddScoped<Attachment<IBattleManager>>();

@@ -20,9 +20,11 @@ namespace Adventure.Menu
         private readonly NativeOSWindow nativeOSWindow;
         private readonly App app;
         private readonly PlayerMenu playerMenu;
-
+        private readonly IGameStateRequestor gameStateRequestor;
+        private readonly ISetupGameState setupGameState;
         private readonly SharpButton players = new SharpButton() { Text = "Players" };
         private readonly SharpButton toggleFullscreen = new SharpButton() { Text = "Fullscreen" };
+        private readonly SharpButton load = new SharpButton() { Text = "Load" };
         private readonly SharpButton exitGame = new SharpButton() { Text = "Exit Game" };
         private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
@@ -37,7 +39,9 @@ namespace Adventure.Menu
             IScreenPositioner screenPositioner,
             NativeOSWindow nativeOSWindow,
             App app,
-            PlayerMenu playerMenu
+            PlayerMenu playerMenu,
+            IGameStateRequestor gameStateRequestor,
+            ISetupGameState setupGameState
         )
         {
             this.scaleHelper = scaleHelper;
@@ -47,6 +51,8 @@ namespace Adventure.Menu
             this.nativeOSWindow = nativeOSWindow;
             this.app = app;
             this.playerMenu = playerMenu;
+            this.gameStateRequestor = gameStateRequestor;
+            this.setupGameState = setupGameState;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -58,7 +64,7 @@ namespace Adventure.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(players, toggleFullscreen, exitGame, back) { Margin = new IntPad(10) }
+               new ColumnLayout(players, toggleFullscreen, load, exitGame, back) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -70,7 +76,7 @@ namespace Adventure.Menu
                 menu.RequestSubMenu(playerMenu, gamepadId);
             }
 
-            if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: players.Id, navDown: exitGame.Id))
+            if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: players.Id, navDown: load.Id))
             {
                 options.Fullscreen = !options.Fullscreen;
                 nativeOSWindow.toggleFullscreen();
@@ -80,7 +86,12 @@ namespace Adventure.Menu
                 }
             }
 
-            if (sharpGui.Button(exitGame, gamepadId, navUp: toggleFullscreen.Id, navDown: back.Id))
+            if(sharpGui.Button(load, gamepadId, navUp: toggleFullscreen.Id, navDown: exitGame.Id))
+            {
+                gameStateRequestor.RequestGameState(setupGameState);
+            }
+
+            if (sharpGui.Button(exitGame, gamepadId, navUp: load.Id, navDown: back.Id))
             {
                 app.Exit();
             }
