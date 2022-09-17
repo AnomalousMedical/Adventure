@@ -18,9 +18,7 @@ namespace Adventure
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
-        private readonly RTInstances<EmptyScene> zoneInstances;
         private RTInstances rtInstances;
-        private readonly RayTracingRenderer rayTracingRenderer;
         private IGameState nextState;
         private bool finished = false;
 
@@ -34,16 +32,14 @@ namespace Adventure
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<EmptyScene> zoneInstances,
-            RayTracingRenderer rayTracingRenderer
+            RTInstances<EmptyScene> rtInstances
         )
         {
             this.zoneManager = zoneManager;
             this.coroutineRunner = coroutineRunner;
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
-            this.zoneInstances = zoneInstances;
-            this.rayTracingRenderer = rayTracingRenderer;
+            this.rtInstances = rtInstances;
         }
 
         public void Link(IGameState next)
@@ -58,11 +54,9 @@ namespace Adventure
                 finished = false;
                 coroutineRunner.RunTask(async () =>
                 {
-                    rtInstances = zoneInstances;
                     await zoneManager.WaitForCurrent();
                     await zoneManager.WaitForPrevious();
                     await zoneManager.WaitForNext();
-                    await rayTracingRenderer.WaitForPipelineRebuild();
                     finished = true;
                 });
             }
