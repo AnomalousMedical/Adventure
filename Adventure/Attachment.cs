@@ -42,6 +42,8 @@ namespace Adventure
 
         private Quaternion orientation;
         private Quaternion additionalRotation = Quaternion.Identity;
+        private bool graphicsActive;
+        private bool makeGraphicsActive = true;
 
         public Attachment
         (
@@ -92,9 +94,7 @@ namespace Adventure
                     return; //Stop loading
                 }
 
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                SetGraphicsActive(makeGraphicsActive);
             });
         }
 
@@ -102,12 +102,32 @@ namespace Adventure
         {
             disposed = true;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
+            SetGraphicsActive(false);
             if (!dummyLight)
             {
                 lightManager.RemoveLight(light);
+            }
+        }
+
+        public void SetGraphicsActive(bool active)
+        {
+            makeGraphicsActive = active;
+            if (graphicsActive != active)
+            {
+                if (active)
+                {
+                    rtInstances.AddTlasBuild(tlasData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                    graphicsActive = true;
+                }
+                else
+                {
+                    rtInstances.RemoveSprite(sprite);
+                    rtInstances.RemoveShaderTableBinder(Bind);
+                    rtInstances.RemoveTlasBuild(tlasData);
+                    graphicsActive = false;
+                }
             }
         }
 

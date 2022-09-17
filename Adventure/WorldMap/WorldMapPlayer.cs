@@ -272,6 +272,12 @@ namespace Adventure.WorldMap
                     rtInstances.RemoveTlasBuild(tlasData);
                     graphicsActive = false;
                 }
+
+                mainHandHand?.SetGraphicsActive(active);
+                mainHandItem?.SetGraphicsActive(active);
+
+                offHandHand?.SetGraphicsActive(active);
+                offHandItem?.SetGraphicsActive(active);
             }
         }
 
@@ -568,6 +574,8 @@ namespace Adventure.WorldMap
                 mainHandHand.RequestDestruction();
                 mainHandHand = null;
             }
+            mainHandHand?.SetGraphicsActive(graphicsActive);
+            mainHandItem?.SetGraphicsActive(graphicsActive);
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
         }
@@ -606,6 +614,8 @@ namespace Adventure.WorldMap
                 offHandHand.RequestDestruction();
                 offHandHand = null;
             }
+            offHandHand?.SetGraphicsActive(graphicsActive);
+            offHandItem?.SetGraphicsActive(graphicsActive);
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
         }
