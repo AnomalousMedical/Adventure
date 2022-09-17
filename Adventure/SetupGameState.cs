@@ -80,6 +80,7 @@ namespace Adventure
 
                 var lastSeed = persistence.Current?.World.Seed;
 
+                zoneManager.DestroyPlayers();
                 this.persistenceWriter.Load();
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
                 timeClock.ResetToPersistedTime();

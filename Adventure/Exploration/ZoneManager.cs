@@ -33,6 +33,7 @@ namespace Adventure
         void ManagePlayers();
         void Update();
         void CenterCamera();
+        void DestroyPlayers();
     }
 
     class ZoneManager : IDisposable, IZoneManager
@@ -454,6 +455,18 @@ namespace Adventure
                         players[i].RequestDestruction();
                         players[i] = null;
                     }
+                }
+            }
+        }
+
+        public void DestroyPlayers()
+        {
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i] != null)
+                {
+                    players[i].RequestDestruction();
+                    players[i] = null;
                 }
             }
         }

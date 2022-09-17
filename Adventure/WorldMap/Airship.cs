@@ -192,7 +192,6 @@ namespace Adventure.WorldMap
             }
             else
             {
-                Land(null);
                 SyncGraphics();
                 CreatePhysics();
             }

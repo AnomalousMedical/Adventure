@@ -88,16 +88,15 @@ namespace Adventure.WorldMap
 
         public async Task SetupWorldMap()
         {
-            if (player == null)
+            player?.RequestDestruction();
+
+            var playerCharacter = party.ActiveCharacters.FirstOrDefault();
+            player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
             {
-                var playerCharacter = party.ActiveCharacters.FirstOrDefault();
-                player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
-                {
-                    o.PlayerSprite = playerCharacter.PlayerSprite;
-                    o.CharacterSheet = playerCharacter.CharacterSheet;
-                    o.Gamepad = GamepadId.Pad1;
-                });
-            }
+                o.PlayerSprite = playerCharacter.PlayerSprite;
+                o.CharacterSheet = playerCharacter.CharacterSheet;
+                o.Gamepad = GamepadId.Pad1;
+            });
 
             worldMapInstance?.RequestDestruction();
 
