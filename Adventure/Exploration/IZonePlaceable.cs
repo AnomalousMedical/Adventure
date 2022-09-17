@@ -8,6 +8,6 @@ namespace Adventure
         void SetZonePosition(in Vector3 zonePosition);
         void CreatePhysics();
         void DestroyPhysics();
-        void Reset() { }
+        void Reset();
     }
 }

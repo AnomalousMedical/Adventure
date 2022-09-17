@@ -48,6 +48,7 @@ namespace Adventure
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
         private bool graphicsCreated = false;
+        private bool graphicsLoaded = false;
         private int zoneIndex;
         private int instanceId;
         private bool taken = false;
@@ -100,17 +101,27 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
+                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
+                this.graphicsLoaded = true;
+
                 if (!taken)
                 {
-                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
-
-                    rtInstances.AddTlasBuild(tlasData);
-                    rtInstances.AddShaderTableBinder(Bind);
-                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
-
-                    graphicsCreated = true;
+                    AddGraphics();
                 }
             });
+        }
+
+        public void Reset()
+        {
+            this.taken = persistence.Current.PlotItems.Contains(plotItem);
+            if (!taken)
+            {
+                AddGraphics();
+            }
+            else
+            {
+                DestroyGraphics();
+            }
         }
 
         public void CreatePhysics()
@@ -146,13 +157,27 @@ namespace Adventure
         {
             DestroyGraphics();
             DestroyPhysics();
+            spriteInstanceFactory.TryReturn(spriteInstance);
+        }
+
+        private void AddGraphics()
+        {
+            if(!graphicsLoaded || taken) { return; }
+
+            if (!graphicsCreated)
+            {
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+
+                graphicsCreated = true;
+            }
         }
 
         private void DestroyGraphics()
         {
             if (graphicsCreated)
             {
-                spriteInstanceFactory.TryReturn(spriteInstance);
                 rtInstances.RemoveSprite(sprite);
                 rtInstances.RemoveShaderTableBinder(Bind);
                 rtInstances.RemoveTlasBuild(tlasData);

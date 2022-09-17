@@ -81,6 +81,11 @@ namespace Adventure
             
         }
 
+        public void Reset()
+        {
+            //Nothing to reset
+        }
+
         public void Dispose()
         {
             DestroyGraphics();

@@ -107,6 +107,11 @@ namespace Adventure
             });
         }
 
+        public void Reset()
+        {
+            //Nothing to reset
+        }
+
         public void CreatePhysics()
         {
             if (!physicsCreated)

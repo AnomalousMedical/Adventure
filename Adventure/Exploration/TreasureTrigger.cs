@@ -120,6 +120,19 @@ namespace Adventure
             });
         }
 
+        public void Reset()
+        {
+            this.state = persistence.Current.TreasureTriggers.GetData(zoneIndex, instanceId);
+            if (state.Open)
+            {
+                sprite.SetAnimation("open");
+            }
+            else
+            {
+                sprite.SetAnimation("closed");
+            }
+        }
+
         public void CreatePhysics()
         {
             if (!physicsCreated)

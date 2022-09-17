@@ -98,6 +98,11 @@ namespace Adventure
             });
         }
 
+        public void Reset()
+        {
+            //TODO: Need to figure out how to reset the loot drop
+        }
+
         public void CreatePhysics()
         {
             if (!physicsCreated)

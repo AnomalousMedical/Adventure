@@ -110,6 +110,19 @@ namespace Adventure
             });
         }
 
+        public void Reset()
+        {
+            state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
+            if (state.GateOpened)
+            {
+                AddGraphics();
+            }
+            else
+            {
+                RemoveGraphics();
+            }
+        }
+
         public void CreatePhysics()
         {
             if(this.state.GateOpened) { return; }
