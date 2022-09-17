@@ -25,6 +25,7 @@ namespace Adventure.GameOver
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
+        private readonly IPersistenceWriter persistenceWriter;
         private IGameState nextState;
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpText gameOver = new SharpText("Game Over");
@@ -39,7 +40,8 @@ namespace Adventure.GameOver
             IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
-            Persistence persistence
+            Persistence persistence,
+            IPersistenceWriter persistenceWriter
         )
         {
             this.sharpGui = sharpGui;
@@ -48,6 +50,7 @@ namespace Adventure.GameOver
             this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
             this.persistence = persistence;
+            this.persistenceWriter = persistenceWriter;
             layout = new ColumnLayout(gameOver, restart) { Margin = new IntPad(10) };
         }
 
@@ -60,27 +63,10 @@ namespace Adventure.GameOver
         {
             if (active)
             {
-                persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
-                persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
-                persistence.Current.BattleTriggers.ClearData();
-                persistence.Current.Party.Undefeated = false;
-                if (persistence.Current.Party.Gold > 0)
+                if (persistence.Current.Party.Undefeated)
                 {
-                    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
-                    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-                    persistence.Current.Player.LootDropGold = persistence.Current.Party.Gold;
-                    persistence.Current.Party.Gold = 0;
-                }
-                else
-                {
-                    persistence.Current.Player.LootDropPosition = null;
-                    persistence.Current.Player.LootDropZone = null;
-                    persistence.Current.Player.LootDropGold = 0;
-                }
-
-                foreach (var character in persistence.Current.Party.Members)
-                {
-                    character.CharacterSheet.Rest();
+                    persistenceWriter.SaveDefeated();
+                    persistence.Current.Party.Undefeated = false;
                 }
             }
         }
@@ -99,6 +85,30 @@ namespace Adventure.GameOver
             //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
             if (sharpGui.Button(restart, GamepadId.Pad1) || sharpGui.Button(restart, GamepadId.Pad2) || sharpGui.Button(restart, GamepadId.Pad3) || sharpGui.Button(restart, GamepadId.Pad4))
             {
+                persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
+                persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
+                persistence.Current.BattleTriggers.ClearData();
+                if (persistence.Current.Party.Gold > 0)
+                {
+                    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
+                    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
+                    persistence.Current.Player.LootDropGold = persistence.Current.Party.Gold;
+                    persistence.Current.Party.Gold = 0;
+                }
+                else
+                {
+                    persistence.Current.Player.LootDropPosition = null;
+                    persistence.Current.Player.LootDropZone = null;
+                    persistence.Current.Player.LootDropGold = 0;
+                }
+
+                foreach (var character in persistence.Current.Party.Members)
+                {
+                    character.CharacterSheet.Rest();
+                }
+
+                persistenceWriter.Save();
+
                 coroutineRunner.RunTask(zoneManager.Restart());
                 nextState = this.nextState;
             }

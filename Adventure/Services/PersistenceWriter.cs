@@ -17,6 +17,7 @@ namespace Adventure.Services
         void Load();
         void RemoveSaveBlock(object blocker);
         void Save();
+        void SaveDefeated();
     }
 
     class PersistenceWriter : IPersistenceWriter, IDisposable
@@ -57,10 +58,17 @@ namespace Adventure.Services
                 return;
             }
 
-            var outFile = GetSaveFile();
-            using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-            JsonSerializer.Serialize(stream, persistence.Current, jsonSerializerOptions);
-            logger.LogInformation($"Wrote save to '{outFile}'.");
+            SaveData(persistence.Current);
+        }
+
+        public void SaveDefeated()
+        {
+            var savedState = LoadData();
+            if (savedState.Party.Undefeated)
+            {
+                savedState.Party.Undefeated = false;
+                SaveData(savedState);
+            }
         }
 
         public void AddSaveBlock(Object blocker)
@@ -75,19 +83,32 @@ namespace Adventure.Services
 
         public void Load()
         {
+            persistence.Current = LoadData();
+        }
+
+        private Persistence.GameState LoadData()
+        {
             var outFile = GetSaveFile();
 
             if (!File.Exists(outFile))
             {
                 logger.LogInformation($"Creating new save.");
-                persistence.Current = genesysModule.SeedWorld(seedProvider.GetSeed());
+                return genesysModule.SeedWorld(seedProvider.GetSeed());
             }
             else
             {
                 logger.LogInformation($"Loading save from '{outFile}'.");
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                persistence.Current = JsonSerializer.Deserialize<Persistence.GameState>(stream, jsonSerializerOptions);
+                return JsonSerializer.Deserialize<Persistence.GameState>(stream, jsonSerializerOptions);
             }
+        }
+
+        private void SaveData(Persistence.GameState state)
+        {
+            var outFile = GetSaveFile();
+            using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+            JsonSerializer.Serialize(stream, state, jsonSerializerOptions);
+            logger.LogInformation($"Wrote save to '{outFile}'.");
         }
 
         private String GetSaveFile()
