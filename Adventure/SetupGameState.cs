@@ -26,6 +26,7 @@ namespace Adventure
         private readonly RayTracingRenderer rayTracingRenderer;
         private readonly IPersistenceWriter persistenceWriter;
         private readonly IWorldDatabase worldDatabase;
+        private readonly ITimeClock timeClock;
         private IGameState nextState;
         private bool finished = false;
 
@@ -47,7 +48,8 @@ namespace Adventure
             Persistence persistence,
             RayTracingRenderer rayTracingRenderer,
             IPersistenceWriter persistenceWriter,
-            IWorldDatabase worldDatabase
+            IWorldDatabase worldDatabase,
+            ITimeClock timeClock
         )
         {
             this.zoneManager = zoneManager;
@@ -61,6 +63,7 @@ namespace Adventure
             this.rayTracingRenderer = rayTracingRenderer;
             this.persistenceWriter = persistenceWriter;
             this.worldDatabase = worldDatabase;
+            this.timeClock = timeClock;
         }
 
         public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
@@ -79,6 +82,7 @@ namespace Adventure
 
                 this.persistenceWriter.Load();
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
+                timeClock.ResetToPersistedTime();
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
 
                 coroutineRunner.RunTask(async () =>

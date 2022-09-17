@@ -21,6 +21,7 @@ namespace Adventure
         void ResetTimeFactor();
         void SetTimeRatio(long speedup);
         void Update(Clock clock);
+        void ResetToPersistedTime();
 
         public event Action<TimeClock> NightStarted;
 
@@ -50,18 +51,22 @@ namespace Adventure
 
         public TimeClock(Persistence persistence)
         {
-            if(persistence.Current != null)
-            {
-                currentTime = persistence.Current.Time.Current ?? 6L * HoursToMicro;
-            }
-            else
-            {
-                currentTime = 6L * HoursToMicro;
-            }
             halfPeriod = period / 2;
             dayEndFactor = (dayEnd - dayStart) * Clock.MicroToSeconds;
             nightEndFactor = (dayStart + period - dayEnd) * Clock.MicroToSeconds;
             this.persistence = persistence;
+        }
+
+        public void ResetToPersistedTime()
+        {
+            if(persistence.Current != null)
+            {
+                CurrentTimeMicro = persistence.Current.Time.Current ?? 6L * HoursToMicro;
+            }
+            else
+            {
+                CurrentTimeMicro = 6L * HoursToMicro;
+            }
         }
 
         public void Update(Clock clock)
