@@ -191,6 +191,7 @@ namespace Adventure
         private bool connectPreviousToWorld;
         private bool connectNextToWorld;
         private PlotItems? plotItem;
+        private LootDropTrigger lootDropTrigger;
 
         private Task zoneGenerationTask;
         private Vector3 mapUnits;
@@ -376,7 +377,7 @@ namespace Adventure
                     CreateBackgroundItems(enemyRandom, biome);
                 }
 
-                AddLootDrop();
+                ResetLootDrop();
                 AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
 
                 //Since this is async the physics can be active before the placeables are created
@@ -448,6 +449,7 @@ namespace Adventure
 
         public void ResetPlaceables()
         {
+            ResetLootDrop();
             foreach (var placeable in placeables)
             {
                 placeable.Reset();
@@ -551,8 +553,14 @@ namespace Adventure
             placeFirstChest = true;
         }
 
-        private void AddLootDrop()
+        private void ResetLootDrop()
         {
+            if (lootDropTrigger != null)
+            {
+                lootDropTrigger.RequestDestruction();
+                lootDropTrigger = null;
+            }
+
             if (persistence.Current.Player.LootDropZone == index)
             {
                 var lootDrop = objectResolver.Resolve<LootDropTrigger, LootDropTrigger.Description>(o =>
@@ -565,6 +573,7 @@ namespace Adventure
                 });
                 this.placeables.Add(lootDrop);
                 lootDrop.Disposed += () => this.placeables.Remove(lootDrop);
+                lootDropTrigger = lootDrop; //Don't combine this with above to keep disposed cb working
             }
         }
 

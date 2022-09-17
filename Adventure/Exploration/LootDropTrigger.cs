@@ -100,7 +100,7 @@ namespace Adventure
 
         public void Reset()
         {
-            //TODO: Need to figure out how to reset the loot drop
+            //This gets reset by the zone itself
         }
 
         public void CreatePhysics()
