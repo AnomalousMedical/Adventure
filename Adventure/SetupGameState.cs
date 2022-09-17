@@ -20,7 +20,7 @@ namespace Adventure
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private readonly RTInstances<IZoneManager> zoneInstances;
-        private readonly RTInstances<IWorldMapGameState> worldInstances;
+        private readonly RTInstances<WorldMapScene> worldInstances;
         private RTInstances rtInstances;
         private readonly Persistence persistence;
         private readonly RayTracingRenderer rayTracingRenderer;
@@ -44,7 +44,7 @@ namespace Adventure
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
             RTInstances<IZoneManager> zoneInstances,
-            RTInstances<IWorldMapGameState> worldInstances,
+            RTInstances<WorldMapScene> worldInstances,
             Persistence persistence,
             RayTracingRenderer rayTracingRenderer,
             IPersistenceWriter persistenceWriter,

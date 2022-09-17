@@ -40,9 +40,9 @@ namespace Adventure.WorldMap
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly RayTracingRenderer renderer;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IBiomeManager biomeManager;
         private readonly csIslandMaze map;
         private readonly IObjectResolver objectResolver;
@@ -88,10 +88,10 @@ namespace Adventure.WorldMap
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances<IWorldMapGameState> rtInstances,
+            RTInstances<WorldMapScene> rtInstances,
             RayTracingRenderer renderer,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            IBepuScene<WorldMapScene> bepuScene,
             IBiomeManager biomeManager
         )
         {

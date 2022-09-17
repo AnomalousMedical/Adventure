@@ -31,7 +31,7 @@ namespace Adventure.WorldMap
 
         private TLASInstanceData[] instanceData;
         private readonly CubeBLAS cubeBLAS;
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly RayTracingRenderer renderer;
         private readonly TextureManager textureManager;
@@ -40,7 +40,7 @@ namespace Adventure.WorldMap
         private PrimaryHitShader primaryHitShader;
         private CC0TextureResult cubeTexture;
         private BlasInstanceData blasInstanceData;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
@@ -48,7 +48,7 @@ namespace Adventure.WorldMap
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
-        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly IWorldMapManager worldMapManager;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -83,14 +83,14 @@ namespace Adventure.WorldMap
             Description description,
             CubeBLAS cubeBLAS,
             IScopedCoroutine coroutine,
-            RTInstances<IWorldMapGameState> rtInstances,
+            RTInstances<WorldMapScene> rtInstances,
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RayTracingRenderer renderer,
             TextureManager textureManager,
             ActiveTextures activeTextures,
             Persistence persistence,
-            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
+            IBepuScene<WorldMapScene> bepuScene,
             IContextMenu contextMenu,
             EventManager eventManager,
             CameraMover cameraMover,

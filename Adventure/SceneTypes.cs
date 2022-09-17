@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class EmptyScene
-    {
-    }
+    class EmptyScene { }
+
+    class WorldMapScene { }
+
+    class ZoneScene { }
+
+    class BattleScene { }
 }

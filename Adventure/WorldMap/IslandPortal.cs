@@ -31,7 +31,7 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
@@ -40,8 +40,8 @@ namespace Adventure.WorldMap
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData[] tlasData;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
-        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
+        private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -53,12 +53,12 @@ namespace Adventure.WorldMap
         private Vector3 currentScale;
 
         public IslandPortal(
-            RTInstances<IWorldMapGameState> rtInstances,
+            RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            IBepuScene<WorldMapScene> bepuScene,
             Description description,
-            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             IWorldMapManager worldMapManager,

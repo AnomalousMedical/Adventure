@@ -39,14 +39,14 @@ namespace Adventure.WorldMap
         public const int RightHand = 0;
         public const int LeftHand = 1;
 
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly EventManager eventManager;
         private readonly CameraMover cameraMover;
-        private readonly ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly EventLayer eventLayer;
@@ -57,10 +57,10 @@ namespace Adventure.WorldMap
         private bool graphicsActive = false;
 
         private IPlayerSprite playerSpriteInfo;
-        private Attachment<IWorldMapGameState> mainHandItem;
-        private Attachment<IWorldMapGameState> offHandItem;
-        private Attachment<IWorldMapGameState> mainHandHand;
-        private Attachment<IWorldMapGameState> offHandHand;
+        private Attachment<WorldMapScene> mainHandItem;
+        private Attachment<WorldMapScene> offHandItem;
+        private Attachment<WorldMapScene> mainHandHand;
+        private Attachment<WorldMapScene> offHandHand;
 
         private CharacterSheet characterSheet;
 
@@ -101,16 +101,16 @@ namespace Adventure.WorldMap
 
         public WorldMapPlayer
         (
-            RTInstances<IWorldMapGameState> rtInstances,
+            RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            IBepuScene<WorldMapScene> bepuScene,
             EventManager eventManager,
             Description description,
             CameraMover cameraMover,
-            ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory
         )
@@ -546,7 +546,7 @@ namespace Adventure.WorldMap
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -559,7 +559,7 @@ namespace Adventure.WorldMap
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -586,7 +586,7 @@ namespace Adventure.WorldMap
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -599,7 +599,7 @@ namespace Adventure.WorldMap
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<IWorldMapGameState>, Attachment<IWorldMapGameState>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {

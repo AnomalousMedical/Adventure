@@ -14,7 +14,20 @@ namespace Adventure.WorldMap
 {
     class AirshipPortal : IslandPortal
     {
-        public AirshipPortal(RTInstances<IWorldMapGameState> rtInstances, IDestructionRequest destructionRequest, IScopedCoroutine coroutine, IBepuScene<IWorldMapGameState> bepuScene, Description description, ICollidableTypeIdentifier<IWorldMapGameState> collidableIdentifier, SpriteInstanceFactory spriteInstanceFactory, IContextMenu contextMenu, IWorldMapManager worldMapManager, Persistence persistence) : base(rtInstances, destructionRequest, coroutine, bepuScene, description, collidableIdentifier, spriteInstanceFactory, contextMenu, worldMapManager, persistence)
+        public AirshipPortal(
+            RTInstances<WorldMapScene> rtInstances, 
+            IDestructionRequest destructionRequest, 
+            IScopedCoroutine coroutine, 
+            IBepuScene<WorldMapScene> bepuScene, 
+            Description description, 
+            ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier, 
+            SpriteInstanceFactory spriteInstanceFactory, 
+            IContextMenu contextMenu, 
+            IWorldMapManager worldMapManager, 
+            Persistence persistence
+            ) : base(rtInstances, destructionRequest, coroutine, bepuScene, description, 
+                collidableIdentifier, spriteInstanceFactory, contextMenu, worldMapManager, 
+                persistence)
         {
         }
 

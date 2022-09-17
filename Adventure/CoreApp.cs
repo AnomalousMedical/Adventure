@@ -78,7 +78,7 @@ namespace Adventure
                 o.EventLayer = EventLayers.Exploration;
             });
             services.AddBepuPlugin<IExplorationGameState>()
-                    .AddBepuSceneType<IWorldMapGameState>();
+                    .AddBepuSceneType<WorldMapScene>();
 
             services.AddRpgMath();
 
@@ -109,15 +109,15 @@ namespace Adventure
             services.AddScoped<Enemy.Desc>();
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
-            services.AddSingleton<RTInstances<IWorldMapGameState>>();
+            services.AddSingleton<RTInstances<WorldMapScene>>();
             services.AddSingleton<RTInstances<EmptyScene>>();
             services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();
             services.AddScoped<Attachment<IBattleManager>>();
             services.AddScoped<Attachment<IBattleManager>.Description>();
-            services.AddScoped<Attachment<IWorldMapGameState>>();
-            services.AddScoped<Attachment<IWorldMapGameState>.Description>();
+            services.AddScoped<Attachment<WorldMapScene>>();
+            services.AddScoped<Attachment<WorldMapScene>.Description>();
             services.AddScoped<IBattleBuilder, BattleBuilder>();
             services.AddScoped<Zone>();
             services.AddScoped<Zone.Description>();
@@ -171,7 +171,7 @@ namespace Adventure
             services.AddSingleton<IGameStateLinker, GameStateLinker>();
             services.AddSingleton<CameraMover>();
             services.AddSingleton<ICollidableTypeIdentifier<IExplorationGameState>, CollidableTypeIdentifier<IExplorationGameState>>();
-            services.AddSingleton<ICollidableTypeIdentifier<IWorldMapGameState>, CollidableTypeIdentifier<IWorldMapGameState>>();
+            services.AddSingleton<ICollidableTypeIdentifier<WorldMapScene>, CollidableTypeIdentifier<WorldMapScene>>();
             services.AddSingleton<IBackgroundMusicPlayer, BackgroundMusicPlayer>();
             services.AddSingleton<ICameraProjector, CameraProjector>();
             services.AddSingleton<IBattleScreenLayout, BattleScreenLayout>();

@@ -28,7 +28,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
         private Airship airship;
@@ -37,7 +37,7 @@ namespace Adventure.WorldMap
         (
             IObjectResolverFactory objectResolverFactory,
             IWorldDatabase worldDatabase,
-            IBepuScene<IWorldMapGameState> bepuScene, //Inject this here so it is created earlier and destroyed later
+            IBepuScene<WorldMapScene> bepuScene, //Inject this here so it is created earlier and destroyed later
             Party party
         )
         {

@@ -23,13 +23,13 @@ namespace Adventure.WorldMap
 
     class WorldMapGameState : IWorldMapGameState
     {
-        private readonly RTInstances<IWorldMapGameState> rtInstances;
+        private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
         private readonly IWorldMapManager worldMapManager;
         private readonly FlyCameraManager flyCameraManager;
-        private readonly IBepuScene<IWorldMapGameState> bepuScene;
+        private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IContextMenu contextMenu;
         private readonly IWorldDatabase worldDatabase;
         private readonly IExplorationMenu explorationMenu;
@@ -43,13 +43,13 @@ namespace Adventure.WorldMap
 
         public WorldMapGameState
         (
-            RTInstances<IWorldMapGameState> rtInstances,
+            RTInstances<WorldMapScene> rtInstances,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
             Persistence persistence,
             IWorldMapManager worldMapManager,
             FlyCameraManager flyCameraManager,
-            IBepuScene<IWorldMapGameState> bepuScene,
+            IBepuScene<WorldMapScene> bepuScene,
             IContextMenu contextMenu,
             IWorldDatabase worldDatabase,
             IExplorationMenu explorationMenu,
