@@ -20,7 +20,7 @@ namespace Adventure.GameOver
     class GameOverGameState : IGameOverGameState
     {
         private readonly ISharpGui sharpGui;
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly IScreenPositioner screenPositioner;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
@@ -36,7 +36,7 @@ namespace Adventure.GameOver
         public GameOverGameState
         (
             ISharpGui sharpGui,
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             IScreenPositioner screenPositioner,
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,

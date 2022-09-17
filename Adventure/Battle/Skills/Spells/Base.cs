@@ -39,7 +39,7 @@ namespace Adventure.Battle.Skills
                 battleManager.AddDamageNumber(target, damage);
                 target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
-                var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
                     ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
                     o.RenderShadow = false;

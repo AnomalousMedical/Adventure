@@ -19,7 +19,7 @@ namespace Adventure.Battle
     class BattlePlayer : IDisposable, IBattleTarget
     {
         private readonly IPlayerSprite playerSpriteInfo;
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly IScopedCoroutine coroutine;
         private readonly IScaleHelper scaleHelper;
@@ -40,11 +40,11 @@ namespace Adventure.Battle
         private GamepadId gamepadId;
         private FrameEventSprite sprite;
 
-        private Attachment<IBattleManager> mainHandItem;
-        private Attachment<IBattleManager> offHandItem;
-        private Attachment<IBattleManager> castEffect;
-        private Attachment<IBattleManager> mainHandHand;
-        private Attachment<IBattleManager> offHandHand;
+        private Attachment<BattleScene> mainHandItem;
+        private Attachment<BattleScene> offHandItem;
+        private Attachment<BattleScene> castEffect;
+        private Attachment<BattleScene> mainHandHand;
+        private Attachment<BattleScene> offHandHand;
 
         private SharpButton attackButton = new SharpButton() { Text = "Attack" };
         private SharpButton skillsButton = new SharpButton() { Text = "Skills" };
@@ -113,7 +113,7 @@ namespace Adventure.Battle
         }
 
         public BattlePlayer(
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,
             IDestructionRequest destructionRequest,
             Description description,
@@ -436,7 +436,7 @@ namespace Adventure.Battle
         private void Cast(IBattleTarget target, ISkill skill)
         {
             castEffect?.RequestDestruction();
-            castEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+            castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
                 ISpriteAsset asset = new Assets.PixelEffects.Nebula();
                 o.RenderShadow = false;
@@ -650,7 +650,7 @@ namespace Adventure.Battle
         private void UseItem(IBattleTarget target, InventoryItem item)
         {
             castEffect?.RequestDestruction();
-            castEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+            castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
                 ISpriteAsset asset = new Assets.PixelEffects.Nebula();
                 o.RenderShadow = false;
@@ -916,7 +916,7 @@ namespace Adventure.Battle
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -929,7 +929,7 @@ namespace Adventure.Battle
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -955,7 +955,7 @@ namespace Adventure.Battle
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -968,7 +968,7 @@ namespace Adventure.Battle
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {

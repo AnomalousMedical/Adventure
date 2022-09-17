@@ -28,7 +28,7 @@ namespace Adventure.Battle.Skills
             target = battleManager.ValidateTarget(attacker, target);
             IEnumerable<IBattleTarget> groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
 
-            var applyEffects = new List<Attachment<IBattleManager>>();
+            var applyEffects = new List<Attachment<BattleScene>>();
 
             foreach (var currentTarget in groupTargets)
             {
@@ -43,7 +43,7 @@ namespace Adventure.Battle.Skills
                     battleManager.AddDamageNumber(currentTarget, damage);
                     currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
-                    var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
                         ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
                         o.RenderShadow = false;

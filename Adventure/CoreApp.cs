@@ -108,14 +108,14 @@ namespace Adventure
             services.AddScoped<Enemy>();
             services.AddScoped<Enemy.Desc>();
             services.AddSingleton<RTInstances<IZoneManager>>();
-            services.AddSingleton<RTInstances<IBattleManager>>();
+            services.AddSingleton<RTInstances<BattleScene>>();
             services.AddSingleton<RTInstances<WorldMapScene>>();
             services.AddSingleton<RTInstances<EmptyScene>>();
             services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();
-            services.AddScoped<Attachment<IBattleManager>>();
-            services.AddScoped<Attachment<IBattleManager>.Description>();
+            services.AddScoped<Attachment<BattleScene>>();
+            services.AddScoped<Attachment<BattleScene>.Description>();
             services.AddScoped<Attachment<WorldMapScene>>();
             services.AddScoped<Attachment<WorldMapScene>.Description>();
             services.AddScoped<IBattleBuilder, BattleBuilder>();

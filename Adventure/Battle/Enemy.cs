@@ -26,7 +26,7 @@ namespace Adventure.Battle
             public long GoldReward { get; set; }
         }
 
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
@@ -52,7 +52,7 @@ namespace Adventure.Battle
         private long currentMp;
 
         public Enemy(
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,

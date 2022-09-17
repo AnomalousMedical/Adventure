@@ -35,7 +35,7 @@ namespace Adventure.Battle.Skills
             {
                 ApplyDamage(battleManager, attacker, target, resistance);
 
-                var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
                     ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
                     o.RenderShadow = false;

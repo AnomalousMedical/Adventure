@@ -62,7 +62,7 @@ namespace Adventure.Battle.Skills
 
             battleManager.AddDamageNumber(target, DamageNumberText, Color.White);
 
-            var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
                 ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
                 o.RenderShadow = false;

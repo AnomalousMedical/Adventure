@@ -23,7 +23,7 @@ namespace Adventure.Battle
     class BattleGameState : IBattleGameState
     {
         private readonly IBattleManager battleManager;
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly Party party;
         private readonly PotionCreator potionCreator;
         private readonly EventManager eventManager;
@@ -37,7 +37,7 @@ namespace Adventure.Battle
         public BattleGameState
         (
             IBattleManager battleManager,
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             Party party,
             PotionCreator potionCreator,
             EventManager eventManager,

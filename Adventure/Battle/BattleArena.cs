@@ -47,7 +47,7 @@ namespace Adventure.Battle
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances<IBattleManager> rtInstances
+            RTInstances<BattleScene> rtInstances
         )
         {
             this.destructionRequest = destructionRequest;

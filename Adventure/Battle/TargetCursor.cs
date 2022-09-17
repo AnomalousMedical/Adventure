@@ -15,7 +15,7 @@ namespace Adventure.Battle
     class TargetCursor : IDisposable
     {
         private readonly IDestructionRequest destructionRequest;
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly ISharpGui sharpGui;
         private readonly IBattleScreenLayout battleScreenLayout;
@@ -81,7 +81,7 @@ namespace Adventure.Battle
         public TargetCursor
         (
             IDestructionRequest destructionRequest,
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,
             IScopedCoroutine coroutine,
             ISharpGui sharpGui,

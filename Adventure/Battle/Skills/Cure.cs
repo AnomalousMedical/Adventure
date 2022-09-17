@@ -66,7 +66,7 @@ namespace Adventure.Battle.Skills
             target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
-            var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
                 ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
                 o.RenderShadow = false;

@@ -17,7 +17,7 @@ namespace Adventure.Battle
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        private readonly RTInstances<IBattleManager> rtInstances;
+        private readonly RTInstances<BattleScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
@@ -31,7 +31,7 @@ namespace Adventure.Battle
         private Vector3 currentScale;
 
         public BattleBackgroundItem(
-            RTInstances<IBattleManager> rtInstances,
+            RTInstances<BattleScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             Description description,

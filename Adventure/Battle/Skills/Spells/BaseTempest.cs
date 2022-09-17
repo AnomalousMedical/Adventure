@@ -29,7 +29,7 @@ namespace Adventure.Battle.Skills
             var groupTargets = battleManager.GetTargetsInGroup(target);
             var hitTargets = new List<IBattleTarget>(10);
 
-            var applyEffects = new List<Attachment<IBattleManager>>();
+            var applyEffects = new List<Attachment<BattleScene>>();
 
             foreach (var currentTarget in groupTargets)
             {
@@ -40,7 +40,7 @@ namespace Adventure.Battle.Skills
                     hitTargets.Add(currentTarget);
                     ApplyDamage(battleManager, attacker, currentTarget, resistance);
 
-                    var applyEffect = objectResolver.Resolve<Attachment<IBattleManager>, Attachment<IBattleManager>.Description>(o =>
+                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
                         ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
                         o.RenderShadow = false;
