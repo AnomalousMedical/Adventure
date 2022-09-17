@@ -45,6 +45,7 @@ namespace Adventure
             IScreenPositioner screenPositioner,
             RTInstances<ZoneScene> zoneInstances,
             RTInstances<WorldMapScene> worldInstances,
+            RTInstances<EmptyScene> emptySceneInstances,
             Persistence persistence,
             RayTracingRenderer rayTracingRenderer,
             IPersistenceWriter persistenceWriter,
@@ -59,6 +60,7 @@ namespace Adventure
             this.screenPositioner = screenPositioner;
             this.zoneInstances = zoneInstances;
             this.worldInstances = worldInstances;
+            this.rtInstances = emptySceneInstances;
             this.persistence = persistence;
             this.rayTracingRenderer = rayTracingRenderer;
             this.persistenceWriter = persistenceWriter;
@@ -91,17 +93,17 @@ namespace Adventure
                     if (persistence.Current.Player.InWorld)
                     {
                         this.nextState = worldMapGameState;
-                        rtInstances = worldInstances;
                         await mapLoadTask;
+                        rtInstances = worldInstances;
                     }
                     else
                     {
                         this.nextState = explorationGameState;
-                        rtInstances = zoneInstances;
                         await zoneManager.Restart(lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
                         await zoneManager.WaitForPrevious();
                         await zoneManager.WaitForNext();
+                        rtInstances = zoneInstances;
                     }
 
                     await rayTracingRenderer.WaitForPipelineRebuild();
