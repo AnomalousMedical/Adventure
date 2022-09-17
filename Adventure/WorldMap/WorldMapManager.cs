@@ -89,6 +89,8 @@ namespace Adventure.WorldMap
         public async Task SetupWorldMap()
         {
             player?.RequestDestruction();
+            worldMapInstance?.RequestDestruction();
+            airship?.RequestDestruction();
 
             var playerCharacter = party.ActiveCharacters.FirstOrDefault();
             player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
@@ -98,15 +100,10 @@ namespace Adventure.WorldMap
                 o.Gamepad = GamepadId.Pad1;
             });
 
-            worldMapInstance?.RequestDestruction();
-
-            if(airship == null)
+            airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
             {
-                airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
-                {
-                    o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
-                });
-            }
+                o.Scale = new Vector3(0.4f, 0.4f, 0.4f);
+            });
 
             worldMapInstance = objectResolver.Resolve<WorldMapInstance, WorldMapInstance.Description>(o =>
             {

@@ -199,6 +199,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            StopAirshipMode();
             this.activeTextures.RemoveActiveTexture(this.cubeTexture);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
             textureManager.TryReturn(cubeTexture);
@@ -320,33 +321,47 @@ namespace Adventure.WorldMap
 
         private void TakeOff(ContextMenuArgs args)
         {
-            persistence.Current.Player.InAirship = true;
-            contextMenu.ClearContext(TakeOff);
-            eventLayer.makeFocusLayer();
-            active = true;
-            currentPosition.y = 3.14f;
-            DestroyPhysics();
-            SyncGraphics();
-            worldMapManager.SetPlayerVisible(false);
-            backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+            if (!active)
+            {
+                persistence.Current.Player.InAirship = true;
+                contextMenu.ClearContext(TakeOff);
+                eventLayer.makeFocusLayer();
+                active = true;
+                currentPosition.y = 3.14f;
+                DestroyPhysics();
+                SyncGraphics();
+                worldMapManager.SetPlayerVisible(false);
+                backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+            }
         }
 
         private void Land(ContextMenuArgs args)
         {
-            persistence.Current.Player.InAirship = false;
-            contextMenu.ClearContext(Land);
-            landEventLayer.makeFocusLayer();
-            active = false;
-            var cell = map.GetCellForLocation(currentPosition);
-            var center = map.GetCellCenterpoint(cell);
-            currentPosition = center;
-            currentPosition.y += currentScale.y / 2.0f;
-            this.persistence.Current.Player.AirshipPosition = this.currentPosition;
-            SyncGraphics();
-            CreatePhysics();
-            worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
-            worldMapManager.SetPlayerVisible(true);
-            backgroundMusicPlayer.SetBattleTrack(null);
+            if (active)
+            {
+                persistence.Current.Player.InAirship = false;
+                var cell = map.GetCellForLocation(currentPosition);
+                var center = map.GetCellCenterpoint(cell);
+                currentPosition = center;
+                currentPosition.y += currentScale.y / 2.0f;
+                this.persistence.Current.Player.AirshipPosition = this.currentPosition;
+                worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
+                StopAirshipMode();
+                SyncGraphics();
+                CreatePhysics();
+            }
+        }
+
+        private void StopAirshipMode()
+        {
+            if (active)
+            {
+                active = false;
+                contextMenu.ClearContext(Land);
+                landEventLayer.makeFocusLayer();
+                worldMapManager.SetPlayerVisible(true);
+                backgroundMusicPlayer.SetBattleTrack(null);
+            }
         }
 
         private void SetupInput()
