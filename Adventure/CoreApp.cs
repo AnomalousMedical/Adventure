@@ -96,6 +96,7 @@ namespace Adventure
             services.AddSingleton<ISetupRespawnGameState, SetupRespawnGameState>();
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
+            services.AddSingleton<IStartExplorationGameState, StartExplorationGameState>();
             services.AddScoped<WorldMapPlayer>();
             services.AddScoped<WorldMapPlayer.Description>();
             services.AddScoped<Airship>();
@@ -109,6 +110,7 @@ namespace Adventure
             services.AddSingleton<RTInstances<IZoneManager>>();
             services.AddSingleton<RTInstances<IBattleManager>>();
             services.AddSingleton<RTInstances<IWorldMapGameState>>();
+            services.AddSingleton<RTInstances<EmptyScene>>();
             services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
             services.AddScoped<Attachment<IZoneManager>>();
             services.AddScoped<Attachment<IZoneManager>.Description>();

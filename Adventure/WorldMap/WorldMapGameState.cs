@@ -17,7 +17,7 @@ namespace Adventure.WorldMap
 {
     interface IWorldMapGameState : IGameState
     {
-        void Link(IExplorationGameState explorationState);
+        void Link(IExplorationGameState explorationState, IGameState startExplorationGameState);
         void EnterZone(int zoneIndex);
     }
 
@@ -36,6 +36,7 @@ namespace Adventure.WorldMap
         private readonly EventManager eventManager;
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private IExplorationGameState explorationState;
+        private IGameState startExplorationGameState;
         private IGameState nextState;
 
         public RTInstances Instances => rtInstances;
@@ -70,9 +71,10 @@ namespace Adventure.WorldMap
             this.backgroundMusicPlayer = backgroundMusicPlayer;
         }
 
-        public void Link(IExplorationGameState explorationState)
+        public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
         {
             this.explorationState = explorationState;
+            this.startExplorationGameState = startExplorationGameState;
         }
 
         public void SetActive(bool active)
@@ -100,7 +102,7 @@ namespace Adventure.WorldMap
             persistence.Current.Player.RespawnPosition = null;
             persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
             coroutineRunner.RunTask(zoneManager.Restart());
-            nextState = this.explorationState;
+            nextState = this.startExplorationGameState;
         }
 
         public IGameState Update(Clock clock)

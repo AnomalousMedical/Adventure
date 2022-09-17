@@ -18,7 +18,8 @@ namespace Adventure
             IGameOverGameState gameOver,
             IWorldMapGameState worldMap,
             ISetupGameState setup,
-            ISetupRespawnGameState setupRespawnGameState
+            ISetupRespawnGameState setupRespawnGameState, 
+            IStartExplorationGameState startExplorationGameState
         )
         {
             setup.Link(exploration, worldMap);
@@ -26,7 +27,8 @@ namespace Adventure
             battle.Link(exploration, gameOver);
             gameOver.Link(setupRespawnGameState);
             setupRespawnGameState.Link(exploration);
-            worldMap.Link(exploration);
+            worldMap.Link(exploration, startExplorationGameState);
+            startExplorationGameState.Link(exploration);
         }
     }
 }
