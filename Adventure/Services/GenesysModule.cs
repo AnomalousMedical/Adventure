@@ -10,8 +10,6 @@ namespace Adventure.Services
 {
     interface IGenesysModule
     {
-        int Seed { get; set; }
-
         Persistence.GameState SeedWorld(int seed);
     }
 
@@ -19,11 +17,7 @@ namespace Adventure.Services
     {
         public GenesysModule()
         {
-            var random = new Random();
-            this.Seed = random.Next(int.MaxValue);
         }
-
-        public int Seed { get; set; }
 
         public Persistence.GameState SeedWorld(int seed)
         {

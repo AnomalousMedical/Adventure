@@ -14,6 +14,7 @@ namespace Adventure.Services
         int GetZoneSeed(int index);
         IAreaBuilder GetAreaBuilder(int zoneIndex);
         int GetLevelDelta(int area);
+        void Reset(int newSeed);
 
         IBiomeManager BiomeManager { get; }
         SwordCreator SwordCreator { get; }
@@ -75,25 +76,9 @@ namespace Adventure.Services
         }
 
         private WorldMapData worldMap;
-        public WorldMapData WorldMap
-        {
-            get
-            {
-                CheckSeed();
+        public WorldMapData WorldMap => worldMap;
 
-                return worldMap;
-            }
-        }
-
-        public List<IAreaBuilder> AreaBuilders
-        {
-            get
-            {
-                CheckSeed();
-
-                return areaBuilders;
-            }
-        }
+        public List<IAreaBuilder> AreaBuilders => areaBuilders;
 
         public int CurrentSeed => persistence.Current.World.Seed;
 
@@ -127,13 +112,10 @@ namespace Adventure.Services
             PotionCreator = potionCreator;
             DaggerCreator = daggerCreator;
             BookCreator = bookCreator;
-            Reset(persistence.Current.World.Seed);
         }
 
         public int GetZoneSeed(int zoneIndex)
         {
-            CheckSeed();
-
             var end = zoneIndex + 1;
             for (var i = createdZoneSeeds.Count; i < end; ++i)
             {
@@ -144,8 +126,6 @@ namespace Adventure.Services
 
         public IAreaBuilder GetAreaBuilder(int zoneIndex)
         {
-            CheckSeed();
-
             foreach (var area in areaBuilders)
             {
                 if (zoneIndex >= area.StartZone && zoneIndex <= area.EndZone)
@@ -157,15 +137,7 @@ namespace Adventure.Services
             return areaBuilders[0];
         }
 
-        private void CheckSeed()
-        {
-            if (persistence.Current.World.Seed != currentSeed)
-            {
-                Reset(persistence.Current.World.Seed);
-            }
-        }
-
-        private void Reset(int newSeed)
+        public void Reset(int newSeed)
         {
             //Setup seeds and randoms
             createdZoneSeeds = new List<int>();

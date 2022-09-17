@@ -180,6 +180,11 @@ namespace Adventure
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IContextMenu, ContextMenu>();
+#if !RELEASE
+            services.AddSingleton<ISeedProvider>(s => new ConstantSeedProvider(0)); //Set to 0 for debugging
+#else
+            services.AddSingleton<ISeedProvider, RandomSeedProvider>();
+#endif
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
             services.AddSingleton<PhilipRootMenu>();
             services.AddSingleton<IGenesysModule, GenesysModule>();
@@ -210,18 +215,7 @@ namespace Adventure
             services.AddSingleton<PickUpTreasureMenu>();
             services.AddSingleton<OptionsMenu>();
             services.AddSingleton<App>(this);
-            services.AddSingleton<Persistence>(s =>
-            {
-                var writer = s.GetRequiredService<IPersistenceWriter>();
-                return writer.Load(() =>
-                {
-                    var genesysModule = s.GetRequiredService<IGenesysModule>();
-#if !RELEASE
-                    genesysModule.Seed = 0; //Set to 0 for debugging, but by default is a random number
-#endif
-                    return genesysModule.SeedWorld(genesysModule.Seed);
-                });
-            });
+            services.AddSingleton<Persistence>();
 
             return true;
         }

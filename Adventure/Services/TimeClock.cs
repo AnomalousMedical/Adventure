@@ -50,7 +50,14 @@ namespace Adventure
 
         public TimeClock(Persistence persistence)
         {
-            currentTime = persistence.Current.Time.Current ?? 6L * HoursToMicro;
+            if(persistence.Current != null)
+            {
+                currentTime = persistence.Current.Time.Current ?? 6L * HoursToMicro;
+            }
+            else
+            {
+                currentTime = 6L * HoursToMicro;
+            }
             halfPeriod = period / 2;
             dayEndFactor = (dayEnd - dayStart) * Clock.MicroToSeconds;
             nightEndFactor = (dayStart + period - dayEnd) * Clock.MicroToSeconds;

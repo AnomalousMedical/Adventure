@@ -49,7 +49,6 @@ namespace Adventure
 
         public ExplorationGameState
         (
-            ICoroutineRunner coroutineRunner,
             IBepuScene<IExplorationGameState> bepuScene,
             IZoneManager zoneManager,
             RTInstances<IZoneManager> rtInstances,
@@ -74,10 +73,6 @@ namespace Adventure
             this.persistence = persistence;
             this.worldDatabase = worldDatabase;
             this.levelCalculator = levelCalculator;
-            if (!persistence.Current.Player.InWorld)
-            {
-                coroutineRunner.RunTask(zoneManager.Restart());
-            }
         }
 
         public void Dispose()

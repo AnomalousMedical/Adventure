@@ -1,4 +1,5 @@
 ﻿using Adventure.Services;
+using BepuPlugin;
 using Engine;
 using Engine.Platform;
 using System;
@@ -19,7 +20,6 @@ namespace Adventure.WorldMap
         void MovePlayer(in Vector3 loc);
         void SetPlayerVisible(bool visible);
         Vector3 GetAirshipPortal();
-        Task WaitForWorldMapLoad();
         void CenterCamera();
     }
 
@@ -28,6 +28,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
+        private readonly IBepuScene<IWorldMapGameState> bepuScene;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
         private Airship airship;
@@ -36,20 +37,14 @@ namespace Adventure.WorldMap
         (
             IObjectResolverFactory objectResolverFactory,
             IWorldDatabase worldDatabase,
+            IBepuScene<IWorldMapGameState> bepuScene, //Inject this here so it is created earlier and destroyed later
             Party party
         )
         {
             this.objectResolver = objectResolverFactory.Create();
             this.worldDatabase = worldDatabase;
             this.party = party;
-            var playerCharacter = party.ActiveCharacters.FirstOrDefault();
-            player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
-            {
-                //o.Translation = currentZone.StartPoint;
-                o.PlayerSprite = playerCharacter.PlayerSprite;
-                o.CharacterSheet = playerCharacter.CharacterSheet;
-                o.Gamepad = GamepadId.Pad1;
-            });
+            this.bepuScene = bepuScene;
         }
 
         public void Dispose()
@@ -93,6 +88,17 @@ namespace Adventure.WorldMap
 
         public async Task SetupWorldMap()
         {
+            if (player == null)
+            {
+                var playerCharacter = party.ActiveCharacters.FirstOrDefault();
+                player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
+                {
+                    o.PlayerSprite = playerCharacter.PlayerSprite;
+                    o.CharacterSheet = playerCharacter.CharacterSheet;
+                    o.Gamepad = GamepadId.Pad1;
+                });
+            }
+
             worldMapInstance?.RequestDestruction();
 
             if(airship == null)
@@ -115,11 +121,6 @@ namespace Adventure.WorldMap
             await worldMapInstance.WaitForLoad();
             await airship.SetMap(worldMapInstance);
             worldMapInstance.SetupPhysics();
-        }
-
-        public Task WaitForWorldMapLoad()
-        {
-            return worldMapInstance?.WaitForLoad() ?? Task.CompletedTask;
         }
 
         public Vector3 GetPortal(int portalIndex)

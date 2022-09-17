@@ -68,7 +68,6 @@ namespace Adventure.WorldMap
             this.explorationMenu = explorationMenu;
             this.eventManager = eventManager;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
-            coroutineRunner.RunTask(worldMapManager.SetupWorldMap());
         }
 
         public void Link(IExplorationGameState explorationState)

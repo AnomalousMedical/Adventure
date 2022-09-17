@@ -24,12 +24,16 @@ namespace Adventure
         private RTInstances rtInstances;
         private readonly Persistence persistence;
         private readonly RayTracingRenderer rayTracingRenderer;
+        private readonly IPersistenceWriter persistenceWriter;
+        private readonly IWorldDatabase worldDatabase;
         private IGameState nextState;
         private bool finished = false;
 
         public RTInstances Instances => rtInstances;
 
         private SharpText loading = new SharpText("Loading") { Color = Color.White };
+        private IExplorationGameState explorationGameState;
+        private IWorldMapGameState worldMapGameState;
 
         public SetupGameState
         (
@@ -41,7 +45,9 @@ namespace Adventure
             RTInstances<IZoneManager> zoneInstances,
             RTInstances<IWorldMapGameState> worldInstances,
             Persistence persistence,
-            RayTracingRenderer rayTracingRenderer
+            RayTracingRenderer rayTracingRenderer,
+            IPersistenceWriter persistenceWriter,
+            IWorldDatabase worldDatabase
         )
         {
             this.zoneManager = zoneManager;
@@ -53,18 +59,14 @@ namespace Adventure
             this.worldInstances = worldInstances;
             this.persistence = persistence;
             this.rayTracingRenderer = rayTracingRenderer;
+            this.persistenceWriter = persistenceWriter;
+            this.worldDatabase = worldDatabase;
         }
 
         public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
         {
-            if (persistence.Current.Player.InWorld)
-            {
-                this.nextState = worldMapGameState;
-            }
-            else
-            {
-                this.nextState = explorationGameState;
-            }
+            this.explorationGameState = explorationGameState;
+            this.worldMapGameState = worldMapGameState;
         }
 
         public void SetActive(bool active)
@@ -72,16 +74,24 @@ namespace Adventure
             if (active)
             {
                 finished = false;
+
+                this.persistenceWriter.Load();
+                this.worldDatabase.Reset(persistence.Current.World.Seed);
+                var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
+
                 coroutineRunner.RunTask(async () =>
                 {
                     if (persistence.Current.Player.InWorld)
                     {
+                        this.nextState = worldMapGameState;
                         rtInstances = worldInstances;
-                        await worldMapManager.WaitForWorldMapLoad();
+                        await mapLoadTask;
                     }
                     else
                     {
+                        this.nextState = explorationGameState;
                         rtInstances = zoneInstances;
+                        await zoneManager.Restart();
                         await zoneManager.WaitForCurrent();
                         await zoneManager.WaitForPrevious();
                         await zoneManager.WaitForNext();

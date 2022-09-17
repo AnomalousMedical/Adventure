@@ -14,15 +14,17 @@ namespace Adventure.Services
     interface IPersistenceWriter
     {
         void AddSaveBlock(object blocker);
-        Persistence Load(Func<Persistence.GameState> createNewWorld);
+        void Load();
         void RemoveSaveBlock(object blocker);
         void Save();
     }
 
     class PersistenceWriter : IPersistenceWriter, IDisposable
     {
-        private Persistence persistence;
         private readonly ILogger<PersistenceWriter> logger;
+        private readonly Persistence persistence;
+        private readonly IGenesysModule genesysModule;
+        private readonly ISeedProvider seedProvider;
         private HashSet<object> saveBlockers = new HashSet<object>();
         private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -30,9 +32,12 @@ namespace Adventure.Services
             WriteIndented = true,
         };
 
-        public PersistenceWriter(ILogger<PersistenceWriter> logger)
+        public PersistenceWriter(ILogger<PersistenceWriter> logger, Persistence persistence, IGenesysModule genesysModule, ISeedProvider seedProvider)
         {
             this.logger = logger;
+            this.persistence = persistence;
+            this.genesysModule = genesysModule;
+            this.seedProvider = seedProvider;
         }
 
         public void Dispose()
@@ -52,7 +57,7 @@ namespace Adventure.Services
 
             var outFile = GetSaveFile();
             using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-            JsonSerializer.Serialize(stream, persistence, jsonSerializerOptions);
+            JsonSerializer.Serialize(stream, persistence.Current, jsonSerializerOptions);
             logger.LogInformation($"Wrote save to '{outFile}'.");
         }
 
@@ -66,26 +71,21 @@ namespace Adventure.Services
             saveBlockers.Remove(blocker);
         }
 
-        public Persistence Load(Func<Persistence.GameState> createNewWorld)
+        public void Load()
         {
             var outFile = GetSaveFile();
 
             if (!File.Exists(outFile))
             {
                 logger.LogInformation($"Creating new save.");
-                persistence = new Persistence()
-                {
-                    Current = createNewWorld()
-                };
+                persistence.Current = genesysModule.SeedWorld(seedProvider.GetSeed());
             }
             else
             {
                 logger.LogInformation($"Loading save from '{outFile}'.");
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                persistence = JsonSerializer.Deserialize<Persistence>(stream, jsonSerializerOptions);
+                persistence.Current = JsonSerializer.Deserialize<Persistence.GameState>(stream, jsonSerializerOptions);
             }
-
-            return persistence;
         }
 
         private String GetSaveFile()
