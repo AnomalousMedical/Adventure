@@ -93,6 +93,7 @@ namespace Adventure
             services.AddSingleton<IRootMenu, RootMenu>();
             services.AddSingleton<IBattleGameState, BattleGameState>();
             services.AddSingleton<IGameOverGameState, GameOverGameState>();
+            services.AddSingleton<ISetupRespawnGameState, SetupRespawnGameState>();
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
             services.AddScoped<WorldMapPlayer>();
