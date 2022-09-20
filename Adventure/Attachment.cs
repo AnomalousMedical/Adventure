@@ -44,6 +44,7 @@ namespace Adventure
         private Quaternion additionalRotation = Quaternion.Identity;
         private bool graphicsActive;
         private bool makeGraphicsActive = true;
+        private bool graphicsReady = false;
 
         public Attachment
         (
@@ -87,14 +88,16 @@ namespace Adventure
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until task is finished and this is disposed.
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(attachmentDescription.SpriteMaterial, sprite);
-
+                graphicsReady = true;
                 if (this.disposed)
                 {
                     this.spriteInstanceFactory.TryReturn(spriteInstance);
                     return; //Stop loading
                 }
-
-                SetGraphicsActive(makeGraphicsActive);
+                else
+                {
+                    SetGraphicsActive(makeGraphicsActive);
+                }
             });
         }
 
@@ -112,7 +115,7 @@ namespace Adventure
         public void SetGraphicsActive(bool active)
         {
             makeGraphicsActive = active;
-            if (graphicsActive != active)
+            if (graphicsActive != active && graphicsReady)
             {
                 if (active)
                 {
