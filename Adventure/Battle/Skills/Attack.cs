@@ -69,7 +69,7 @@ namespace Adventure.Battle.Skills
 
         public void Update(Clock clock)
         {
-            battleManager.Attack(attacker, target, isCounter, target.TryBlock(), isPower);
+            battleManager.Attack(attacker, target, isCounter, target.TryBlock(), false, isPower);
             Finished = true;
         }
     }

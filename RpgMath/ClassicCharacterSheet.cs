@@ -121,6 +121,8 @@ namespace RpgMath
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //Not hooked up
 
+        public bool CanBlock { get; set; }
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;

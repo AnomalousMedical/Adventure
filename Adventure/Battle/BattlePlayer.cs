@@ -996,7 +996,7 @@ namespace Adventure.Battle
 
         public bool TryBlock()
         {
-            return (contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown) && characterSheet.CanBlock;
+            return (contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown);
         }
     }
 }

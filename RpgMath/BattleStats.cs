@@ -52,6 +52,8 @@ namespace RpgMath
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //These are not hooked up to the stats
 
+        public bool CanBlock { get; set; }
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))

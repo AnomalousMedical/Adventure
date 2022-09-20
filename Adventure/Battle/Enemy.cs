@@ -164,6 +164,11 @@ namespace Adventure.Battle
                         else
                         {
                             blocked = blockSpamPrevention;
+                            if (!target.Stats.CanBlock)
+                            {
+                                blocked = false;
+                                blockSpamPrevention = false;
+                            }
                         }
                     }
                 }
@@ -178,7 +183,7 @@ namespace Adventure.Battle
                     if (needsAttack && remainingTime < swingTime)
                     {
                         needsAttack = false;
-                        battleManager.Attack(this, target, false, blocked, false);
+                        battleManager.Attack(this, target, false, blocked, !blockSpamPrevention, false);
                     }
                 }
                 else

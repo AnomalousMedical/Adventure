@@ -25,6 +25,7 @@ namespace RpgMath
         IEnumerable<string> Skills { get; }
         IEnumerable<Element> AttackElements { get; }
         List<CharacterBuff> Buffs { get; }
+        public bool CanBlock { get; }
 
         Resistance GetResistance(Element element);
     }
