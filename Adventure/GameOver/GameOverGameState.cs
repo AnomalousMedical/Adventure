@@ -90,10 +90,11 @@ namespace Adventure.GameOver
                 persistence.Current.BattleTriggers.ClearData();
                 if (persistence.Current.Party.Gold > 0)
                 {
+                    var takeGold = (long)(persistence.Current.Party.Gold * 0.75f);
                     persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
                     persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-                    persistence.Current.Player.LootDropGold = persistence.Current.Party.Gold;
-                    persistence.Current.Party.Gold = 0;
+                    persistence.Current.Player.LootDropGold = takeGold;
+                    persistence.Current.Party.Gold -= takeGold;
                 }
                 else
                 {
