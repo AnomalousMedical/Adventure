@@ -34,7 +34,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy));
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert));
-            monsterAssets.Add(new MonsterAssetInfo(new SirenNew(), BiomeType.Countryside));
+            monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Countryside));
             monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert));
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest));
             monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
