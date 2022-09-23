@@ -84,6 +84,8 @@ namespace Adventure.Services
         /// </summary>
         public bool StartEnd { get; set; }
 
+        public int MaxMainCorridorBattles { get; set; } = int.MaxValue;
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -105,6 +107,7 @@ namespace Adventure.Services
             o.GoPrevious = zoneIndex != 0;
             o.ConnectPreviousToWorld = zoneIndex == StartZone;
             o.ConnectNextToWorld = zoneIndex == EndZone;
+            o.MaxMainCorridorBattles = MaxMainCorridorBattles;
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
 

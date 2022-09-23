@@ -258,6 +258,7 @@ namespace Adventure.Services
                 areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
                 areaBuilder.Treasure = phase0UniqueTreasures;
                 areaBuilder.StartEnd = true;
+                areaBuilder.MaxMainCorridorBattles = 1;
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
             }
