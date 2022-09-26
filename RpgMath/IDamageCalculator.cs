@@ -14,5 +14,6 @@
         bool PhysicalHit(IBattleStats attacker, IBattleStats target);
         long RandomVariation(long damage);
         long PowerGaugeGain(IBattleStats target, long damage);
+        long Magical(long attackerMagic, IBattleStats target, long power);
     }
 }

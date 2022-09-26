@@ -240,6 +240,8 @@ namespace RpgMath
 
         public event Action<CharacterSheet> OnOffHandModified;
 
+        public event Action<CharacterSheet, CharacterEffect> OnEffectApplied;
+
         public Equipment Body { get; set; }
 
         public Equipment Accessory { get; set; }
@@ -360,6 +362,8 @@ namespace RpgMath
         public bool AtPowerMax => PowerGauge >= 255;
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
+
+        public List<CharacterEffect> Effects { get; set; } = new List<CharacterEffect>();
 
         [JsonIgnore]
         public IEnumerable<String> Skills

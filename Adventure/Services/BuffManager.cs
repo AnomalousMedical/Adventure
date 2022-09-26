@@ -11,10 +11,12 @@ namespace Adventure.Services
     class BuffManager
     {
         private readonly Persistence persistence;
+        private readonly IDamageCalculator damageCalculator;
 
-        public BuffManager(Persistence persistence)
+        public BuffManager(Persistence persistence, IDamageCalculator damageCalculator)
         {
             this.persistence = persistence;
+            this.damageCalculator = damageCalculator;
         }
 
         public void Update(Clock clock)
@@ -35,6 +37,51 @@ namespace Adventure.Services
                         ++i;
                     }
                 }
+
+                var effects = member.CharacterSheet.Effects;
+                for (var i = 0; i < effects.Count;)
+                {
+                    var effect = effects[i];
+                    effect.TimeRemaining -= clock.DeltaTimeMicro;
+
+                    switch (effect.StatusEffect)
+                    {
+                        case StatusEffects.Poison:
+                            TickPoison(member.CharacterSheet, effect);
+                            break;
+                        case StatusEffects.DeathTimer:
+                            TickDeath(member.CharacterSheet, effect);
+                            break;
+                    }
+
+                    if (effect.TimeRemaining <= 0)
+                    {
+                        effects.RemoveAt(i);
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+            }
+        }
+
+        private void TickPoison(CharacterSheet stats, CharacterEffect effect)
+        {
+            if (effect.TimeRemaining < effect.NextEffectTime)
+            {
+                effect.NextEffectTime -= 1 * Clock.SecondsToMicro;
+                var damage = damageCalculator.Magical(effect.AttackerMagicLevelSum, stats, effect.Power);
+                damage = damageCalculator.RandomVariation(damage);
+                stats.CurrentHp = damageCalculator.ApplyDamage(damage, stats.CurrentHp, stats.Hp);
+            }
+        }
+
+        private void TickDeath(CharacterSheet stats, CharacterEffect effect)
+        {
+            if (effect.TimeRemaining < effect.NextEffectTime)
+            {
+                stats.CurrentHp = 0;
             }
         }
     }

@@ -51,7 +51,12 @@ namespace RpgMath
         /// <returns></returns>
         public long Magical(IBattleStats attacker, IBattleStats target, long power)
         {
-            long baseDamage = 6L * (attacker.MagicAttack + attacker.Level);
+            return Magical(attacker.MagicAttack + attacker.Level, target, power);
+        }
+
+        public long Magical(long attackerMagicLevelSum, IBattleStats target, long power)
+        {
+            long baseDamage = 6L * attackerMagicLevelSum;
             return ((power * (512L - target.MagicDefense) * baseDamage) / (16L * 512L));
         }
 
