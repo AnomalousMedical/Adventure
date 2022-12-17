@@ -1,22 +1,25 @@
-# Anomalous Engine
-This is the core game engine that powers Anomalous Medical. There are some little projects to demonstrate game apps and this includes the Anomaly Scene Editor, the Ogre Model Editor and the Image Atlas Packer.
+# Anomalous Adventure
+This is a ray traced procedural JRPG style game. It shares a legacy and dependencies with Anomalous Medical, but is its own project with its own renderer baesd on Diligent Engine.
+
+## Assets
+You will also need the AdventureAssets repo to have the assets. Clone this to the same folder you clone this repository and the dependencies to. 
 
 ## Building
-After building the dependencies run the AutoBuild_Windows.bat or Autobuild_Android.bat file to build the native libraries for those platforms.
+Building targets 64 bit win32 and is done with Visual Studio. You can run it on other platforms that support running win32 applications, like Linux with Proton.
 
-From there open the solution you want to build and build the .net side.
+First clone the Dependencies repo into the same folder as this one. You can build what is needed for just Adventure by running `AdventureOnly_x64.bat`.
 
-## Anomaly Editor
-The primary scene editor for Anomalous Medical. It can open the Medical.ano file in the Export repository/Scenes/AnomalyProject. This allows you to edit the SimObjects in the scene and build it.
+After building the dependencies open the solution in Visual Studio and you can build it. Just be sure to set the x64 target.
 
-## Ogre Model Editor
-A tool to view ogre .mesh files and edit their properties. It also allows you to compile virtual texture .ptex files.
+## Hardware and Platform Info
+ * This is tested on the Steam Deck, but has major issues in both Windows and Linux.
+ * AMD Radeon 6000 series cards have small graphical artifacts in Windows, but otherwise work ok.
+ * Nvidia cards work without issues in Windows.
+ * Intel Arc cards work without issues in Windows.
 
-## Image Atlas Packer
-An image atlas packing tool.
+This should work even on very small RT hardware like the steam deck or recent AMD APUs. While it is ray traced the workload is not actually very intense. The issues on the steam deck seem to be more drivers than actual performance potential. Some of the demos work a little better on that platform and run pretty well.
 
-## Unsupported Configurations
-The iOS and Mac OS versions are deprecated. With Apple's decision to [deprecate OpenGL](https://developer.apple.com/macos/whats-new/) this project deprecated the Apple platforms. The files are left for posterity or for the adventerous. Anomalous Medical is a volunteer effort and the decision was made to focus on platforms that offer both openness and stability. The last sucessful Apple platform builds were in 2016.
+If you try a combo I don't have let me know how it goes and I can add it.
 
 ----------------------------------------------------------
 
