@@ -54,7 +54,9 @@ namespace Adventure.Battle
 
         void HandleDeath(IBattleTarget target);
 
-        public void AddDamageNumber(IBattleTarget target, long damage, bool isCritical = false);
+        public void AddDamageNumber(IBattleTarget target, long damage);
+
+        public void AddDamageNumber(IBattleTarget target, long damage, Color color);
 
         public void AddDamageNumber(IBattleTarget target, String damage, Color color);
 
@@ -551,6 +553,7 @@ namespace Adventure.Battle
                 }
 
                 bool isCritical = false;
+                var color = Color.White;
                 if (randomizeDamage)
                 {
                     damage = damageCalculator.RandomVariation(damage);
@@ -559,6 +562,7 @@ namespace Adventure.Battle
                     if (isCritical)
                     {
                         damage *= 2;
+                        color = Color.Orange;
                     }
                     if (isPower)
                     {
@@ -567,14 +571,16 @@ namespace Adventure.Battle
                     if (blocked)
                     {
                         damage /= 2;
+                        color = Color.Grey;
                     }
                     if (fumbleBlock)
                     {
                         damage += (long)(damage * 0.25f);
+                        color = Color.Red;
                     }
                 }
 
-                AddDamageNumber(target, damage, isCritical);
+                AddDamageNumber(target, damage, color);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 if (!isCounter && !target.IsDead)
                 {
@@ -626,12 +632,16 @@ namespace Adventure.Battle
             return Enumerable.Empty<IBattleTarget>();
         }
 
-        public void AddDamageNumber(IBattleTarget target, long damage, bool isCritical = false)
+        public void AddDamageNumber(IBattleTarget target, long damage)
         {
-            var color = isCritical ? Color.Yellow : Color.White;
+            AddDamageNumber(target, damage, Color.White);
+        }
+
+        public void AddDamageNumber(IBattleTarget target, long damage, Color color)
+        {
             if(damage < 0)
             {
-                color = isCritical ? Color.LightBlue : Color.Green;
+                color = Color.Green;
                 damage *= -1;
             }
             AddDamageNumber(target, damage.ToString(), color);
