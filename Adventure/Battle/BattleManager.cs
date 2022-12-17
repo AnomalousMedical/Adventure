@@ -1,4 +1,5 @@
-﻿using Anomalous.OSPlatform;
+﻿using Adventure.Services;
+using Anomalous.OSPlatform;
 using Engine;
 using Engine.Platform;
 using RpgMath;
@@ -92,6 +93,7 @@ namespace Adventure.Battle
         private readonly ITurnTimer turnTimer;
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleBuilder battleBuilder;
+        private readonly BuffManager buffManager;
         private readonly IObjectResolver objectResolver;
         private BattleArena battleArena;
         private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
@@ -130,7 +132,8 @@ namespace Adventure.Battle
             ICameraProjector cameraProjector,
             ITurnTimer turnTimer,
             IBattleScreenLayout battleScreenLayout,
-            IBattleBuilder battleBuilder)
+            IBattleBuilder battleBuilder,
+            BuffManager buffManager)
         {
             this.eventManager = eventManager;
             this.sharpGui = sharpGui;
@@ -145,6 +148,7 @@ namespace Adventure.Battle
             this.turnTimer = turnTimer;
             this.battleScreenLayout = battleScreenLayout;
             this.battleBuilder = battleBuilder;
+            this.buffManager = buffManager;
             this.objectResolver = objectResolverFactory.Create();
 
             cursor = this.objectResolver.Resolve<TargetCursor>();
@@ -271,6 +275,8 @@ namespace Adventure.Battle
 
         public IBattleManager.Result Update(Clock clock)
         {
+            buffManager.Update(clock);
+
             var result = IBattleManager.Result.ContinueBattle;
             if (turnQueue.Count > 0)
             {

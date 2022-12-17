@@ -40,6 +40,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly IWorldDatabase worldDatabase;
         private readonly ILevelCalculator levelCalculator;
+        private readonly BuffManager buffManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -59,7 +60,8 @@ namespace Adventure
             ITimeClock timeClock,
             Persistence persistence,
             IWorldDatabase worldDatabase,
-            ILevelCalculator levelCalculator
+            ILevelCalculator levelCalculator,
+            BuffManager buffManager
         )
         {
             this.bepuScene = bepuScene;
@@ -73,6 +75,7 @@ namespace Adventure
             this.persistence = persistence;
             this.worldDatabase = worldDatabase;
             this.levelCalculator = levelCalculator;
+            this.buffManager = buffManager;
         }
 
         public void Dispose()
@@ -137,8 +140,9 @@ namespace Adventure
         public IGameState Update(Clock clock)
         {
             nextState = this;
+            buffManager.Update(clock);
 
-            if(explorationEvent != null)
+            if (explorationEvent != null)
             {
                 if (!explorationEvent.Invoke(clock))
                 {

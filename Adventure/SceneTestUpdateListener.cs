@@ -30,7 +30,6 @@ namespace Adventure
         private readonly RTCameraAndLight cameraAndLight;
         private readonly LightManager lightManager;
         private readonly PlayedTimeService playedTimeService;
-        private readonly BuffManager buffManager;
         private readonly IGameStateRequestor gameStateRequestor;
         private IGameState gameState;
 
@@ -48,7 +47,6 @@ namespace Adventure
             RTCameraAndLight cameraAndLight,
             LightManager lightManager,
             PlayedTimeService playedTimeService,
-            BuffManager buffManager,
             IGameStateRequestor gameStateRequestor
         )
         {
@@ -65,7 +63,6 @@ namespace Adventure
             this.cameraAndLight = cameraAndLight;
             this.lightManager = lightManager;
             this.playedTimeService = playedTimeService;
-            this.buffManager = buffManager;
             this.gameStateRequestor = gameStateRequestor;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
@@ -85,7 +82,6 @@ namespace Adventure
         {
             timeClock.Update(clock);
             playedTimeService.Update(clock);
-            buffManager.Update(clock);
             sharpGui.Begin(clock);
 
             var nextState = gameStateRequestor.GetRequestedGameState() ?? this.gameState.Update(clock);
