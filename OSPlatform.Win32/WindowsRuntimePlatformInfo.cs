@@ -1,16 +1,10 @@
-﻿using Engine.Platform;
-using Engine.Platform.Input;
+﻿using Engine.Platform.Input;
 using OSPlatform.Win32.XInputDotNetPure;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using XInputDotNetPure;
+using System.Threading;
 
 namespace Anomalous.OSPlatform.Win32
 {
@@ -37,6 +31,12 @@ namespace Anomalous.OSPlatform.Win32
             SetThreadExecutionState(ExecutionState.ES_CONTINUOUS | ExecutionState.ES_DISPLAY_REQUIRED);
 
             SetProcessDPIAware();
+
+            //Needs testing on other cpus, but with Raptor Lake and probably Alder Lake this will
+            //keep the status from going to "Suspended" in Windows, which would cause tons of lag
+            //while the thread got tossed around. This game uses so little cpu it does need a hint
+            //to the os to keep the priority up.
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
             new WindowsRuntimePlatformInfo();
 
