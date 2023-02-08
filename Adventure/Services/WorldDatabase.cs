@@ -151,10 +151,8 @@ namespace Adventure.Services
             //Setup map
             worldMap = new WorldMapData(newSeed);
             var numIslands = 1  //Phase 0, 1 and bonus 1
-                            + 2  //Phase 2
-                            + 1  //Bonus 2
+                            + 3  //Phase 2
                             + 6  //Phase 3
-                            + 1  //Bonus 3
                             + 1; //Airship
             worldMap.Map.RemoveExtraIslands(numIslands);
             var map = worldMap.Map;
