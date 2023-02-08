@@ -181,8 +181,7 @@ namespace Adventure.WorldMap
             }
             else if (persistence.Current.PlotItems.Contains(PlotItems.PortalKey0)
                 && persistence.Current.PlotItems.Contains(PlotItems.PortalKey1)
-                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey2)
-                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey3))
+                && persistence.Current.PlotItems.Contains(PlotItems.PortalKey2))
             {
                 var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
                 worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
