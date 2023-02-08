@@ -637,6 +637,10 @@ namespace Adventure.Services
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
+                var uniqueTreasure = phase3UniqueTreasures.Count / 6;
+                var stolenTreasure = phase3UniqueStolenTreasures.Count / 6;
+
+                //Area 10
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 22;
@@ -645,16 +649,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom),
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                    .Concat(new[] 
+                    { 
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
@@ -663,6 +663,7 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
+                //Area 11
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 24;
@@ -671,16 +672,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom),
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                    .Concat(new[] 
+                    { 
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
@@ -689,6 +686,7 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
+                //Area 12
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 26;
@@ -697,16 +695,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                {
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom), 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                    .Concat(new[] 
+                    {
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
@@ -715,6 +709,7 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
+                //Area 13
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 28;
@@ -723,16 +718,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 3;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom),
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                    .Concat(new[] 
+                    { 
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
@@ -741,6 +732,7 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
+                //Area 14
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 30;
@@ -749,16 +741,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 4;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom),
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                    .Concat(new[] 
+                    { 
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
@@ -767,6 +755,7 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
+                //Area 15
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = 32;
@@ -775,16 +764,12 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 5;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Treasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueTreasures, treasureRandom), 
-                    new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
-                };
-                areaBuilder.UniqueStealTreasure = new[] 
-                { 
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom),
-                    RemoveRandomItem(phase3UniqueStolenTreasures, treasureRandom)
-                };
+                areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, phase3UniqueTreasures.Count) //Last area gets the remaining treasure
+                    .Concat(new[] 
+                    { 
+                        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel)) 
+                    });
+                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, phase3UniqueStolenTreasures.Count); //Last area gets the remaining treasure
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
