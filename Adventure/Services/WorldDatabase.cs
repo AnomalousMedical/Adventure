@@ -925,12 +925,16 @@ namespace Adventure.Services
             }
         }
 
-        private IEnumerable<T> RemoveRandomItems<T>(List<T> items, FIRandom random, int count)
+        private List<T> RemoveRandomItems<T>(List<T> items, FIRandom random, int count)
         {
+            //This needs to actually iterate or else you won't get the same treasure
+            //because it won't be solved until later when the enumerable runs
+            var results = new List<T>();
             for(int i = 0; i <count; ++i)
             {
-                yield return RemoveRandomItem(items, random);
+                results.Add(RemoveRandomItem(items, random));
             }
+            return results;
         }
 
         private T RemoveRandomItem<T>(List<T> items, FIRandom random)
