@@ -108,6 +108,7 @@ namespace Adventure.Battle
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
         private List<Func<Clock, bool>> turnQueue = new List<Func<Clock, bool>>(30);
         private Func<Clock, bool> currentTurn = null;
+        bool allowBattleFinish = false;
 
         private TargetCursor cursor;
 
@@ -205,6 +206,7 @@ namespace Adventure.Battle
                 {
                     cursor.BattleStarted();
                     numbers.Clear();
+                    allowBattleFinish = false;
 
                     backgroundMusicPlayer.SetBattleTrack(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
@@ -291,9 +293,7 @@ namespace Adventure.Battle
                 }
             }
 
-            //This order means if all the players and enemies die it is not a game over.
-            //But all players wil have 0 hp. This is probably not what we want.
-            if (enemies.Count == 0)
+            if (allowBattleFinish)
             {
                 var goldReward = 0L;
                 foreach (var killed in killedEnemies)
@@ -349,6 +349,13 @@ namespace Adventure.Battle
                             player.DrawInfoGui(clock, sharpGui, target == player);
                         }
                     }
+                    else if (enemies.Count == 0)
+                    {
+                        cursor.Cancel();
+                        target = null;
+                        targetPos = Vector3.Zero;
+                        cursor.Visible = false;
+                    }
                     else
                     {
                         target = enemies[(int)(cursor.EnemyTargetIndex % enemies.Count)];
@@ -367,7 +374,7 @@ namespace Adventure.Battle
 
                     cursor.Visible = false;
 
-                    if (AllowActivePlayerGui)
+                    if (AllowActivePlayerGui && enemies.Count > 0)
                     {
                         activePlayer?.UpdateActivePlayerGui(sharpGui);
                     }
@@ -478,7 +485,7 @@ namespace Adventure.Battle
 
         public IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target)
         {
-            //Make sure target still exists
+            //Make sure target still exists, this will not handle the enemies list being empty
             switch (target.BattleTargetType)
             {
                 case BattleTargetType.Enemy:
@@ -612,7 +619,12 @@ namespace Adventure.Battle
                     killedEnemies.Add(enemy);
                     if (enemies.Count == 0)
                     {
-                        BattleEnded();
+                        turnQueue.Insert(0, c =>
+                        {
+                            BattleEnded();
+                            allowBattleFinish = true;
+                            return true;
+                        });
                         backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                     }
                 }
