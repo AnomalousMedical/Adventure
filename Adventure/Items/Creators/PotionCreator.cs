@@ -80,6 +80,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(StrengthBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;
@@ -93,6 +94,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(MagicBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;
@@ -106,6 +108,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(SpiritBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;
@@ -119,6 +122,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(VitalityBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;
@@ -132,6 +136,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(DexterityBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;
@@ -145,6 +150,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(LuckBoost),
+                CanUseOnPickup = true,
             };
 
             item.Number = 1;

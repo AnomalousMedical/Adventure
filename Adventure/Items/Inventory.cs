@@ -30,6 +30,8 @@ namespace Adventure.Items
         public Equipment Equipment { get; set; }
 
         public long? Number { get; set; }
+
+        public bool CanUseOnPickup { get; set; }
     }
 
     interface IInventoryAction

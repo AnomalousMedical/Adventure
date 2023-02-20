@@ -24,6 +24,7 @@ namespace Adventure.Services
         private readonly IPersistenceWriter persistenceWriter;
         private Stack<ITreasure> currentTreasure;
         SharpButton take = new SharpButton() { Text = "Take" };
+        SharpButton use = new SharpButton() { Text = "Use" };
         SharpButton discard = new SharpButton() { Text = "Discard" };
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -91,17 +92,35 @@ namespace Adventure.Services
 
             itemInfo.Text = treasure.InfoText;
 
-            layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(
-                   new CenterHorizontalLayout(currentCharacter), 
-                   new CenterHorizontalLayout(inventoryInfo),
-                   new CenterHorizontalLayout(itemInfo),
-                   new CenterHorizontalLayout(take), 
-                   new CenterHorizontalLayout(discard)) 
-               { Margin = new IntPad(scaleHelper.Scaled(10)) }
-            ));
+            if (treasure.CanUseOnPickup)
+            {
+                layout =
+                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                   new MaxWidthLayout(scaleHelper.Scaled(600),
+                   new ColumnLayout(
+                       new CenterHorizontalLayout(currentCharacter),
+                       new CenterHorizontalLayout(inventoryInfo),
+                       new CenterHorizontalLayout(itemInfo),
+                       new CenterHorizontalLayout(take),
+                       new CenterHorizontalLayout(use),
+                       new CenterHorizontalLayout(discard))
+                   { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                ));
+            }
+            else
+            {
+                layout =
+                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                   new MaxWidthLayout(scaleHelper.Scaled(600),
+                   new ColumnLayout(
+                       new CenterHorizontalLayout(currentCharacter),
+                       new CenterHorizontalLayout(inventoryInfo),
+                       new CenterHorizontalLayout(itemInfo),
+                       new CenterHorizontalLayout(take),
+                       new CenterHorizontalLayout(discard))
+                   { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                ));
+            }
 
             layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
 
@@ -109,7 +128,7 @@ namespace Adventure.Services
             sharpGui.Text(inventoryInfo);
             sharpGui.Text(itemInfo);
 
-            if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+            if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 if (hasInventoryRoom)
                 {
@@ -123,7 +142,16 @@ namespace Adventure.Services
                 }
             }
 
-            if (sharpGui.Button(discard, gamepadId, navUp: take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
+            if (treasure.CanUseOnPickup)
+            {
+                if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+                {
+                    currentTreasure.Pop();
+                    treasure.Use(sheet.Inventory, sheet.CharacterSheet);
+                }
+            }
+
+            if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
             {
                 currentTreasure.Pop();
             }
