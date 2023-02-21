@@ -336,9 +336,8 @@ namespace Adventure.Battle
                 }
                 if (cursor.Targeting)
                 {
-                    cursor.Visible = true;
                     IBattleTarget target;
-                    Vector3 targetPos;
+                    Vector3 targetPos = Vector3.Zero;
                     if (cursor.TargetPlayers)
                     {
                         target = players[(int)(cursor.PlayerTargetIndex % players.Count)];
@@ -351,10 +350,7 @@ namespace Adventure.Battle
                     }
                     else if (enemies.Count == 0)
                     {
-                        cursor.Cancel();
                         target = null;
-                        targetPos = Vector3.Zero;
-                        cursor.Visible = false;
                     }
                     else
                     {
@@ -362,8 +358,14 @@ namespace Adventure.Battle
                         targetPos = target.CursorDisplayLocation;
                     }
 
-                    if (target != null)
+                    if(activePlayer == null || target == null)
                     {
+                        cursor.Cancel();
+                        cursor.Visible = false;
+                    }
+                    else
+                    {
+                        cursor.Visible = true;
                         cursor.UpdateCursor(this, target, targetPos, activePlayer);
                     }
                 }
