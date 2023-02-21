@@ -289,6 +289,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             {
                 if (allowChanges)
                 {
+                    itemButtons.ListIndex = 0;
                     --currentSheet;
                     if (currentSheet < 0)
                     {
@@ -300,6 +301,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             {
                 if (allowChanges)
                 {
+                    itemButtons.ListIndex = 0;
                     ++currentSheet;
                     if (currentSheet >= persistence.Current.Party.Members.Count)
                     {
