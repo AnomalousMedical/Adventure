@@ -187,11 +187,7 @@ namespace Adventure.Battle
         {
             TargetPlayers = targetPlayers;
             getTargetTask = new TaskCompletionSource<IBattleTarget>();
-            return getTargetTask.Task.ContinueWith(t =>
-            {
-                getTargetTask = null;
-                return t.Result;
-            });
+            return getTargetTask.Task;
         }
 
         public void Cancel()
@@ -307,7 +303,9 @@ namespace Adventure.Battle
         {
             if (getTargetTask != null)
             {
-                getTargetTask.SetResult(enemy);
+                var refGetTargetTask = getTargetTask;
+                getTargetTask = null;
+                refGetTargetTask.SetResult(enemy);
             }
         }
 
