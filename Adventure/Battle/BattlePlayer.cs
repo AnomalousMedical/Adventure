@@ -537,7 +537,7 @@ namespace Adventure.Battle
                 Sprite_FrameChanged(sprite);
 
                 return done;
-            });
+            }, skill.QueueFront);
         }
 
         private void Melee(IBattleTarget target, ISkill skill, bool queueFront, bool deactivatePlayer)

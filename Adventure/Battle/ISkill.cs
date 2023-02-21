@@ -28,6 +28,8 @@ namespace Adventure.Battle
         /// </summary>
         bool NeedsTarget => true;
 
+        bool QueueFront => false;
+
         string Name { get; }
 
         long MpCost { get; }

@@ -24,6 +24,8 @@ namespace Adventure.Battle.Skills
 
         public bool NeedsTarget => false;
 
+        public bool QueueFront => true;
+
         public long MpCost => 0;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
