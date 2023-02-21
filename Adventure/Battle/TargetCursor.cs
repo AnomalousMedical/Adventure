@@ -305,7 +305,10 @@ namespace Adventure.Battle
 
         private void SetTarget(IBattleTarget enemy)
         {
-            getTargetTask.SetResult(enemy);
+            if (getTargetTask != null)
+            {
+                getTargetTask.SetResult(enemy);
+            }
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

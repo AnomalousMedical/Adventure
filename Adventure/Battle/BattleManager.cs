@@ -361,8 +361,11 @@ namespace Adventure.Battle
                         target = enemies[(int)(cursor.EnemyTargetIndex % enemies.Count)];
                         targetPos = target.CursorDisplayLocation;
                     }
-                    
-                    cursor.UpdateCursor(this, target, targetPos, activePlayer);
+
+                    if (target != null)
+                    {
+                        cursor.UpdateCursor(this, target, targetPos, activePlayer);
+                    }
                 }
                 else
                 {
