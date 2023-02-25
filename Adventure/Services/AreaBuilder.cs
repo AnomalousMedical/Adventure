@@ -86,6 +86,8 @@ namespace Adventure.Services
 
         public int MaxMainCorridorBattles { get; set; } = int.MaxValue;
 
+        public IEnumerable<MonsterInfo> Monsters { get; set; } = Enumerable.Empty<MonsterInfo>();
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -123,7 +125,7 @@ namespace Adventure.Services
             }
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);
-            var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).ToList();
+            var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).Concat(Monsters).ToList();
             regularMonsters = biomeMonsters;
             bossMonster = biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
 

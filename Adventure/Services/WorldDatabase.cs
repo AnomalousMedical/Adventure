@@ -697,6 +697,34 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
             }
+
+            //Phase 4
+            {
+                //Area 11
+                //TODO: Need to set a minimum level here
+                island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+                areaBuilder = new AreaBuilder(this, monsterInfo, area++);
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
+                areaBuilder.Phase = 3;
+                areaBuilder.IndexInPhase = 2;
+                areaBuilder.Biome = BiomeType.Chip;
+                areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+                areaBuilder.Monsters = monsterInfo; //You get all the monsters in this zone
+                //areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
+                //    .Concat(new[]
+                //    {
+                //        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel))
+                //    });
+                //areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
+                //areaBuilder.StealTreasure = new[]
+                //{
+                //    new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
+                //    new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel))
+                //};
+                SetIslandBiome(island, map, areaBuilder.Biome);
+                yield return areaBuilder;
+            }
         }
 
         private static Element GetDifferentElement(FIRandom elementalRandom, Element notThisElement)
@@ -783,18 +811,29 @@ namespace Adventure.Services
             throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
         }
 
-        private static void SetIslandBiome(IslandInfo island, csIslandMaze map, BiomeType biome)
+        private static int GetBiomeIndex(BiomeType biome)
         {
+            switch (biome)
+            {
+                case BiomeType.Chip:
+                    return (int)BiomeType.Max + 2; //Max is the stand in for the chip zone + 2 for the cliff and sea floor
+                default:
+                    return (int)biome;
+            }
+        }
+
+        private static void SetIslandBiome(IslandInfo island, csIslandMaze map, BiomeType biome)
+        {            
             foreach (var square in island.islandPoints)
             {
-                map.TextureOffsets[square.x, square.y] = (int)biome;
+                map.TextureOffsets[square.x, square.y] = GetBiomeIndex(biome);
             }
         }
 
         private static void FillSurroundings(csIslandMaze map, BiomeType biome, IntVector2 startPoint, bool[,] filled)
         {
             //The start point will always be filled out even if its already filled
-            map.TextureOffsets[startPoint.x, startPoint.y] = (int)biome;
+            map.TextureOffsets[startPoint.x, startPoint.y] = GetBiomeIndex(biome);
             filled[startPoint.x, startPoint.y] = true;
 
             var nextGeneration = new List<IntVector2>(25);
@@ -810,7 +849,7 @@ namespace Adventure.Services
                     if (check.y < map.MapY && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
-                        map.TextureOffsets[check.x, check.y] = (int)biome;
+                        map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
                     }
 
@@ -819,7 +858,7 @@ namespace Adventure.Services
                     if (check.y > 0 && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
-                        map.TextureOffsets[check.x, check.y] = (int)biome;
+                        map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
                     }
 
@@ -828,7 +867,7 @@ namespace Adventure.Services
                     if (check.x < map.MapX && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
-                        map.TextureOffsets[check.x, check.y] = (int)biome;
+                        map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
                     }
 
@@ -837,7 +876,7 @@ namespace Adventure.Services
                     if (check.x > 0 && filled[check.x, check.y] == false && map.Map[check.x, check.y] != csIslandMaze.EmptyCell)
                     {
                         nextGeneration.Add(check);
-                        map.TextureOffsets[check.x, check.y] = (int)biome;
+                        map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
                     }
                 }

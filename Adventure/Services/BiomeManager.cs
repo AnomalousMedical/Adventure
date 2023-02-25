@@ -1,11 +1,8 @@
-﻿using RpgMath;
-using Adventure.Assets;
+﻿using Adventure.Assets;
+using Adventure.Assets.World;
+using RpgMath;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Adventure.Assets.World;
 
 namespace Adventure
 {
@@ -15,15 +12,13 @@ namespace Adventure
         Desert = 1,
         Snowy = 2,
         Forest = 3,
-        Max = Forest + 1
-        //Chip is not in here, since it has its own rules
+        Max = Forest + 1,
+        Chip = 1000, //This isn't included in random selection
     }
 
     interface IBiomeManager
     {
-
         IBiome GetBiome(BiomeType type);
-        Biome MakeChip();
     }
 
     class BiomeEnemy
@@ -54,7 +49,8 @@ namespace Adventure
                     return MakeSnowy();
                 case BiomeType.Forest:
                     return MakeForest();
-                //No chip since it is a special zone
+                case BiomeType.Chip:
+                    return MakeChip();
             }
 
             throw new IndexOutOfRangeException($"Biome type '{type}' is not supported.");
@@ -138,7 +134,7 @@ namespace Adventure
                 {
                     Asset = new Assets.World.TreasureChest(),
                 },
-                BackgroundItems =new List<BiomeBackgroundItem>
+                BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(20, new TallTree())
                 }
@@ -154,6 +150,7 @@ namespace Adventure
                 ReflectFloor = true,
                 FloorTexture = "Graphics/Textures/AmbientCG/Metal032_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Chip005_1K",
+                EntranceAsset = new ForestEntrance(),
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),

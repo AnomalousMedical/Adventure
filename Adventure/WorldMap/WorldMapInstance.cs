@@ -78,6 +78,7 @@ namespace Adventure.WorldMap
         CC0TextureResult forestTexture;
         CC0TextureResult cliffTexture;
         CC0TextureResult oceanFloorTexture;
+        CC0TextureResult chipTexture;
 
         public WorldMapInstance
         (
@@ -145,6 +146,7 @@ namespace Adventure.WorldMap
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
+                    var chipTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Chip005_1K");
 
                     var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
                     var desertTextureTask = textureManager.Checkout(desertTextureDesc);
@@ -152,6 +154,7 @@ namespace Adventure.WorldMap
                     var forestTextureTask = textureManager.Checkout(forestTextureDesc);
                     var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
+                    var chipTextureTask = textureManager.Checkout(chipTextureDesc);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();
 
@@ -173,6 +176,7 @@ namespace Adventure.WorldMap
                         forestTextureTask,
                         cliffTextureTask,
                         oceanFloorTextureTask,
+                        chipTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
                         shaderSetup
                     );
@@ -184,6 +188,7 @@ namespace Adventure.WorldMap
                     this.forestTexture = forestTextureTask.Result;
                     this.cliffTexture = cliffTextureTask.Result;
                     this.oceanFloorTexture = oceanFloorTextureTask.Result;
+                    this.chipTexture = chipTextureTask.Result;
 
                     foreach (var data in floorInstanceData)
                     {
@@ -191,7 +196,7 @@ namespace Adventure.WorldMap
                         rtInstances.AddTlasBuild(data);
                     }
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.cliffTexture, this.oceanFloorTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.cliffTexture, this.oceanFloorTexture, this.chipTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
@@ -243,12 +248,14 @@ namespace Adventure.WorldMap
             activeTextures.RemoveActiveTexture(snowyTexture);
             activeTextures.RemoveActiveTexture(forestTexture);
             activeTextures.RemoveActiveTexture(oceanFloorTexture);
+            activeTextures.RemoveActiveTexture(chipTexture);
             textureManager.TryReturn(countrysideTexture);
             textureManager.TryReturn(desertTexture);
             textureManager.TryReturn(snowyTexture);
             textureManager.TryReturn(forestTexture);
             textureManager.TryReturn(cliffTexture);
             textureManager.TryReturn(oceanFloorTexture);
+            textureManager.TryReturn(chipTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(shader);
             foreach(var data in floorInstanceData)
