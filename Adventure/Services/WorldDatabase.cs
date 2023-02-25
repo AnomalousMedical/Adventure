@@ -701,12 +701,12 @@ namespace Adventure.Services
             //Phase 4
             {
                 //Area 11
-                //TODO: Need to set a minimum level here
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
-                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(2);
                 areaBuilder.Phase = 3;
+                areaBuilder.EnemyLevel = 51;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = BiomeType.Chip;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);

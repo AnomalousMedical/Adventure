@@ -136,6 +136,8 @@ namespace Adventure.Services
             public int Seed { get; set; }
 
             public int Level { get; set; }
+
+            public Dictionary<int, int> CompletedAreaLevels { get; set; } = new Dictionary<int, int>();
         }
 
         public class CharacterData

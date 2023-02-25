@@ -22,6 +22,8 @@ namespace Adventure
 
             public BiomeEnemy TriggerEnemy { get; set; }
 
+            public int Area { get; set; }
+
             public int Zone { get; set; }
 
             public int Index { get; set; }
@@ -126,6 +128,7 @@ namespace Adventure
         {
             if (IsBoss)
             {
+                persistence.Current.World.CompletedAreaLevels[description.Area] = EnemyLevel;
                 explorationGameState.LevelUpWorld();
             }
 

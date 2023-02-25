@@ -27,6 +27,8 @@ namespace Adventure.Services
         int IndexInPhase { get; }
 
         IntVector2 Location { get; }
+
+        public int? EnemyLevel { get; }
     }
 
     class AreaBuilder : IAreaBuilder
@@ -86,6 +88,8 @@ namespace Adventure.Services
 
         public int MaxMainCorridorBattles { get; set; } = int.MaxValue;
 
+        public int? EnemyLevel { get; set; }
+
         public IEnumerable<MonsterInfo> Monsters { get; set; } = Enumerable.Empty<MonsterInfo>();
 
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
@@ -118,6 +122,7 @@ namespace Adventure.Services
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
             o.StartEnd = StartEnd;
+            o.Area = Index;
 
             if(zoneIndex == EndZone && PlotItem != null)
             {

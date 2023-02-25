@@ -152,6 +152,8 @@ namespace Adventure
             public IEnumerable<ITreasure> BossUniqueStealTreasure { get; set; }
 
             public PlotItems? PlotItem { get; set; }
+
+            public int Area { get; set; }
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -216,6 +218,8 @@ namespace Adventure
 
         public bool LoadNextLevel => !connectNextToWorld;
 
+        public int Area { get; init; }
+
         public Zone
         (
             IDestructionRequest destructionRequest,
@@ -242,6 +246,7 @@ namespace Adventure
             this.index = description.Index;
             this.enemySeed = description.EnemySeed;
             this.makeRestArea = description.MakeRest;
+            this.Area = description.Area;
             this.makePhilip = description.MakePhilip;
             this.makeBoss = description.MakeBoss;
             this.makeGate = description.MakeGate;
@@ -653,6 +658,7 @@ namespace Adventure
                     var enemy = biome.RegularEnemies[enemyRandom.Next(biome.RegularEnemies.Count)];
                     o.TriggerEnemy = enemy;
                     o.Zone = index;
+                    o.Area = Area;
                     o.Index = enemyIndex++;
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
@@ -715,6 +721,7 @@ namespace Adventure
                     o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
                     o.TriggerEnemy = biome.BossEnemy;
                     o.Zone = index;
+                    o.Area = Area;
                     o.Index = 0; //Only ever 1 boss
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
