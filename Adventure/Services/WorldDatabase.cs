@@ -82,6 +82,24 @@ namespace Adventure.Services
 
         public int CurrentSeed => persistence.Current.World.Seed;
 
+        class ZoneCounter
+        {
+            private int index;
+
+            public int GetZoneStart()
+            {
+                return index;
+            }
+
+            public int GetZoneEnd(int numZones)
+            {
+                var zoneDelta = numZones - 1;
+                var endZone = index + zoneDelta;
+                index += numZones;
+                return endZone;
+            }
+        }
+
         public WorldDatabase
         (
             Persistence persistence,
@@ -200,14 +218,10 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            //TODO: Add enemy strengths and weaknesses in phase 2, 3
-            //TODO: finish phase 2, 3 and bonus 2, 3
-            //TODO: Randomize zones by placing squares in a list then pulling the squares out
-            //TODO: Every boss should have unique steal treasure for permanent stat boosts
-
             var filled = new bool[map.MapX, map.MapY];
             int area = 0;
             AreaBuilder areaBuilder;
+            var zoneCounter = new ZoneCounter();
             var biomeMax = (int)BiomeType.Max;
 
             AddPortal(map.IslandInfo[map.IslandSizeOrder[0]], usedSquares, placementRandom, portalLocations);
@@ -249,8 +263,8 @@ namespace Adventure.Services
 
                 //Area 1
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 0;
-                areaBuilder.EndZone = 0;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 0;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -311,8 +325,8 @@ namespace Adventure.Services
 
                 //Area 2
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 2;
-                areaBuilder.EndZone = 2;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -332,10 +346,10 @@ namespace Adventure.Services
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
 
-                //Area 4
+                //Area 3
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 6;
-                areaBuilder.EndZone = 6;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 1;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -434,10 +448,10 @@ namespace Adventure.Services
                     GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost),
                 };
 
-                //Area 5
+                //Area 4
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 10;
-                areaBuilder.EndZone = 10;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.PlotItem = PlotItems.AirshipKey0;
@@ -457,10 +471,10 @@ namespace Adventure.Services
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
 
-                //Area 6
+                //Area 5
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 12;
-                areaBuilder.EndZone = 12;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.PlotItem = PlotItems.AirshipKey1;
@@ -491,10 +505,10 @@ namespace Adventure.Services
                     GetUnusedSquare(usedSquares, island, placementRandom, island.Southmost),
                 };
 
-                //Area 9
+                //Area 6
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 18;
-                areaBuilder.EndZone = 18;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.PlotItem = PlotItems.AirshipKey2;
@@ -591,11 +605,11 @@ namespace Adventure.Services
                 var uniqueTreasure = phase3UniqueTreasures.Count / 4;
                 var stolenTreasure = phase3UniqueStolenTreasures.Count / 4;
 
-                //Area 10
+                //Area 7
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 22;
-                areaBuilder.EndZone = 22;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -614,11 +628,11 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
-                //Area 11
+                //Area 8
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 24;
-                areaBuilder.EndZone = 24;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -637,11 +651,11 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
-                //Area 12
+                //Area 9
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 26;
-                areaBuilder.EndZone = 26;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
@@ -660,11 +674,11 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
 
-                //Area 15
+                //Area 10
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = 32;
-                areaBuilder.EndZone = 32;
+                areaBuilder.StartZone = zoneCounter.GetZoneStart();
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 3;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
