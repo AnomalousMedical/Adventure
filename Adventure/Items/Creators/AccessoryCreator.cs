@@ -35,7 +35,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = $"{nameGenerator.GetLevelName(level)} Healing accessory",
+                Name = $"{nameGenerator.GetLevelName(level).Adjective} Healing Accessory",
             };
 
             if(level < SpellLevels.Common)
@@ -58,7 +58,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = $"{nameGenerator.GetLevelName(level)} Healing accessory",
+                Name = $"{nameGenerator.GetLevelName(level).Adjective} Item Use Accessory",
             };
 
             if (level < SpellLevels.Common)
