@@ -11,7 +11,6 @@ namespace Adventure.Services
     {
         PortalKey0,
         PortalKey1,
-        PortalKey2,
         AirshipKey
     }
 
