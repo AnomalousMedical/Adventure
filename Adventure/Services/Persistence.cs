@@ -11,7 +11,9 @@ namespace Adventure.Services
     {
         PortalKey0,
         PortalKey1,
-        AirshipKey
+        AirshipKey0,
+        AirshipKey1,
+        AirshipKey2
     }
 
     class Persistence

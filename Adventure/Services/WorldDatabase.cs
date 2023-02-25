@@ -440,6 +440,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = 10;
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 0;
+                areaBuilder.PlotItem = PlotItems.AirshipKey0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, uniqueTreasure)
@@ -462,7 +463,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = 12;
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 1;
-                areaBuilder.PlotItem = PlotItems.AirshipKey;
+                areaBuilder.PlotItem = PlotItems.AirshipKey1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, uniqueTreasure)
@@ -496,6 +497,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = 18;
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 2;
+                areaBuilder.PlotItem = PlotItems.AirshipKey2;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 areaBuilder.Location = GetSquare(thirdIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, phase2UniqueTreasures.Count) //Last area gets remaining treasure
