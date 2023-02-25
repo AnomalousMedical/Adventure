@@ -139,6 +139,105 @@ namespace DiligentEngine.RT.Resources
             };
         }
 
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6, CC0TextureResult texture7)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f,
+                v2 = AddActiveTexture2(texture7) + 0.5f
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6, CC0TextureResult texture7, CC0TextureResult texture8)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f,
+                v2 = AddActiveTexture2(texture7) + 0.5f,
+                u3 = AddActiveTexture2(texture8) + 0.5f,
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6, CC0TextureResult texture7, CC0TextureResult texture8, CC0TextureResult texture9)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f,
+                v2 = AddActiveTexture2(texture7) + 0.5f,
+                u3 = AddActiveTexture2(texture8) + 0.5f,
+                v3 = AddActiveTexture2(texture9) + 0.5f
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6, CC0TextureResult texture7, CC0TextureResult texture8, CC0TextureResult texture9, CC0TextureResult texture10)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f,
+                v2 = AddActiveTexture2(texture7) + 0.5f,
+                u3 = AddActiveTexture2(texture8) + 0.5f,
+                v3 = AddActiveTexture2(texture9) + 0.5f,
+                u4 = AddActiveTexture2(texture10) + 0.5f
+            };
+        }
+
+        public HLSL.BlasInstanceData AddActiveTexture(CC0TextureResult texture0, CC0TextureResult texture1, CC0TextureResult texture2, CC0TextureResult texture3, CC0TextureResult texture4, CC0TextureResult texture5, CC0TextureResult texture6, CC0TextureResult texture7, CC0TextureResult texture8, CC0TextureResult texture9, CC0TextureResult texture10, CC0TextureResult texture11)
+        {
+            return new HLSL.BlasInstanceData()
+            {
+                tex0 = AddActiveTexture2(texture0),
+                tex1 = AddActiveTexture2(texture1),
+                tex2 = AddActiveTexture2(texture2),
+                tex3 = AddActiveTexture2(texture3),
+                u1 = AddActiveTexture2(texture4) + 0.5f,
+                v1 = AddActiveTexture2(texture5) + 0.5f,
+                u2 = AddActiveTexture2(texture6) + 0.5f,
+                v2 = AddActiveTexture2(texture7) + 0.5f,
+                u3 = AddActiveTexture2(texture8) + 0.5f,
+                v3 = AddActiveTexture2(texture9) + 0.5f,
+                u4 = AddActiveTexture2(texture10) + 0.5f,
+                v4 = AddActiveTexture2(texture11) + 0.5f
+            };
+        }
+
         public int AddActiveTexture2(CC0TextureResult texture)
         {
             TextureBinding binding;
