@@ -12,8 +12,9 @@ namespace Adventure.Services
 {
     interface IMonsterMaker
     {
-        List<MonsterInfo> CreateBaseMonsters(FIRandom random);
-        void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element weakElement, Element resistElement);
+        List<MonsterInfo> CreateBaseMonsters(int seed);
+        List<MonsterInfo> CreateElemental(int seed, Element absorbElement);
+        void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss);
     }
 
     record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances, BiomeType NativeBiome)
@@ -46,8 +47,9 @@ namespace Adventure.Services
         /// </summary>
         /// <param name="random"></param>
         /// <returns></returns>
-        public List<MonsterInfo> CreateBaseMonsters(FIRandom random)
+        public List<MonsterInfo> CreateBaseMonsters(int seed)
         {
+            var weaknessRandom = new FIRandom(seed);
             var monsters = new List<MonsterInfo>();
             var availablePhysicalElements = new List<Element>();
             var availableElements = new List<Element>();
@@ -69,18 +71,18 @@ namespace Adventure.Services
                 RefillElements();
                 int index;
                 
-                index = random.Next(availablePhysicalElements.Count);
+                index = weaknessRandom.Next(availablePhysicalElements.Count);
                 var weakPhysicalElement = availablePhysicalElements[index];
                 availablePhysicalElements.RemoveAt(index);
 
-                index = random.Next(availablePhysicalElements.Count);
+                index = weaknessRandom.Next(availablePhysicalElements.Count);
                 var resistPhysicalElement = availablePhysicalElements[index];
 
-                index = random.Next(availableElements.Count);
+                index = weaknessRandom.Next(availableElements.Count);
                 var weakElement = availableElements[index];
                 availableElements.RemoveAt(index);
 
-                index = random.Next(availableElements.Count);
+                index = weaknessRandom.Next(availableElements.Count);
                 var resistElement = availableElements[index];
 
                 var monster = new MonsterInfo
@@ -102,61 +104,56 @@ namespace Adventure.Services
             return monsters;
         }
 
-        public void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss, Element weakElement, Element resistElement)
+        public List<MonsterInfo> CreateElemental(int seed, Element absorbElement)
+        {
+            var monsters = CreateBaseMonsters(seed);
+            foreach(var monster in monsters)
+            {
+                monster.Resistances[absorbElement] = Resistance.Absorb;
+            }
+            return monsters;
+        }
+
+        public void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss)
         {
             foreach(var monster in regularEnemies)
             {
-                var enemy = CreateEnemy(monster, weakElement, resistElement);
+                var enemy = CreateEnemy(monster);
                 biome.RegularEnemies.Add(enemy);
             }
 
-            biome.BossEnemy = CreateEnemy(boss, weakElement, resistElement);
-
-            var elementColor = ElementColors.GetElementalHue(weakElement);
-            if (weakElement != Element.None)
-            {
-
-                foreach (var regularEnemy in biome.RegularEnemies)
-                {
-                    regularEnemy.Asset.SetupSwap(elementColor, 100, 50);
-                }
-                biome.BossEnemy.Asset.SetupSwap(elementColor, 100, 50);
-            }
-            else if(resistElement != Element.None)
-            {
-                foreach(var regularEnemy in biome.RegularEnemies)
-                {
-                    regularEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-                }
-                biome.BossEnemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
-            }
+            biome.BossEnemy = CreateEnemy(boss);
         }
 
-        private BiomeEnemy CreateEnemy(MonsterInfo monster, Element weakElement, Element resistElement)
+        private BiomeEnemy CreateEnemy(MonsterInfo monster)
         {
             //Make resistances, this is setup to make the monster's intrinsic stats override any zone settings
 
             var enemyResistances = new Dictionary<Element, Resistance>();
-            if (weakElement != Element.None)
-            {
-                enemyResistances[weakElement] = Resistance.Weak;
-            }
-            else
-            {
-                enemyResistances[resistElement] = Resistance.Resist;
-            }
 
+            Element? absorbElement = null;
             foreach (var resistance in monster.Resistances)
             {
+                if(resistance.Value == Resistance.Absorb && resistance.Key > Element.MagicStart && resistance.Key < Element.MagicEnd)
+                {
+                    absorbElement = resistance.Key;
+                }
                 enemyResistances[resistance.Key] = resistance.Value;
             }
-
+            
             var enemy = new BiomeEnemy
             {
                 Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
                 Resistances = enemyResistances
             };
+
+            if (absorbElement != null)
+            {
+                var elementColor = ElementColors.GetElementalHue(absorbElement.Value);
+                enemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+            }
+
             return enemy;
         }
     }

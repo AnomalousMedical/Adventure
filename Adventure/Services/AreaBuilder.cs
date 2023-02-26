@@ -1,12 +1,7 @@
-﻿using Adventure.Items;
-using Adventure.Items.Creators;
-using Engine;
-using RpgMath;
+﻿using Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
@@ -65,10 +60,6 @@ namespace Adventure.Services
         public IntVector2 Location { get; set; }
 
         public PlotItems? PlotItem { get; set; }
-
-        public Element EnemyWeakElement { get; set; } = Element.None;
-
-        public Element EnemyStrongElement { get; set; } = Element.None;
 
         public IEnumerable<ITreasure> Treasure { get; set; }
 
@@ -145,16 +136,7 @@ namespace Adventure.Services
                 o.BossUniqueStealTreasure = BossUniqueStealTreasure;
             }
 
-            if (EnemyWeakElement != Element.None && EnemyStrongElement != Element.None && EnemyWeakElement == EnemyStrongElement)
-            {
-                EnemyStrongElement += 1;
-                if (EnemyStrongElement >= Element.MagicEnd)
-                {
-                    EnemyStrongElement = Element.MagicStart;
-                }
-            }
-
-            worldDatabase.MonsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster, EnemyWeakElement, EnemyStrongElement);
+            worldDatabase.MonsterMaker.PopulateBiome(o.Biome, regularMonsters, bossMonster);
         }
     }
 }

@@ -180,8 +180,6 @@ namespace Adventure.Services
             //World needs enough islands to cover all zones
 
             //Setup areas
-            var weaknessRandom = new FIRandom(newSeed);
-            var monsterInfo = MonsterMaker.CreateBaseMonsters(weaknessRandom);
             var usedSquares = new bool[map.MapX, map.MapY];
             var usedIslands = new bool[map.NumIslands];
             portalLocations = new List<IntVector2>(5);
@@ -192,7 +190,7 @@ namespace Adventure.Services
             usedIslands[map.IslandSizeOrder[2]] = true;
 
             SetupAirshipIsland(placementRandom, out airshipStartSquare, out airshipPortalSquare, usedSquares, usedIslands, map);
-            areaBuilders = SetupAreaBuilder(monsterInfo, biomeRandom, placementRandom, elementalRandom, treasureRandom, portalLocations, usedSquares, usedIslands, map).ToList();
+            areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, portalLocations, usedSquares, usedIslands, map).ToList();
         }
 
         private static void SetupAirshipIsland(FIRandom placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
@@ -215,8 +213,16 @@ namespace Adventure.Services
             return square;
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(IList<MonsterInfo> monsterInfo, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
+            var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
+            var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
+            {
+                { Element.Fire, MonsterMaker.CreateElemental(seed, Element.Fire) },
+                { Element.Ice, MonsterMaker.CreateElemental(seed, Element.Ice) },
+                { Element.Electricity, MonsterMaker.CreateElemental(seed, Element.Electricity) }
+            };
+
             var filled = new bool[map.MapX, map.MapY];
             int area = 0;
             AreaBuilder areaBuilder;
@@ -471,6 +477,8 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.PlotItem = PlotItems.AirshipKey0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[] 
@@ -494,6 +502,8 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.PlotItem = PlotItems.AirshipKey1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[] 
@@ -528,9 +538,11 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.PlotItem = PlotItems.AirshipKey2;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetSquare(thirdIslandSquares, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase2UniqueTreasures, treasureRandom, phase2UniqueTreasures.Count) //Last area gets remaining treasure
-                    .Concat(new[] 
+                    .Concat(new[]
                     { 
                         new Treasure(PotionCreator.CreateHealthPotion(phase2TreasureLevel)) 
                     });
@@ -617,6 +629,7 @@ namespace Adventure.Services
                 var uniqueTreasure = phase3UniqueTreasures.Count / 4;
                 var stolenTreasure = phase3UniqueStolenTreasures.Count / 4;
 
+                Element firstMonsterElement;
                 //Area 7
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -625,6 +638,10 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
+                areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
+                    .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[] 
@@ -648,6 +665,10 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
+                areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
+                    .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[] 
@@ -671,6 +692,10 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
+                areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
+                    .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[] 
@@ -694,6 +719,10 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 3;
                 areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
+                areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
+                    .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
+                    .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, phase3UniqueTreasures.Count) //Last area gets the remaining treasure
                     .Concat(new[] 
@@ -725,7 +754,16 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = BiomeType.Chip;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
-                areaBuilder.Monsters = monsterInfo; //You get all the monsters in this zone
+
+                //You get all the monsters in this zone
+                areaBuilder.Monsters = monsterInfo;
+                foreach(var monsters in elementalMonsters.Values)
+                {
+                    areaBuilder.Monsters = areaBuilder.Monsters.Concat(monsters);
+                }
+                areaBuilder.Monsters = areaBuilder.Monsters.ToList();
+
+                //TODO: Specify the boss and some treasure
                 //areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
                 //    .Concat(new[]
                 //    {
@@ -742,20 +780,32 @@ namespace Adventure.Services
             }
         }
 
-        private static Element GetDifferentElement(FIRandom elementalRandom, Element notThisElement)
+        private static Element GetRandomMagicElement(FIRandom elementalRandom, params Element[] except)
         {
-            var otherElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-            int retry = 0;
-            while (otherElement == notThisElement)
+            var elements = Enum.GetValues<Element>().Where(i => i > Element.MagicStart && i < Element.MagicEnd && !except.Contains(i)).ToArray();
+            if(elements.Length == 0)
             {
-                otherElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
-                if (retry++ > 10)
-                {
-                    otherElement = (Element)(((int)notThisElement + 1) % (int)Element.MagicEnd);
-                }
+                throw new InvalidOperationException("No elements left to select from");
             }
 
-            return otherElement;
+            return elements[elementalRandom.Next(0, elements.Length)];
+        }
+
+        private static Element GetElementForBiome(BiomeType biome)
+        {
+            switch (biome)
+            {
+                case BiomeType.Snowy:
+                    return Element.Ice;
+                case BiomeType.Countryside:
+                    return Element.Fire;
+                case BiomeType.Forest:
+                    return Element.Electricity;
+                case BiomeType.Desert:
+                    return Element.Fire;
+                default:
+                    return Element.Fire;
+            }
         }
 
         private static void AddPortal(IslandInfo island, bool[,] usedSquares, FIRandom placementRandom, List<IntVector2> portalLocations)
