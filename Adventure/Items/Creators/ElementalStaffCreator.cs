@@ -10,7 +10,7 @@ namespace Adventure.Items.Creators
     {
         private readonly IEquipmentCurve equipmentCurve;
 
-        protected ElementalStaffCreator(IEquipmentCurve equipmentCurve)
+        public ElementalStaffCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
         }
