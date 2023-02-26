@@ -215,7 +215,7 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var starterBiomes = new List<BiomeType>() { BiomeType.Countryside, BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy };
+            var starterBiomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy };
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
             var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
@@ -246,9 +246,7 @@ namespace Adventure.Services
 
             //Phase 0
             {
-                var biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
-                var startingBiome = starterBiomes[biomeIndex];
-                starterBiomes.RemoveAt(biomeIndex);
+                var startingBiome = BiomeType.Countryside;
                 var phase0TreasureLevel = 1;
                 var phase0Adjective = "Busted";
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
