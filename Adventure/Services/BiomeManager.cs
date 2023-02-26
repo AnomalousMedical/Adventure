@@ -68,7 +68,7 @@ namespace Adventure
                 {
                     Asset = new Assets.World.TreasureChest(),
                 },
-                BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
+                BgMusic = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
                 BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
@@ -108,6 +108,8 @@ namespace Adventure
                 //FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
+                BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
+                BgMusicNight = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
@@ -150,6 +152,8 @@ namespace Adventure
                 ReflectFloor = true,
                 FloorTexture = "Graphics/Textures/AmbientCG/Metal032_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Chip005_1K",
+                BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
+                BgMusicNight = "Music/opengameart/congusbongus - Mythica.ogg",
                 EntranceAsset = new ForestEntrance(),
                 Treasure = new BiomeTreasure()
                 {
