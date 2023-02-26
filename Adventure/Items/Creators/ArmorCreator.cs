@@ -20,44 +20,38 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public InventoryItem CreatePlate(int level)
+        public InventoryItem CreatePlate(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var armor = new Equipment
             {
-                Name = $"{name.Adjective} Plate Armor",
-                Defense = equipmentCurve.GetDefense(name.Level),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level, 1f / 3f)
+                Name = $"{adjective} Plate Armor",
+                Defense = equipmentCurve.GetDefense(level),
+                MagicDefense = equipmentCurve.GetMDefense(level, 1f / 3f)
             };
 
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateLeather(int level)
+        public InventoryItem CreateLeather(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var armor = new Equipment
             {
-                Name = $"{name.Adjective} Leather Armor",
-                Defense = equipmentCurve.GetDefense(name.Level, 2f / 3f),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level, 2f / 3f),
+                Name = $"{adjective} Leather Armor",
+                Defense = equipmentCurve.GetDefense(level, 2f / 3f),
+                MagicDefense = equipmentCurve.GetMDefense(level, 2f / 3f),
                 InventorySlots = level / 10 + 1
             };
 
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateCloth(int level)
+        public InventoryItem CreateCloth(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var armor = new Equipment
             {
-                Name = $"{name.Adjective} Cloth Armor",
-                Defense = equipmentCurve.GetDefense(name.Level, 1f / 3f),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level),
+                Name = $"{adjective} Cloth Armor",
+                Defense = equipmentCurve.GetDefense(level, 1f / 3f),
+                MagicDefense = equipmentCurve.GetMDefense(level),
                 MagicAttack = level / 10 + 1
             };
 

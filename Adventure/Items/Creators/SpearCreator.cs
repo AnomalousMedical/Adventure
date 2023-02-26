@@ -1,6 +1,5 @@
 ﻿using Adventure.Assets.Equipment;
 using Adventure.Items.Actions;
-using Adventure.Menu;
 using RpgMath;
 
 namespace Adventure.Items.Creators
@@ -16,21 +15,12 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ShopEntry CreateShopEntry(int level)
+        public InventoryItem CreateNormal(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
-            return new ShopEntry($"{name.Adjective} Spear", name.Cost, () => CreateNormal(name.Level));
-        }
-
-        public InventoryItem CreateNormal(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
             var spear = new Equipment
             {
-                Name = $"{name.Adjective} Spear",
-                Attack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} Spear",
+                Attack = equipmentCurve.GetAttack(level),
                 AttackPercent = 100,
                 Sprite = nameof(Spear2Old),
                 AttackElements = new[] { Element.Piercing }

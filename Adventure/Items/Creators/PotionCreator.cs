@@ -1,15 +1,9 @@
 ﻿using Adventure.Items.Actions;
-using Adventure.Menu;
 
 namespace Adventure.Items.Creators
 {
     class PotionCreator
     {
-        public ShopEntry CreateManaPotionShopEntry(int level)
-        {
-            return new ShopEntry($"Mana Potion", 75, () => CreateManaPotion(1));
-        }
-
         public InventoryItem CreateManaPotion(int level)
         {
             var item = new InventoryItem

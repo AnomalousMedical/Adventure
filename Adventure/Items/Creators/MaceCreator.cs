@@ -16,21 +16,12 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ShopEntry CreateShopEntry(int level)
+        public InventoryItem CreateNormal(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
-            return new ShopEntry($"{name.Adjective} Mace", name.Cost, () => CreateNormal(name.Level));
-        }
-
-        public InventoryItem CreateNormal(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
             var mace = new Equipment
             {
-                Name = $"{name.Adjective} Mace",
-                Attack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} Mace",
+                Attack = equipmentCurve.GetAttack(level),
                 AttackPercent = 100,
                 Sprite = nameof(MaceLarge2New),
                 AttackElements = new[] { Element.Bludgeoning }

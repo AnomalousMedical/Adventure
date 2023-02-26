@@ -19,21 +19,12 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ShopEntry CreateShopEntry(int level)
+        public InventoryItem CreateNormal(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
-            return new ShopEntry($"{name.Adjective} Dagger", name.Cost, () => CreateNormal(name.Level));
-        }
-
-        public InventoryItem CreateNormal(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
             var sword = new Equipment
             {
-                Name = $"{name.Adjective} Dagger",
-                Attack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} Dagger",
+                Attack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(DaggerNew),
                 Skills = GetSkills(level),
                 AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block

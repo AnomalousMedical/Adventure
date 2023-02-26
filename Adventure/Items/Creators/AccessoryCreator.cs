@@ -31,48 +31,24 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(accessory);
         }
 
-        public InventoryItem CreateHealing(int level)
+        public InventoryItem CreateHealing(String adjective, float healingBonus)
         {
             var accessory = new Equipment
             {
-                Name = $"{nameGenerator.GetLevelName(level).Adjective} Healing Accessory",
+                Name = $"{adjective} Bangle of Restoration",
+                HealingBonus = healingBonus
             };
-
-            if(level < SpellLevels.Common)
-            {
-                accessory.HealingBonus = 0.1f;
-            }
-            else if (level < SpellLevels.Superior)
-            {
-                accessory.HealingBonus = 0.2f;
-            }
-            else
-            {
-                accessory.HealingBonus = 0.3f;
-            }
 
             return CreateInventoryItem(accessory);
         }
 
-        public InventoryItem CreateItemUsage(int level)
+        public InventoryItem CreateItemUsage(String adjective, float itemUsageBonus)
         {
             var accessory = new Equipment
             {
-                Name = $"{nameGenerator.GetLevelName(level).Adjective} Item Use Accessory",
+                Name = $"{adjective} Gloves of Handling",
+                ItemUsageBonus = itemUsageBonus
             };
-
-            if (level < SpellLevels.Common)
-            {
-                accessory.ItemUsageBonus = 0.1f;
-            }
-            else if (level < SpellLevels.Superior)
-            {
-                accessory.ItemUsageBonus = 0.25f;
-            }
-            else
-            {
-                accessory.ItemUsageBonus = 0.5f;
-            }
 
             return CreateInventoryItem(accessory);
         }

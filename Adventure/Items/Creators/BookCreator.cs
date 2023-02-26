@@ -18,14 +18,12 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public InventoryItem CreateCure(int level)
+        public InventoryItem CreateCure(int level, string adjective)
         {
-            var name = nameGenerator.GetBookLevelName(level);
-
             var book = new Equipment
             {
-                Name = $"{name.Adjective} Restoration",
-                MagicAttack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} Restoration",
+                MagicAttack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(FancyBook),
                 Skills = GetCureSpells(level),
                 ShowHand = false,
@@ -48,14 +46,12 @@ namespace Adventure.Items.Creators
             }
         }
 
-        public InventoryItem CreateReanimation(int level)
+        public InventoryItem CreateReanimation(int level, string adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var book = new Equipment
             {
-                Name = $"{name.Adjective} Reanimation",
-                MagicAttack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} Reanimation",
+                MagicAttack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(FancyBook),
                 Skills = GetReanimationSpells(level),
                 ShowHand = false,

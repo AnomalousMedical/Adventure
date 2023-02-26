@@ -8,8 +8,7 @@ namespace Adventure.Items.Creators
 {
     interface IStaffCreator
     {
-        InventoryItem CreateNormal(int level);
-        ShopEntry CreateShopEntry(int level);
+        InventoryItem CreateNormal(int level, string adjective);
     }
 
     abstract class BaseStaffCreator : IStaffCreator
@@ -27,23 +26,14 @@ namespace Adventure.Items.Creators
             this.nameGenerator = nameGenerator;
         }
 
-        public ShopEntry CreateShopEntry(int level)
+        public InventoryItem CreateNormal(int level, String adjective)
         {
-            var name = nameGenerator.GetLevelName(level);
-
-            return new ShopEntry($"{name.Adjective} {this.typeName} Staff", name.Cost * 2, () => CreateNormal(name.Level));
-        }
-
-        public InventoryItem CreateNormal(int level)
-        {
-            var name = nameGenerator.GetLevelName(level);
-
             var staff = new Equipment
             {
-                Name = $"{name.Adjective} {typeName} Staff",
-                MagicAttack = equipmentCurve.GetAttack(name.Level),
+                Name = $"{adjective} {typeName} Staff",
+                MagicAttack = equipmentCurve.GetAttack(level),
                 MagicAttackPercent = 100,
-                Attack = equipmentCurve.GetAttack(name.Level) / 3,
+                Attack = equipmentCurve.GetAttack(level) / 3,
                 AttackPercent = 35,
                 Sprite = sprite,
                 Skills = GetSpells(level),
