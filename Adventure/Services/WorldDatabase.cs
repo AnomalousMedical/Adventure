@@ -238,9 +238,12 @@ namespace Adventure.Services
 
             //Phase 0
             {
+                var startingBiome = (BiomeType)biomeRandom.Next(0, biomeMax);
                 var phase0TreasureLevel = 1;
                 var phase0Adjective = "Busted";
-                var startingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
+                var bossResistance = firstBoss.Resistances.Where(i => i.Value == Resistance.Weak && i.Key > Element.MagicStart && i.Key < Element.MagicEnd);
+                var startingElementStaff = bossResistance.Any() ? bossResistance.Select(i => i.Key).First() : Element.Fire;
                 string[] spells;
                 string staffName = $"{phase0Adjective} ";
                 switch (startingElementStaff)
@@ -284,7 +287,8 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 0;
                 areaBuilder.IndexInPhase = 0;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Biome = startingBiome;
+                areaBuilder.BossMonster = firstBoss;
                 areaBuilder.Location = GetSquare(firstIslandSquares, placementRandom);
                 areaBuilder.Treasure = phase0UniqueTreasures;
                 areaBuilder.StartEnd = true;

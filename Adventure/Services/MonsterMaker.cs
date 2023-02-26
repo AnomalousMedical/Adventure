@@ -49,20 +49,33 @@ namespace Adventure.Services
         public List<MonsterInfo> CreateBaseMonsters(FIRandom random)
         {
             var monsters = new List<MonsterInfo>();
+            var availablePhysicalElements = new List<Element>();
             var availableElements = new List<Element>();
             void RefillElements()
             {
+                availablePhysicalElements.Clear();
+                availablePhysicalElements.Add(Element.Slashing);
+                availablePhysicalElements.Add(Element.Piercing);
+                availablePhysicalElements.Add(Element.Bludgeoning);
+
                 availableElements.Clear();
-                availableElements.Add(Element.Slashing);
-                availableElements.Add(Element.Piercing);
-                availableElements.Add(Element.Bludgeoning);
+                availableElements.Add(Element.Fire);
+                availableElements.Add(Element.Ice);
+                availableElements.Add(Element.Electricity);
             }
 
-            foreach(var monsterAsset in monsterAssets)
+            foreach (var monsterAsset in monsterAssets)
             {
                 RefillElements();
                 int index;
                 
+                index = random.Next(availablePhysicalElements.Count);
+                var weakPhysicalElement = availablePhysicalElements[index];
+                availablePhysicalElements.RemoveAt(index);
+
+                index = random.Next(availablePhysicalElements.Count);
+                var resistPhysicalElement = availablePhysicalElements[index];
+
                 index = random.Next(availableElements.Count);
                 var weakElement = availableElements[index];
                 availableElements.RemoveAt(index);
@@ -75,6 +88,8 @@ namespace Adventure.Services
                     Asset: monsterAsset.Asset,
                     Resistances: new Dictionary<Element, Resistance>
                     {
+                        { weakPhysicalElement, Resistance.Weak },
+                        { resistPhysicalElement, Resistance.Resist },
                         { weakElement, Resistance.Weak },
                         { resistElement, Resistance.Resist }
                     },
