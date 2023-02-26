@@ -19,7 +19,7 @@ namespace Adventure.Items.Creators
         {
             var book = new Equipment
             {
-                Name = $"{adjective} Restoration",
+                Name = $"{adjective} Book of Restoration",
                 MagicAttack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(FancyBook),
                 Skills = spells.ToArray(),
