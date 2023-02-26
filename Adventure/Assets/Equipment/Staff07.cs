@@ -86,39 +86,4 @@ namespace Adventure.Assets.Equipment
             };
         }
     }
-
-    class AcidStaff07 : Staff07
-    {
-        public AcidStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, ElementColors.Acid }
-            };
-        }
-    }
-
-    class GravityStaff07 : Staff07
-    {
-        public GravityStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, ElementColors.Gravity }
-            };
-        }
-    }
-
-
-
-    class EarthStaff07 : Staff07
-    {
-        public EarthStaff07()
-        {
-            PalletSwap = new Dictionary<uint, uint>
-            {
-                { Staff07.Crystal, ElementColors.Earth }
-            };
-        }
-    }
 }

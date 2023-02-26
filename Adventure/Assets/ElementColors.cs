@@ -13,23 +13,14 @@ namespace Adventure.Assets
         public const uint Fire = 0xffde4509;
         public const uint Ice = 0xff0962de;
         public const uint Electricity = 0xffe3c923;
-        public const uint Acid = 0xff18c81b;
-        public const uint Gravity = 0xffe109bb;
-        public const uint Earth = 0xffcd880b;
 
         public static readonly HslColor FireHsl = new IntColor(Fire).ToHsl();
         public static readonly HslColor IceHsl = new IntColor(Ice).ToHsl();
         public static readonly HslColor ElectricityHsl = new IntColor(Electricity).ToHsl();
-        public static readonly HslColor AcidHsl = new IntColor(Acid).ToHsl();
-        public static readonly HslColor GravityHsl = new IntColor(Gravity).ToHsl();
-        public static readonly HslColor EarthHsl = new IntColor(Earth).ToHsl();
 
         public static readonly Color FireColor = Color.FromARGB(Fire);
         public static readonly Color IceColor = Color.FromARGB(Ice);
         public static readonly Color ElectricityColor = Color.FromARGB(Electricity);
-        public static readonly Color AcidColor = Color.FromARGB(Acid);
-        public static readonly Color GravityColor = Color.FromARGB(Gravity);
-        public static readonly Color EarthColor = Color.FromARGB(Earth);
 
         public static float GetElementalHue(Element element)
         {
@@ -41,12 +32,6 @@ namespace Adventure.Assets
                     return IceHsl.H;
                 case Element.Electricity:
                     return ElectricityHsl.H;
-                case Element.Acid:
-                    return AcidHsl.H;
-                case Element.Gravity:
-                    return GravityHsl.H;
-                case Element.Earth:
-                    return EarthHsl.H;
             }
 
             return 120f;
@@ -62,12 +47,6 @@ namespace Adventure.Assets
                     return IceColor;
                 case Element.Electricity:
                     return ElectricityColor;
-                case Element.Acid:
-                    return AcidColor;
-                case Element.Gravity:
-                    return GravityColor;
-                case Element.Earth:
-                    return EarthColor;
             }
 
             return Color.Green;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RpgMath
+﻿namespace RpgMath
 {
     public enum Element
     {
@@ -17,9 +13,6 @@ namespace RpgMath
         Fire,
         Ice,
         Electricity,
-        Acid,
-        Gravity,
-        Earth,
         
         //Healing
         Healing,

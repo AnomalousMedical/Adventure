@@ -90,9 +90,6 @@ namespace Adventure.Menu
         private readonly SpearCreator spearCreator;
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
-        private readonly AcidStaffCreator acidStaffCreator;
-        private readonly GravityStaffCreator gravityStaffCreator;
-        private readonly EarthStaffCreator earthStaffCreator;
         private readonly FireStaffCreator fireStaffCreator;
         private readonly IceStaffCreator iceStaffCreator;
         private readonly ZapStaffCreator zapStaffCreator;
@@ -120,9 +117,6 @@ namespace Adventure.Menu
             SpearCreator spearCreator,
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
-            AcidStaffCreator acidStaffCreator,
-            GravityStaffCreator gravityStaffCreator,
-            EarthStaffCreator earthStaffCreator,
             FireStaffCreator fireStaffCreator,
             IceStaffCreator iceStaffCreator,
             ZapStaffCreator zapStaffCreator,
@@ -142,9 +136,6 @@ namespace Adventure.Menu
             this.spearCreator = spearCreator;
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
-            this.acidStaffCreator = acidStaffCreator;
-            this.gravityStaffCreator = gravityStaffCreator;
-            this.earthStaffCreator = earthStaffCreator;
             this.fireStaffCreator = fireStaffCreator;
             this.iceStaffCreator = iceStaffCreator;
             this.zapStaffCreator = zapStaffCreator;
