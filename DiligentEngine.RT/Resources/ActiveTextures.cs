@@ -17,7 +17,7 @@ namespace DiligentEngine.RT.Resources
             public int textureSetIndex;
         }
 
-        public int MaxTextures => 100; //This can be much higher
+        public int MaxTextures => 200; //This can be much higher
         internal List<IDeviceObject> Textures => textures;
 
         private Stack<int> availableSlots;
