@@ -16,14 +16,12 @@ namespace Adventure.Items.Creators
         private readonly string typeName;
         private readonly string sprite;
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        protected BaseStaffCreator(String typeName, String sprite, IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        protected BaseStaffCreator(String typeName, String sprite, IEquipmentCurve equipmentCurve)
         {
             this.typeName = typeName;
             this.sprite = sprite;
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateNormal(int level, String adjective)

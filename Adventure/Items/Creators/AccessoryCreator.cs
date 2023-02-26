@@ -12,12 +12,10 @@ namespace Adventure.Items.Creators
     class AccessoryCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        public AccessoryCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public AccessoryCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateCounterAttack()

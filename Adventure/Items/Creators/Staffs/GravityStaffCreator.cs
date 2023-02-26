@@ -8,8 +8,8 @@ namespace Adventure.Items.Creators
 {
     class GravityStaffCreator : BaseStaffCreator
     {
-        public GravityStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
-            :base("Gravity", nameof(GravityStaff07), equipmentCurve, nameGenerator)
+        public GravityStaffCreator(IEquipmentCurve equipmentCurve) 
+            : base("Gravity", nameof(GravityStaff07), equipmentCurve)
         {
             
         }

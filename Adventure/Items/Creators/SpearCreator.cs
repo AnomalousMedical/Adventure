@@ -7,12 +7,10 @@ namespace Adventure.Items.Creators
     class SpearCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        public SpearCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public SpearCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateNormal(int level, string adjective)

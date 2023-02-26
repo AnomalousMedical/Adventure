@@ -11,12 +11,10 @@ namespace Adventure.Items.Creators
     class DaggerCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        public DaggerCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public DaggerCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateNormal(int level, string adjective)

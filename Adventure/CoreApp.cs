@@ -163,7 +163,6 @@ namespace Adventure
             services.AddSingleton<IWorldManager, WorldManager>();
             services.AddSingleton<IWorldDatabase, WorldDatabase>();
             services.AddSingleton<IBattleManager, BattleManager>();
-            services.AddSingleton<INameGenerator, NameGenerator>();
             services.AddSingleton<IMonsterMaker, MonsterMaker>();
             services.AddScoped<BattleArena>();
             services.AddScoped<BattleArena.Description>();

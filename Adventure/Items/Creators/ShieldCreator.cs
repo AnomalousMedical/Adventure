@@ -8,23 +8,19 @@ namespace Adventure.Items.Creators
     class ShieldCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        public ShieldCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public ShieldCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateNormal(int level, string adjective, long guardPercent)
         {
-            var name = nameGenerator.GetLevelName(level);
-
             var shield = new Equipment
             {
-                Name = $"{name.Adjective} Shield",
-                Defense = equipmentCurve.GetDefense(name.Level),
-                MagicDefense = equipmentCurve.GetMDefense(name.Level),
+                Name = $"{adjective} Shield",
+                Defense = equipmentCurve.GetDefense(level),
+                MagicDefense = equipmentCurve.GetMDefense(level),
                 Sprite = nameof(ShieldOfReflection),
                 Skills = new[] { nameof(Guard) },
                 GuardPercent = guardPercent,

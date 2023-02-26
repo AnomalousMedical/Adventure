@@ -8,8 +8,8 @@ namespace Adventure.Items.Creators
 {
     class AcidStaffCreator : BaseStaffCreator
     {
-        public AcidStaffCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
-            :base("Acid", nameof(AcidStaff07), equipmentCurve, nameGenerator)
+        public AcidStaffCreator(IEquipmentCurve equipmentCurve)
+            :base("Acid", nameof(AcidStaff07), equipmentCurve)
         {
             
         }

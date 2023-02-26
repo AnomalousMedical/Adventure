@@ -10,12 +10,10 @@ namespace Adventure.Items.Creators
     class BookCreator
     {
         private readonly IEquipmentCurve equipmentCurve;
-        private readonly INameGenerator nameGenerator;
 
-        public BookCreator(IEquipmentCurve equipmentCurve, INameGenerator nameGenerator)
+        public BookCreator(IEquipmentCurve equipmentCurve)
         {
             this.equipmentCurve = equipmentCurve;
-            this.nameGenerator = nameGenerator;
         }
 
         public InventoryItem CreateCure(int level, string adjective)
