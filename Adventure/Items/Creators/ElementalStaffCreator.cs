@@ -1,43 +1,41 @@
-﻿using RpgMath;
+﻿using Adventure.Assets.Equipment;
+using Adventure.Items.Actions;
+using RpgMath;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
     class ElementalStaffCreator
     {
-        private readonly FireStaffCreator fireStaffCreator;
-        private readonly IceStaffCreator iceStaffCreator;
-        private readonly ZapStaffCreator zapStaffCreator;
+        private readonly IEquipmentCurve equipmentCurve;
 
-        public ElementalStaffCreator
-        (
-            FireStaffCreator fireStaffCreator,
-            IceStaffCreator iceStaffCreator,
-            ZapStaffCreator zapStaffCreator
-        )
+        protected ElementalStaffCreator(IEquipmentCurve equipmentCurve)
         {
-            this.fireStaffCreator = fireStaffCreator;
-            this.iceStaffCreator = iceStaffCreator;
-            this.zapStaffCreator = zapStaffCreator;
+            this.equipmentCurve = equipmentCurve;
         }
 
-        public IStaffCreator GetStaffCreator(Element element)
+        public InventoryItem CreateNormal(int level, String adjective, params string[] spells)
         {
-            switch (element)
+            var staff = new Equipment
             {
-                case Element.Fire:
-                    return fireStaffCreator;
-                case Element.Ice:
-                    return iceStaffCreator;
-                case Element.Electricity:
-                    return zapStaffCreator;
-            }
+                Name = $"{adjective} Staff",
+                MagicAttack = equipmentCurve.GetAttack(level),
+                MagicAttackPercent = 100,
+                Attack = equipmentCurve.GetAttack(level) / 3,
+                AttackPercent = 35,
+                Sprite = nameof(IceStaff07),
+                Skills = spells.ToArray(),
+                TwoHanded = true,
+                AttackElements = new[] { Element.Bludgeoning }
+            };
 
-            return null;
+            return CreateInventoryItem(staff);
+        }
+
+        private InventoryItem CreateInventoryItem(Equipment equipment)
+        {
+            return new InventoryItem(equipment, nameof(EquipMainHand));
         }
     }
 }

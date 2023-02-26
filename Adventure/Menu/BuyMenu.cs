@@ -90,9 +90,7 @@ namespace Adventure.Menu
         private readonly SpearCreator spearCreator;
         private readonly MaceCreator maceCreator;
         private readonly ShieldCreator shieldCreator;
-        private readonly FireStaffCreator fireStaffCreator;
-        private readonly IceStaffCreator iceStaffCreator;
-        private readonly ZapStaffCreator zapStaffCreator;
+        private readonly ElementalStaffCreator staffCreator;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ArmorCreator armorCreator;
         private readonly PotionCreator potionCreator;
@@ -117,9 +115,7 @@ namespace Adventure.Menu
             SpearCreator spearCreator,
             MaceCreator maceCreator,
             ShieldCreator shieldCreator,
-            FireStaffCreator fireStaffCreator,
-            IceStaffCreator iceStaffCreator,
-            ZapStaffCreator zapStaffCreator,
+            ElementalStaffCreator staffCreator,
             AccessoryCreator accessoryCreator,
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
@@ -136,9 +132,7 @@ namespace Adventure.Menu
             this.spearCreator = spearCreator;
             this.maceCreator = maceCreator;
             this.shieldCreator = shieldCreator;
-            this.fireStaffCreator = fireStaffCreator;
-            this.iceStaffCreator = iceStaffCreator;
-            this.zapStaffCreator = zapStaffCreator;
+            this.staffCreator = staffCreator;
             this.accessoryCreator = accessoryCreator;
             this.armorCreator = armorCreator;
             this.potionCreator = potionCreator;

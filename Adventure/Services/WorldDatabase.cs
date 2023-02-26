@@ -5,8 +5,6 @@ using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
@@ -240,12 +238,29 @@ namespace Adventure.Services
 
             //Phase 0
             {
-                var startingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase0TreasureLevel = 1;
                 var phase0Adjective = "Busted";
+                var startingElementStaff = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
+                string[] spells;
+                string staffName = $"{phase0Adjective} ";
+                switch (startingElementStaff)
+                {
+                    case Element.Ice:
+                        spells = new []{ nameof(Ice) };
+                        staffName += "Ice";
+                        break;
+                    case Element.Fire:
+                        spells = new[] { nameof(Fire) };
+                        staffName += "Fire";
+                        break;
+                    default:
+                        spells = new[] { nameof(Zap) };
+                        staffName += "Electrical";
+                        break;
+                }
                 var phase0UniqueTreasures = new List<Treasure>();
                 phase0UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)));
-                phase0UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(startingElementStaff).CreateNormal(phase0TreasureLevel, phase0Adjective)));
+                phase0UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase0TreasureLevel, staffName, spells)));
                 phase0UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase0TreasureLevel, phase0Adjective, nameof(Cure))));
                 phase0UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)));
                 phase0UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)));
@@ -280,7 +295,6 @@ namespace Adventure.Services
 
             //Phase 1
             {
-                var phase1EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase1TreasureLevel = 30;
                 var phase1Adjective = "Common";
                 var phase1UniqueTreasures = new List<Treasure>();
@@ -289,7 +303,7 @@ namespace Adventure.Services
                 phase1UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))));
                 phase1UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 70)));
-                phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase1EndWeakElement).CreateNormal(phase1TreasureLevel, phase1Adjective)));
+                phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Zap))));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, phase1Adjective)));
@@ -374,7 +388,6 @@ namespace Adventure.Services
             //Phase 2
             {
                 //TODO: This is really just a placeholder
-                var phase2EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase2TreasureLevel = 50;
                 var phase2Adjective = "Quality";
                 var phase2UniqueTreasures = new List<Treasure>();
@@ -383,7 +396,7 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, nameof(Cure), nameof(MegaCure))));
                 phase2UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 80)));
-                phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase2EndWeakElement).CreateNormal(phase2TreasureLevel, phase2Adjective)));
+                phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(Fire), nameof(FireBlast), nameof(Ice), nameof(IceBlast), nameof(Zap), nameof(ZapBlast))));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective)));
@@ -530,16 +543,15 @@ namespace Adventure.Services
             //Phase 3
             {
                 //TODO: This is really just a placeholder
-                var phase3EndWeakElement = (Element)elementalRandom.Next((int)Element.MagicStart, (int)Element.MagicEnd);
                 var phase3TreasureLevel = 65;
                 var phase3Adjective = "Superior";
                 var phase3UniqueTreasures = new List<Treasure>();
                 phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, phase3Adjective, nameof(Cure), nameof(MegaCure), nameof(Reanimate))));
+                phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, "Arch Mage's", nameof(Fire), nameof(FireBlast), nameof(FireLash), nameof(Ice), nameof(IceBlast), nameof(IceLash), nameof(Zap), nameof(ZapBlast), nameof(ZapLash))));
                 phase3UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 90)));
-                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.GetStaffCreator(phase3EndWeakElement).CreateNormal(phase3TreasureLevel, phase3Adjective)));
+                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective)));
