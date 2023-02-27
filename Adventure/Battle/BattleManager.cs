@@ -600,7 +600,9 @@ namespace Adventure.Battle
 
                 AddDamageNumber(target, damage, color);
                 target.ApplyDamage(attacker, damageCalculator, damage);
-                if (!isCounter && !target.IsDead && damageCalculator.Counter(attacker.Stats, target.Stats))
+                var attackerIsPlayer = players.Contains(attacker);
+                var targetIsPlayer = players.Contains(target);
+                if (!isCounter && !target.IsDead && attackerIsPlayer != targetIsPlayer && damageCalculator.Counter(attacker.Stats, target.Stats))
                 {
                     target.AttemptMeleeCounter(attacker);
                 }
