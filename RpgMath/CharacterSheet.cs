@@ -346,6 +346,9 @@ namespace RpgMath
         public long GuardPercent => EquippedItems().Sum(i => i.GuardPercent);
 
         [JsonIgnore]
+        public long CounterPercent => EquippedItems().Sum(i => i.CounterPercent);
+
+        [JsonIgnore]
         public bool AllowLuckyEvade => true;
 
         public long Level { get; set; } = 1;

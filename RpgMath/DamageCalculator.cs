@@ -184,6 +184,14 @@ namespace RpgMath
             return rand < hitPct;
         }
 
+        public bool Counter(IBattleStats attacker, IBattleStats target)
+        {
+            long hitPct = target.CounterPercent;
+
+            var rand = (long)random.Next(65536) * 99 / 65535 + 1;
+            return rand < hitPct;
+        }
+
         public long PowerGaugeGain(IBattleStats target, long damage)
         {
             if(damage < 1)

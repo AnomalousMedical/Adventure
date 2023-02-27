@@ -31,7 +31,7 @@ namespace Adventure.Items.Creators
             if(level > SpellLevels.Superior)
             {
                 //Flawless and above gets counter
-                sword.SpecialEffects = new[] { BattleSpecialEffects.Counterattack };
+                sword.CounterPercent = 40L;
             }
 
             return CreateInventoryItem(sword);

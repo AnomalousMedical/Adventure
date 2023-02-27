@@ -20,6 +20,7 @@ namespace RpgMath
         long Level { get; }
         long ExtraCritChance { get; }
         long GuardPercent { get; }
+        long CounterPercent { get; }
         float TotalItemUsageBonus { get; }
         float TotalHealingBonus { get; }
         IEnumerable<string> Skills { get; }

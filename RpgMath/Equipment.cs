@@ -40,6 +40,8 @@ namespace RpgMath
 
         public long GuardPercent { get; set; }
 
+        public long CounterPercent { get; set; }
+
         public bool TwoHanded { get; set; }
 
         public int InventorySlots { get; set; }
@@ -57,8 +59,6 @@ namespace RpgMath
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }
-
-        public IEnumerable<BattleSpecialEffects> SpecialEffects { get; set; }
 
         public Guid? Id { get; set; }
 

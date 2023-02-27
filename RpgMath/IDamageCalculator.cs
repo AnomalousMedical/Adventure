@@ -15,5 +15,6 @@
         long RandomVariation(long damage);
         long PowerGaugeGain(IBattleStats target, long damage);
         long Magical(long attackerMagic, IBattleStats target, long power);
+        bool Counter(IBattleStats attacker, IBattleStats target);
     }
 }

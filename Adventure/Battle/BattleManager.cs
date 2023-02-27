@@ -600,7 +600,7 @@ namespace Adventure.Battle
 
                 AddDamageNumber(target, damage, color);
                 target.ApplyDamage(attacker, damageCalculator, damage);
-                if (!isCounter && !target.IsDead)
+                if (!isCounter && !target.IsDead && damageCalculator.Counter(attacker.Stats, target.Stats))
                 {
                     target.AttemptMeleeCounter(attacker);
                 }

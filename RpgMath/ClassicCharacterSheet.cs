@@ -103,6 +103,8 @@ namespace RpgMath
 
         public long GuardPercent => EquippedItems().Sum(i => i.GuardPercent);
 
+        public long CounterPercent => EquippedItems().Sum(i => i.CounterPercent);
+
         public bool AllowLuckyEvade => true;
 
         public long CurrentXp { get; set; }

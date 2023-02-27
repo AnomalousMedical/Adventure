@@ -40,6 +40,8 @@ namespace RpgMath
 
         public long GuardPercent { get; set; }
 
+        public long CounterPercent { get; set; }
+
         public float TotalItemUsageBonus { get; set; }
 
         public float TotalHealingBonus { get; set; }

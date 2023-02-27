@@ -842,11 +842,7 @@ namespace Adventure.Battle
 
         public void AttemptMeleeCounter(IBattleTarget attacker)
         {
-            var counter = characterSheet.EquippedItems().Where(i => i.SpecialEffects?.Contains(BattleSpecialEffects.Counterattack) == true).Any();
-            if (counter)
-            {
-                Melee(attacker, counterAttack, true, false);
-            }
+            Melee(attacker, counterAttack, true, false);
         }
 
         public void Resurrect(IDamageCalculator calculator, long damage)
