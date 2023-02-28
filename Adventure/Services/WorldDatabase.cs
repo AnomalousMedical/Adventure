@@ -307,7 +307,7 @@ namespace Adventure.Services
 
             //Phase 1
             {
-                var phase1TreasureLevel = 30;
+                var phase1TreasureLevel = 20;
                 var phase1Adjective = "Common";
                 var phase1UniqueTreasures = new List<Treasure>();
                 phase1UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)));
@@ -403,8 +403,7 @@ namespace Adventure.Services
 
             //Phase 2
             {
-                //TODO: This is really just a placeholder
-                var phase2TreasureLevel = 50;
+                var phase2TreasureLevel = 35;
                 var phase2Adjective = "Quality";
                 var phase2UniqueTreasures = new List<Treasure>();
                 phase2UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
@@ -564,8 +563,7 @@ namespace Adventure.Services
 
             //Phase 3
             {
-                //TODO: This is really just a placeholder
-                var phase3TreasureLevel = 65;
+                var phase3TreasureLevel = 55;
                 var phase3Adjective = "Superior";
                 var phase3UniqueTreasures = new List<Treasure>();
                 phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
@@ -747,7 +745,7 @@ namespace Adventure.Services
 
             //Phase 4
             {
-                var phase4TreasureLevel = 70;
+                var phase4TreasureLevel = 60;
                 var phase4Adjective = "Flawless";
 
                 //Area 11
