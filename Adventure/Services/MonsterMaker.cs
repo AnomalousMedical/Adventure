@@ -151,7 +151,7 @@ namespace Adventure.Services
             if (absorbElement != null)
             {
                 var elementColor = ElementColors.GetElementalHue(absorbElement.Value);
-                enemy.Asset.SetupSwap(elementColor + 180f, 100, 50);
+                enemy.Asset.SetupSwap(elementColor, 100, 50);
             }
 
             return enemy;

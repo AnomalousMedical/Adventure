@@ -10,8 +10,8 @@ namespace Adventure.Assets
 {
     public static class ElementColors
     {
-        public const uint Fire = 0xffde4509;
-        public const uint Ice = 0xff0962de;
+        public const uint Fire = 0xffde2609;
+        public const uint Ice = 0xff098fde;
         public const uint Electricity = 0xffe3c923;
 
         public static readonly HslColor FireHsl = new IntColor(Fire).ToHsl();
