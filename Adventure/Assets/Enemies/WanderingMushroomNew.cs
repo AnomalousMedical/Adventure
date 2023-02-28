@@ -1,5 +1,6 @@
 ﻿using DiligentEngine.RT.Sprites;
 using Engine;
+using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace Adventure.Assets.Enemies
 {
     class WanderingMushroomNew : ISpriteAsset
     {
+        const float SpriteWidth = 64f;
+        const float SpriteHeight = 21f;
+        const float SpriteStepX = 32f / SpriteWidth;
+        const float SpriteStepY = 21f / SpriteHeight;
+
         public const uint Skin = 0xffffff80;//(yellowish)
         public const uint Cap = 0xffffc000;//(orange)
         public const uint CapHighlight = 0xffe20bdf;//(purple)
@@ -58,7 +64,10 @@ namespace Adventure.Assets.Enemies
 
         public Sprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return new Sprite(animations: new Dictionary<string, SpriteAnimation>
+            {
+                { "default", new SpriteAnimation((long)(1.14f * Clock.SecondsToMicro), new SpriteFrame(0, 0, SpriteStepX, SpriteStepY), new SpriteFrame(SpriteStepX, 0, SpriteStepX * 2, SpriteStepY)) }
+            }) { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }
