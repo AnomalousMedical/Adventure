@@ -87,6 +87,7 @@ namespace Adventure
             this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
             this.sprite = description.TriggerEnemy.Asset.CreateSprite();
+            this.sprite.RandomizeFrameTime();
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;

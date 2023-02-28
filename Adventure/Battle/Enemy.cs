@@ -68,6 +68,7 @@ namespace Adventure.Battle
             this.battleManager = battleManager;
             this.turnTimer = turnTimer;
             this.sprite = description.Sprite;
+            this.sprite.RandomizeFrameTime();
             this.Stats = description.BattleStats ?? throw new InvalidOperationException("You must include battle stats in an enemy description.");
             this.currentHp = Stats.Hp;
             this.currentMp = Stats.Mp;

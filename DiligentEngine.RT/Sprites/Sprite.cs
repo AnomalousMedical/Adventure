@@ -112,6 +112,13 @@ namespace DiligentEngine.RT.Sprites
             SetAnimation(animations.Keys.First());
         }
 
+        public void RandomizeFrameTime()
+        {
+            //This is converted to int, but its still random
+            //Anything into the long territory will be a pretty long animation anyway
+            frameTime = Random.Shared.Next(0, (int)duration);
+        }
+
         public void SetAnimation(String animationName)
         {
             if (animationName == currentName)
