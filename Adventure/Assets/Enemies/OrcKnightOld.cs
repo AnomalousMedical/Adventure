@@ -1,15 +1,17 @@
 ﻿using DiligentEngine.RT.Sprites;
 using Engine;
-using System;
+using Engine.Platform;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Assets.Enemies
 {
     class OrcKnightOld : ISpriteAsset
     {
+        const float SpriteWidth = 64f;
+        const float SpriteHeight = 32f;
+        const float SpriteStepX = 32f / SpriteWidth;
+        const float SpriteStepY = 32f / SpriteHeight;
+
         public const uint Tusks = 0xffe0e0e0;//(white)
         public const uint Skin = 0xff156b0b;//(green)
         public const uint Belt = 0xfff2c44d;//(gold)
@@ -63,7 +65,10 @@ namespace Adventure.Assets.Enemies
 
         public Sprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(1, 1, 1) };
+            return new Sprite(animations: new Dictionary<string, SpriteAnimation>
+            {
+                { "default", new SpriteAnimation((long)(1.47f * Clock.SecondsToMicro), new SpriteFrame(0, 0, SpriteStepX, SpriteStepY), new SpriteFrame(SpriteStepX, 0, SpriteStepX * 2, SpriteStepY)) }
+            }) { BaseScale = new Vector3(1, 1, 1) };
         }
     }
 }
