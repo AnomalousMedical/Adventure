@@ -1,15 +1,17 @@
 ﻿using DiligentEngine.RT.Sprites;
 using Engine;
-using System;
+using Engine.Platform;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Assets.Enemies
 {
     class Wolf : ISpriteAsset
     {
+        const float SpriteWidth = 102f;
+        const float SpriteHeight = 54f;
+        const float SpriteStepX = 51f / SpriteWidth;
+        const float SpriteStepY = 54f / SpriteHeight;
+
         public const uint Fur1 = 0xff5e7096;//Fur 1 (blue)
         public const uint Fur2 = 0xffe3e4e5;//Fur 2 (white)
         public const uint Fur3 = 0xffaaa8a3;//Fur 2 (grey)
@@ -61,7 +63,11 @@ namespace Adventure.Assets.Enemies
 
         public Sprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(24f / 29f, 1, 1) };
+            return new Sprite(animations: new Dictionary<string, SpriteAnimation>
+            {
+                { "default", new SpriteAnimation((long)(0.87f * Clock.SecondsToMicro), new SpriteFrame(0, 0, SpriteStepX, SpriteStepY), new SpriteFrame(SpriteStepX, 0, SpriteStepX * 2, SpriteStepY)) }
+            }) 
+            { BaseScale = new Vector3(24f / 29f, 1, 1) };
         }
     }
 }

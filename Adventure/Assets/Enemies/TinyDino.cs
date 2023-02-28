@@ -1,15 +1,17 @@
 ﻿using DiligentEngine.RT.Sprites;
 using Engine;
-using System;
+using Engine.Platform;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Assets.Enemies
 {
     class TinyDino : ISpriteAsset
     {
+        const float SpriteWidth = 64f;
+        const float SpriteHeight = 21f;
+        const float SpriteStepX = 32f / SpriteWidth;
+        const float SpriteStepY = 21f / SpriteHeight;
+
         public const uint Skin = 0xff168516;//Skin (green)
         public const uint Spine = 0xffff0000;//Spines (red)
         public const uint Eyes = 0xff9105bd;//Eye (purple)
@@ -57,7 +59,10 @@ namespace Adventure.Assets.Enemies
 
         public Sprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(1.466666666666667f, 1, 1) };
+            return new Sprite(animations: new Dictionary<string, SpriteAnimation>
+            {
+                { "default", new SpriteAnimation((long)(0.87f * Clock.SecondsToMicro), new SpriteFrame(0, 0, SpriteStepX, SpriteStepY), new SpriteFrame(SpriteStepX, 0, SpriteStepX * 2, SpriteStepY)) }
+            }) { BaseScale = new Vector3(1.466666666666667f, 1, 1) };
         }
     }
 }
