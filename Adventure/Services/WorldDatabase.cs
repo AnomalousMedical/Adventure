@@ -334,17 +334,10 @@ namespace Adventure.Services
                 phase1UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
                 var uniqueTreasure = phase1UniqueTreasures.Count / 2;
@@ -424,11 +417,7 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
                 var phase2UniqueStolenTreasures = new List<Treasure>();
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
@@ -439,24 +428,14 @@ namespace Adventure.Services
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
@@ -587,12 +566,8 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
                 var phase3UniqueStolenTreasures = new List<Treasure>();
@@ -615,18 +590,9 @@ namespace Adventure.Services
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
