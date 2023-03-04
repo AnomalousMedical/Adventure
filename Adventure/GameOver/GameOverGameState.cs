@@ -26,7 +26,9 @@ namespace Adventure.GameOver
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
         private readonly IPersistenceWriter persistenceWriter;
+        private readonly ISetupGameState setupGameState;
         private IGameState nextState;
+        private SharpButton load = new SharpButton() { Text = "Load" };
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpText gameOver = new SharpText("Game Over");
         private ILayoutItem layout;
@@ -41,7 +43,8 @@ namespace Adventure.GameOver
             ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
             Persistence persistence,
-            IPersistenceWriter persistenceWriter
+            IPersistenceWriter persistenceWriter,
+            ISetupGameState setupGameState
         )
         {
             this.sharpGui = sharpGui;
@@ -51,7 +54,8 @@ namespace Adventure.GameOver
             this.zoneManager = zoneManager;
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
-            layout = new ColumnLayout(gameOver, restart) { Margin = new IntPad(10) };
+            this.setupGameState = setupGameState;
+            layout = new ColumnLayout(gameOver, load, restart) { Margin = new IntPad(10) };
         }
 
         public void Link(IGameState nextState)
@@ -83,6 +87,11 @@ namespace Adventure.GameOver
             sharpGui.Text(gameOver);
 
             //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
+            if (sharpGui.Button(load, GamepadId.Pad1) || sharpGui.Button(load, GamepadId.Pad2) || sharpGui.Button(load, GamepadId.Pad3) || sharpGui.Button(load, GamepadId.Pad4))
+            {
+                nextState = setupGameState;
+            }
+
             if (sharpGui.Button(restart, GamepadId.Pad1) || sharpGui.Button(restart, GamepadId.Pad2) || sharpGui.Button(restart, GamepadId.Pad3) || sharpGui.Button(restart, GamepadId.Pad4))
             {
                 persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;

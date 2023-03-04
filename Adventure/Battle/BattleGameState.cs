@@ -33,6 +33,7 @@ namespace Adventure.Battle
         private IGameState returnState;
         private BattleTrigger battleTrigger;
         private Random noTriggerRandom = new Random();
+        private bool saveOnExit = false;
 
         public BattleGameState
         (
@@ -69,6 +70,7 @@ namespace Adventure.Battle
         {
             if (active)
             {
+                persistenceWriter.Save();
                 persistenceWriter.AddSaveBlock(saveBlock);
                 eventManager[EventLayers.Battle].makeFocusLayer();
                 int battleSeed;
@@ -113,7 +115,11 @@ namespace Adventure.Battle
             else
             {
                 persistenceWriter.RemoveSaveBlock(saveBlock);
-                persistenceWriter.Save();
+                if (saveOnExit)
+                {
+                    persistenceWriter.Save();
+                    saveOnExit = false;
+                }
             }
             battleManager.SetActive(active);
         }
@@ -130,6 +136,7 @@ namespace Adventure.Battle
                 case IBattleManager.Result.ReturnToExploration:
                     nextState = returnState;
                     battleTrigger?.BattleWon();
+                    saveOnExit = true;
                     break;
             }
 
