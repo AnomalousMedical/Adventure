@@ -122,6 +122,33 @@ namespace RogueLikeMapBuilder
         /// </summary>
         public bool Horizontal { get; set; }
 
+        private record RoomSorter(ushort Room, int NumCorridors);
+
+        /// <summary>
+        /// Get the indexes of the rooms in order based on how many corridors they have from least to most.
+        /// The indexes returned will start at 0, so you can look up the room rectangles directly
+        /// from these values.
+        /// </summary>
+        /// <returns>The rooms in order with the least number of corridors first and the most last.</returns>
+        public IEnumerable<ushort> GetRoomsLeastCorridorFirst()
+        {
+            //Shift the values so that no 2 rooms have exactly the same value, they will be influenced by the number of corridors and their original index.
+            //This will keep them in the same order no matter what kind of algorithm is used to sort them
+            const int SHIFT = 10000;
+
+            //Using 0 based index for direct lookups
+            ushort room = 0;
+            var sorter = new List<RoomSorter>(roomCorridorCount.Count);
+            foreach(var i in roomCorridorCount)
+            {
+                sorter.Add(new RoomSorter(room, i * SHIFT + room));
+                ++room;
+            }
+
+            sorter.Sort((l, r) => l.NumCorridors - r.NumCorridors);
+            return sorter.Select(i => i.Room);
+        }
+
         #endregion
 
         /// <summary>
@@ -338,7 +365,7 @@ namespace RogueLikeMapBuilder
 
             Map_Size = new Size(width, newHeight);
             map = new ushort[width, newHeight];
-            
+
             for (int y = 0; y < oldHeight; ++y)
             {
                 for (int x = 0; x < width; ++x)
@@ -361,8 +388,8 @@ namespace RogueLikeMapBuilder
 
             lBuilltCorridors = lBuilltCorridors.Select(AddTopPadding).ToList();
             lPotentialCorridor = lPotentialCorridor.Select(AddTopPadding).ToList();
-            
-            if(EastConnector != null)
+
+            if (EastConnector != null)
             {
                 EastConnector = AddTopPadding(EastConnector.Value);
             }

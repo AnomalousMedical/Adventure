@@ -543,7 +543,6 @@ namespace Adventure
         private bool placeGate;
         private bool placeKey;
         private bool placeFirstChest;
-        private ushort philipRoom = csMapbuilder.NullCell;
 
         private void ResetPlacementData()
         {
@@ -554,7 +553,6 @@ namespace Adventure
             placePhilip = this.makePhilip;
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
-            philipRoom = csMapbuilder.NullCell;
             placeFirstChest = true;
         }
 
@@ -676,11 +674,23 @@ namespace Adventure
             var treasureChests = new List<TreasureTrigger>();
             treasureStack = new Stack<ITreasure>(this.treasure);
 
+            var rooms = mapMesh.MapBuilder.GetRoomsLeastCorridorFirst().ToList();
+            var skipRooms = 0;
+
+            if (placeKey)
+            {
+                //This might not be possible, so the key will go in a corridor later if it isn't placed here
+                var keyRoomIndex = rooms[skipRooms++];
+                var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                PlaceKey(point);
+            }
+
             //Philip gets a room always
             if (placePhilip)
             {
-                philipRoom = csMapbuilder.IsRoomCell(mapMesh.MapBuilder.WestConnectorRoom) ? mapMesh.MapBuilder.WestConnectorRoom : csMapbuilder.RoomCell;
-                var room = mapMesh.MapBuilder.Rooms[philipRoom - csMapbuilder.RoomCell];
+                var philipRoom = rooms[skipRooms++];
+                var room = mapMesh.MapBuilder.Rooms[philipRoom];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
 
@@ -748,56 +758,12 @@ namespace Adventure
                 placeables.Add(gate);
             }
 
-            int keyRoom = csMapbuilder.NullCell;
-
-            if (placeKey)
-            {
-                //This might not be possible, so the key will go in a corridor later if it isn't placed here
-
-                var tries = 0;
-                var triedRooms = new HashSet<int>();
-                var numRooms = mapMesh.MapBuilder.Rooms.Count;
-                triedRooms.Add(philipRoom);
-                triedRooms.Add(mapMesh.MapBuilder.WestConnectorRoom);
-                triedRooms.Add(mapMesh.MapBuilder.EastConnectorRoom);
-                triedRooms.Add(mapMesh.MapBuilder.NorthConnectorRoom);
-                triedRooms.Add(mapMesh.MapBuilder.SouthConnectorRoom);
-                triedRooms.Add(csMapbuilder.RoomCell); //Not start room
-                triedRooms.Add(csMapbuilder.RoomCell + 1); //Not end room
-                var keyRoomIndex = enemyRandom.Next(0, numRooms);
-
-                if (triedRooms.Count < numRooms)
-                {
-                    while (triedRooms.Contains(keyRoomIndex))
-                    {
-                        if (++tries > 50)
-                        {
-                            //If we generate too many bad random numbers, just get the first index we can from the list
-                            for (keyRoomIndex = 0; keyRoomIndex < numRooms && triedRooms.Contains(keyRoomIndex); ++keyRoomIndex) { }
-                        }
-                        else
-                        {
-                            keyRoomIndex = enemyRandom.Next(0, numRooms);
-                        }
-                    }
-                    var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
-                    keyRoom = mapMesh.MapBuilder.map[room.Left, room.Top];
-                    var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                    PlaceKey(point);
-                }
-            }
-
-            //Since keys can't go in the connector rooms there will always be at least 1 left when this is called.
-            foreach (var room in mapMesh.MapBuilder.Rooms.Where(i =>
-            {
-                var ri = mapMesh.MapBuilder.map[i.Left, i.Top];
-                return ri != philipRoom && ri != keyRoom;
-            }))
+            foreach (var room in rooms.Skip(skipRooms).Select(i => mapMesh.MapBuilder.Rooms[i]))
             {
                 PopulateRoom(room, treasureStack, treasureChests);
             }
 
-            //This really should not be able to happen, but track it anyway
+            //This really should not be able to happen, but track it anyway, if you had philip a key and only 2 rooms this would happen
             if (treasureChests.Count == 0 && treasureStack.Count > 0)
             {
                 logger.LogWarning("No treasure chests. All loot for this zone will be converted to stolen treasure.");
