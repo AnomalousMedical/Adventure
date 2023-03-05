@@ -136,7 +136,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 20;
             Name = "Mega Strength";
-            MpCost = 25;
+            MpCost = 35;
         }
     }
 
@@ -173,7 +173,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 20;
             Name = "Mega Magic";
-            MpCost = 25;
+            MpCost = 35;
         }
     }
 
@@ -210,7 +210,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 20;
             Name = "Mega Vitality";
-            MpCost = 25;
+            MpCost = 35;
         }
     }
 
@@ -247,7 +247,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 20;
             Name = "Mega Spirit";
-            MpCost = 25;
+            MpCost = 35;
         }
     }
 

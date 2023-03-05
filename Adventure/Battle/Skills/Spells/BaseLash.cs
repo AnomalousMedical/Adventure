@@ -16,7 +16,7 @@ namespace Adventure.Battle.Skills
         private readonly Element element;
 
         //TODO: This mp cost was just made up, it might need more balancing
-        public BaseLash(String name, Element element, long mpCost = 28, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        public BaseLash(String name, Element element, long mpCost = 40, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;

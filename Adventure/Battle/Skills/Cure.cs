@@ -95,9 +95,9 @@ namespace Adventure.Battle.Skills
 
         public string Name { get; init; } = "Cure";
 
-        public long MpCost { get; init; } = 5;
+        public long MpCost { get; init; } = 9;
 
-        public long Amount { get; init; } = 5;
+        public long Amount { get; init; } = 4;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
     }
