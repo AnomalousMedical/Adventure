@@ -149,6 +149,8 @@ namespace Adventure
             sprite.SetAnimation(name);
         }
 
+        public Vector3 BaseScale => sprite.BaseScale;
+
         public void SetPosition(in Vector3 parentPosition, in Quaternion parentRotation, in Vector3 parentScale)
         {
             var frame = sprite.GetCurrentFrame();
@@ -164,6 +166,11 @@ namespace Adventure
             var finalOrientation = fullRot;
             var finalScale = scale;
 
+            SetWorldPosition(finalPosition, finalOrientation, finalScale);
+        }
+
+        public void SetWorldPosition(in Vector3 finalPosition, in Quaternion finalOrientation, in Vector3 finalScale)
+        {
             this.tlasData.Transform = new InstanceMatrix(finalPosition, finalOrientation, finalScale);
 
             light.Position = (finalPosition + lightOffset).ToVector4();

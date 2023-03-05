@@ -1,18 +1,15 @@
-﻿using DiligentEngine;
+﻿using Adventure.Assets;
+using Adventure.Items;
+using Adventure.Services;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using RpgMath;
-using Adventure.Assets;
 using SharpGui;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Adventure.Items;
-using Adventure.Services;
 
 namespace Adventure.Battle
 {
@@ -484,7 +481,7 @@ namespace Adventure.Battle
 
                 if (remainingTime > standStartTime)
                 {
-                    sprite.SetAnimation("stand-left");
+                    sprite.SetAnimation("cast-left");
                     if (!battleManager.IsStillValidTarget(target))
                     {
                         target = battleManager.ValidateTarget(this, target);
@@ -527,14 +524,20 @@ namespace Adventure.Battle
                     interpolate = remainingTime / (float)standEndTime;
                 }
 
+                var position = end.lerp(start, interpolate);
+
                 if (remainingTime < 0)
                 {
+                    position = end;
                     sprite.SetAnimation("stand-left");
                     TurnComplete();
                     done = true;
                 }
-                
+
                 Sprite_FrameChanged(sprite);
+
+                var scale = sprite.BaseScale * this.currentScale;
+                castEffect?.SetWorldPosition(position, this.currentOrientation, castEffect.BaseScale * scale);
 
                 return done;
             }, skill.QueueFront);
