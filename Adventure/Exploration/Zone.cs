@@ -674,7 +674,7 @@ namespace Adventure
             var treasureChests = new List<TreasureTrigger>();
             treasureStack = new Stack<ITreasure>(this.treasure);
 
-            var rooms = mapMesh.MapBuilder.GetRoomsLeastCorridorFirst().ToList();
+            var rooms = mapMesh.MapBuilder.GetDesiredRooms().ToList();
             var skipRooms = 0;
 
             if (placeKey)

@@ -122,15 +122,15 @@ namespace RogueLikeMapBuilder
         /// </summary>
         public bool Horizontal { get; set; }
 
-        private record RoomSorter(ushort Room, int NumCorridors);
+        private record RoomSorter(ushort Room, int Weight);
 
         /// <summary>
-        /// Get the indexes of the rooms in order based on how many corridors they have from least to most.
-        /// The indexes returned will start at 0, so you can look up the room rectangles directly
+        /// Get the indexes of the rooms in order based on how good they are to place rare items in.
+        /// The indexes returned will start at 0, so you can look up the room rectangles directly.
         /// from these values.
         /// </summary>
         /// <returns>The rooms in order with the least number of corridors first and the most last.</returns>
-        public IEnumerable<ushort> GetRoomsLeastCorridorFirst()
+        public IEnumerable<ushort> GetDesiredRooms()
         {
             //Shift the values so that no 2 rooms have exactly the same value, they will be influenced by the number of corridors and their original index.
             //This will keep them in the same order no matter what kind of algorithm is used to sort them
@@ -141,11 +141,19 @@ namespace RogueLikeMapBuilder
             var sorter = new List<RoomSorter>(roomCorridorCount.Count);
             foreach(var i in roomCorridorCount)
             {
-                sorter.Add(new RoomSorter(room, i * SHIFT + room));
+                int weight = i * SHIFT + room;
+
+                //If the room is a connector room, make it less likely to have something
+                var offsetRoom = room + RoomCell;
+                if(offsetRoom == WestConnectorRoom || offsetRoom == EastConnectorRoom || offsetRoom == NorthConnectorRoom || offsetRoom == SouthConnectorRoom)
+                {
+                    weight = int.MaxValue - room;
+                }
+                sorter.Add(new RoomSorter(room, weight));
                 ++room;
             }
 
-            sorter.Sort((l, r) => l.NumCorridors - r.NumCorridors);
+            sorter.Sort((l, r) => l.Weight - r.Weight);
             return sorter.Select(i => i.Room);
         }
 
@@ -703,7 +711,7 @@ namespace RogueLikeMapBuilder
                     Room_Build();
                 }
 
-                if (Corridor_GetStart(out Location, out Direction, out _))
+                if (Corridor_GetStart(out Location, out Direction, out _)) //This can be discarded, since the rooms will start with 1 corridor, which is this one
                 {
                     CorBuildOutcome = CorridorMake_Straight(ref Location, ref Direction, 100, true);
 
