@@ -557,9 +557,9 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, "Arch Mage's", nameof(Fire), nameof(FireBlast), nameof(FireLash), nameof(Ice), nameof(IceBlast), nameof(IceLash), nameof(Zap), nameof(ZapBlast), nameof(ZapLash))));
+                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, "Arch Mage's", nameof(Fire), nameof(FireBlast), nameof(FireLash), nameof(Ice), nameof(IceBlast), nameof(IceLash), nameof(Zap), nameof(ZapBlast), nameof(ZapLash))));
                 phase3UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 90)));
-                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
+                phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, phase3Adjective, nameof(Cure), nameof(MegaCure), nameof(Reanimate))));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective)));
