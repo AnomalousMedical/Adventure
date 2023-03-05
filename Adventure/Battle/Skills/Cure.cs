@@ -1,12 +1,9 @@
-﻿using Engine;
-using Adventure.Assets;
-using System;
+﻿using Adventure.Assets;
+using Adventure.Services;
+using Engine;
+using RpgMath;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RpgMath;
-using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -74,7 +71,7 @@ namespace Adventure.Battle.Skills
                 o.SpriteMaterial = asset.CreateMaterial();
                 o.Light = new Light
                 {
-                    Color = Color.FromARGB(0xff63c74c),
+                    Color = CastColor,
                     Length = 2.3f,
                 };
                 o.LightOffset = new Vector3(0, 0, -0.1f);
@@ -100,6 +97,8 @@ namespace Adventure.Battle.Skills
         public long Amount { get; init; } = 4;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
+
+        public Color CastColor => Color.FromARGB(0xff63c74c);
     }
 
     class MegaCure : Cure

@@ -130,8 +130,8 @@ namespace Adventure.Battle
             ISkillFactory skillFactory,
             EventManager eventManager)
         {
-            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new [] { KeyboardButtonCode.KC_SPACE });
-            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new [] { GamepadButtonCode.XInput_RTrigger });
+            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
+            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger });
             eventManager.addEvent(contextTriggerKeyboard);
             eventManager.addEvent(contextTriggerJoystick);
 
@@ -413,7 +413,7 @@ namespace Adventure.Battle
 
         private void UseSkill(IBattleTarget target, ISkill skill)
         {
-            if(target == null)
+            if (target == null)
             {
                 target = this;
             }
@@ -456,6 +456,7 @@ namespace Adventure.Battle
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
+            bool createSkillCastEffect = true;
             ISkillEffect skillEffect = null;
             battleManager.DeactivateCurrentPlayer();
             battleManager.QueueTurn(c =>
@@ -464,6 +465,25 @@ namespace Adventure.Battle
                 {
                     DestroyCastEffect();
                     return true;
+                }
+
+                if (createSkillCastEffect)
+                {
+                    createSkillCastEffect = false;
+                    castEffect?.RequestDestruction();
+                    castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                    {
+                        ISpriteAsset asset = skill.SpriteAsset;
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = skill.CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
                 }
 
                 //If there is an effect, just let it run
@@ -850,7 +870,7 @@ namespace Adventure.Battle
 
         public void Resurrect(IDamageCalculator calculator, long damage)
         {
-            if(damage < 0 && !IsDead) { return; } //Don't do anything if healing and not dead
+            if (damage < 0 && !IsDead) { return; } //Don't do anything if healing and not dead
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
@@ -871,10 +891,10 @@ namespace Adventure.Battle
 
         public void TakeMp(long mp)
         {
-            if(IsDead) { return; }
+            if (IsDead) { return; }
 
             characterSheet.CurrentMp -= mp;
-            if(characterSheet.CurrentMp < 0)
+            if (characterSheet.CurrentMp < 0)
             {
                 characterSheet.CurrentMp = 0;
             }
@@ -893,7 +913,7 @@ namespace Adventure.Battle
 
         public void MoveToStart()
         {
-            if(battleManager.GetActivePlayer() == this)
+            if (battleManager.GetActivePlayer() == this)
             {
                 this.currentPosition = this.ActivePosition;
             }

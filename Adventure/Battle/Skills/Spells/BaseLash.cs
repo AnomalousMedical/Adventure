@@ -43,7 +43,7 @@ namespace Adventure.Battle.Skills
                     o.SpriteMaterial = asset.CreateMaterial();
                     o.Light = new Light
                     {
-                        Color = ElementColors.GetElementalColor(element),
+                        Color = CastColor,
                         Length = 2.3f,
                     };
                     o.LightOffset = new Vector3(0, 0, -0.1f);
@@ -86,5 +86,7 @@ namespace Adventure.Battle.Skills
         public long MpCost { get; }
 
         public SkillAttackStyle AttackStyle { get; }
+
+        public Color CastColor => ElementColors.GetElementalColor(element);
     }
 }

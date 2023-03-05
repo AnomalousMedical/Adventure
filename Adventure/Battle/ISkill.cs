@@ -1,11 +1,7 @@
-﻿using Engine;
+﻿using Adventure.Assets;
+using Engine;
 using Engine.Platform;
 using RpgMath;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
@@ -35,6 +31,10 @@ namespace Adventure.Battle
         long MpCost { get; }
 
         SkillAttackStyle AttackStyle { get; }
+
+        ISpriteAsset SpriteAsset => new Assets.PixelEffects.Nebula();
+
+        Color CastColor => Color.FromARGB(0xff639cff);
     }
 
     interface ISkillEffect

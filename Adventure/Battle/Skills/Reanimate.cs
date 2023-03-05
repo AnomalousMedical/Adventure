@@ -20,6 +20,8 @@ namespace Adventure.Battle.Skills
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
 
+        public Color CastColor => Color.FromARGB(0xff63c74c);
+
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
             if (source.CurrentMp - MpCost < 0)
@@ -89,7 +91,7 @@ namespace Adventure.Battle.Skills
                 o.SpriteMaterial = asset.CreateMaterial();
                 o.Light = new Light
                 {
-                    Color = Color.FromARGB(0xff63c74c),
+                    Color = CastColor,
                     Length = 2.3f,
                 };
                 o.LightOffset = new Vector3(0, 0, -0.1f);
