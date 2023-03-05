@@ -23,6 +23,8 @@ namespace RogueLikeMapBuilder
         /// </summary>
         private List<Rectangle> rctBuiltRooms;
 
+        private List<int> roomCorridorCount;
+
         /// <summary>
         /// Built corridors stored here
         /// </summary>
@@ -199,6 +201,7 @@ namespace RogueLikeMapBuilder
         {
             lPotentialCorridor = new List<Point>();
             rctBuiltRooms = new List<Rectangle>();
+            roomCorridorCount = new List<int>();
             lBuilltCorridors = new List<Point>();
             currentRoomCell = RoomCell;
             currentCorridorCell = CorridorCell;
@@ -240,7 +243,7 @@ namespace RogueLikeMapBuilder
                 if (loopctr++ > BreakOut)//bail out if this value is exceeded
                     return false;
 
-                if (Corridor_GetStart(out Location, out Direction))
+                if (Corridor_GetStart(out Location, out Direction, out var potentialStartRoom))
                 {
 
                     CorBuildOutcome = CorridorMake_Straight(ref Location, ref Direction, rnd.Next(1, Corridor_MaxTurns)
@@ -257,7 +260,7 @@ namespace RogueLikeMapBuilder
                         case CorridorItemHit.completed:
                             if (Room_AttemptBuildOnCorridor(Direction))
                             {
-                                RecordCurrentCorridorTerminatingRoom();
+                                RecordCurrentCorridorTerminatingRoom(potentialStartRoom);
                                 Corridor_Build(true);
                                 Room_Build();
                             }
@@ -296,7 +299,7 @@ namespace RogueLikeMapBuilder
                 if (loopctr++ > BreakOut)//bail out if this value is exceeded
                     return false;
 
-                if (Corridor_GetStart(out Location, out Direction))
+                if (Corridor_GetStart(out Location, out Direction, out var potentialStartRoom))
                 {
 
                     CorBuildOutcome = CorridorMake_Straight(ref Location, ref Direction, rnd.Next(1, Corridor_MaxTurns)
@@ -313,7 +316,7 @@ namespace RogueLikeMapBuilder
                         case CorridorItemHit.completed:
                             if (Room_AttemptBuildOnCorridor(Direction))
                             {
-                                RecordCurrentCorridorTerminatingRoom();
+                                RecordCurrentCorridorTerminatingRoom(potentialStartRoom);
                                 Corridor_Build(true);
                                 Room_Build();
                             }
@@ -590,8 +593,13 @@ namespace RogueLikeMapBuilder
         /// When building a corridor with a room call this function to record the corridor terminating room.
         /// Do this before callig Corridor_Build and Room_Build since the counters get incremented in those functions.
         /// </summary>
-        private void RecordCurrentCorridorTerminatingRoom()
+        private void RecordCurrentCorridorTerminatingRoom(ushort potentialStartRoom)
         {
+            if (IsRoomCell(potentialStartRoom))
+            {
+                var index = potentialStartRoom - RoomCell;
+                roomCorridorCount[index] = roomCorridorCount[index] + 1;
+            }
             corridorTerminatingRooms[currentCorridorCell] = currentRoomCell;
         }
 
@@ -668,7 +676,7 @@ namespace RogueLikeMapBuilder
                     Room_Build();
                 }
 
-                if (Corridor_GetStart(out Location, out Direction))
+                if (Corridor_GetStart(out Location, out Direction, out _))
                 {
                     CorBuildOutcome = CorridorMake_Straight(ref Location, ref Direction, 100, true);
 
@@ -757,10 +765,11 @@ namespace RogueLikeMapBuilder
         /// <param name="Location">Out: Location of point on room edge</param>
         /// <param name="Location">Out: Direction of point</param>
         /// <returns>If Location is legal</returns>
-        private void Room_GetEdge(out Point pLocation, out Point pDirection)
+        private void Room_GetEdge(out Point pLocation, out Point pDirection, out ushort roomCell)
         {
 
             rctCurrentRoom = rctBuiltRooms[rnd.Next(0, rctBuiltRooms.Count())];
+            roomCell = map[rctCurrentRoom.Left, rctCurrentRoom.Top];
 
             //pick a random point within a room
             //the +1 / -1 on the values are to stop a corner from being chosen
@@ -853,20 +862,21 @@ namespace RogueLikeMapBuilder
         /// <param name="Location">Out: pLocation of point</param>
         /// <param name="Location">Out: pDirection of point</param>
         /// <returns>Bool indicating if location found is OK</returns>
-        private bool Corridor_GetStart(out Point pLocation, out Point pDirection)
+        private bool Corridor_GetStart(out Point pLocation, out Point pDirection, out ushort roomCell)
         {
+            roomCell = 0;
             rctCurrentRoom = new Rectangle();
             lPotentialCorridor = new List<Point>();
 
             if (lBuilltCorridors.Count > 0)
             {
                 if (rnd.Next(0, 100) >= BuildProb)
-                    Room_GetEdge(out pLocation, out pDirection);
+                    Room_GetEdge(out pLocation, out pDirection, out roomCell);
                 else
                     Corridor_GetEdge(out pLocation, out pDirection);
             }
             else//no corridors present, so build off a room
-                Room_GetEdge(out pLocation, out pDirection);
+                Room_GetEdge(out pLocation, out pDirection, out roomCell);
 
             //finally check the point we've found
             return Corridor_PointTest(pLocation, pDirection) == CorridorItemHit.OK;
@@ -1064,6 +1074,7 @@ namespace RogueLikeMapBuilder
         /// </summary>
         private void Room_Build()
         {
+            roomCorridorCount.Add(1); //There is always at least 1 corridor
             rctBuiltRooms.Add(rctCurrentRoom);
 
             for (int x = rctCurrentRoom.Left; x <= rctCurrentRoom.Right; x++)
