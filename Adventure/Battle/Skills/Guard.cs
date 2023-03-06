@@ -1,14 +1,5 @@
 ﻿using Engine;
-using RpgMath;
-using Adventure.Assets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Platform;
-using SharpGui;
-using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -20,13 +11,20 @@ namespace Adventure.Battle.Skills
             return objectResolver.Resolve<GuardEffect>();
         }
 
-        public string Name => "Guard";
+        public virtual string Name => "Guard";
 
         public bool NeedsTarget => false;
 
         public long MpCost => 0;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
+    }
+
+    class QuickGuard : Guard
+    {
+        public override string Name => "Quick Guard";
+
+        public bool QueueFront => true;
     }
 
     class GuardEffect : ISkillEffect
