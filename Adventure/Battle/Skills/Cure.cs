@@ -41,7 +41,7 @@ namespace Adventure.Battle.Skills
             target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
         }
 
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             if(attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
@@ -50,42 +50,75 @@ namespace Adventure.Battle.Skills
             }
 
             target = battleManager.ValidateTarget(attacker, target);
-            var damage = battleManager.DamageCalculator.Cure(attacker.Stats, Amount);
-            damage = battleManager.DamageCalculator.RandomVariation(damage);
-
-            damage *= -1; //Make it healing
-
-            //Apply resistance
-            var resistance = target.Stats.GetResistance(RpgMath.Element.Healing);
-            damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
-            
-            battleManager.AddDamageNumber(target, damage);
-            target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
-            battleManager.HandleDeath(target);
-
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            IEnumerable<IBattleTarget> targets;
+            if (triggered)
             {
-                ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
-                o.RenderShadow = false;
-                o.Sprite = asset.CreateSprite();
-                o.SpriteMaterial = asset.CreateMaterial();
-                o.Light = new Light
-                {
-                    Color = CastColor,
-                    Length = 2.3f,
-                };
-                o.LightOffset = new Vector3(0, 0, -0.1f);
-            });
-            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                targets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+            }
+            else
+            {
+                targets = new[] { target };
+            }
 
+            var applyEffects = new List<Attachment<BattleScene>>();
+
+            foreach (var currentTarget in targets)
+            {
+                var damage = battleManager.DamageCalculator.Cure(attacker.Stats, Amount);
+                damage = battleManager.DamageCalculator.RandomVariation(damage);
+
+                damage *= -1; //Make it healing
+                if(currentTarget != target)
+                {
+                    damage /= 15;
+                }
+
+                if (triggerSpammed)
+                {
+                    damage /= 2;
+                }
+
+                //Apply resistance
+                var resistance = target.Stats.GetResistance(RpgMath.Element.Healing);
+                damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+
+                battleManager.AddDamageNumber(currentTarget, damage);
+                currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
+
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                {
+                    ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
+                    o.RenderShadow = false;
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = new Light
+                    {
+                        Color = CastColor,
+                        Length = 2.3f,
+                    };
+                    o.LightOffset = new Vector3(0, 0, -0.1f);
+                });
+                applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                applyEffects.Add(applyEffect);
+            }
+
+            var effect = new SkillEffect();
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(1.5);
-                applyEffect.RequestDestruction();
+                yield return coroutine.WaitSeconds(0.5);
+                foreach (var currentTarget in targets)
+                {
+                    battleManager.HandleDeath(currentTarget);
+                }
+                foreach (var effect in applyEffects)
+                {
+                    effect.RequestDestruction();
+                }
+                effect.Finished = true;
             }
             coroutine.Run(run());
 
-            return new SkillEffect(true);
+            return effect;
         }
 
         public bool DefaultTargetPlayers => true;

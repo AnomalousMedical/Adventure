@@ -24,7 +24,7 @@ namespace Adventure.Battle.Skills
             this.AttackStyle = attackStyle;
         }
 
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             target = battleManager.ValidateTarget(attacker, target);
             var resistance = target.Stats.GetResistance(element);

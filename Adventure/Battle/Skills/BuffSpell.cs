@@ -46,7 +46,7 @@ namespace Adventure.Battle.Skills
             UpdateBuffs(buff, activeBuffs);
         }
 
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {

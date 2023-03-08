@@ -459,6 +459,7 @@ namespace Adventure.Battle
             bool createSkillCastEffect = true;
             ISkillEffect skillEffect = null;
             battleManager.DeactivateCurrentPlayer();
+            var triggerManager = new ContextTriggerManager();
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -509,6 +510,7 @@ namespace Adventure.Battle
                     start = this.startPosition;
                     end = target.MeleeAttackLocation;
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                    triggerManager.CheckTrigger(this, true);
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -529,7 +531,7 @@ namespace Adventure.Battle
                         else
                         {
                             TakeMp(skill.MpCost);
-                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target);
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target, triggerManager.Activated, triggerManager.Spammed);
                         }
                     }
                 }
@@ -556,8 +558,11 @@ namespace Adventure.Battle
 
                 Sprite_FrameChanged(sprite);
 
-                var scale = sprite.BaseScale * this.currentScale;
-                castEffect?.SetWorldPosition(position, this.currentOrientation, castEffect.BaseScale * scale);
+                if (castEffect != null)
+                {
+                    var scale = sprite.BaseScale * this.currentScale;
+                    castEffect.SetWorldPosition(position, this.currentOrientation, castEffect.BaseScale * scale);
+                }
 
                 return done;
             }, skill.QueueFront);
@@ -579,6 +584,7 @@ namespace Adventure.Battle
             {
                 battleManager.DeactivateCurrentPlayer();
             }
+            var triggerManager = new ContextTriggerManager();
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -616,6 +622,7 @@ namespace Adventure.Battle
                     start = attackStartPosition;
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                    triggerManager.CheckTrigger(this, true);
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -636,7 +643,7 @@ namespace Adventure.Battle
                         else
                         {
                             TakeMp(skill.MpCost);
-                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target);
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target, triggerManager.Activated, triggerManager.Spammed);
                         }
                     }
                 }

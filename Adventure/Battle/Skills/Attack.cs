@@ -13,7 +13,7 @@ namespace Adventure.Battle.Skills
         protected bool isCounter = false;
         protected bool isPower = false;
 
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             var attack = objectResolver.Resolve<AttackEffect>();
             attack.Link(attacker, target, isCounter, isPower);

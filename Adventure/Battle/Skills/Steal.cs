@@ -1,20 +1,12 @@
-﻿using Engine;
-using RpgMath;
-using Adventure.Assets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Adventure.Services;
+using Engine;
 using Engine.Platform;
-using SharpGui;
-using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
     class Steal : ISkill
     {
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             battleManager.AddDamageNumber(target, "Stealing", Color.White);
             return objectResolver.Resolve<StealEffect>();

@@ -51,7 +51,7 @@ namespace Adventure.Battle.Skills
             target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
         }
 
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {

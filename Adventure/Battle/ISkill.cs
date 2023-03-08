@@ -15,7 +15,7 @@ namespace Adventure.Battle
     {
         void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
 
-        ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
+        ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed);
 
         bool DefaultTargetPlayers => false;
 

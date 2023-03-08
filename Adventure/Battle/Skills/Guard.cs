@@ -5,7 +5,7 @@ namespace Adventure.Battle.Skills
 {
     class Guard : ISkill
     {
-        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+        public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             battleManager.ChangeBlockingStatus(attacker);
             return objectResolver.Resolve<GuardEffect>();
