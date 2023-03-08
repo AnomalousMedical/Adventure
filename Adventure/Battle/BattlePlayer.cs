@@ -1013,7 +1013,7 @@ namespace Adventure.Battle
             this.skills.AddRange(characterSheet.Skills.Select(i => skillFactory.CreateSkill(i)));
         }
 
-        public bool TryBlock()
+        public bool TryContextTrigger()
         {
             return (contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown);
         }

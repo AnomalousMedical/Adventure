@@ -37,6 +37,7 @@ namespace Adventure.Battle
         void MoveToStart();
 
         void AttemptMeleeCounter(IBattleTarget attacker);
-        bool TryBlock();
+
+        bool TryContextTrigger();
     }
 }

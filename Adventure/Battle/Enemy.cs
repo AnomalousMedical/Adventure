@@ -122,8 +122,8 @@ namespace Adventure.Battle
             var target = battleManager.GetRandomPlayer();
             IBattleTarget guard = null;
             bool findGuard = true;
-            bool blockSpamPrevention = true;
-            bool blocked = false;
+            var blockManager = new ContextTriggerManager();
+
             battleManager.QueueTurn(c =>
             {
                 if (IsDead)
@@ -155,23 +155,7 @@ namespace Adventure.Battle
                     start = this.startPosition;
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
-                    if (target.TryBlock())
-                    {
-                        if (blocked)
-                        {
-                            blocked = false;
-                            blockSpamPrevention = false;
-                        }
-                        else
-                        {
-                            blocked = blockSpamPrevention;
-                            if (!target.Stats.CanBlock)
-                            {
-                                blocked = false;
-                                blockSpamPrevention = false;
-                            }
-                        }
-                    }
+                    blockManager.CheckTrigger(target, target.Stats.CanBlock);
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -184,7 +168,7 @@ namespace Adventure.Battle
                     if (needsAttack && remainingTime < swingTime)
                     {
                         needsAttack = false;
-                        battleManager.Attack(this, target, false, blocked, !blockSpamPrevention, false);
+                        battleManager.Attack(this, target, false, blockManager.Activated, blockManager.Spammed, false);
                     }
                 }
                 else
@@ -302,7 +286,7 @@ namespace Adventure.Battle
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
         }
 
-        public bool TryBlock()
+        public bool TryContextTrigger()
         {
             return false;
         }
