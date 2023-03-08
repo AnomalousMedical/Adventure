@@ -68,6 +68,11 @@ namespace Adventure.Battle.Skills
 
             damage *= -1; //Make it healing
 
+            if (triggered)
+            {
+                damage *= 2;
+            }
+
             //Apply resistance
             var resistance = target.Stats.GetResistance(RpgMath.Element.Healing);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
