@@ -293,6 +293,9 @@ namespace RpgMath
         [JsonIgnore]
         public bool CanBlock => OffHand?.AllowActiveBlock == true || MainHand?.AllowActiveBlock == true || Accessory?.AllowActiveBlock == true || Body?.AllowActiveBlock == true;
 
+        [JsonIgnore]
+        public bool CanTriggerAttack => OffHand?.AllowTriggerAttack == true || MainHand?.AllowTriggerAttack == true || Accessory?.AllowTriggerAttack == true || Body?.AllowTriggerAttack == true;
+
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }

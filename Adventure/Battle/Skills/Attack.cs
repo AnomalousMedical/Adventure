@@ -16,7 +16,7 @@ namespace Adventure.Battle.Skills
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             var attack = objectResolver.Resolve<AttackEffect>();
-            attack.Link(attacker, target, isCounter, isPower);
+            attack.Link(attacker, target, isCounter, isPower, triggered, triggerSpammed);
             return attack;
         }
 
@@ -51,25 +51,29 @@ namespace Adventure.Battle.Skills
         private IBattleTarget target;
         private bool isCounter;
         private bool isPower;
+        private bool triggered;
+        private bool triggerSpammed;
 
         public AttackEffect(IBattleManager battleManager)
         {
             this.battleManager = battleManager;
         }
 
-        public void Link(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool isPower)
+        public void Link(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool isPower, bool triggered, bool triggerSpammed)
         {
             this.attacker = attacker;
             this.target = target;
             this.isCounter = isCounter;
             this.isPower = isPower;
+            this.triggered = triggered;
+            this.triggerSpammed = triggerSpammed;
         }
 
         public bool Finished { get; private set; }
 
         public void Update(Clock clock)
         {
-            battleManager.Attack(attacker, target, isCounter, target.TryContextTrigger(), false, isPower);
+            battleManager.Attack(attacker, target, isCounter, target.TryContextTrigger(), false, isPower, triggered, triggerSpammed);
             Finished = true;
         }
     }

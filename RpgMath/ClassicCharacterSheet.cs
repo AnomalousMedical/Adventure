@@ -125,6 +125,8 @@ namespace RpgMath
 
         public bool CanBlock { get; set; }
 
+        public bool CanTriggerAttack { get; set; }
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;

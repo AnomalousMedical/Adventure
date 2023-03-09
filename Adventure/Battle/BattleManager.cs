@@ -24,7 +24,7 @@ namespace Adventure.Battle
         bool Active { get; }
 
         void AddToActivePlayers(BattlePlayer player);
-        void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool fumbleBlock, bool isPower);
+        void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool fumbleBlock, bool isPower, bool triggered, bool triggerSpammed);
         void ChangeBlockingStatus(IBattleTarget blocker);
         Task<IBattleTarget> GetTarget(bool targetPlayers);
 
@@ -547,7 +547,7 @@ namespace Adventure.Battle
             return guard;
         }
 
-        public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool fumbleBlock, bool isPower)
+        public void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool fumbleBlock, bool isPower, bool triggered, bool triggerSpammed)
         {
             target = ValidateTarget(attacker, target);
 
@@ -595,6 +595,23 @@ namespace Adventure.Battle
                     {
                         damage += (long)(damage * 0.25f);
                         color = Color.Red;
+                    }
+
+                    if (triggered)
+                    {
+                        if (attacker.Stats.CanTriggerAttack)
+                        {
+                            damage += (long)(damage * 0.5f);
+                        }
+                        else //Penalized if you can't trigger
+                        {
+                            damage -= (long)(damage * 0.5f);
+                        }
+                    }
+
+                    if (triggerSpammed)
+                    {
+                        damage -= (long)(damage * 0.5f);
                     }
                 }
 

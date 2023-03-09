@@ -52,6 +52,8 @@ namespace RpgMath
 
         public bool AllowActiveBlock { get; set; }
 
+        public bool AllowTriggerAttack { get; set; }
+
         public float ItemUsageBonus { get; set; }
 
         public float HealingBonus { get; set; }

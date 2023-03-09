@@ -25,6 +25,7 @@ namespace Adventure.Items.Creators
                 Attack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(DaggerNew),
                 Skills = GetSkills(level),
+                AllowTriggerAttack = true,
                 AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block
             };
 

@@ -168,7 +168,7 @@ namespace Adventure.Battle
                     if (needsAttack && remainingTime < swingTime)
                     {
                         needsAttack = false;
-                        battleManager.Attack(this, target, false, blockManager.Activated, blockManager.Spammed, false);
+                        battleManager.Attack(this, target, false, blockManager.Activated, blockManager.Spammed, false, false, false);
                     }
                 }
                 else

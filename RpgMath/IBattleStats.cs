@@ -27,7 +27,7 @@ namespace RpgMath
         IEnumerable<Element> AttackElements { get; }
         List<CharacterBuff> Buffs { get; }
         public bool CanBlock { get; }
-
+        public bool CanTriggerAttack { get; }
         Resistance GetResistance(Element element);
     }
 }

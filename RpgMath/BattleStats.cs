@@ -56,6 +56,8 @@ namespace RpgMath
 
         public bool CanBlock { get; set; }
 
+        public bool CanTriggerAttack { get; set; }
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))
