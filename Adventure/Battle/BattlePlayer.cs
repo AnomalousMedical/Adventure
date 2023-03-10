@@ -71,7 +71,7 @@ namespace Adventure.Battle
 
         public Vector3 DamageDisplayLocation => this.currentPosition;
 
-        private Vector3 ActivePosition => this.startPosition + new Vector3(-1f, 0f, 0f);
+        private Vector3 ActivePosition => this.startPosition + new Vector3(-1.65f, 0f, 0f);
 
         public Vector3 CursorDisplayLocation => this.currentPosition + new Vector3(-0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
@@ -173,7 +173,9 @@ namespace Adventure.Battle
 
             name.Text = description.CharacterSheet.Name;
             currentHp.Text = GetCurrentHpText();
+            currentHp.Color = GetCurrentHpTextColor();
             currentMp.Text = GetCurrentMpText();
+            currentHp.Color = GetCurrentMpTextColor();
 
             turnTimer.AddTimer(characterTimer);
             characterTimer.TurnReady += CharacterTimer_TurnReady;
@@ -232,9 +234,19 @@ namespace Adventure.Battle
             return $"{characterSheet.CurrentHp} / {characterSheet.Hp}";
         }
 
+        private Color GetCurrentHpTextColor()
+        {
+            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.White;
+        }
+
         private String GetCurrentMpText()
         {
             return $"{characterSheet.CurrentMp} / {characterSheet.Mp}";
+        }
+
+        private Color GetCurrentMpTextColor()
+        {
+            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.White;
         }
 
         private bool guiActive = false;
@@ -855,6 +867,7 @@ namespace Adventure.Battle
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
+            currentHp.Color = GetCurrentHpTextColor();
             if (attacker.BattleTargetType == BattleTargetType.Enemy)
             {
                 characterSheet.PowerGauge += calculator.PowerGaugeGain(characterSheet, damage);
@@ -881,6 +894,7 @@ namespace Adventure.Battle
 
             characterSheet.CurrentHp = calculator.ApplyDamage(damage, characterSheet.CurrentHp, characterSheet.Hp);
             currentHp.UpdateText(GetCurrentHpText());
+            currentHp.Color = GetCurrentHpTextColor();
 
             //Player died from applied damage
             if (IsDead)
@@ -910,6 +924,7 @@ namespace Adventure.Battle
                 characterSheet.CurrentMp = characterSheet.Mp;
             }
             currentMp.UpdateText(GetCurrentMpText());
+            currentHp.Color = GetCurrentHpTextColor();
         }
 
         public void MoveToGuard(in Vector3 position)
