@@ -15,7 +15,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateRestoration(int level, string adjective, params String[] spells)
+        public InventoryItem CreateRestoration(int level, string adjective, bool allowActiveBlock, params String[] spells)
         {
             var book = new Equipment
             {
@@ -24,7 +24,7 @@ namespace Adventure.Items.Creators
                 Sprite = nameof(FancyBook),
                 Skills = spells.ToArray(),
                 ShowHand = false,
-                AllowActiveBlock = level > SpellLevels.Superior
+                AllowActiveBlock = allowActiveBlock
             };
 
             return CreateInventoryItem(book);

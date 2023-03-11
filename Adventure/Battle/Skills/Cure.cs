@@ -149,7 +149,7 @@ namespace Adventure.Battle.Skills
         public UltraCure()
         {
             MpCost = 64;
-            Amount = 130;
+            Amount = 65;
             Name = "Ultra Cure";
         }
     }

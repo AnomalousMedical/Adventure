@@ -17,7 +17,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective)
+        public InventoryItem CreateNormal(int level, string adjective, bool allowTrigger, bool allowActiveBlock)
         {
             var sword = new Equipment
             {
