@@ -266,15 +266,15 @@ namespace Adventure.Services
                 switch (startingElementStaff)
                 {
                     case Element.Ice:
-                        spells = new []{ nameof(Ice) };
+                        spells = new []{ nameof(WeakIce) };
                         staffName += "Ice";
                         break;
                     case Element.Fire:
-                        spells = new[] { nameof(Fire) };
+                        spells = new[] { nameof(WeakFire) };
                         staffName += "Fire";
                         break;
                     default:
-                        spells = new[] { nameof(Zap) };
+                        spells = new[] { nameof(WeakLightning) };
                         staffName += "Electrical";
                         break;
                 }
@@ -324,7 +324,7 @@ namespace Adventure.Services
                 phase1UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))));
                 phase1UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 70, false)));
-                phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Zap))));
+                phase1UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Lightning))));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, phase1Adjective)));
@@ -413,7 +413,7 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, nameof(Cure), nameof(MegaCure))));
                 phase2UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 80, false)));
-                phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(Fire), nameof(FireBlast), nameof(Ice), nameof(IceBlast), nameof(Zap), nameof(ZapBlast))));
+                phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(FireBlast), nameof(StrongIce), nameof(IceBlast), nameof(StrongLightning), nameof(LightningBlast))));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective)));
@@ -559,7 +559,7 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
                 phase3UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, "Arch Mage's", nameof(Fire), nameof(FireBlast), nameof(FireLash), nameof(Ice), nameof(IceBlast), nameof(IceLash), nameof(Zap), nameof(ZapBlast), nameof(ZapLash))));
+                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, "Arch Mage's", nameof(ArchFire), nameof(Furnace), nameof(ArchIce), nameof(Freezer), nameof(ArchLightning), nameof(Thunderstorm))));
                 phase3UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 90, true)));
                 phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, phase3Adjective, nameof(Cure), nameof(MegaCure), nameof(Reanimate))));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));

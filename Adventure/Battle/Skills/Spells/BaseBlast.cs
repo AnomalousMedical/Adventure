@@ -1,12 +1,10 @@
-﻿using Engine;
+﻿using Adventure.Assets;
+using Adventure.Services;
+using Engine;
 using RpgMath;
-using Adventure.Assets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -14,13 +12,13 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        //TODO: This is the original cost of tier 2 spells, but that was for single target, so this could be adjusted
-        public BaseBlast(String name, Element element, long mpCost = 35, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        public BaseBlast(String name, Element element, long mpCost, long power, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;
             this.MpCost = mpCost;
             this.AttackStyle = attackStyle;
+            Power = power;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
@@ -36,7 +34,7 @@ namespace Adventure.Battle.Skills
 
                 if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
                 {
-                    var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, 20);
+                    var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, Power);
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                     damage = battleManager.DamageCalculator.RandomVariation(damage);
 
@@ -99,6 +97,8 @@ namespace Adventure.Battle.Skills
         public long MpCost { get; }
 
         public SkillAttackStyle AttackStyle { get; }
+
+        public long Power { get; }
 
         public Color CastColor => ElementColors.GetElementalColor(element);
     }

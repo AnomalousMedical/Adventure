@@ -1,12 +1,9 @@
-﻿using Engine;
+﻿using Adventure.Assets;
+using Adventure.Services;
+using Engine;
 using RpgMath;
-using Adventure.Assets;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Adventure.Services;
 
 namespace Adventure.Battle.Skills
 {
@@ -14,13 +11,13 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        //TODO: This is the original cost, but maybe it could be a little higher. It might be better to have a v2 that is more powerful and more expensive, but still relativly cheap
-        public Base(String name, Element element, long mpCost = 4, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        public Base(String name, Element element, long mpCost, long power, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
         {
             this.Name = name;
             this.element = element;
             this.MpCost = mpCost;
             this.AttackStyle = attackStyle;
+            this.Power = power;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
@@ -32,7 +29,7 @@ namespace Adventure.Battle.Skills
 
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
             {
-                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 8);
+                var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, Power);
                 damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                 damage = battleManager.DamageCalculator.RandomVariation(damage);
 
@@ -85,6 +82,8 @@ namespace Adventure.Battle.Skills
         public string Name { get; }
 
         public long MpCost { get; }
+
+        public long Power { get; }
 
         public SkillAttackStyle AttackStyle { get; }
 
