@@ -175,7 +175,7 @@ namespace Adventure.Battle
             currentHp.Text = GetCurrentHpText();
             currentHp.Color = GetCurrentHpTextColor();
             currentMp.Text = GetCurrentMpText();
-            currentHp.Color = GetCurrentMpTextColor();
+            currentMp.Color = GetCurrentMpTextColor();
 
             turnTimer.AddTimer(characterTimer);
             characterTimer.TurnReady += CharacterTimer_TurnReady;
@@ -924,7 +924,7 @@ namespace Adventure.Battle
                 characterSheet.CurrentMp = characterSheet.Mp;
             }
             currentMp.UpdateText(GetCurrentMpText());
-            currentHp.Color = GetCurrentHpTextColor();
+            currentMp.Color = GetCurrentMpTextColor();
         }
 
         public void MoveToGuard(in Vector3 position)
