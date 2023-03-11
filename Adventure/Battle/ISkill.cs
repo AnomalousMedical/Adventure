@@ -28,7 +28,7 @@ namespace Adventure.Battle
 
         string Name { get; }
 
-        long MpCost { get; }
+        long GetMpCost(bool triggered, bool triggerSpammed);
 
         SkillAttackStyle AttackStyle { get; }
 

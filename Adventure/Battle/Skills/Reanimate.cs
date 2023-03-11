@@ -22,6 +22,8 @@ namespace Adventure.Battle.Skills
 
         public Color CastColor => Color.FromARGB(0xff63c74c);
 
+        public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
+
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
             if (source.CurrentMp - MpCost < 0)

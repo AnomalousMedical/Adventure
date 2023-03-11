@@ -9,6 +9,8 @@ namespace Adventure.Battle.Skills
 {
     class Cure : ISkill
     {
+        public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
+
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
             if(source.CurrentMp - MpCost < 0)

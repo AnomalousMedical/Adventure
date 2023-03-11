@@ -536,13 +536,13 @@ namespace Adventure.Battle
                         needsAttack = false;
                         DestroyCastEffect();
 
-                        if (characterSheet.CurrentMp < skill.MpCost)
+                        if (characterSheet.CurrentMp < skill.GetMpCost(triggerManager.Activated, triggerManager.Spammed))
                         {
                             battleManager.AddDamageNumber(this, "Not Enough MP", Color.Red);
                         }
                         else
                         {
-                            TakeMp(skill.MpCost);
+                            TakeMp(skill.GetMpCost(triggerManager.Activated, triggerManager.Spammed));
                             skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target, triggerManager.Activated, triggerManager.Spammed);
                         }
                     }
@@ -648,13 +648,13 @@ namespace Adventure.Battle
                     {
                         needsAttack = false;
 
-                        if (characterSheet.CurrentMp < skill.MpCost)
+                        if (characterSheet.CurrentMp < skill.GetMpCost(triggerManager.Activated, triggerManager.Spammed))
                         {
                             battleManager.AddDamageNumber(this, "Not Enough MP", Color.Red);
                         }
                         else
                         {
-                            TakeMp(skill.MpCost);
+                            TakeMp(skill.GetMpCost(triggerManager.Activated, triggerManager.Spammed));
                             skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target, triggerManager.Activated, triggerManager.Spammed);
                         }
                     }

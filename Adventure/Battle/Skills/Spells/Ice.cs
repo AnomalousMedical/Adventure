@@ -2,39 +2,53 @@
 
 namespace Adventure.Battle.Skills
 {
-    class WeakIce : Base
+    class WeakIce : BaseBlast
     {
         public WeakIce()
-            : base("Weak Ice", Element.Ice, 4, 2)
+            : base(Element.Ice)
         {
-
+            Name = "Weak Ice";
+            MpCost = 4;
+            TriggeredMpCost = 6;
+            Power = 2;
         }
     }
 
-    class Ice : Base
+    class Ice : BaseBlast
     {
         public Ice()
-            : base("Ice", Element.Ice, 8, 4)
+            : base(Element.Ice)
         {
-
+            Name = "Ice";
+            MpCost = 8;
+            TriggeredMpCost = 11;
+            Power = 4;
         }
     }
 
-    class StrongIce : Base
+    class StrongIce : BaseBlast
     {
         public StrongIce()
-            : base("Strong Ice", Element.Ice, 17, 8)
+            : base(Element.Ice)
         {
-
+            Name = "Strong Ice";
+            MpCost = 17;
+            TriggeredMpCost = 21;
+            Power = 8;
+            HitGroupOnTrigger = true;
         }
     }
 
-    class ArchIce : Base
+    class ArchIce : BaseBlast
     {
         public ArchIce()
-            : base("Arch Ice", Element.Ice, 50, 16)
+            : base(Element.Ice)
         {
-
+            Name = "Arch Ice";
+            MpCost = 32;
+            TriggeredMpCost = 41;
+            Power = 16;
+            HitGroupOnTrigger = true;
         }
     }
 }

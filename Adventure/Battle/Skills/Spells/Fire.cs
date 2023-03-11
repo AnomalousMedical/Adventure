@@ -2,39 +2,53 @@
 
 namespace Adventure.Battle.Skills
 {
-    class WeakFire : Base
+    class WeakFire : BaseBlast
     {
         public WeakFire()
-            : base("Weak Fire", Element.Fire, 4, 2)
+            : base(Element.Fire)
         {
-
+            Name = "Weak Fire";
+            MpCost = 4;
+            TriggeredMpCost = 6;
+            Power = 2;
         }
     }
 
-    class Fire : Base
+    class Fire : BaseBlast
     {
         public Fire()
-            :base("Fire", Element.Fire, 8, 4)
+            :base(Element.Fire)
         {
-
+            Name = "Fire";
+            MpCost = 8;
+            TriggeredMpCost = 11;
+            Power = 4;
         }
     }
 
-    class StrongFire : Base
+    class StrongFire : BaseBlast
     {
         public StrongFire()
-            : base("Strong Fire", Element.Fire, 17, 8)
+            : base(Element.Fire)
         {
-
+            Name = "Strong Fire";
+            MpCost = 17;
+            TriggeredMpCost = 21;
+            Power = 8;
+            HitGroupOnTrigger = true;
         }
     }
 
-    class ArchFire : Base
+    class ArchFire : BaseBlast
     {
         public ArchFire()
-            : base("Arch Fire", Element.Fire, 50, 16)
+            : base(Element.Fire)
         {
-
+            Name = "Arch Fire";
+            MpCost = 32;
+            TriggeredMpCost = 41;
+            Power = 16;
+            HitGroupOnTrigger = true;
         }
     }
 }

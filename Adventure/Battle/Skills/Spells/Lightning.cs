@@ -2,39 +2,53 @@
 
 namespace Adventure.Battle.Skills
 {
-    class WeakLightning : Base
+    class WeakLightning : BaseBlast
     {
         public WeakLightning()
-            : base("Weak Lightning", Element.Electricity, 4, 2)
+            : base(Element.Electricity)
         {
-
+            Name = "Weak Lightning";
+            MpCost = 4;
+            TriggeredMpCost = 6;
+            Power = 2;
         }
     }
 
-    class Lightning : Base
+    class Lightning : BaseBlast
     {
         public Lightning()
-            : base("Lightning", Element.Electricity, 8, 4)
+            : base(Element.Electricity)
         {
-
+            Name = "Lightning";
+            MpCost = 8;
+            TriggeredMpCost = 11;
+            Power = 4;
         }
     }
 
-    class StrongLightning : Base
+    class StrongLightning : BaseBlast
     {
         public StrongLightning()
-            : base("Strong Lightning", Element.Electricity, 17, 8)
+            : base(Element.Electricity)
         {
-
+            Name = "Strong Lightning";
+            MpCost = 17;
+            TriggeredMpCost = 21;
+            Power = 8;
+            HitGroupOnTrigger = true;
         }
     }
 
-    class ArchLightning : Base
+    class ArchLightning : BaseBlast
     {
         public ArchLightning()
-            : base("Arch Lightning", Element.Electricity, 50, 16)
+            : base(Element.Electricity)
         {
-
+            Name = "Arch Lightning";
+            MpCost = 32;
+            TriggeredMpCost = 41;
+            Power = 16;
+            HitGroupOnTrigger = true;
         }
     }
 }

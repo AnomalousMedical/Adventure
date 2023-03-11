@@ -2,7 +2,6 @@
 using Adventure.Services;
 using Engine;
 using RpgMath;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,19 +11,35 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
 
-        public BaseBlast(String name, Element element, long mpCost, long power, SkillAttackStyle attackStyle = SkillAttackStyle.Cast)
+        public BaseBlast(Element element)
         {
-            this.Name = name;
             this.element = element;
-            this.MpCost = mpCost;
-            this.AttackStyle = attackStyle;
-            Power = power;
+        }
+
+        public long GetMpCost(bool triggered, bool triggerSpammed)
+        {
+            if(triggered || triggerSpammed)
+            {
+                return TriggeredMpCost;
+            }
+
+            return MpCost;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             target = battleManager.ValidateTarget(attacker, target);
-            IEnumerable<IBattleTarget> groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+
+            IEnumerable<IBattleTarget> groupTargets;
+
+            if (HitGroupOnTrigger && triggered && !triggerSpammed)
+            {
+                groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+            }
+            else
+            {
+                groupTargets = new[] { target };
+            }
 
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -92,14 +107,18 @@ namespace Adventure.Battle.Skills
             return effect;
         }
 
-        public string Name { get; }
+        public string Name { get; init; }
 
-        public long MpCost { get; }
+        public long MpCost { get; init; }
 
-        public SkillAttackStyle AttackStyle { get; }
+        public long TriggeredMpCost { get; init; }
 
-        public long Power { get; }
+        public SkillAttackStyle AttackStyle { get; init; } = SkillAttackStyle.Cast;
+
+        public long Power { get; init; }
 
         public Color CastColor => ElementColors.GetElementalColor(element);
+
+        public bool HitGroupOnTrigger { get; init; }
     }
 }

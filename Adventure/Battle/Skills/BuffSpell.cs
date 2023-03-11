@@ -15,6 +15,8 @@ namespace Adventure.Battle.Skills
 
         public long MpCost { get; init; }
 
+        public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
+
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
 
         public bool DefaultTargetPlayers => true;

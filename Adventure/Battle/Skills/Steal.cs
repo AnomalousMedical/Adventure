@@ -14,7 +14,7 @@ namespace Adventure.Battle.Skills
 
         public string Name => "Steal";
 
-        public long MpCost => 0;
+        public long GetMpCost(bool triggered, bool triggerSpammed) => 0;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Melee;
     }
