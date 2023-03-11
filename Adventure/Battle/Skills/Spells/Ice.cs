@@ -5,7 +5,7 @@ namespace Adventure.Battle.Skills
     class WeakIce : Base
     {
         public WeakIce()
-            : base("Weak Ice", Element.Ice, 4, 4)
+            : base("Weak Ice", Element.Ice, 4, 2)
         {
 
         }
@@ -23,7 +23,7 @@ namespace Adventure.Battle.Skills
     class StrongIce : Base
     {
         public StrongIce()
-            : base("Strong Ice", Element.Ice, 35, 22)
+            : base("Strong Ice", Element.Ice, 17, 8)
         {
 
         }
@@ -32,7 +32,7 @@ namespace Adventure.Battle.Skills
     class ArchIce : Base
     {
         public ArchIce()
-            : base("Arch Ice", Element.Ice, 50, 30)
+            : base("Arch Ice", Element.Ice, 50, 16)
         {
 
         }
