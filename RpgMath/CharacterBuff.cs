@@ -42,6 +42,8 @@ namespace RpgMath
 
         public long TimeRemaining { get; set; }
 
+        public bool QueueTurnsFront { get; set; }
+
         public int BuffTypeId { get; set; }
     }
 }

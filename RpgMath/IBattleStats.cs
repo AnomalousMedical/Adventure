@@ -28,6 +28,7 @@ namespace RpgMath
         List<CharacterBuff> Buffs { get; }
         public bool CanBlock { get; }
         public bool CanTriggerAttack { get; }
+        public bool QueueTurnsFront { get; }
         Resistance GetResistance(Element element);
     }
 }

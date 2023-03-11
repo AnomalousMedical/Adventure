@@ -210,7 +210,8 @@ namespace Adventure.Battle.Skills
             {
                 Dexterity = Amount,
                 TimeRemaining = Duration,
-                BuffTypeId = Id
+                BuffTypeId = Id,
+                QueueTurnsFront = true
             };
         }
     }

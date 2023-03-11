@@ -296,6 +296,9 @@ namespace RpgMath
         [JsonIgnore]
         public bool CanTriggerAttack => OffHand?.AllowTriggerAttack == true || MainHand?.AllowTriggerAttack == true || Accessory?.AllowTriggerAttack == true || Body?.AllowTriggerAttack == true;
 
+        [JsonIgnore]
+        public bool QueueTurnsFront => Buffs.Any(i => i.QueueTurnsFront);
+
         public long CurrentHp { get; set; }
 
         public long CurrentMp { get; set; }

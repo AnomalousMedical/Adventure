@@ -54,6 +54,8 @@ namespace RpgMath
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //These are not hooked up to the stats
 
+        public bool QueueTurnsFront => Buffs.Any(i => i.QueueTurnsFront);
+
         public bool CanBlock { get; set; }
 
         public bool CanTriggerAttack { get; set; }

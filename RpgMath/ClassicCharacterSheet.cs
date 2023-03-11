@@ -127,6 +127,8 @@ namespace RpgMath
 
         public bool CanTriggerAttack { get; set; }
 
+        public bool QueueTurnsFront => Buffs.Any(i => i.QueueTurnsFront);
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;

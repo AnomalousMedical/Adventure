@@ -577,7 +577,7 @@ namespace Adventure.Battle
                 }
 
                 return done;
-            }, skill.QueueFront);
+            }, skill.QueueFront || characterSheet.QueueTurnsFront);
         }
 
         private void Melee(IBattleTarget target, ISkill skill, bool queueFront, bool deactivatePlayer)
