@@ -1,10 +1,8 @@
 ﻿using Adventure.Assets.Equipment;
-using Adventure.Battle.Skills;
 using Adventure.Items.Actions;
-using Adventure.Menu;
 using RpgMath;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Adventure.Items.Creators
 {
@@ -17,14 +15,14 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, bool allowTrigger, bool allowActiveBlock)
+        public InventoryItem CreateNormal(int level, string adjective, bool allowTrigger, bool allowActiveBlock, params String[] skills)
         {
             var sword = new Equipment
             {
                 Name = $"{adjective} Dagger",
                 Attack = equipmentCurve.GetAttack(level),
                 Sprite = nameof(DaggerNew),
-                Skills = GetSkills(level),
+                Skills = skills.ToArray(),
                 AllowTriggerAttack = true,
                 AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block
             };
@@ -36,11 +34,6 @@ namespace Adventure.Items.Creators
             }
 
             return CreateInventoryItem(sword);
-        }
-
-        private IEnumerable<String> GetSkills(int level)
-        {
-            yield return nameof(Steal);
         }
 
         private InventoryItem CreateInventoryItem(Equipment equipment)

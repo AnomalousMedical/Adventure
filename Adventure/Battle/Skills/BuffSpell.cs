@@ -115,39 +115,40 @@ namespace Adventure.Battle.Skills
         public long Duration { get; set; } = 2 * 60 * Clock.SecondsToMicro;
     }
 
-    class StrengthBuff : BuffSpell
+    class PhysicalBuff : BuffSpell
     {
         protected static readonly int Id = 0;
 
-        public override string DamageNumberText => $"+{Amount} Strength";
+        public override string DamageNumberText => $"+{Amount} Strength and Vitality";
 
         public override CharacterBuff CreateBuff()
         {
             return new CharacterBuff()
             {
                 Strength = Amount,
+                Vitality = Amount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id
             };
         }
     }
 
-    class MegaStrength : StrengthBuff
+    class BattleCry : PhysicalBuff
     {
-        public MegaStrength()
+        public BattleCry()
         {
             Amount = 20;
-            Name = "Mega Strength";
+            Name = "Battle Cry";
             MpCost = 35;
         }
     }
 
-    class UltraStrength : StrengthBuff
+    class WarCry : PhysicalBuff
     {
-        public UltraStrength()
+        public WarCry()
         {
             Amount = 45;
-            Name = "Ultra Strength";
+            Name = "War Cry";
             MpCost = 65;
         }
     }
@@ -163,79 +164,6 @@ namespace Adventure.Battle.Skills
             return new CharacterBuff()
             {
                 Magic = Amount,
-                TimeRemaining = Duration,
-                BuffTypeId = Id
-            };
-        }
-    }
-
-    class MegaMagic : MagicBuff
-    {
-        public MegaMagic()
-        {
-            Amount = 20;
-            Name = "Mega Magic";
-            MpCost = 35;
-        }
-    }
-
-    class UltraMagic : MagicBuff
-    {
-        public UltraMagic()
-        {
-            Amount = 45;
-            Name = "Ultra Magic";
-            MpCost = 65;
-        }
-    }
-
-    class VitalityBuff : BuffSpell
-    {
-        protected static readonly int Id = 2;
-
-        public override string DamageNumberText => $"+{Amount} Vitality";
-
-        public override CharacterBuff CreateBuff()
-        {
-            return new CharacterBuff()
-            {
-                Vitality = Amount,
-                TimeRemaining = Duration,
-                BuffTypeId = Id
-            };
-        }
-    }
-
-    class MegaVitality : VitalityBuff
-    {
-        public MegaVitality()
-        {
-            Amount = 20;
-            Name = "Mega Vitality";
-            MpCost = 35;
-        }
-    }
-
-    class UltraVitality : VitalityBuff
-    {
-        public UltraVitality()
-        {
-            Amount = 45;
-            Name = "Ultra Vitality";
-            MpCost = 65;
-        }
-    }
-
-    class SpiritBuff : BuffSpell
-    {
-        protected static readonly int Id = 3;
-
-        public override string DamageNumberText => $"+{Amount} Spirit";
-
-        public override CharacterBuff CreateBuff()
-        {
-            return new CharacterBuff()
-            {
                 Spirit = Amount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id
@@ -243,22 +171,22 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class MegaSpirit : SpiritBuff
+    class Focus : MagicBuff
     {
-        public MegaSpirit()
+        public Focus()
         {
             Amount = 20;
-            Name = "Mega Spirit";
+            Name = "Focus";
             MpCost = 35;
         }
     }
 
-    class UltraSpirit : SpiritBuff
+    class IntenseFocus : MagicBuff
     {
-        public UltraSpirit()
+        public IntenseFocus()
         {
             Amount = 45;
-            Name = "Ultra Spirit";
+            Name = "Intense Focus";
             MpCost = 65;
         }
     }
