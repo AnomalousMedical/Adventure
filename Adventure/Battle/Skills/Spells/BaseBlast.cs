@@ -40,6 +40,16 @@ namespace Adventure.Battle.Skills
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                     damage = battleManager.DamageCalculator.RandomVariation(damage);
 
+                    if (triggered)
+                    {
+                        damage *= 2;
+                    }
+
+                    if (triggerSpammed)
+                    {
+                        damage /= 2;
+                    }
+
                     battleManager.AddDamageNumber(currentTarget, damage);
                     currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 

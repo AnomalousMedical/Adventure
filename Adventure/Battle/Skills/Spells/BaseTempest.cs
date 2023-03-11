@@ -38,7 +38,7 @@ namespace Adventure.Battle.Skills
                 if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
                 {
                     hitTargets.Add(currentTarget);
-                    ApplyDamage(battleManager, attacker, currentTarget, resistance);
+                    ApplyDamage(battleManager, attacker, currentTarget, resistance, triggered, triggerSpammed);
 
                     var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
@@ -69,7 +69,7 @@ namespace Adventure.Battle.Skills
                 foreach (var currentTarget in hitTargets)
                 {
                     var resistance = currentTarget.Stats.GetResistance(element);
-                    ApplyDamage(battleManager, attacker, currentTarget, resistance);
+                    ApplyDamage(battleManager, attacker, currentTarget, resistance, triggered, triggerSpammed);
                 }
 
                 yield return coroutine.WaitSeconds(0.5);
@@ -88,7 +88,7 @@ namespace Adventure.Battle.Skills
             return effect;
         }
 
-        private static void ApplyDamage(IBattleManager battleManager, IBattleTarget attacker, IBattleTarget currentTarget, Resistance resistance)
+        private static void ApplyDamage(IBattleManager battleManager, IBattleTarget attacker, IBattleTarget currentTarget, Resistance resistance, bool triggered, bool triggerSpammed)
         {
             var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, 20);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);

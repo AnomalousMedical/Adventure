@@ -33,7 +33,7 @@ namespace Adventure.Battle.Skills
 
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
             {
-                ApplyDamage(battleManager, attacker, target, resistance);
+                ApplyDamage(battleManager, attacker, target, resistance, triggered, triggerSpammed);
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
@@ -53,7 +53,7 @@ namespace Adventure.Battle.Skills
                 IEnumerator<YieldAction> run()
                 {
                     yield return coroutine.WaitSeconds(0.5);
-                    ApplyDamage(battleManager, attacker, target, resistance);
+                    ApplyDamage(battleManager, attacker, target, resistance, triggered, triggerSpammed);
 
                     yield return coroutine.WaitSeconds(0.5);
                     applyEffect.RequestDestruction();
@@ -71,11 +71,21 @@ namespace Adventure.Battle.Skills
             return effect;
         }
 
-        private static void ApplyDamage(IBattleManager battleManager, IBattleTarget attacker, IBattleTarget target, Resistance resistance)
+        private static void ApplyDamage(IBattleManager battleManager, IBattleTarget attacker, IBattleTarget target, Resistance resistance, bool triggered, bool triggerSpammed)
         {
             var damage = battleManager.DamageCalculator.Magical(attacker.Stats, target.Stats, 20);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
             damage = battleManager.DamageCalculator.RandomVariation(damage);
+
+            if (triggered)
+            {
+                damage *= 2;
+            }
+
+            if (triggerSpammed)
+            {
+                damage /= 2;
+            }
 
             battleManager.AddDamageNumber(target, damage);
             target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
