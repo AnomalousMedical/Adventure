@@ -2,7 +2,7 @@
 
 namespace Adventure.Battle.Skills
 {
-    class WeakLightning : BaseBlast
+    class WeakLightning : ElementalBase
     {
         public WeakLightning()
             : base(Element.Electricity)
@@ -14,7 +14,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class Lightning : BaseBlast
+    class Lightning : ElementalBase
     {
         public Lightning()
             : base(Element.Electricity)
@@ -26,7 +26,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class StrongLightning : BaseBlast
+    class StrongLightning : ElementalBase
     {
         public StrongLightning()
             : base(Element.Electricity)
@@ -39,7 +39,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class ArchLightning : BaseBlast
+    class ArchLightning : ElementalBase
     {
         public ArchLightning()
             : base(Element.Electricity)

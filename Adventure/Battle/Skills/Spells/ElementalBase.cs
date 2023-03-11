@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace Adventure.Battle.Skills
 {
-    class BaseBlast : ISkill
+    class ElementalBase : ISkill
     {
         private readonly Element element;
 
-        public BaseBlast(Element element)
+        public ElementalBase(Element element)
         {
             this.element = element;
         }

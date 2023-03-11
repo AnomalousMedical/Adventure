@@ -2,7 +2,7 @@
 
 namespace Adventure.Battle.Skills
 {
-    class WeakFire : BaseBlast
+    class WeakFire : ElementalBase
     {
         public WeakFire()
             : base(Element.Fire)
@@ -14,7 +14,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class Fire : BaseBlast
+    class Fire : ElementalBase
     {
         public Fire()
             :base(Element.Fire)
@@ -26,7 +26,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class StrongFire : BaseBlast
+    class StrongFire : ElementalBase
     {
         public StrongFire()
             : base(Element.Fire)
@@ -39,7 +39,7 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class ArchFire : BaseBlast
+    class ArchFire : ElementalBase
     {
         public ArchFire()
             : base(Element.Fire)
