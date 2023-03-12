@@ -21,7 +21,7 @@ namespace Adventure.Items.Creators
             {
                 Name = $"{adjective} Staff",
                 MagicAttack = equipmentCurve.GetAttack(level),
-                MagicAttackPercent = 100,
+                MagicAttackPercent = 50,
                 Attack = equipmentCurve.GetAttack(level) / 3,
                 AttackPercent = 35,
                 Sprite = nameof(IceStaff07),

@@ -50,7 +50,8 @@ namespace Adventure.Items.Creators
                 Name = $"{adjective} Cloth Armor",
                 Defense = equipmentCurve.GetDefense(level, 1f / 3f),
                 MagicDefense = equipmentCurve.GetMDefense(level),
-                MagicAttack = level / 10 + 1
+                MagicAttack = level / 10 + 1,
+                MagicAttackPercent = 50,
             };
 
             return CreateInventoryItem(armor);
