@@ -1,14 +1,8 @@
-﻿using Adventure.Items;
-using Adventure.Items.Creators;
-using Adventure.Services;
+﻿using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using SharpGui;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Menu
 {
@@ -65,6 +59,10 @@ namespace Adventure.Menu
                     persistence.Current.Party.Gold -= SelectedItem.Cost;
                     var item = SelectedItem.CreateItem();
                     characterData.Inventory.Items.Add(item);
+                    if(SelectedItem.UniqueSalePlotItem != null)
+                    {
+                        persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
+                    }
                 }
                 this.SelectedItem = null;
             }
@@ -84,17 +82,8 @@ namespace Adventure.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
-        private readonly IZoneManager zoneManager;
         private readonly ConfirmBuyMenu confirmBuyMenu;
-        private readonly SwordCreator swordCreator;
-        private readonly SpearCreator spearCreator;
-        private readonly MaceCreator maceCreator;
-        private readonly ShieldCreator shieldCreator;
-        private readonly ElementalStaffCreator staffCreator;
-        private readonly AccessoryCreator accessoryCreator;
-        private readonly ArmorCreator armorCreator;
-        private readonly PotionCreator potionCreator;
-        private readonly DaggerCreator daggerCreator;
+        private readonly IWorldDatabase worldDatabase;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -109,34 +98,16 @@ namespace Adventure.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            IZoneManager zoneManager,
             ConfirmBuyMenu confirmBuyMenu,
-            SwordCreator swordCreator,
-            SpearCreator spearCreator,
-            MaceCreator maceCreator,
-            ShieldCreator shieldCreator,
-            ElementalStaffCreator staffCreator,
-            AccessoryCreator accessoryCreator,
-            ArmorCreator armorCreator,
-            PotionCreator potionCreator,
-            DaggerCreator daggerCreator
+            IWorldDatabase worldDatabase
         )
         {
             this.persistence = persistence;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
-            this.zoneManager = zoneManager;
             this.confirmBuyMenu = confirmBuyMenu;
-            this.swordCreator = swordCreator;
-            this.spearCreator = spearCreator;
-            this.maceCreator = maceCreator;
-            this.shieldCreator = shieldCreator;
-            this.staffCreator = staffCreator;
-            this.accessoryCreator = accessoryCreator;
-            this.armorCreator = armorCreator;
-            this.potionCreator = potionCreator;
-            this.daggerCreator = daggerCreator;
+            this.worldDatabase = worldDatabase;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -216,12 +187,14 @@ Lck: {characterData.CharacterSheet.TotalLuck}
 
             var canBuy = characterData.HasRoom;
 
-            //var shopItems = ShopItems().Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i)).ToArray(); //TODO: Cache this somehow, don't keep making it
-            //var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
-            //if (canBuy && selectedItem != null)
-            //{
-            //    confirmBuyMenu.SelectedItem = selectedItem;
-            //}
+            var shopItems = worldDatabase.CreateShopItems(persistence.Current.PlotItems)
+                .Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i))
+                .ToArray();
+            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+            if (canBuy && selectedItem != null)
+            {
+                confirmBuyMenu.SelectedItem = selectedItem;
+            }
 
             if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
             {
@@ -254,6 +227,4 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             }
         }
     }
-
-    record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem) { }
 }

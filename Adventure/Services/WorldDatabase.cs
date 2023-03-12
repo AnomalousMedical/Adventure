@@ -1,4 +1,5 @@
 ﻿using Adventure.Battle.Skills;
+using Adventure.Items;
 using Adventure.Items.Creators;
 using Engine;
 using RpgMath;
@@ -14,7 +15,7 @@ namespace Adventure.Services
         IAreaBuilder GetAreaBuilder(int zoneIndex);
         int GetLevelDelta(int area);
         void Reset(int newSeed);
-
+        IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems);
         IBiomeManager BiomeManager { get; }
         SwordCreator SwordCreator { get; }
         SpearCreator SpearCreator { get; }
@@ -34,6 +35,8 @@ namespace Adventure.Services
         IntVector2 AirshipPortalSquare { get; }
         BookCreator BookCreator { get; }
     }
+
+    record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
 
     class WorldDatabase : IWorldDatabase
     {
@@ -758,6 +761,40 @@ namespace Adventure.Services
                 //};
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
+            }
+        }
+
+        public IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems)
+        {
+            if (plotItems.Contains(PlotItems.Phase3Shop))
+            {
+                var treasureLevel = 40;
+                var adjective = "Mass Produced";
+                if (!plotItems.Contains(PlotItems.UniquePhase3Shield))
+                {
+                    yield return new ShopEntry($"{adjective} Shield", 3000, () => ShieldCreator.CreateNormal(treasureLevel, adjective, 80, true), PlotItems.UniquePhase3Shield);
+                }
+                yield return new ShopEntry($"{adjective} Sword", 2400, () => SwordCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 2400, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Mace", 2400, () => MaceCreator.CreateNormal(treasureLevel, adjective));
+            }
+
+            if (plotItems.Contains(PlotItems.Phase2Shop))
+            {
+                var treasureLevel = 25;
+                var adjective = "Store Bought";
+                yield return new ShopEntry($"{adjective} Sword", 800, () => SwordCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 800, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Mace", 800, () => MaceCreator.CreateNormal(treasureLevel, adjective));
+            }
+
+            if (plotItems.Contains(PlotItems.Phase1Shop))
+            {
+                var treasureLevel = 5;
+                var adjective = "Discount";
+                yield return new ShopEntry($"{adjective} Sword", 200, () => SwordCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 200, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Mace", 200, () => MaceCreator.CreateNormal(treasureLevel, adjective));
             }
         }
 

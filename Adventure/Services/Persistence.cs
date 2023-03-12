@@ -3,7 +3,6 @@ using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Adventure.Services
 {
@@ -13,7 +12,11 @@ namespace Adventure.Services
         PortalKey1,
         AirshipKey0,
         AirshipKey1,
-        AirshipKey2
+        AirshipKey2,
+        Phase1Shop,
+        Phase2Shop,
+        Phase3Shop,
+        UniquePhase3Shield
     }
 
     class Persistence
