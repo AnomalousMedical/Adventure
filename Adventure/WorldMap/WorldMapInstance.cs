@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Assets.World;
+using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
@@ -11,9 +12,7 @@ using DungeonGenerator;
 using Engine;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
@@ -409,6 +408,19 @@ namespace Adventure.WorldMap
         private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare, in IntVector2 airshipPortalSquare, List<IntVector2> portalLocations)
         {
             areaLocations = new IntVector2[areaBuilders.Count];
+
+            {
+                var storePhilip = objectResolver.Resolve<StorePhilip, StorePhilip.Description>(o =>
+                {
+                    o.Transforms = transforms;
+                    var entrance = new Gargoyle();
+                    o.Sprite = entrance.CreateSprite();
+                    o.SpriteMaterial = entrance.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(storePhilip);
+            }
 
             {
                 this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);     

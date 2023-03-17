@@ -21,6 +21,7 @@ namespace Adventure.WorldMap
         void SetPlayerVisible(bool visible);
         Vector3 GetAirshipPortal();
         void CenterCamera();
+        Vector3 GetCellCenterpoint(in IntVector2 cell);
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -127,6 +128,11 @@ namespace Adventure.WorldMap
         public Vector3 GetAirshipPortal()
         {
             return worldMapInstance?.GetAirshipPortalLocation() ?? Vector3.Zero;
+        }
+
+        public Vector3 GetCellCenterpoint(in IntVector2 cell) 
+        { 
+            return worldMapInstance.GetCellCenterpoint(cell);
         }
 
         public void Update(Clock clock)

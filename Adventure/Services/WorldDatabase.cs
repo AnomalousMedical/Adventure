@@ -34,6 +34,7 @@ namespace Adventure.Services
         IntVector2 AirshipStartSquare { get; }
         IntVector2 AirshipPortalSquare { get; }
         BookCreator BookCreator { get; }
+        List<IntVector2> StorePhilipLocations { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -64,6 +65,7 @@ namespace Adventure.Services
         public List<IntVector2> PortalLocations => portalLocations;
         public IntVector2 AirshipStartSquare => airshipStartSquare;
         public IntVector2 AirshipPortalSquare => airshipPortalSquare;
+        public List<IntVector2> StorePhilipLocations { get; } = new List<IntVector2>();
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -248,6 +250,9 @@ namespace Adventure.Services
             AddPortal(map.IslandInfo[map.IslandSizeOrder[2]], usedSquares, placementRandom, portalLocations);
 
             var island = map.IslandInfo[map.IslandSizeOrder[0]];
+            var firstStorePhilipIsland = island;
+            IslandInfo secondStorePhilipIsland;
+            IslandInfo thirdStorePhilipIsland;
             var firstIslandSquares = new List<IntVector2>
             {
                 //Northmost is the teleporter
@@ -517,6 +522,7 @@ namespace Adventure.Services
 
                 //3rd island
                 island = map.IslandInfo[map.IslandSizeOrder[2]];
+                secondStorePhilipIsland = island;
 
                 var thirdIslandSquares = new List<IntVector2>
                 {
@@ -643,6 +649,7 @@ namespace Adventure.Services
 
                 //Area 8
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+                thirdStorePhilipIsland = island;
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -762,6 +769,10 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
             }
+
+            StorePhilipLocations.Add(GetUnusedSquare(usedSquares, firstStorePhilipIsland, placementRandom));
+            StorePhilipLocations.Add(GetUnusedSquare(usedSquares, secondStorePhilipIsland, placementRandom));
+            StorePhilipLocations.Add(GetUnusedSquare(usedSquares, thirdStorePhilipIsland, placementRandom));
         }
 
         public IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems)
