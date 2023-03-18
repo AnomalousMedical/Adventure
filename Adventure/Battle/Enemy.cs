@@ -120,8 +120,10 @@ namespace Adventure.Battle
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
             var target = battleManager.GetRandomPlayer();
-            IBattleTarget guard = null;
+            IBattleTarget guard = null; //This is the guard that moved, if there was one
+            IBattleTarget guardInput = null; //This is the character input to check for guard
             bool findGuard = true;
+            bool startGuard = true;
             var blockManager = new ContextTriggerManager();
 
             battleManager.QueueTurn(c =>
@@ -140,11 +142,11 @@ namespace Adventure.Battle
                 if (findGuard)
                 {
                     findGuard = false;
-                    guard = battleManager.GetGuard(this, target);
-                    if (guard != null)
+                    guardInput = battleManager.GetGuard(this, target);
+                    if(guardInput == null)
                     {
-                        guard.MoveToGuard(target.MeleeAttackLocation);
-                        target = guard;
+                        //If a guard can't be found, use the target
+                        guardInput = target;
                     }
                 }
 
@@ -155,7 +157,7 @@ namespace Adventure.Battle
                     start = this.startPosition;
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
-                    blockManager.CheckTrigger(target, target.Stats.CanBlock);
+                    blockManager.CheckTrigger(guardInput, guardInput.Stats.CanBlock);
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -164,6 +166,17 @@ namespace Adventure.Battle
                     //sprite.SetAnimation("stand-left");
                     interpolate = 0.0f;
                     start = end = GetAttackLocation(target);
+
+                    if (startGuard && blockManager.Activated && !blockManager.Spammed)
+                    {
+                        startGuard = false;
+                        if (guardInput != null && guardInput != target)
+                        {
+                            guard = guardInput;
+                            guard.MoveToGuard(target.MeleeAttackLocation);
+                            target = guard;
+                        }
+                    }
 
                     if (needsAttack && remainingTime < swingTime)
                     {
