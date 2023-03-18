@@ -539,9 +539,7 @@ namespace Adventure.Battle
 
             if (!guards.Contains(target))
             {
-                guard = guards
-                    //.Where(i => damageCalculator.Guard(attacker.Stats, i.Stats))
-                    .FirstOrDefault();
+                guard = guards.FirstOrDefault();
             }
 
             return guard;

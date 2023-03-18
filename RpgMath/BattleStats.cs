@@ -38,8 +38,6 @@ namespace RpgMath
 
         public long ExtraCritChance { get; set; }
 
-        public long GuardPercent { get; set; }
-
         public long CounterPercent { get; set; }
 
         public float TotalItemUsageBonus { get; set; }

@@ -20,7 +20,6 @@ namespace RpgMath.Tests
             TotalDexterity = 13,
             TotalLuck = 19,
             Level = 10,
-            GuardPercent = 60,
             Hp = 200,
             Mp = 20
         };
@@ -38,7 +37,6 @@ namespace RpgMath.Tests
             TotalDexterity = 22,
             TotalLuck = 20,
             Level = 20,
-            GuardPercent = 60,
             Hp = 400,
             Mp = 40
         };
@@ -56,7 +54,6 @@ namespace RpgMath.Tests
             TotalDexterity = 30,
             TotalLuck = 21,
             Level = 30,
-            GuardPercent = 60,
             Hp = 800,
             Mp = 80
         };
@@ -74,7 +71,6 @@ namespace RpgMath.Tests
             TotalDexterity = 38,
             TotalLuck = 22,
             Level = 40,
-            GuardPercent = 80,
             Hp = 2000,
             Mp = 200
         };
@@ -92,7 +88,6 @@ namespace RpgMath.Tests
             TotalDexterity = 46,
             TotalLuck = 23,
             Level = 50,
-            GuardPercent = 80,
             Hp = 4000,
             Mp = 300
         };
@@ -110,7 +105,6 @@ namespace RpgMath.Tests
             TotalDexterity = 51,
             TotalLuck = 23,
             Level = 60,
-            GuardPercent = 80,
             Hp = 5000,
             Mp = 400
         };
@@ -128,7 +122,6 @@ namespace RpgMath.Tests
             TotalDexterity = 53,
             TotalLuck = 24,
             Level = 70,
-            GuardPercent = 100,
             Hp = 6000,
             Mp = 600
         };
@@ -146,7 +139,6 @@ namespace RpgMath.Tests
             TotalDexterity = 55,
             TotalLuck = 25,
             Level = 80,
-            GuardPercent = 100,
             Hp = 7000,
             Mp = 700
         };
@@ -164,7 +156,6 @@ namespace RpgMath.Tests
             TotalDexterity = 57,
             TotalLuck = 26,
             Level = 90,
-            GuardPercent = 100,
             Hp = 8000,
             Mp = 800
         };
@@ -182,7 +173,6 @@ namespace RpgMath.Tests
             TotalDexterity = 59,
             TotalLuck = 26,
             Level = 99,
-            GuardPercent = 100,
             Hp = 9000,
             Mp = 900
         };

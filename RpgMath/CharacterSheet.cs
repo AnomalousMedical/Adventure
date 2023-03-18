@@ -349,9 +349,6 @@ namespace RpgMath
         public int InventorySize => 6 + EquippedItems().Sum(i => i.InventorySlots);
 
         [JsonIgnore]
-        public long GuardPercent => EquippedItems().Sum(i => i.GuardPercent);
-
-        [JsonIgnore]
         public long CounterPercent => EquippedItems().Sum(i => i.CounterPercent);
 
         [JsonIgnore]

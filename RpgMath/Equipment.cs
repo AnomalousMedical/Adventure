@@ -38,8 +38,6 @@ namespace RpgMath
 
         public long CritChance { get; set; }
 
-        public long GuardPercent { get; set; }
-
         public long CounterPercent { get; set; }
 
         public bool TwoHanded { get; set; }

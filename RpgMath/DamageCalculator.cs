@@ -176,14 +176,6 @@ namespace RpgMath
             return newHp;
         }
 
-        public bool Guard(IBattleStats attacker, IBattleStats blocker)
-        {
-            long hitPct = blocker.GuardPercent;
-
-            var rand = (long)random.Next(65536) * 99 / 65535 + 1;
-            return rand < hitPct;
-        }
-
         public bool Counter(IBattleStats attacker, IBattleStats target)
         {
             long hitPct = target.CounterPercent;
