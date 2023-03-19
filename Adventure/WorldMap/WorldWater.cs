@@ -87,7 +87,7 @@ namespace Adventure.WorldMap
                 this.instanceData.pBLAS = meshBlas.Instance.BLAS.Obj;
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 blasInstanceData = GlassInstanceDataCreator.Create(new Vector3(0.5f, 0.5f, 0.5f), 100.95f, new Vector2(1.5f, 1.02f), new Color(0.5f, 0.5f, 0.5f));
-                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(false, false, false, false, false, isGlass: true);
+                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(false, false, false, false, false, isWater: true);
 
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);

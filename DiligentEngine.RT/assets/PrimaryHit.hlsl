@@ -215,5 +215,18 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 instanceData.padding //GlassMaterialColorRgb
             );
             break;
+
+        case $$(WATERMATERIAL):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            Water
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                float3(instanceData.uv0.x, instanceData.uv0.y, instanceData.uv1.x), //GlassReflectionColorMask
+                instanceData.uv1.y, //GlassAbsorption
+                instanceData.uv2, //GlassIndexOfRefraction
+                instanceData.padding //GlassMaterialColorRgb
+            );
+            break;
     }
 }

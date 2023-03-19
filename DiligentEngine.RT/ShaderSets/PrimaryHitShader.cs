@@ -156,6 +156,7 @@ namespace DiligentEngine.RT.ShaderSets
                     { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflective.ToString() },
                     { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflectiveEmissive.ToString() },
                     { "GLASSMATERIAL", HLSL.BlasInstanceDataConstants.Glass.ToString() },
+                    { "WATERMATERIAL", HLSL.BlasInstanceDataConstants.Water.ToString() },
                 };
 
                 // Create closest hit shaders.

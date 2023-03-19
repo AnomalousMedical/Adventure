@@ -106,9 +106,15 @@ namespace DiligentEngine.RT.HLSL
         public const uint LightAndShadeBaseNormalPhysicalReflective = 128;
         public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 256;
         public const uint Glass = 512;
+        public const uint Water = 1024;
 
-        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive, bool isSprite, bool isGlass = false)
+        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive, bool isSprite, bool isGlass = false, bool isWater = false)
         {
+            if (isWater)
+            {
+                return Water;
+            }
+
             if (isGlass)
             {
                 return Glass;
