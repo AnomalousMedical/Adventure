@@ -27,6 +27,8 @@ namespace RTBepuDemo
             public InstanceMatrix Transform = InstanceMatrix.Identity;
 
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
+
+            public bool IsGlass { get; set; }
         }
 
         private readonly TLASInstanceData instanceData;
@@ -81,8 +83,15 @@ namespace RTBepuDemo
                 this.instanceData.pBLAS = cubeBLAS.Instance.BLAS.Obj;
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 this.cubeTexture = cubeTextureTask.Result;
-                blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
+                if (description.IsGlass)
+                {
+                    blasInstanceData = GlassInstanceDataCreator.Create(new Vector3(0.22f, 0.83f, 0.93f), 0.5f, new Vector2(1.5f, 1.02f), new Color(0.33f, 0.93f, 0.29f));
+                }
+                else
+                {
+                    blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
+                }
+                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false, isGlass: description.IsGlass);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

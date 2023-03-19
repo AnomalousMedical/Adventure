@@ -31,6 +31,8 @@ namespace RTBepuDemo
             public byte Mask { get; set; } = RtStructures.OPAQUE_GEOM_MASK;
 
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
+
+            public bool IsGlass { get; set; }
         }
 
         private BodyHandle bodyHandle;
@@ -101,8 +103,15 @@ namespace RTBepuDemo
                     this.instanceData.Flags = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_FORCE_NO_OPAQUE;
                 }
 
-                blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
+                if (description.IsGlass)
+                {
+                    blasInstanceData = GlassInstanceDataCreator.Create(new Vector3(0.22f, 0.83f, 0.93f), 0.5f, new Vector2(1.5f, 1.02f), new Color(0.33f, 0.93f, 0.29f));
+                }
+                else
+                {
+                    blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
+                }
+                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false, isGlass: description.IsGlass);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

@@ -114,6 +114,7 @@ namespace RTBepuDemo
                 o.position = position;
                 o.box = box;
                 o.boxInertia = boxInertia;
+                o.IsGlass = true;
             });
 
             bodyPositionSyncs.Add(body);
