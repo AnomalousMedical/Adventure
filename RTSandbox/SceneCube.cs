@@ -84,6 +84,23 @@ namespace RTSandbox
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
                 blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false, isGlass: description.IsGlass);
+
+                if (description.IsGlass)
+                {
+                    //GlassReflectionColorMask = new Vector3(0.22f, 0.83f, 0.93f),
+                    //GlassAbsorption = 0.5f,
+                    //GlassIndexOfRefraction = new Vector2(1.5f, 1.02f),
+                    //GlassMaterialColor = new Vector4(0.33f, 0.93f, 0.29f, 0f),
+
+                    blasInstanceData.u1 = 0.22f;
+                    blasInstanceData.v1 = 0.83f;
+                    blasInstanceData.u2 = 0.93f;
+                    blasInstanceData.v2 = 0.5f;
+                    blasInstanceData.u3 = 1.5f;
+                    blasInstanceData.v3 = 1.02f;
+                    blasInstanceData.padding = (uint)new Color(0.33f, 0.93f, 0.29f).toRGB();
+                }
+
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

@@ -1,8 +1,8 @@
 struct BlasInstanceData
 {
-    float2 uv0; //also tex4 (x) and tex5 (y) in mesh
-    float2 uv1; //also tex6 (x) and tex7 (y) in mesh
-    float2 uv2; //also tex8 (x) and tex9 (y) in mesh
+    float2 uv0; //also tex4 (x) and tex5 (y) in mesh, GlassReflectionColorMask.xy for glass
+    float2 uv1; //also tex6 (x) and tex7 (y) in mesh, GlassReflectionColorMask.z and GlassAbsorption
+    float2 uv2; //also tex8 (x) and tex9 (y) in mesh, GlassIndexOfRefraction
     float2 uv3; //also tex10 (x) and tex11 (y) in mesh
 
     int tex0;
@@ -12,7 +12,7 @@ struct BlasInstanceData
     uint indexOffset;
     uint vertexOffset;
     uint dispatchType;
-    uint padding;
+    uint padding;   //also GlassMaterialColor
 };
 
 struct TextureSet
@@ -83,13 +83,6 @@ struct Constants
 
     //Sky properties
     float4 Pallete[6];
-
-    // Refraction cube properties
-    float3  GlassReflectionColorMask;
-    float   GlassAbsorption;
-    float4  GlassMaterialColor;
-    float2  GlassIndexOfRefraction;  // min and max IOR
-    float2  GlassPadding01;
 };
 
 struct SurfaceReflectanceInfo

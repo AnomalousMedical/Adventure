@@ -1,16 +1,16 @@
 // Simulate light absorption inside glass.
-float3 LightAbsorption(float3 color1, float depth)
+float3 LightAbsorption(float3 color1, float depth, float GlassAbsorption, float3 GlassMaterialColor)
 {
     float  factor1 = depth * 0.25;
-    float  factor2 = pow(depth * g_ConstantsCB.GlassAbsorption, 2.2) * 0.25;
+    float  factor2 = pow(depth * GlassAbsorption, 2.2) * 0.25;
     float  factor  = clamp(factor1 + factor2 + 0.05, 0.0, 1.0); 
-    float3 color2  = color1 * g_ConstantsCB.GlassMaterialColor.rgb;
+    float3 color2  = color1 * GlassMaterialColor.rgb;
     return lerp(color1, color2, factor);
 }
 
-float3 BlendWithReflection(float3 srcColor, float3 reflectionColor, float factor)
+float3 BlendWithReflection(float3 srcColor, float3 reflectionColor, float factor, float3 GlassReflectionColorMask)
 {
-    return lerp(srcColor, reflectionColor * g_ConstantsCB.GlassReflectionColorMask.rgb, factor);
+    return lerp(srcColor, reflectionColor * GlassReflectionColorMask.rgb, factor);
 }
 
 // Optimized fresnel calculation.
@@ -35,15 +35,26 @@ float Fresnel(float eta, float cosThetaI)
     return 0.5 * (Rs * Rs + Rp * Rp);
 }
 
-//void GlassHit(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
 void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
-    CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ)
+    CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ,
+    float3  GlassReflectionColorMask,
+    float   GlassAbsorption,
+    float2  GlassIndexOfRefraction, //min and max IOR
+    uint     GlassMaterialColorRgb
+)
 {
+    float3  GlassMaterialColor = float3
+    (
+        ((GlassMaterialColorRgb >> 16) & 0xff) / 255.0f,
+        ((GlassMaterialColorRgb >> 8) & 0xff) / 255.0f,
+        ((GlassMaterialColorRgb     ) & 0xff) / 255.0f
+    );
+
     float3 normal = posX.normal.xyz * barycentrics.x +
         posY.normal.xyz * barycentrics.y +
         posZ.normal.xyz * barycentrics.z;
 
-    normal        = normalize(mul((float3x3) ObjectToWorld3x4(), normal));
+    normal = normalize(mul((float3x3) ObjectToWorld3x4(), normal));
     
     // Air index of refraction
     const float  AirIOR      = 1.0;
@@ -60,13 +71,13 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
     // Refraction at the interface between air and glass.
     if (HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE)
     {
-        relIOR = AirIOR / g_ConstantsCB.GlassIndexOfRefraction.x;
+        relIOR = AirIOR / GlassIndexOfRefraction.x;
         rayDir = refract(rayDir, normal, relIOR);
     }
     // Refraction at the interface between glass and air.
     else if (HitKind() == HIT_KIND_TRIANGLE_BACK_FACE)
     {
-        relIOR = g_ConstantsCB.GlassIndexOfRefraction.x / AirIOR;
+        relIOR = GlassIndexOfRefraction.x / AirIOR;
         normal = -normal;
         rayDir = refract(rayDir, normal, relIOR);
     }
@@ -84,7 +95,7 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
             
         if (HitKind() == HIT_KIND_TRIANGLE_BACK_FACE)
         {
-            reflColor = LightAbsorption(reflColor, reflPayload.Depth);
+            reflColor = LightAbsorption(reflColor, reflPayload.Depth, GlassAbsorption, GlassMaterialColor);
         }
     }
         
@@ -99,11 +110,11 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
             
         if (HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE || payload.Recursion == 0)
         {
-            resultColor = LightAbsorption(resultColor, nextPayload.Depth);
+            resultColor = LightAbsorption(resultColor, nextPayload.Depth, GlassAbsorption, GlassMaterialColor);
         }
     }
         
-    resultColor = BlendWithReflection(resultColor, reflColor, fresnel);
+    resultColor = BlendWithReflection(resultColor, reflColor, fresnel, GlassReflectionColorMask);
 
     payload.Color = resultColor;
     payload.Depth = RayTCurrent();

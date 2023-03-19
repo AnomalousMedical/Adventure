@@ -208,7 +208,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             Glass
             (
                 payload, barycentrics,
-                posX, posY, posZ
+                posX, posY, posZ,
+                float3(instanceData.uv0.x, instanceData.uv0.y, instanceData.uv1.x), //GlassReflectionColorMask
+                instanceData.uv1.y, //GlassAbsorption
+                instanceData.uv2, //GlassIndexOfRefraction
+                instanceData.padding //GlassMaterialColorRgb
             );
             break;
     }
