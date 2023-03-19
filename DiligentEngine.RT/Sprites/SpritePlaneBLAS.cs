@@ -31,11 +31,6 @@ namespace DiligentEngine.RT
                         Flags = RAYTRACING_GEOMETRY_FLAGS.RAYTRACING_GEOMETRY_FLAG_NONE
                     };
 
-                    //Top Right
-                    //Top Left
-                    //Bottom Left
-                    //Bottom Right
-
                     blasDesc.CubePos = new Vector3[]
                     {
                         new Vector3(-0.5f,-0.5f,+0.0f), new Vector3(+0.5f,-0.5f,+0.0f), new Vector3(+0.5f,+0.5f,+0.0f), new Vector3(-0.5f,+0.5f,+0.0f), //Front +z
@@ -53,9 +48,12 @@ namespace DiligentEngine.RT
 
                     blasDesc.Textures = new float[4]; //Sprites cannot use these textures, since they override the uvs
 
+                    // 3   2
+                    //
+                    // 0   1
                     blasDesc.Indices = new uint[]
                     {
-                        0,1,2, 0,3,2
+                        0,1,2, 2,3,0
                     };
 
                     instance = await blasBuilder.CreateBLAS(blasDesc);
