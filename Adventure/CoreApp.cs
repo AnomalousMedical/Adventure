@@ -125,6 +125,8 @@ namespace Adventure
             services.AddScoped<ZoneConnector.Description>();
             services.AddScoped<StorePhilip>();
             services.AddScoped<StorePhilip.Description>();
+            services.AddScoped<WorldWater>();
+            services.AddScoped<WorldWater.Description>();
             services.AddScoped<IslandPortal>();
             services.AddScoped<IslandPortal.Description>();
             services.AddScoped<AirshipPortal, AirshipPortal>(); //Uses IslandPortal.Description

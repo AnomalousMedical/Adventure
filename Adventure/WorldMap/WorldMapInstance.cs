@@ -423,6 +423,15 @@ namespace Adventure.WorldMap
             }
 
             {
+                var water = objectResolver.Resolve<WorldWater, WorldWater.Description>(o =>
+                {
+                    o.Transform = new InstanceMatrix(new Vector3(0f, 0.64f, 0f), Quaternion.Identity, new Vector3(1.0f, 1.0f, 1.0f));
+                });
+
+                placeables.Add(water);
+            }
+
+            {
                 this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);     
                 this.airshipPortal = airshipPortalSquare;
                 var loc = mapMesh.PointToVector(airshipPortalSquare.x, airshipPortalSquare.y);
