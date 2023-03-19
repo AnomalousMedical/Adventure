@@ -67,7 +67,7 @@ namespace Adventure
             this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Attachment"),
-                Mask = RtStructures.OPAQUE_GEOM_MASK,
+                Mask = attachmentDescription.RenderShadow ? RtStructures.OPAQUE_GEOM_MASK : RtStructures.TRANSPARENT_GEOM_MASK,
                 Transform = new InstanceMatrix(Vector3.Zero, attachmentDescription.Orientation, sprite.BaseScale) //It might be worth it to skip this line
             };
 
