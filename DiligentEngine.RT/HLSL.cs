@@ -65,6 +65,24 @@ namespace DiligentEngine.RT.HLSL
         public uint padding;
     };
 
+    public static class GlassInstanceDataCreator
+    {
+        public static BlasInstanceData Create(in float3 GlassReflectionColorMask, float GlassAbsorption, in float2 GlassIndexOfRefraction, in Engine.Color GlassMaterialColor)
+        {
+            return new BlasInstanceData
+            {
+                u1 = GlassReflectionColorMask.x,
+                v1 = GlassReflectionColorMask.y,
+                u2 = GlassReflectionColorMask.z,
+                v2 = GlassAbsorption,
+                u3 = GlassIndexOfRefraction.x,
+                v3 = GlassIndexOfRefraction.y,
+                padding = (uint)GlassMaterialColor.toRGB(),
+            };
+        }
+    }
+
+
     [StructLayout(LayoutKind.Sequential)]
     public struct TextureSet
     {
