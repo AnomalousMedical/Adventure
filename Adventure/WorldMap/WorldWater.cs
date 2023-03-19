@@ -15,7 +15,7 @@ namespace Adventure.WorldMap
         {
             public string InstanceName { get; set; } = RTId.CreateId("WorldWater");
 
-            public byte Mask { get; set; } = RtStructures.OPAQUE_GEOM_MASK;
+            public byte Mask { get; set; } = RtStructures.TRANSPARENT_GEOM_MASK;
 
             public RAYTRACING_INSTANCE_FLAGS Flags { get; set; } = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_NONE;
 
