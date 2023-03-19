@@ -1,10 +1,7 @@
 ﻿using DiligentEngine.RT.Resources;
-using DiligentEngine.RT.Sprites;
 using Engine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiligentEngine.RT.ShaderSets
@@ -76,7 +73,6 @@ namespace DiligentEngine.RT.ShaderSets
         private AutoPtr<IShader> pCubePrimaryHit;
         private AutoPtr<IShader> pCubeAnyHit;
         private AutoPtr<IShader> pShadowAnyHit;
-        private AutoPtr<IShader> pGlassPrimaryHit;
         private RayTracingRenderer renderer;
         private BLASBuilder builder;
 
@@ -95,10 +91,8 @@ namespace DiligentEngine.RT.ShaderSets
 
         private String primaryShaderGroupName;
         private String shadowShaderGroupName;
-        private String glassHitShaderGroupName;
         private RayTracingTriangleHitShaderGroup primaryHitShaderGroup;
         private RayTracingTriangleHitShaderGroup shadowHitShaderGroup;
-        private RayTracingTriangleHitShaderGroup glassHitShaderGroup;
 
         public PrimaryHitShader(ActiveTextures activeTextures, RayTracingRenderer renderer, BLASBuilder builder)
         {
@@ -122,13 +116,13 @@ namespace DiligentEngine.RT.ShaderSets
             {
                 this.primaryShaderGroupName = $"{Guid.NewGuid()}PrimaryHit";
                 this.shadowShaderGroupName = $"{Guid.NewGuid()}ShadowHit";
-                this.glassHitShaderGroupName = $"{Guid.NewGuid()}GlassHit";
 
                 var m_pDevice = graphicsEngine.RenderDevice;
 
                 // Define shader macros
                 ShaderMacroHelper Macros = new ShaderMacroHelper();
                 Macros.AddShaderMacro("NUM_LIGHTS", cameraAndLight.NumLights);
+                Macros.AddShaderMacro("MAX_DISPERS_SAMPLES", 16);
 
                 ShaderCreateInfo ShaderCI = new ShaderCreateInfo();
                 // We will not be using combined texture samplers as they
@@ -161,6 +155,7 @@ namespace DiligentEngine.RT.ShaderSets
                     { "LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalEmissive.ToString() },
                     { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflective.ToString() },
                     { "LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE", HLSL.BlasInstanceDataConstants.LightAndShadeBaseNormalPhysicalReflectiveEmissive.ToString() },
+                    { "GLASSMATERIAL", HLSL.BlasInstanceDataConstants.Glass.ToString() },
                 };
 
                 // Create closest hit shaders.
@@ -169,14 +164,6 @@ namespace DiligentEngine.RT.ShaderSets
                 ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/PrimaryHit.hlsl");
                 ShaderCI.EntryPoint = "main";
                 pCubePrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros)
-                  ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
-
-
-                ShaderCI.Desc.ShaderType = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT;
-                ShaderCI.Desc.Name = $"glass ray closest hit shader";
-                ShaderCI.Source = shaderLoader.LoadShader(shaderVars, $"assets/GlassPrimaryHit.hlsl");
-                ShaderCI.EntryPoint = "main";
-                pGlassPrimaryHit = m_pDevice.CreateShader(ShaderCI, Macros)
                   ?? throw new InvalidOperationException($"Could not create '{ShaderCI.Desc.Name}'");
 
                 // Create primary any hit shaders.
@@ -200,7 +187,6 @@ namespace DiligentEngine.RT.ShaderSets
                 // Primary ray hit group for the textured cube.
                 primaryHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = primaryShaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pCubeAnyHit.Obj };
                 shadowHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = shadowShaderGroupName, pClosestHitShader = pCubePrimaryHit.Obj, pAnyHitShader = pShadowAnyHit.Obj };
-                glassHitShaderGroup = new RayTracingTriangleHitShaderGroup { Name = glassHitShaderGroupName, pClosestHitShader = pGlassPrimaryHit.Obj, pAnyHitShader = pCubeAnyHit.Obj };
 
                 //TODO: Remove SHADER_TYPE.SHADER_TYPE_RAY_GEN below, seems you don't need it, but needs testing
                 verticesDesc = new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_GEN | SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT | SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, Name = VerticesVarName, Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC };
@@ -223,14 +209,12 @@ namespace DiligentEngine.RT.ShaderSets
             pShadowAnyHit?.Dispose();
             pCubeAnyHit?.Dispose();
             pCubePrimaryHit?.Dispose();
-            pGlassPrimaryHit?.Dispose();
         }
 
         private void Renderer_OnSetupCreateInfo(RayTracingPipelineStateCreateInfo PSOCreateInfo)
         {
             PSOCreateInfo.pTriangleHitShaders.Add(primaryHitShaderGroup);
             PSOCreateInfo.pTriangleHitShaders.Add(shadowHitShaderGroup);
-            //PSOCreateInfo.pTriangleHitShaders.Add(glassHitShaderGroup);
             //TODO: Adding this to the triangle hit shaders here assumes the BLAS is already created. This is setup to work ok now, but hopefully this can be unbound later
 
             PSOCreateInfo.PSODesc.ResourceLayout.Variables.Add(verticesDesc);
@@ -243,7 +227,6 @@ namespace DiligentEngine.RT.ShaderSets
         {
             sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.PRIMARY_RAY_INDEX, primaryShaderGroupName, data, size);
             sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.SHADOW_RAY_INDEX, shadowShaderGroupName, data, size);
-            sbt.BindHitGroupForInstance(tlas, instanceName, RtStructures.PRIMARY_RAY_INDEX, glassHitShaderGroupName, data, size);
         }
 
         private void Bind(IShaderResourceBinding rayTracingSRB)

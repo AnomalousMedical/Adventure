@@ -2,6 +2,7 @@
 #include "RayUtils.hlsl"
 #include "Data.hlsl"
 #include "Lighting.hlsl"
+#include "GlassPrimaryHit.hlsl"
 
 [shader("closesthit")]
 void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
@@ -200,6 +201,15 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 GetPhysical(mip, uv)
             );
             payload.Color += GetEmissive(mip, uv, g_SamPointWrap);
+            break;
+
+        case $$(GLASSMATERIAL):
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            Glass
+            (
+                payload, barycentrics,
+                posX, posY, posZ
+            );
             break;
     }
 }

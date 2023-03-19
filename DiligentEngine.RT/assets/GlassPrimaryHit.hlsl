@@ -1,7 +1,3 @@
-#include "Structures.hlsl"
-#include "RayUtils.hlsl"
-#include "Data.hlsl"
-
 // Simulate light absorption inside glass.
 float3 LightAbsorption(float3 color1, float depth)
 {
@@ -39,24 +35,10 @@ float Fresnel(float eta, float cosThetaI)
     return 0.5 * (Rs * Rs + Rp * Rp);
 }
 
-[shader("closesthit")]
-void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
+//void GlassHit(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
+void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
+    CubeAttribVertex posX, CubeAttribVertex posY, CubeAttribVertex posZ)
 {
-    float3 barycentrics;
-    CubeAttribVertex posX, posY, posZ;
-    float2 uv;
-    GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
-
-    // Calculate triangle barycentrics.
-    //float3 barycentrics = float3(1.0 - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
-    
-    // Get vertex indices for primitive.
-    //uint3 primitive = g_CubeAttribsCB.Primitives[PrimitiveIndex()].xyz;
-    
-    // Calculate and transform triangle normal.
-    //float3 normal = g_CubeAttribsCB.Normals[primitive.x].xyz * barycentrics.x +
-    //                g_CubeAttribsCB.Normals[primitive.y].xyz * barycentrics.y +
-    //                g_CubeAttribsCB.Normals[primitive.z].xyz * barycentrics.z;
     float3 normal = posX.normal.xyz * barycentrics.x +
         posY.normal.xyz * barycentrics.y +
         posZ.normal.xyz * barycentrics.z;
