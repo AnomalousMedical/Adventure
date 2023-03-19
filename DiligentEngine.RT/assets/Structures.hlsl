@@ -83,6 +83,13 @@ struct Constants
 
     //Sky properties
     float4 Pallete[6];
+
+    // Refraction cube properties
+    float3  GlassReflectionColorMask;
+    float   GlassAbsorption;
+    float4  GlassMaterialColor;
+    float2  GlassIndexOfRefraction;  // min and max IOR
+    float2  GlassPadding01;
 };
 
 struct SurfaceReflectanceInfo

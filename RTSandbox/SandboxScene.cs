@@ -28,9 +28,9 @@ namespace RTSandbox
             this.renderer = renderer;
             objectResolver = objectResolverFactory.Create();
 
-            rotateCube = objectResolver.Resolve<SceneCube, SceneCube.Desc>(o =>
+            objectResolver.Resolve<SceneCube, SceneCube.Desc>(o =>
             {
-                o.Transform = new InstanceMatrix(new Vector3(10, 0, 0), Quaternion.Identity);
+                o.Transform = new InstanceMatrix(new Vector3(-3, 0, 0), Quaternion.Identity);
                 o.Texture = new CCOTextureBindingDescription("cc0Textures/Lava004_1K");
             });
 
@@ -39,6 +39,12 @@ namespace RTSandbox
                 o.Transform = new InstanceMatrix(new Vector3(-3, -3, 0), Quaternion.Identity);
                 o.Flags = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_FORCE_NO_OPAQUE;
                 o.Texture = new CCOTextureBindingDescription("cc0Textures/SheetMetal002_1K", reflective: true);
+            });
+
+            rotateCube = objectResolver.Resolve<SceneCube, SceneCube.Desc>(o =>
+            {
+                o.Transform = new InstanceMatrix(new Vector3(0, 0, 0), Quaternion.Identity);
+                o.IsGlass = true;
             });
 
             objectResolver.Resolve<SceneCube, SceneCube.Desc>(o =>

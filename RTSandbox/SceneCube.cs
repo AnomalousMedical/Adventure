@@ -27,6 +27,8 @@ namespace RTSandbox
             public InstanceMatrix Transform = InstanceMatrix.Identity;
 
             public CCOTextureBindingDescription Texture { get; set; } = new CCOTextureBindingDescription("cc0Textures/Ground025_1K");
+
+            public bool IsGlass { get; set; }
         }
 
         private readonly TLASInstanceData instanceData;
@@ -81,7 +83,7 @@ namespace RTSandbox
                 this.instanceData.pBLAS = cubeBLAS.Instance.BLAS.Obj;
                 this.primaryHitShader = primaryHitShaderTask.Result;
                 blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
+                blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false, isGlass: description.IsGlass);
                 rtInstances.AddTlasBuild(instanceData);
                 rtInstances.AddShaderTableBinder(Bind);
             });

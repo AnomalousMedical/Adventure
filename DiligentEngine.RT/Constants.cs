@@ -77,6 +77,13 @@ namespace DiligentEngine.RT
         public float4 Pallete_4;
         public float4 Pallete_5;
 
+        //Glass Test
+        public float3 GlassReflectionColorMask;
+        public float GlassAbsorption;
+        public float4 GlassMaterialColor;
+        public float2 GlassIndexOfRefraction;  // min and max IOR
+        public float2 GlassPadding01;
+
         public static Constants CreateDefault(uint maxRecursionDepth)
         {
             return new Constants
@@ -99,6 +106,12 @@ namespace DiligentEngine.RT
                 Pallete_3 = new float4(0.41f, 0.79f, 1.00f, 0f),
                 Pallete_4 = new float4(0.78f, 1.00f, 1.00f, 0f),
                 Pallete_5 = new float4(1.00f, 1.00f, 1.00f, 0f),
+
+                // Glass cube constants.
+                GlassReflectionColorMask = new Vector3(0.22f, 0.83f, 0.93f),
+                GlassAbsorption = 0.5f,
+                GlassMaterialColor = new Vector4(0.33f, 0.93f, 0.29f, 0f),
+                GlassIndexOfRefraction = new Vector2(1.5f, 1.02f),
             };
         }
     }
