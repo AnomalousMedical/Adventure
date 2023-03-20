@@ -425,7 +425,7 @@ namespace Adventure.WorldMap
             {
                 var water = objectResolver.Resolve<WorldWater, WorldWater.Description>(o =>
                 {
-                    o.Transform = new InstanceMatrix(new Vector3(0f, 0.64f, 0f), Quaternion.Identity, new Vector3(1.0f, 1.0f, 1.0f));
+                    o.Transform = new InstanceMatrix(new Vector3(0f, 0.79f, 0f), Quaternion.Identity, new Vector3(1.0f, 1.0f, 1.0f));
                 });
 
                 placeables.Add(water);
