@@ -97,20 +97,21 @@ namespace Adventure.GameOver
                 persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
                 persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
                 persistence.Current.BattleTriggers.ClearData();
-                if (persistence.Current.Party.Gold > 0)
-                {
-                    var takeGold = (long)(persistence.Current.Party.Gold * 0.75f);
-                    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
-                    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-                    persistence.Current.Player.LootDropGold = takeGold;
-                    persistence.Current.Party.Gold -= takeGold;
-                }
-                else
-                {
-                    persistence.Current.Player.LootDropPosition = null;
-                    persistence.Current.Player.LootDropZone = null;
-                    persistence.Current.Player.LootDropGold = 0;
-                }
+                //This is what takes the party's gold, for now disable it
+                //if (persistence.Current.Party.Gold > 0)
+                //{
+                //    var takeGold = (long)(persistence.Current.Party.Gold * 0.75f);
+                //    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
+                //    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
+                //    persistence.Current.Player.LootDropGold = takeGold;
+                //    persistence.Current.Party.Gold -= takeGold;
+                //}
+                //else
+                //{
+                //    persistence.Current.Player.LootDropPosition = null;
+                //    persistence.Current.Player.LootDropZone = null;
+                //    persistence.Current.Player.LootDropGold = 0;
+                //}
 
                 foreach (var character in persistence.Current.Party.Members)
                 {
