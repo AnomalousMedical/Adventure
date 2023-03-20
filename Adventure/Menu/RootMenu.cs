@@ -25,8 +25,10 @@ namespace Adventure.Menu
         private readonly PlayerMenu playerMenu;
         private readonly OptionsMenu optionsMenu;
         private readonly Persistence persistence;
+        private readonly BuyMenu buyMenu;
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
+        SharpButton shop = new SharpButton() { Text = "Shop" };
         SharpButton options = new SharpButton() { Text = "Options" };
         SharpButton debug = new SharpButton() { Text = "Debug" };
 
@@ -41,7 +43,8 @@ namespace Adventure.Menu
             SkillMenu skillMenu,
             PlayerMenu playerMenu,
             OptionsMenu optionsMenu,
-            Persistence persistence)
+            Persistence persistence,
+            BuyMenu buyMenu)
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
@@ -51,6 +54,19 @@ namespace Adventure.Menu
             this.playerMenu = playerMenu;
             this.optionsMenu = optionsMenu;
             this.persistence = persistence;
+            this.buyMenu = buyMenu;
+        }
+
+        private IEnumerable<SharpButton> GetMenuItems(bool hasShop)
+        {
+            yield return skills;
+            yield return items;
+            if (hasShop)
+            {
+                yield return shop;
+            }
+            yield return options;
+            yield return debug;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
@@ -66,6 +82,8 @@ namespace Adventure.Menu
             var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
             infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
+            var hasShop = persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop);
+
             sharpGui.Text(timePlayed);
             if (persistence.Current.Party.Undefeated)
             {
@@ -75,7 +93,7 @@ namespace Adventure.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(skills, items, options, debug) { Margin = new IntPad(10) }
+               new ColumnLayout(GetMenuItems(hasShop)) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -85,11 +103,16 @@ namespace Adventure.Menu
             {
                 explorationMenu.RequestSubMenu(skillMenu, gamepad);
             }
-            else if (sharpGui.Button(items, gamepad, navDown: options.Id, navUp: skills.Id))
+            else if (sharpGui.Button(items, gamepad, navDown: hasShop ? shop.Id : options.Id, navUp: skills.Id))
             {
                 explorationMenu.RequestSubMenu(itemMenu, gamepad);
             }
-            else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: items.Id))
+            else if (hasShop && sharpGui.Button(shop, gamepad, navDown: options.Id, navUp: items.Id))
+            {
+                buyMenu.PreviousMenu = this;
+                explorationMenu.RequestSubMenu(buyMenu, gamepad);
+            }
+            else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: hasShop ? shop.Id : items.Id))
             {
                 optionsMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(optionsMenu, gamepad);

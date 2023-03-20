@@ -147,7 +147,7 @@ namespace RpgMath
                     value = (long)(value * 2.5f);
                     break;
                 case EnemyType.Badass:
-                    value *= 2;
+                    value = (long)(value * 1.75f);
                     break;
                 case EnemyType.Peon:
                     value /= 2;
@@ -752,10 +752,10 @@ namespace RpgMath
                     scale *= 5f;
                     break;
                 case EnemyType.Badass:
-                    scale *= 1.16666f;
+                    scale *= 2.23f;
                     break;
                 case EnemyType.Peon:
-                    scale *= 0.75f;
+                    scale *= 0.63f;
                     break;
             }
 
