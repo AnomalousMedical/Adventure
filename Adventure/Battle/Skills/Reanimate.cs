@@ -1,12 +1,8 @@
-﻿using Adventure.Assets;
-using Adventure.Services;
+﻿using Adventure.Services;
 using Engine;
 using RpgMath;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Battle.Skills
 {
@@ -17,6 +13,8 @@ namespace Adventure.Battle.Skills
         public long MpCost { get; init; } = 40;
 
         public long Amount { get; init; } = 8;
+
+        public bool DefaultTargetPlayers => true;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
 
