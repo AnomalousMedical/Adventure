@@ -367,6 +367,9 @@ namespace RpgMath
         [JsonIgnore]
         public bool AtPowerMax => PowerGauge >= 255;
 
+        [JsonIgnore]
+        public bool CanSeeEnemyInfo => EquippedItems().Any(i => i.ShowEnemyInfo);
+
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
 
         public List<CharacterEffect> Effects { get; set; } = new List<CharacterEffect>();
@@ -436,6 +439,8 @@ namespace RpgMath
         {
             return Resistance.Normal;
         }
+
+        public Dictionary<Element, Resistance> Resistances { get; } = new Dictionary<Element, Resistance>();
 
         public void Rest()
         {

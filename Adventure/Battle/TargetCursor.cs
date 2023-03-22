@@ -3,6 +3,7 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
+using RpgMath;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace Adventure.Battle
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly ISharpGui sharpGui;
         private readonly IBattleScreenLayout battleScreenLayout;
+        private readonly ICameraProjector cameraProjector;
+        private readonly IScaleHelper scaleHelper;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
@@ -27,6 +30,7 @@ namespace Adventure.Battle
         private SharpButton nextTargetButton = new SharpButton() { Text = "Next" };
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
+        private SharpText statText = new SharpText() { Color = Color.White };
 
         public uint EnemyTargetIndex { get; private set; }
         public uint PlayerTargetIndex { get; private set; }
@@ -85,7 +89,9 @@ namespace Adventure.Battle
             SpriteInstanceFactory spriteInstanceFactory,
             IScopedCoroutine coroutine,
             ISharpGui sharpGui,
-            IBattleScreenLayout battleScreenLayout
+            IBattleScreenLayout battleScreenLayout,
+            ICameraProjector cameraProjector,
+            IScaleHelper scaleHelper
         )
         {
             this.destructionRequest = destructionRequest;
@@ -93,6 +99,8 @@ namespace Adventure.Battle
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.sharpGui = sharpGui;
             this.battleScreenLayout = battleScreenLayout;
+            this.cameraProjector = cameraProjector;
+            this.scaleHelper = scaleHelper;
             this.sprite = new Sprite(animations)
             { BaseScale = new Vector3(0.5f, 0.5f, 1f) };
 
@@ -177,10 +185,12 @@ namespace Adventure.Battle
             PlayerTargetIndex = 0;
         }
 
+        private Vector3 currentPosition;
+
         public void SetPosition(Vector3 targetPosition)
         {
-            var position = targetPosition - sprite.GetCurrentFrame().Attachments[0].translate * sprite.BaseScale;
-            this.tlasData.Transform = new InstanceMatrix(position, sprite.BaseScale);
+            currentPosition = targetPosition - sprite.GetCurrentFrame().Attachments[0].translate * sprite.BaseScale;
+            this.tlasData.Transform = new InstanceMatrix(currentPosition, sprite.BaseScale);
         }
 
         public Task<IBattleTarget> GetTarget(bool targetPlayers)
@@ -198,11 +208,35 @@ namespace Adventure.Battle
             }
         }
 
+        IBattleTarget resistanceTextTarget;
+
         public void UpdateCursor(IBattleManager battleManager, IBattleTarget target, Vector3 enemyPos, BattlePlayer activePlayer)
         {
             SetPosition(enemyPos);
 
             battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton);
+
+            if (activePlayer.Stats.CanSeeEnemyInfo)
+            {
+                if (resistanceTextTarget != target)
+                {
+                    resistanceTextTarget = target;
+                    var resistances = new StringBuilder();
+                    foreach (var resistance in target.Stats.Resistances.OrderBy(i => i.Value))
+                    {
+                        resistances.AppendLine($"{resistance.Key} - {resistance.Value}");
+                    }
+                    statText.Text = resistances.ToString();
+                }
+
+                var cursorOffset = currentPosition;
+                cursorOffset.y -= sprite.BaseScale.y / 2.0f;
+                var resistanceLoc = cameraProjector.Project(cursorOffset);
+
+                statText.SetRect(new IntRect((int)resistanceLoc.x, (int)resistanceLoc.y, scaleHelper.Scaled(400), scaleHelper.Scaled(1000)));
+
+                sharpGui.Text(statText);
+            }
 
             if (sharpGui.Button(selectTargetButton, activePlayer.GamepadId))
             {
@@ -301,6 +335,7 @@ namespace Adventure.Battle
 
         private void SetTarget(IBattleTarget enemy)
         {
+            resistanceTextTarget = null;
             if (getTargetTask != null)
             {
                 var refGetTargetTask = getTargetTask;

@@ -127,6 +127,8 @@ namespace RpgMath
 
         public bool QueueTurnsFront => Buffs.Any(i => i.QueueTurnsFront);
 
+        public bool CanSeeEnemyInfo { get; set; }
+
         public void LevelUp(ILevelCalculator levelCalculator)
         {
             ++Level;
@@ -152,6 +154,8 @@ namespace RpgMath
         {
             return Resistance.Normal;
         }
+
+        public Dictionary<Element, Resistance> Resistances { get; } = new Dictionary<Element, Resistance>();
 
         public void Rest()
         {

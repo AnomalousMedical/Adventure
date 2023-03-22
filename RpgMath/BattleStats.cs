@@ -58,6 +58,8 @@ namespace RpgMath
 
         public bool CanTriggerAttack { get; set; }
 
+        public bool CanSeeEnemyInfo { get; set; }
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))

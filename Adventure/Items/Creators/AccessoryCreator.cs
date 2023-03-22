@@ -1,11 +1,6 @@
-﻿using Adventure.Assets.Equipment;
-using Adventure.Items.Actions;
+﻿using Adventure.Items.Actions;
 using RpgMath;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Items.Creators
 {
@@ -24,6 +19,17 @@ namespace Adventure.Items.Creators
             {
                 Name = $"Counter attack accessory",
                 CounterPercent = 60L
+            };
+
+            return CreateInventoryItem(accessory);
+        }
+
+        public InventoryItem CreateTargetScope()
+        {
+            var accessory = new Equipment
+            {
+                Name = $"Target Scope",
+                ShowEnemyInfo = true
             };
 
             return CreateInventoryItem(accessory);

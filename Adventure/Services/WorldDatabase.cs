@@ -338,6 +338,7 @@ namespace Adventure.Services
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, phase1Adjective)));
                 phase1UniqueTreasures.Add(new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, phase1Adjective)));
+                phase1UniqueTreasures.Add(new Treasure(AccessoryCreator.CreateTargetScope()));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateMagicBoost()));
                 phase1UniqueTreasures.Add(new Treasure(PotionCreator.CreateSpiritBoost()));

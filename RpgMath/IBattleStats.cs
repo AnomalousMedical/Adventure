@@ -25,9 +25,11 @@ namespace RpgMath
         IEnumerable<string> Skills { get; }
         IEnumerable<Element> AttackElements { get; }
         List<CharacterBuff> Buffs { get; }
-        public bool CanBlock { get; }
-        public bool CanTriggerAttack { get; }
-        public bool QueueTurnsFront { get; }
+        bool CanBlock { get; }
+        bool CanTriggerAttack { get; }
+        bool QueueTurnsFront { get; }
+        Dictionary<Element, Resistance> Resistances { get; }
+        bool CanSeeEnemyInfo { get; }
         Resistance GetResistance(Element element);
     }
 }
