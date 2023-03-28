@@ -78,10 +78,25 @@ namespace Adventure.Menu
                 }
             }
 
+            var canTransfer = persistence.Current.Party.Members
+                        .Where(i => i != characterData && i.HasRoom)
+                        .Any();
+
+            IEnumerable<ILayoutItem> GetButtons(bool canTransfer)
+            {
+                yield return use;
+                if (canTransfer)
+                {
+                    yield return transfer;
+                }
+                yield return discard;
+                yield return cancel;
+            }
+
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(GetButtons(canTransfer)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -89,7 +104,7 @@ namespace Adventure.Menu
 
             use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
 
-            if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
+            if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: canTransfer ? transfer.Id : discard.Id))
             {
                 if (!choosingCharacter)
                 {
@@ -109,7 +124,7 @@ namespace Adventure.Menu
                     }
                 }
             }
-            if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
+            if (canTransfer && sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
             {
                 if (!choosingCharacter)
                 {
@@ -124,7 +139,7 @@ namespace Adventure.Menu
                     .ToList();
                 }
             }
-            if(sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id))
+            if(sharpGui.Button(discard, gamepadId, navUp: canTransfer ? transfer.Id : use.Id, navDown: cancel.Id))
             {
                 //TODO: Add confirmation for this
                 characterData.RemoveItem(SelectedItem);
