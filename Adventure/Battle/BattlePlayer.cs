@@ -97,6 +97,7 @@ namespace Adventure.Battle
 
         ButtonEvent contextTriggerKeyboard;
         ButtonEvent contextTriggerJoystick;
+        SharpStyle uiStyle;
 
         public class Description : SceneObjectDesc
         {
@@ -107,6 +108,7 @@ namespace Adventure.Battle
             public CharacterSheet CharacterSheet;
             public Inventory Inventory;
             public String PlayerSprite { get; set; }
+            public SharpStyle UiStyle { get; set; }
         }
 
         public BattlePlayer(
@@ -138,6 +140,7 @@ namespace Adventure.Battle
             this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
             this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
+            this.uiStyle = description.UiStyle;
             this.skills = skills;
             this.itemMenu = itemMenu;
             this.xpCalculator = xpCalculator;
@@ -333,10 +336,10 @@ namespace Adventure.Battle
                     didSomething = UpdateRootMenu(sharpGui, didSomething);
                     break;
                 case MenuMode.Magic:
-                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, UseSkill, gamepadId);
+                    didSomething = skills.UpdateGui(sharpGui, coroutine, ref currentMenuMode, UseSkill, gamepadId, uiStyle);
                     break;
                 case MenuMode.Item:
-                    didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem, gamepadId);
+                    didSomething = itemMenu.UpdateGui(sharpGui, this, this.inventory, coroutine, ref currentMenuMode, UseItem, gamepadId, uiStyle);
                     break;
             }
 
@@ -373,7 +376,7 @@ namespace Adventure.Battle
             battleScreenLayout.LayoutBattleMenu(attackButton, skillsButton, itemButton, defendButton);
             attackButton.Text = characterSheet.AtPowerMax ? "Catalyze" : "Attack";
 
-            if (sharpGui.Button(attackButton, gamepadId, navUp: defendButton.Id, navDown: skillsButton.Id))
+            if (sharpGui.Button(attackButton, gamepadId, navUp: defendButton.Id, navDown: skillsButton.Id, style: uiStyle))
             {
                 coroutine.RunTask(async () =>
                 {
@@ -394,19 +397,19 @@ namespace Adventure.Battle
                 didSomething = true;
             }
 
-            if (sharpGui.Button(skillsButton, gamepadId, navUp: attackButton.Id, navDown: itemButton.Id))
+            if (sharpGui.Button(skillsButton, gamepadId, navUp: attackButton.Id, navDown: itemButton.Id, style: uiStyle))
             {
                 currentMenuMode = MenuMode.Magic;
                 didSomething = true;
             }
 
-            if (sharpGui.Button(itemButton, gamepadId, navUp: skillsButton.Id, navDown: defendButton.Id))
+            if (sharpGui.Button(itemButton, gamepadId, navUp: skillsButton.Id, navDown: defendButton.Id, style: uiStyle))
             {
                 currentMenuMode = MenuMode.Item;
                 didSomething = true;
             }
 
-            if (sharpGui.Button(defendButton, gamepadId, navUp: itemButton.Id, navDown: attackButton.Id))
+            if (sharpGui.Button(defendButton, gamepadId, navUp: itemButton.Id, navDown: attackButton.Id, style: uiStyle))
             {
                 didSomething = true;
             }

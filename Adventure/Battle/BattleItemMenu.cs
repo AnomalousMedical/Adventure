@@ -33,7 +33,7 @@ namespace Adventure.Battle
             this.screenPositioner = screenPositioner;
         }
 
-        public bool UpdateGui(ISharpGui sharpGui, IBattleTarget user, Inventory inventory, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, InventoryItem> itemSelectedCb, GamepadId gamepadId)
+        public bool UpdateGui(ISharpGui sharpGui, IBattleTarget user, Inventory inventory, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, InventoryItem> itemSelectedCb, GamepadId gamepadId, SharpStyle style)
         {
             var didSomething = false;
 
@@ -45,7 +45,8 @@ namespace Adventure.Battle
                 , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i))
                 , inventory.Items.Count
                 , s => screenPositioner.GetTopRightRect(s)
-                , gamepadId);
+                , gamepadId,
+                style: style);
 
             if(selectedItem != null)
             {
