@@ -41,7 +41,7 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null);
+        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, SharpStyle style = null);
 
         /// <summary>
         /// Draw a slider. Returns true if the passed in value changed.
@@ -49,14 +49,14 @@ namespace SharpGui
         /// <param name="slider">The slider to draw.</param>
         /// <param name="value">The current value of the slider.</param>
         /// <returns>True if value changed.</returns>
-        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navLeft = null, Guid? navRight = null);
+        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad = GamepadId.Pad1, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null);
 
         /// <summary>
         /// Draw a progress bar. Does not take input or foucs.
         /// </summary>
         /// <param name="progress"></param>
         /// <param name="percent"></param>
-        void Progress(SharpProgressHorizontal progress, float percent);
+        void Progress(SharpProgressHorizontal progress, float percent, SharpStyle style = null);
 
         /// <summary>
         /// Draw some text of unlimited width.
@@ -86,20 +86,20 @@ namespace SharpGui
         /// </summary>
         /// <param name="button"></param>
         /// <returns></returns>
-        bool Button(SharpButton button, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null);
+        bool Button(SharpButton button, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null);
 
         /// <summary>
         /// Draw a text input.
         /// </summary>
         /// <param name="button"></param>
         /// <returns></returns>
-        bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null);
+        bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null);
 
         /// <summary>
         /// Draw a panel.
         /// </summary>
         /// <param name="input"></param>
-        void Panel(SharpPanel input);
+        void Panel(SharpPanel input, SharpStyle style = null);
         bool IsStandardNextPressed(GamepadId gamepad = GamepadId.Pad1);
         bool IsStandardPreviousPressed(GamepadId gamepad = GamepadId.Pad1);
 

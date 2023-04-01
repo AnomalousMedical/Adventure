@@ -210,34 +210,34 @@ namespace SharpGui
             state.End();
         }
 
-        public bool Button(SharpButton button, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
+        public bool Button(SharpButton button, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return button.Process(state, buffer, renderer.Font, buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
+            return button.Process(state, buffer, renderer.Font, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
-        public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null)
+        public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return input.Process(state, buffer, renderer.Font, inputStyle, navUp, navDown, navLeft, navRight);
+            return input.Process(state, buffer, renderer.Font, style ?? inputStyle, navUp, navDown, navLeft, navRight);
         }
 
-        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null)
+        public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, SharpStyle style = null)
         {
-            return slider.Process(ref value, state, buffer, sliderStyle, navUp, navDown, (int)gamepad);
+            return slider.Process(ref value, state, buffer, style ?? sliderStyle, navUp, navDown, (int)gamepad);
         }
 
-        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null)
+        public bool Slider(SharpSliderVertical slider, ref int value, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return slider.Process(ref value, state, buffer, sliderStyle, navLeft, navRight, (int)gamepad);
+            return slider.Process(ref value, state, buffer, style ?? sliderStyle, navLeft, navRight, (int)gamepad);
         }
 
-        public void Progress(SharpProgressHorizontal progress, float percent)
+        public void Progress(SharpProgressHorizontal progress, float percent, SharpStyle style = null)
         {
-            progress.Process(percent, state, buffer, sliderStyle);
+            progress.Process(percent, state, buffer, style ?? sliderStyle);
         }
 
-        public void Panel(SharpPanel panel)
+        public void Panel(SharpPanel panel, SharpStyle style = null)
         {
-            panel.Process(state, buffer, panelStyle);
+            panel.Process(state, buffer, style ?? panelStyle);
         }
 
         public void Text(int x, int y, Color color, String text, float layer = 0f)

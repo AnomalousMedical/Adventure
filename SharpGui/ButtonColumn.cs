@@ -26,7 +26,7 @@ namespace SharpGui
             }
         }
 
-        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null)
+        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
             var layout =
                new MarginLayout(new IntPad(Margin),
@@ -74,7 +74,7 @@ namespace SharpGui
 
                     button.Text = item.Text;
 
-                    if (sharpGui.Button(button, gamepad, navUp: navUpId, navDown: navDownId, navLeft: navLeft, navRight: navRight))
+                    if (sharpGui.Button(button, gamepad, navUp: navUpId, navDown: navDownId, navLeft: navLeft, navRight: navRight, style: style))
                     {
                         return item.Item;
                     }
