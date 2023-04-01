@@ -113,7 +113,7 @@ namespace SharpGui
             }
         }
 
-        public static SharpStyle CreateComplete(IScaleHelper scaleHelper)
+        public static SharpStyle CreateComplete(IScaleHelper scaleHelper, OpenColorSpec spec)
         {
             var style = new SharpStyle()
             {
@@ -122,34 +122,34 @@ namespace SharpGui
                 BorderColor = Color.FromARGB(0xff000000).ToSrgb(),
                 ShadowColor = Color.FromARGB(0x80000000).ToSrgb(),
                 ShadowOffset = scaleHelper.Scaled(new IntVector2(6, 6)),
-                Padding = scaleHelper.Scaled(new IntPad(40)),
+                Padding = scaleHelper.Scaled(new IntPad(28)),
                 Border = scaleHelper.Scaled(new IntPad(5)),
                 Hover =
                 {
-                    Background = Color.FromARGB(0xffd2d2d2).ToSrgb(),
+                    Background = spec.Colors[7],
                 },
                 Active =
                 {
-                    Background = Color.FromARGB(0xffdedede).ToSrgb(),
+                    Background = spec.Colors[3],
                 },
                 HoverAndActive =
                 {
-                    Background = Color.FromARGB(0xffdadada).ToSrgb(),
+                    Background = spec.Colors[3],
                 },
                 Focus =
                 {
-                    Background = Color.FromARGB(0xffdedede).ToSrgb(),
-                    BorderColor = Color.FromARGB(0xff4376a9).ToSrgb(),
+                    Background = spec.Colors[5],
+                    BorderColor = spec.Colors[9],
                 },
                 HoverAndFocus =
                 {
-                    Background = Color.FromARGB(0xffd2d2d2).ToSrgb(),
-                    BorderColor = Color.FromARGB(0xff4376a9).ToSrgb(),
+                    Background = spec.Colors[6],
+                    BorderColor = spec.Colors[9],
                 },
                 HoverAndActiveAndFocus =
                 {
-                    Background = Color.FromARGB(0xffdadada).ToSrgb(),
-                    BorderColor = Color.FromARGB(0xff4376a9).ToSrgb(),
+                    Background = spec.Colors[4],
+                    BorderColor = spec.Colors[9],
                 }
             };
             return style;

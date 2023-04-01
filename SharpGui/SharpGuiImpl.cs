@@ -55,17 +55,21 @@ namespace SharpGui
             eventManager.Pad4.ButtonDown += Pad1_ButtonDown;
             eventManager.Pad4.ButtonUp += Pad1_ButtonUp;
 
-            buttonStyle = SharpStyle.CreateComplete(scaleHelper);
+            var colors = OpenColor.Blue;
+
+            buttonStyle = SharpStyle.CreateComplete(scaleHelper, colors);
             
-            sliderStyle = SharpStyle.CreateComplete(scaleHelper);
+            sliderStyle = SharpStyle.CreateComplete(scaleHelper, colors);
             sliderStyle.Padding = new IntPad(8);
-            sliderStyle.Active.Color = Color.FromARGB(0xff4376a9).ToSrgb();
-            sliderStyle.HoverAndActive.Color = Color.FromARGB(0xff4376a9).ToSrgb();
-            sliderStyle.HoverAndActiveAndFocus.Color = Color.FromARGB(0xff4376a9).ToSrgb();
+            sliderStyle.Focus.Color = colors.Colors[9];
+            sliderStyle.HoverAndFocus.Color = colors.Colors[8];
+            sliderStyle.Active.Color = colors.Colors[7];
+            sliderStyle.HoverAndActive.Color = colors.Colors[7];
+            sliderStyle.HoverAndActiveAndFocus.Color = colors.Colors[7];
 
-            inputStyle = SharpStyle.CreateComplete(scaleHelper);
+            inputStyle = SharpStyle.CreateComplete(scaleHelper, colors);
 
-            panelStyle = SharpStyle.CreateComplete(scaleHelper);
+            panelStyle = SharpStyle.CreateComplete(scaleHelper, colors);
         }
 
         private void Pad1_ButtonDown(Engine.Platform.Input.Gamepad pad, GamepadButtonCode buttonCode)

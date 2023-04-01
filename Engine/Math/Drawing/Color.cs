@@ -77,6 +77,12 @@ namespace Engine
                             (byte)((color >> 8) & 0xFF),
                             (byte)(color & 0xFF));
         }
+        public static Color FromRGB(byte r, byte g, byte b)
+        {
+            return new Color((float)r / 255.0f,
+                            (float)g / 255.0f,
+                            (float)b / 255.0f);
+        }
 
         public static Color FromRGB(int color)
         {
