@@ -18,13 +18,15 @@ namespace Adventure.Battle.Skills
         public long GetMpCost(bool triggered, bool triggerSpammed) => 0;
 
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
+
+        public virtual bool QueueFront => false;
     }
 
     class QuickGuard : Guard
     {
         public override string Name => "Quick Guard";
 
-        public bool QueueFront => true;
+        public override bool QueueFront => true;
     }
 
     class GuardEffect : ISkillEffect
