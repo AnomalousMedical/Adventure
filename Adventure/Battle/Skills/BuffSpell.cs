@@ -23,6 +23,8 @@ namespace Adventure.Battle.Skills
 
         public Color CastColor => Color.FromARGB(0xff63c74c);
 
+        public bool HealingItemsOnly { get; set; } = true;
+
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
             if (source.CurrentMp - MpCost < 0)
@@ -32,7 +34,7 @@ namespace Adventure.Battle.Skills
 
             source.CurrentMp -= MpCost;
 
-            if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
+            if (HealingItemsOnly && source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
             {
                 //Mp is taken, but nothing is done if cure can't be cast.
                 return;
@@ -50,7 +52,7 @@ namespace Adventure.Battle.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
-            if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
+            if (HealingItemsOnly && attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
                 return new SkillEffect(true);
@@ -200,6 +202,7 @@ namespace Adventure.Battle.Skills
             Amount = 100;
             Name = "Haste";
             MpCost = 48;
+            HealingItemsOnly = false;
         }
 
         public override string DamageNumberText => "Haste";
