@@ -137,7 +137,7 @@ namespace Adventure.Battle.Skills
     {
         public BattleCry()
         {
-            Amount = 20;
+            Amount = 30;
             Name = "Battle Cry";
             MpCost = 35;
         }
@@ -149,7 +149,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 45;
             Name = "War Cry";
-            MpCost = 65;
+            MpCost = 48;
         }
     }
 
@@ -177,7 +177,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 20;
             Name = "Focus";
-            MpCost = 35;
+            MpCost = 30;
         }
     }
 
@@ -187,7 +187,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 45;
             Name = "Intense Focus";
-            MpCost = 65;
+            MpCost = 48;
         }
     }
 
@@ -199,7 +199,7 @@ namespace Adventure.Battle.Skills
         {
             Amount = 100;
             Name = "Haste";
-            MpCost = 65;
+            MpCost = 48;
         }
 
         public override string DamageNumberText => "Haste";
