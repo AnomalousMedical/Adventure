@@ -420,7 +420,7 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
                 phase2UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)));
-                phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, false, nameof(MegaCure), nameof(WarCry), nameof(IntenseFocus))));
+                phase2UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, false, nameof(MegaCure), nameof(BattleCry), nameof(Focus))));
                 phase2UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, false)));
                 phase2UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning))));
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
