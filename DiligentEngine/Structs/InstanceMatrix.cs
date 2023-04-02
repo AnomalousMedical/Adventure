@@ -78,7 +78,7 @@ namespace DiligentEngine
             var rotMat = rot.toRotationMatrix4x4();
             var scaleMat = Matrix4x4.Scale(scale.x, scale.y, scale.z);
 
-            var finalMat = scaleMat * rotMat;
+            var finalMat = rotMat * scaleMat;
 
             this.m00 = finalMat.m00;
             this.m01 = finalMat.m01;
