@@ -13,14 +13,14 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective)
+        public InventoryItem CreateNormal(int level, string adjective, string sprite = nameof(Spear2Old))
         {
             var spear = new Equipment
             {
                 Name = $"{adjective} Spear",
                 Attack = equipmentCurve.GetAttack(level),
                 AttackPercent = 100,
-                Sprite = nameof(Spear2Old),
+                Sprite = sprite,
                 AttackElements = new[] { Element.Piercing }
             };
 

@@ -1,4 +1,5 @@
-﻿using Adventure.Battle.Skills;
+﻿using Adventure.Assets.Equipment;
+using Adventure.Battle.Skills;
 using Adventure.Items;
 using Adventure.Items.Creators;
 using Engine;
@@ -566,10 +567,10 @@ namespace Adventure.Services
                 var phase3TreasureLevel = 55;
                 var phase3Adjective = "Superior";
                 var phase3UniqueTreasures = new List<Treasure>();
-                phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective)));
-                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(phase3TreasureLevel, "Arch Mage's", nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))));
+                phase3UniqueTreasures.Add(new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateSword))));
+                phase3UniqueTreasures.Add(new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateSpear))));
+                phase3UniqueTreasures.Add(new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateHammer))));
+                phase3UniqueTreasures.Add(new Treasure(ElementalStaffCreator.CreateNormal(nameof(UltimateStaff), phase3TreasureLevel, "Arch Mage's", nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))));
                 phase3UniqueTreasures.Add(new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, true)));
                 phase3UniqueTreasures.Add(new Treasure(BookCreator.CreateRestoration(phase3TreasureLevel, phase3Adjective, true, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))));
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
