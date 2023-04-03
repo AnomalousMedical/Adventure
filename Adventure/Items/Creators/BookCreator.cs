@@ -17,11 +17,16 @@ namespace Adventure.Items.Creators
 
         public InventoryItem CreateRestoration(int level, string adjective, bool allowActiveBlock, params String[] spells)
         {
+            return CreateRestoration(nameof(FancyBook), level, adjective, allowActiveBlock, spells);
+        }
+
+        public InventoryItem CreateRestoration(String sprite, int level, string adjective, bool allowActiveBlock, params String[] spells)
+        {
             var book = new Equipment
             {
                 Name = $"{adjective} Book of Restoration",
                 MagicAttack = equipmentCurve.GetAttack(level),
-                Sprite = nameof(FancyBook),
+                Sprite = sprite,
                 Skills = spells.ToArray(),
                 ShowHand = false,
                 AllowActiveBlock = allowActiveBlock
