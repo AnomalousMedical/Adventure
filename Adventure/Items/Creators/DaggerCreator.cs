@@ -17,11 +17,16 @@ namespace Adventure.Items.Creators
 
         public InventoryItem CreateNormal(int level, string adjective, bool allowTrigger, bool allowActiveBlock, params String[] skills)
         {
+            return CreateNormal(nameof(DaggerNew), level, adjective, allowTrigger, allowActiveBlock, skills);
+        }
+
+        public InventoryItem CreateNormal(String spriteName, int level, string adjective, bool allowTrigger, bool allowActiveBlock, params String[] skills)
+        {
             var sword = new Equipment
             {
                 Name = $"{adjective} Dagger",
                 Attack = equipmentCurve.GetAttack(level),
-                Sprite = nameof(DaggerNew),
+                Sprite = spriteName,
                 Skills = skills.ToArray(),
                 AllowTriggerAttack = true,
                 AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block

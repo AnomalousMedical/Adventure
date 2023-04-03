@@ -596,7 +596,7 @@ namespace Adventure.Services
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase3UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, true, true, nameof(Steal), nameof(Haste))));
+                phase3UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(nameof(UltimateDagger), phase3TreasureLevel, phase3Adjective, true, true, nameof(Steal), nameof(Haste))));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
