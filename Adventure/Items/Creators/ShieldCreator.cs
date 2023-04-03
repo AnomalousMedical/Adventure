@@ -14,14 +14,14 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, bool quickGuard)
+        public InventoryItem CreateNormal(int level, string adjective, bool quickGuard, string sprite = nameof(ShieldOfReflection))
         {
             var shield = new Equipment
             {
                 Name = $"{adjective} Shield",
                 Defense = equipmentCurve.GetDefense(level),
                 MagicDefense = equipmentCurve.GetMDefense(level),
-                Sprite = nameof(ShieldOfReflection),
+                Sprite = sprite,
                 Skills = quickGuard ? new[] { nameof(QuickGuard) } : new[] { nameof(Guard) },
                 AllowActiveBlock = true,
                 ShowHand = false,
