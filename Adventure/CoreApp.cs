@@ -1,23 +1,22 @@
-﻿using Anomalous.OSPlatform;
+﻿using Adventure.Assets;
+using Adventure.Battle;
+using Adventure.Battle.Skills;
+using Adventure.GameOver;
+using Adventure.Items;
+using Adventure.Items.Actions;
+using Adventure.Items.Creators;
+using Adventure.Menu;
+using Adventure.Services;
+using Adventure.WorldMap;
+using Anomalous.OSPlatform;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using RpgMath;
-using Adventure.Battle;
-using Adventure.Menu;
-using Adventure.GameOver;
-using Adventure.Services;
 using System;
-using System.Globalization;
 using System.IO;
-using Adventure.Assets;
-using Adventure.Items;
-using Adventure.Items.Creators;
-using Adventure.Battle.Skills;
-using Adventure.WorldMap;
 
 namespace Adventure
 {
@@ -97,6 +96,7 @@ namespace Adventure
             services.AddSingleton<IWorldMapGameState, WorldMapGameState>();
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
             services.AddSingleton<IStartExplorationGameState, StartExplorationGameState>();
+            services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<WorldMapPlayer>();
             services.AddScoped<WorldMapPlayer.Description>();
             services.AddScoped<Airship>();
@@ -217,6 +217,22 @@ namespace Adventure
             services.AddSingleton<OptionsMenu>();
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();
+
+            //Add Item Actions
+            services.AddTransient<EquipMainHand>();
+            services.AddTransient<EquipOffHand>();
+            services.AddTransient<EquipAccessory>();
+            services.AddTransient<EquipBody>();
+            services.AddTransient<LevelBoost>();
+            services.AddTransient<StrengthBoost>();
+            services.AddTransient<MagicBoost>();
+            services.AddTransient<SpiritBoost>();
+            services.AddTransient<VitalityBoost>();
+            services.AddTransient<DexterityBoost>();
+            services.AddTransient<LuckBoost>();
+            services.AddTransient<RestoreHp>();
+            services.AddTransient<RestoreMp>();
+            services.AddTransient<Revive>();
 
             return true;
         }

@@ -6,8 +6,6 @@ using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Menu
 {
@@ -17,6 +15,7 @@ namespace Adventure.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        private readonly IInventoryFunctions inventoryFunctions;
         SharpButton use = new SharpButton() { Text = "Use", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
@@ -32,13 +31,15 @@ namespace Adventure.Menu
             Persistence persistence,
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner
+            IScreenPositioner screenPositioner,
+            IInventoryFunctions inventoryFunctions
         )
         {
             this.persistence = persistence;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
+            this.inventoryFunctions = inventoryFunctions;
         }
 
         public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
@@ -111,14 +112,14 @@ namespace Adventure.Menu
                     IsTransfer = false;
                     if(SelectedItem.Equipment != null)
                     {
-                        characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet, characterData.CharacterSheet);
+                        inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
                         SelectedItem = null;
                     }
                     else
                     {
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
-                            characterData.Inventory.Use(SelectedItem, characterData.CharacterSheet, i.CharacterSheet);
+                            inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet);
                         }))
                         .ToList();
                     }

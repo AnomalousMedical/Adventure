@@ -152,5 +152,19 @@ namespace Adventure.Items.Creators
 
             return item;
         }
+
+        public InventoryItem CreateLevelBoost()
+        {
+            var item = new InventoryItem
+            {
+                Action = nameof(LevelBoost),
+                CanUseOnPickup = true,
+            };
+
+            item.Number = 5;
+            item.Name = "Level Boost";
+
+            return item;
+        }
     }
 }

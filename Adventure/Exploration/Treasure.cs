@@ -11,7 +11,7 @@ namespace Adventure
 
         void GiveTo(Inventory inventory);
 
-        void Use(Inventory inventory, CharacterSheet user);
+        void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions);
     }
 
     class Treasure : ITreasure
@@ -32,9 +32,9 @@ namespace Adventure
             inventory.Items.Add(inventoryItem);
         }
 
-        public void Use(Inventory inventory, CharacterSheet user)
+        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions)
         {
-            inventory.Use(this.inventoryItem, user, user);
+            inventoryFunctions.Use(this.inventoryItem, inventory, user, user);
         }
     }
 }

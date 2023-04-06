@@ -22,6 +22,7 @@ namespace Adventure.Services
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly IPersistenceWriter persistenceWriter;
+        private readonly IInventoryFunctions inventoryFunctions;
         private Stack<ITreasure> currentTreasure;
         SharpButton take = new SharpButton() { Text = "Take" };
         SharpButton use = new SharpButton() { Text = "Use" };
@@ -42,7 +43,8 @@ namespace Adventure.Services
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            IPersistenceWriter persistenceWriter
+            IPersistenceWriter persistenceWriter,
+            IInventoryFunctions inventoryFunctions
         )
         {
             this.persistence = persistence;
@@ -50,6 +52,7 @@ namespace Adventure.Services
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.persistenceWriter = persistenceWriter;
+            this.inventoryFunctions = inventoryFunctions;
         }
 
         public void GatherTreasures(IEnumerable<ITreasure> treasure)
@@ -147,7 +150,7 @@ namespace Adventure.Services
                 if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
                 {
                     currentTreasure.Pop();
-                    treasure.Use(sheet.Inventory, sheet.CharacterSheet);
+                    treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions);
                 }
             }
 

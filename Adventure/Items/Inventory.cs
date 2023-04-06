@@ -45,36 +45,5 @@ namespace Adventure.Items
     class Inventory
     {
         public List<InventoryItem> Items { get; init; } = new List<InventoryItem>();
-
-        public void Use(InventoryItem item, CharacterSheet attacker, CharacterSheet target)
-        {
-            if(item.Action == null)
-            {
-                Items.Remove(item);
-                return;
-            }
-
-            var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
-            action.Use(item, this, attacker, target);
-        }
-        
-        public IInventoryAction CreateAction(InventoryItem item)
-        {
-            if (item.Action == null)
-            {
-                Items.Remove(item);
-                return null;
-            }
-
-            var action = CreateInstance<IInventoryAction>($"Adventure.Items.Actions.{item.Action}");
-            return action;
-        }
-
-        private T CreateInstance<T>(String name)
-        {
-            var type = Type.GetType(name);
-            var instance = (T)Activator.CreateInstance(type);
-            return instance;
-        }
     }
 }

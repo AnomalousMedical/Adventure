@@ -737,6 +737,14 @@ namespace Adventure.Services
                 var phase4TreasureLevel = 60;
                 var phase4Adjective = "Flawless";
 
+                var phase4UniqueTreasures = new List<Treasure>()
+                {
+                    new Treasure(PotionCreator.CreateLevelBoost()),
+                    new Treasure(PotionCreator.CreateLevelBoost()),
+                    new Treasure(PotionCreator.CreateLevelBoost()),
+                    new Treasure(PotionCreator.CreateLevelBoost()),
+                };
+
                 //Area 11
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -755,19 +763,18 @@ namespace Adventure.Services
                     areaBuilder.Monsters = areaBuilder.Monsters.Concat(monsters);
                 }
                 areaBuilder.Monsters = areaBuilder.Monsters.ToList();
-
-                //TODO: Specify the boss and some treasure
-                //areaBuilder.Treasure = RemoveRandomItems(phase3UniqueTreasures, treasureRandom, uniqueTreasure)
-                //    .Concat(new[]
-                //    {
-                //        new Treasure(PotionCreator.CreateHealthPotion(phase3TreasureLevel))
-                //    });
-                //areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase3UniqueStolenTreasures, treasureRandom, stolenTreasure);
-                //areaBuilder.StealTreasure = new[]
-                //{
-                //    new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel)),
-                //    new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel))
-                //};
+                areaBuilder.Treasure = phase4UniqueTreasures;
+                areaBuilder.StealTreasure = new[]
+                {
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
+                };
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
             }

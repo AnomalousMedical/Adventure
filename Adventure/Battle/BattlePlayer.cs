@@ -62,6 +62,7 @@ namespace Adventure.Battle
         private readonly IAssetFactory assetFactory;
         private readonly ISkillFactory skillFactory;
         private readonly EventManager eventManager;
+        private readonly IInventoryFunctions inventoryFunctions;
 
         public IBattleStats Stats => this.characterSheet;
 
@@ -130,7 +131,8 @@ namespace Adventure.Battle
             ILevelCalculator levelCalculator,
             IAssetFactory assetFactory,
             ISkillFactory skillFactory,
-            EventManager eventManager)
+            EventManager eventManager,
+            IInventoryFunctions inventoryFunctions)
         {
             this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
             this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger });
@@ -148,6 +150,7 @@ namespace Adventure.Battle
             this.assetFactory = assetFactory;
             this.skillFactory = skillFactory;
             this.eventManager = eventManager;
+            this.inventoryFunctions = inventoryFunctions;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.destructionRequest = destructionRequest;
@@ -703,7 +706,7 @@ namespace Adventure.Battle
                 o.SpriteMaterial = asset.CreateMaterial();
             });
 
-            var action = inventory.CreateAction(item);
+            var action = inventoryFunctions.CreateAction(item, inventory);
             var swingEnd = Quaternion.Identity;
             var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
 

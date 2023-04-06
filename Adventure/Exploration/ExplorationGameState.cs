@@ -174,7 +174,7 @@ namespace Adventure
             persistence.Current.World.Level = current;
             foreach (var sheet in persistence.Current.Party.Members)
             {
-                while (sheet.CharacterSheet.Level < current)
+                for(var i = 0; i < levelDelta; ++i)
                 {
                     sheet.CharacterSheet.LevelUp(levelCalculator);
                 }
