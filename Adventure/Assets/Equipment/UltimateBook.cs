@@ -37,7 +37,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(22, 32, 0, 42, 58), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(12, 18, 0, 23, 32), //Center of grip
                     }
                 } )
             },
@@ -46,7 +46,7 @@ namespace Adventure.Assets.Equipment
         public Sprite CreateSprite()
         {
             return new Sprite(animations)
-            { BaseScale = new Vector3(42f / 58f * 0.55f, 0.55f, 1.0f) };
+            { BaseScale = new Vector3(23f / 32f * 0.55f, 0.55f, 1.0f) };
         }
     }
 }
