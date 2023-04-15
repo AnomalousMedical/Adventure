@@ -57,6 +57,16 @@ namespace DiligentEngine.RT
         public float4 LightPos_7;
         public float4 LightPos_8;
         public float4 LightPos_9;
+        public float4 LightPos_10;
+        public float4 LightPos_11;
+        public float4 LightPos_12;
+        public float4 LightPos_13;
+        public float4 LightPos_14;
+        public float4 LightPos_15;
+        public float4 LightPos_16;
+        public float4 LightPos_17;
+        public float4 LightPos_18;
+        public float4 LightPos_19;
 
         //Light color stores length of the light in w
         public float4 LightColor_0;
@@ -69,6 +79,16 @@ namespace DiligentEngine.RT
         public float4 LightColor_7;
         public float4 LightColor_8;
         public float4 LightColor_9;
+        public float4 LightColor_10;
+        public float4 LightColor_11;
+        public float4 LightColor_12;
+        public float4 LightColor_13;
+        public float4 LightColor_14;
+        public float4 LightColor_15;
+        public float4 LightColor_16;
+        public float4 LightColor_17;
+        public float4 LightColor_18;
+        public float4 LightColor_19;
 
         public float4 Pallete_0;
         public float4 Pallete_1;

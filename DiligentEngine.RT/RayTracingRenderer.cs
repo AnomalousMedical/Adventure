@@ -431,6 +431,16 @@ namespace DiligentEngine.RT
                     m_Constants.LightPos_7 = cameraAndLight.LightPos[7] * -1;
                     m_Constants.LightPos_8 = cameraAndLight.LightPos[8] * -1;
                     m_Constants.LightPos_9 = cameraAndLight.LightPos[9] * -1;
+                    m_Constants.LightPos_10 = cameraAndLight.LightPos[10] * -1;
+                    m_Constants.LightPos_11 = cameraAndLight.LightPos[11] * -1;
+                    m_Constants.LightPos_12 = cameraAndLight.LightPos[12] * -1;
+                    m_Constants.LightPos_13 = cameraAndLight.LightPos[13] * -1;
+                    m_Constants.LightPos_14 = cameraAndLight.LightPos[14] * -1;
+                    m_Constants.LightPos_15 = cameraAndLight.LightPos[15] * -1;
+                    m_Constants.LightPos_16 = cameraAndLight.LightPos[16] * -1;
+                    m_Constants.LightPos_17 = cameraAndLight.LightPos[17] * -1;
+                    m_Constants.LightPos_18 = cameraAndLight.LightPos[18] * -1;
+                    m_Constants.LightPos_19 = cameraAndLight.LightPos[19] * -1;
 
                     var numLights = m_Constants.NumActiveLights = cameraAndLight.NumActiveLights;
                     Color color;
@@ -454,6 +464,26 @@ namespace DiligentEngine.RT
                     m_Constants.LightColor_8 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[8]);
                     color = cameraAndLight.LightColor[9];
                     m_Constants.LightColor_9 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[9]);
+                    color = cameraAndLight.LightColor[10];
+                    m_Constants.LightColor_10 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[10]);
+                    color = cameraAndLight.LightColor[11];
+                    m_Constants.LightColor_11 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[11]);
+                    color = cameraAndLight.LightColor[12];
+                    m_Constants.LightColor_12 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[12]);
+                    color = cameraAndLight.LightColor[13];
+                    m_Constants.LightColor_13 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[13]);
+                    color = cameraAndLight.LightColor[14];
+                    m_Constants.LightColor_14 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[14]);
+                    color = cameraAndLight.LightColor[15];
+                    m_Constants.LightColor_15 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[15]);
+                    color = cameraAndLight.LightColor[16];
+                    m_Constants.LightColor_16 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[16]);
+                    color = cameraAndLight.LightColor[17];
+                    m_Constants.LightColor_17 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[17]);
+                    color = cameraAndLight.LightColor[18];
+                    m_Constants.LightColor_18 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[18]);
+                    color = cameraAndLight.LightColor[19];
+                    m_Constants.LightColor_19 = new Vector4(color.r * numLights, color.g * numLights, color.b * numLights, cameraAndLight.LightLength[19]);
 
                     color = cameraAndLight.MissPallete[0]; m_Constants.Pallete_0 = new Vector4(color.r, color.g, color.b, 0);
                     color = cameraAndLight.MissPallete[1]; m_Constants.Pallete_1 = new Vector4(color.r, color.g, color.b, 0);

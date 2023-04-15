@@ -11,7 +11,7 @@ namespace DiligentEngine.RT
     {
         public Matrix4x4 CurrentViewProj { get; private set; }
 
-        private const int NUM_LIGHTS = 10;
+        private const int NUM_LIGHTS = 20;
 
         public readonly int NumLights = NUM_LIGHTS;
 
