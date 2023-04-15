@@ -62,9 +62,9 @@ namespace RTSandbox
         public void sendUpdate(Clock clock)
         {
             sharpGui.Begin(clock);
+            gui.Update(clock);
             scene.Update(clock);
             cameraControls.UpdateInput(clock);
-            gui.Update(clock);
             sharpGui.End();
 
             rayTracingRenderer.Render(rtInstances, cameraControls.Position, cameraControls.Orientation);

@@ -15,17 +15,19 @@ namespace RTSandbox
     {
         private readonly IObjectResolver objectResolver;
         private readonly RayTracingRenderer renderer;
-
+        private readonly RTCameraAndLight cameraAndLight;
         private SceneCube rotateCube;
         private Quaternion currentRot = Quaternion.Identity;
 
         public SandboxScene
         (
             IObjectResolverFactory objectResolverFactory, 
-            RayTracingRenderer renderer
+            RayTracingRenderer renderer,
+            RTCameraAndLight cameraAndLight
         )
         {
             this.renderer = renderer;
+            this.cameraAndLight = cameraAndLight;
             objectResolver = objectResolverFactory.Create();
 
             objectResolver.Resolve<SceneCube, SceneCube.Desc>(o =>
@@ -128,6 +130,15 @@ namespace RTSandbox
         {
             currentRot *= new Quaternion(new Vector3(0, 1, 0), 0.35f * clock.DeltaSeconds);
             rotateCube?.SetTransform(Vector3.Zero, currentRot);
+
+            float x = -20f;
+            while(cameraAndLight.CheckoutLight(out var index))
+            {
+                cameraAndLight.LightPos[index] = new Vector4(x, -5, 0, 0);
+                cameraAndLight.LightColor[index] = new Color(1.00f, +0.8f, +0.80f);
+                cameraAndLight.LightLength[index] = 5.0f;
+                x += 3f;
+            }
         }
 
         public void Dispose()
