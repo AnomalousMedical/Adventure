@@ -114,7 +114,7 @@ namespace Adventure.Battle
             if (level < 5)
             {
                 //1-5
-                enemyBudget = random.Next(3) + 1;
+                enemyBudget = random.Next(2) + 1;
             }
             else if (level < 10)
             {
