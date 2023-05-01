@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Adventure.Battle.Skills
 {
-    class Atomize : ISkill
+    class IonShread : ISkill
     {
         private const int Power = 29;
 
@@ -86,7 +86,7 @@ namespace Adventure.Battle.Skills
             return effect;
         }
 
-        public string Name => "Atomize";
+        public string Name => "Ion Shread";
 
         public SkillAttackStyle AttackStyle { get; init; } = SkillAttackStyle.Cast;
 
