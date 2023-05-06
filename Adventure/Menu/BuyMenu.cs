@@ -58,7 +58,7 @@ namespace Adventure.Menu
                 {
                     persistence.Current.Party.Gold -= SelectedItem.Cost;
                     var item = SelectedItem.CreateItem();
-                    characterData.Inventory.Items.Add(item);
+                    characterData.Inventory.Items.Insert(0, item);
                     if(SelectedItem.UniqueSalePlotItem != null)
                     {
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);

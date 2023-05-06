@@ -29,7 +29,7 @@ namespace Adventure
 
         public void GiveTo(Inventory inventory)
         {
-            inventory.Items.Add(inventoryItem);
+            inventory.Items.Insert(0, inventoryItem);
         }
 
         public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions)
