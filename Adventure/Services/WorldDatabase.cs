@@ -230,7 +230,7 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var starterBiomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy };
+            var starterBiomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach };
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
             var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
@@ -479,7 +479,9 @@ namespace Adventure.Services
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.PlotItem = PlotItems.AirshipKey0;
-                areaBuilder.Biome = starterBiomes[0];
+                var biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
+                areaBuilder.Biome = starterBiomes[biomeIndex];
+                starterBiomes.RemoveAt(biomeIndex);
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
@@ -504,7 +506,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.PlotItem = PlotItems.AirshipKey1;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                areaBuilder.Biome = starterBiomes[0];
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = GetSquare(secondIslandSquares, placementRandom);
