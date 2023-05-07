@@ -488,6 +488,8 @@ namespace Adventure.WorldMap
                     lStick.normalize();
                 }
 
+                var stickOffset = new Vector3(lStick.x, 0f, lStick.y);
+
                 currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
                 currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
 
@@ -517,7 +519,7 @@ namespace Adventure.WorldMap
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
 
                 SyncGraphics();
-                cameraMover.SetInterpolatedGoalPosition(currentPosition + cameraOffset, cameraAngle);
+                cameraMover.SetInterpolatedGoalPosition(currentPosition + cameraOffset + stickOffset * 2.0f, cameraAngle);
 
                 var cell = map.GetCellForLocation(currentPosition);
                 if (map.CanLand(cell))

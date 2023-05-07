@@ -436,7 +436,6 @@ namespace Adventure.WorldMap
             this.persistence.Current.Player.WorldPosition = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
-            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
 
             var movementDir = characterMover.movementDirection;
             if (movementDir.Y > 0.3f)
@@ -456,6 +455,10 @@ namespace Adventure.WorldMap
                 sprite.SetAnimation("left");
             }
             this.movementDir = movementDir;
+
+            var speedOffset = characterMover.LinearVelocity / characterMover.MaxSpeed;
+            speedOffset.y = 0;
+            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.4f, cameraAngle);
         }
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)

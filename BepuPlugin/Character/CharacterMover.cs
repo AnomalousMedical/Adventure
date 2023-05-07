@@ -72,6 +72,17 @@ namespace BepuPlugin.Characters
             character.TargetVelocity = new Vector2(velocity.X, velocity.Z);
         }
 
+        public float MaxSpeed => speed;
+
+        public Engine.Vector3 LinearVelocity
+        {
+            get
+            {
+                var characterBody = new BodyReference(bodyHandle, characters.Simulation.Bodies);
+                return new Engine.Vector3(characterBody.Velocity.Linear);
+            }
+        }
+
         public void UpdateCharacterGoals(in Vector3 viewDirection, float simulationTimestepDuration)
         {
             var movementDirectionCalc = this.movementDirection;
@@ -87,7 +98,7 @@ namespace BepuPlugin.Characters
             var characterBody = new BodyReference(bodyHandle, characters.Simulation.Bodies);
             var effectiveSpeed = sprint ? speed * sprintMultiple : speed;
             var newTargetVelocity = movementDirectionCalc * effectiveSpeed;
-            
+
             //Modifying the character's raw data does not automatically wake the character up, so we do so explicitly if necessary.
             //If you don't explicitly wake the character up, it won't respond to the changed motion goals.
             //(You can also specify a negative deactivation threshold in the BodyActivityDescription to prevent the character from sleeping at all.)
