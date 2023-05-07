@@ -446,18 +446,26 @@ namespace Adventure
             if (movementDir.Y > 0.3f)
             {
                 sprite.SetAnimation("up");
+                mainHandItem?.SetAnimation("up");
+                offHandItem?.SetAnimation("up");
             }
             else if (movementDir.Y < -0.3f)
             {
                 sprite.SetAnimation("down");
+                mainHandItem?.SetAnimation("down");
+                offHandItem?.SetAnimation("down");
             }
             else if (movementDir.X > 0)
             {
                 sprite.SetAnimation("right");
+                mainHandItem?.SetAnimation("right");
+                offHandItem?.SetAnimation("right");
             }
             else if (movementDir.X < 0)
             {
                 sprite.SetAnimation("left");
+                mainHandItem?.SetAnimation("left");
+                offHandItem?.SetAnimation("left");
             }
             this.movementDir = movementDir;
 

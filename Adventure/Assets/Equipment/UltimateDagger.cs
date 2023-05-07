@@ -42,6 +42,24 @@ namespace Adventure.Assets.Equipment
                     }
                 } )
             },
+            { "right", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(1, 0, 0, 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
+                    }
+                } )
+            },
+            { "up", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(1, 0, 0, 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
+                    }
+                } )
+            },
         };
 
         public Sprite CreateSprite()
