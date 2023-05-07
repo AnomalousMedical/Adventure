@@ -40,6 +40,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest));
             monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest));
+            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Beach));
         }
 
         /// <summary>

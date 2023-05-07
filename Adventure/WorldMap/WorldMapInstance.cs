@@ -75,6 +75,7 @@ namespace Adventure.WorldMap
         CC0TextureResult desertTexture;
         CC0TextureResult snowyTexture;
         CC0TextureResult forestTexture;
+        CC0TextureResult beachTexture;
         CC0TextureResult cliffTexture;
         CC0TextureResult oceanFloorTexture;
         CC0TextureResult chipTexture;
@@ -143,6 +144,7 @@ namespace Adventure.WorldMap
                     var desertTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground025_1K");
                     var snowyTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Snow006_1K");
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
+                    var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground027_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
                     var chipTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Chip005_1K");
@@ -151,6 +153,7 @@ namespace Adventure.WorldMap
                     var desertTextureTask = textureManager.Checkout(desertTextureDesc);
                     var snowyTextureTask = textureManager.Checkout(snowyTextureDesc);
                     var forestTextureTask = textureManager.Checkout(forestTextureDesc);
+                    var beachTextureTask = textureManager.Checkout(beachTextureDesc);
                     var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var chipTextureTask = textureManager.Checkout(chipTextureDesc);
@@ -161,8 +164,8 @@ namespace Adventure.WorldMap
                     {
                         mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale)
                         {
-                            WallTextureIndex = 4,
-                            LowerGroundTextureIndex = 5,
+                            WallTextureIndex = 5,
+                            LowerGroundTextureIndex = 6,
                         };
                         mapMesh.Build();
                     });
@@ -173,6 +176,7 @@ namespace Adventure.WorldMap
                         desertTextureTask,
                         snowyTextureTask,
                         forestTextureTask,
+                        beachTextureTask,
                         cliffTextureTask,
                         oceanFloorTextureTask,
                         chipTextureTask,
@@ -185,6 +189,7 @@ namespace Adventure.WorldMap
                     this.desertTexture = desertTextureTask.Result;
                     this.snowyTexture = snowyTextureTask.Result;
                     this.forestTexture = forestTextureTask.Result;
+                    this.beachTexture = beachTextureTask.Result;
                     this.cliffTexture = cliffTextureTask.Result;
                     this.oceanFloorTexture = oceanFloorTextureTask.Result;
                     this.chipTexture = chipTextureTask.Result;
@@ -195,7 +200,7 @@ namespace Adventure.WorldMap
                         rtInstances.AddTlasBuild(data);
                     }
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.cliffTexture, this.oceanFloorTexture, this.chipTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.beachTexture, this.cliffTexture, this.oceanFloorTexture, this.chipTexture);
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
@@ -246,12 +251,14 @@ namespace Adventure.WorldMap
             activeTextures.RemoveActiveTexture(desertTexture);
             activeTextures.RemoveActiveTexture(snowyTexture);
             activeTextures.RemoveActiveTexture(forestTexture);
+            activeTextures.RemoveActiveTexture(beachTexture);
             activeTextures.RemoveActiveTexture(oceanFloorTexture);
             activeTextures.RemoveActiveTexture(chipTexture);
             textureManager.TryReturn(countrysideTexture);
             textureManager.TryReturn(desertTexture);
             textureManager.TryReturn(snowyTexture);
             textureManager.TryReturn(forestTexture);
+            textureManager.TryReturn(beachTexture);
             textureManager.TryReturn(cliffTexture);
             textureManager.TryReturn(oceanFloorTexture);
             textureManager.TryReturn(chipTexture);

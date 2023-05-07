@@ -836,6 +836,7 @@ namespace Adventure.Services
         {
             switch (biome)
             {
+                case BiomeType.Beach:
                 case BiomeType.Snowy:
                     return Element.Ice;
                 case BiomeType.Countryside:
