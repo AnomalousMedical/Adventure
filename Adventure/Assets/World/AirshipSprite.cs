@@ -8,7 +8,7 @@ namespace Adventure.Assets.World
     static class AirshipSprite
     {
         const float SpriteWidth = 76f;
-        const float SpriteHeight = 66f;
+        const float SpriteHeight = 99f;
 
         private const string colorMap = "Graphics/Sprites/Anomalous/Airship.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
@@ -34,14 +34,14 @@ namespace Adventure.Assets.World
             { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
                 new SpriteFrame(0, 0, 1, 33f / SpriteHeight))
             },
-            { "right", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1, 0, 0, 33f / SpriteHeight))
+            { "left", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(0, 33f / SpriteHeight, 1, 66f / SpriteHeight))
             },
             { "down", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1f / SpriteWidth, 33f / SpriteHeight, 32f / SpriteWidth, 66f / SpriteHeight))
+                new SpriteFrame(1f / SpriteWidth, 66f / SpriteHeight, 32f / SpriteWidth, 99f / SpriteHeight))
             },
             { "up", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(44f / SpriteWidth, 33f / SpriteHeight, 75f / SpriteWidth, 66f / SpriteHeight))
+                new SpriteFrame(44f / SpriteWidth, 66f / SpriteHeight, 75f / SpriteWidth, 99f / SpriteHeight))
             },
         };
 
