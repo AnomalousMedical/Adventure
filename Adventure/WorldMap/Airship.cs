@@ -1,4 +1,5 @@
-﻿using Adventure.Menu;
+﻿using Adventure.Assets.World;
+using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -26,13 +27,13 @@ namespace Adventure.WorldMap
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
 
-            public Sprite Sprite { get; set; } = Assets.World.Airship.CreateSprite();
+            public FrameEventSprite Sprite { get; set; } = AirshipSprite.CreateSprite();
 
-            public SpriteMaterialDescription SpriteMaterial { get; set; } = Assets.World.Airship.CreateMaterial();
+            public SpriteMaterialDescription SpriteMaterial { get; set; } = AirshipSprite.CreateMaterial();
         }
 
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly FrameEventSprite sprite;
         private TLASInstanceData[] instanceData;
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
@@ -68,6 +69,7 @@ namespace Adventure.WorldMap
         private Vector3 currentScale;
 
         private Rect worldRect;
+        private Vector3 descriptionScale;
 
         private GamepadId gamepadId;
         private bool allowJoystickInput = true;
@@ -111,7 +113,7 @@ namespace Adventure.WorldMap
             this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
             this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
 
-            var scale = description.Scale;
+            var scale = descriptionScale = description.Scale;
             var halfScale = scale.y / 2f;
 
             this.currentPosition = persistence.Current.Player.AirshipPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
@@ -144,6 +146,8 @@ namespace Adventure.WorldMap
 
             landEventLayer = eventManager[description.LandEventLayer];
             SetupInput();
+
+            this.sprite.AnimationChanged += Sprite_AnimationChanged;
 
             this.instanceData = new TLASInstanceData[0];
 
@@ -193,6 +197,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            this.sprite.AnimationChanged -= Sprite_AnimationChanged;
             StopAirshipMode();
             this.activeTextures.RemoveActiveTexture(this.cubeTexture);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
@@ -341,6 +346,13 @@ namespace Adventure.WorldMap
                 StopAirshipMode();
                 SyncGraphics();
                 CreatePhysics();
+                switch (sprite.CurrentAnimationName)
+                {
+                    case "up":
+                    case "down":
+                        sprite.SetAnimation("default");
+                        break;
+                }
             }
         }
 
@@ -480,6 +492,23 @@ namespace Adventure.WorldMap
                     lStick.normalize();
                 }
 
+                if (lStick.y > 0.7f)
+                {
+                    sprite.SetAnimation("up");
+                }
+                else if (lStick.y < -0.7f)
+                {
+                    sprite.SetAnimation("down");
+                }
+                else if (lStick.x > 0)
+                {
+                    sprite.SetAnimation("right");
+                }
+                else if (lStick.x < 0)
+                {
+                    sprite.SetAnimation("left");
+                }
+
                 var stickOffset = new Vector3(lStick.x, 0f, lStick.y);
 
                 currentPosition += Vector3.Forward * lStick.y * clock.DeltaSeconds * moveSpeed;
@@ -523,6 +552,12 @@ namespace Adventure.WorldMap
                     contextMenu.ClearContext(Land);
                 }
             }
+        }
+
+        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        {
+            this.currentScale = AirshipSprite.GetScale(obj.CurrentAnimationName) * descriptionScale;
+            SyncGraphics();
         }
     }
 }
