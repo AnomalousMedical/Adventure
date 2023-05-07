@@ -40,9 +40,5 @@ namespace BepuPlugin.Characters
         /// Normal movement speed.
         /// </summary>
         public float Speed = 4f;
-        /// <summary>
-        /// Multiple of speed for sprinting.
-        /// </summary>
-        public float SprintMultiple = 1.75f;
     }
 }

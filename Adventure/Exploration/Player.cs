@@ -182,7 +182,8 @@ namespace Adventure
             var moverDesc = new CharacterMoverDescription()
             {
                 MinimumSupportDepth = shape.Radius * -0.01f,
-
+                MaximumHorizontalForce = 100,
+                Speed = 7f
             };
 
             //Because characters are dynamic, they require a defined BodyInertia. For the purposes of the demos, we don't want them to rotate or fall over, so the inverse inertia tensor is left at its default value of all zeroes.
@@ -194,7 +195,6 @@ namespace Adventure
                 new BodyActivityDescription(shape.Radius * 0.02f));
 
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
-            characterMover.sprint = true;
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
 
@@ -354,7 +354,7 @@ namespace Adventure
             {
                 if (l.EventProcessingAllowed)
                 {
-                    characterMover.sprint = false;
+                    characterMover.speed = 4;
                     l.alertEventsHandled();
                 }
             };
@@ -362,7 +362,7 @@ namespace Adventure
             {
                 if (l.EventProcessingAllowed)
                 {
-                    characterMover.sprint = true;
+                    characterMover.speed = 7;
                     l.alertEventsHandled();
                 }
             };
@@ -469,9 +469,9 @@ namespace Adventure
             }
             this.movementDir = movementDir;
 
-            var speedOffset = characterMover.LinearVelocity / characterMover.MaxSpeed;
+            var speedOffset = characterMover.LinearVelocity / characterMover.speed;
             speedOffset.y = 0;
-            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.8f, cameraAngle);
+            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 1.15f, cameraAngle);
         }
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)

@@ -187,7 +187,7 @@ namespace Adventure.WorldMap
             var moverDesc = new CharacterMoverDescription()
             {
                 MinimumSupportDepth = shape.Radius * -0.01f,
-                Speed = 2f,
+                Speed = 3.5f,
             };
 
             //Because characters are dynamic, they require a defined BodyInertia. For the purposes of the demos, we don't want them to rotate or fall over, so the inverse inertia tensor is left at its default value of all zeroes.
@@ -199,7 +199,6 @@ namespace Adventure.WorldMap
                 new BodyActivityDescription(shape.Radius * 0.02f));
 
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
-            characterMover.sprint = true;
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
             if (!persistence.Current.Player.InAirship)
@@ -395,7 +394,7 @@ namespace Adventure.WorldMap
             {
                 if (l.EventProcessingAllowed)
                 {
-                    characterMover.sprint = false;
+                    characterMover.speed = 2f;
                     l.alertEventsHandled();
                 }
             };
@@ -403,7 +402,7 @@ namespace Adventure.WorldMap
             {
                 if (l.EventProcessingAllowed)
                 {
-                    characterMover.sprint = true;
+                    characterMover.speed = 3.5f;
                     l.alertEventsHandled();
                 }
             };
@@ -441,24 +440,32 @@ namespace Adventure.WorldMap
             if (movementDir.Y > 0.3f)
             {
                 sprite.SetAnimation("up");
+                mainHandItem?.SetAnimation("up");
+                offHandItem?.SetAnimation("up");
             }
             else if (movementDir.Y < -0.3f)
             {
                 sprite.SetAnimation("down");
+                mainHandItem?.SetAnimation("down");
+                offHandItem?.SetAnimation("down");
             }
             else if (movementDir.X > 0)
             {
                 sprite.SetAnimation("right");
+                mainHandItem?.SetAnimation("right");
+                offHandItem?.SetAnimation("right");
             }
             else if (movementDir.X < 0)
             {
                 sprite.SetAnimation("left");
+                mainHandItem?.SetAnimation("left");
+                offHandItem?.SetAnimation("left");
             }
             this.movementDir = movementDir;
 
-            var speedOffset = characterMover.LinearVelocity / characterMover.MaxSpeed;
+            var speedOffset = characterMover.LinearVelocity / characterMover.speed;
             speedOffset.y = 0;
-            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.4f, cameraAngle);
+            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.55f, cameraAngle);
         }
 
         private void EventLayer_OnUpdate(EventLayer eventLayer)

@@ -21,11 +21,9 @@ namespace BepuPlugin.Characters
     {
         BodyHandle bodyHandle;
         CharacterControllers characters;
-        float speed;
-        float sprintMultiple;
 
+        public float speed;
         public Vector2 movementDirection;
-        public bool sprint;
         public bool tryJump;
 
         public BodyHandle BodyHandle { get { return bodyHandle; } }
@@ -46,7 +44,6 @@ namespace BepuPlugin.Characters
             character.MinimumSupportContinuationDepth = -description.SpeculativeMargin;
 
             this.speed = description.Speed;
-            this.sprintMultiple = description.SprintMultiple;
         }
 
         /// <summary>
@@ -72,8 +69,6 @@ namespace BepuPlugin.Characters
             character.TargetVelocity = new Vector2(velocity.X, velocity.Z);
         }
 
-        public float MaxSpeed => speed;
-
         public Engine.Vector3 LinearVelocity
         {
             get
@@ -96,7 +91,7 @@ namespace BepuPlugin.Characters
             ref var character = ref characters.GetCharacterByBodyHandle(bodyHandle);
             character.TryJump = tryJump;
             var characterBody = new BodyReference(bodyHandle, characters.Simulation.Bodies);
-            var effectiveSpeed = sprint ? speed * sprintMultiple : speed;
+            var effectiveSpeed = speed;
             var newTargetVelocity = movementDirectionCalc * effectiveSpeed;
 
             //Modifying the character's raw data does not automatically wake the character up, so we do so explicitly if necessary.
