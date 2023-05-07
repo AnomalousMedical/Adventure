@@ -13,7 +13,7 @@ namespace Adventure.Assets.World
         private const string colorMap = "Graphics/Sprites/Anomalous/Airship.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xffacadac, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"), //Balloon
+            new SpriteMaterialTextureItem(0xffacadac, "Graphics/Textures/AmbientCG/Fabric049_1K", "jpg"), //Balloon
             new SpriteMaterialTextureItem(0xff727172, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Armor
             new SpriteMaterialTextureItem(0xff6d0a22, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), //Hull
         };
