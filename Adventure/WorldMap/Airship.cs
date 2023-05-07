@@ -8,12 +8,10 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.HLSL;
 using DiligentEngine.RT.Resources;
 using DiligentEngine.RT.ShaderSets;
+using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
@@ -27,10 +25,15 @@ namespace Adventure.WorldMap
             public EventLayers EventLayer { get; set; } = EventLayers.Airship;
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
+
+            public Sprite Sprite { get; set; } = Assets.World.Airship.CreateSprite();
+
+            public SpriteMaterialDescription SpriteMaterial { get; set; } = Assets.World.Airship.CreateMaterial();
         }
 
+        private SpriteInstance spriteInstance;
+        private readonly Sprite sprite;
         private TLASInstanceData[] instanceData;
-        private readonly CubeBLAS cubeBLAS;
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly RayTracingRenderer renderer;
@@ -46,6 +49,7 @@ namespace Adventure.WorldMap
         private readonly CameraMover cameraMover;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
+        private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly EventLayer eventLayer;
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
@@ -81,7 +85,6 @@ namespace Adventure.WorldMap
         public Airship
         (
             Description description,
-            CubeBLAS cubeBLAS,
             IScopedCoroutine coroutine,
             RTInstances<WorldMapScene> rtInstances,
             PrimaryHitShader.Factory primaryHitShaderFactory,
@@ -96,9 +99,11 @@ namespace Adventure.WorldMap
             CameraMover cameraMover,
             IDestructionRequest destructionRequest,
             IBackgroundMusicPlayer backgroundMusicPlayer,
+            SpriteInstanceFactory spriteInstanceFactory,
             IWorldMapManager worldMapManager
         )
         {
+            this.sprite = description.Sprite;
             this.worldMapManager = worldMapManager;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
@@ -111,9 +116,8 @@ namespace Adventure.WorldMap
 
             this.currentPosition = persistence.Current.Player.AirshipPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
             this.currentOrientation = description.Orientation;
-            this.currentScale = scale;
+            this.currentScale = sprite.BaseScale * scale;
 
-            this.cubeBLAS = cubeBLAS;
             this.rtInstances = rtInstances;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.renderer = renderer;
@@ -127,6 +131,7 @@ namespace Adventure.WorldMap
             this.cameraMover = cameraMover;
             this.destructionRequest = destructionRequest;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
+            this.spriteInstanceFactory = spriteInstanceFactory;
 
             //Events
             eventManager.addEvent(moveForward);
@@ -146,21 +151,10 @@ namespace Adventure.WorldMap
             {
                 try
                 {
-                    using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
-
-                    this.cubeTexture = await textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Metal032_1K", reflective: true));
-
-                    var primaryHitShaderTask = primaryHitShaderFactory.Checkout();
-
-                    await Task.WhenAll
-                    (
-                        cubeBLAS.WaitForLoad(),
-                        primaryHitShaderTask
-                    );
-
-                    this.primaryHitShader = primaryHitShaderTask.Result;
-                    blasInstanceData = this.activeTextures.AddActiveTexture(this.cubeTexture);
-                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(cubeTexture.NormalMapSRV != null, cubeTexture.PhysicalDescriptorMapSRV != null, cubeTexture.Reflective, cubeTexture.EmissiveSRV != null, false);
+                    using (var destructionBlock = destructionRequest.BlockDestruction()) //Block destruction until coroutine is finished and this is disposed.
+                    {
+                        this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
+                    }
 
                     graphicsReady.SetResult();
                 }
@@ -226,8 +220,8 @@ namespace Adventure.WorldMap
                         InstanceName = RTId.CreateId("Airship"),
                         Mask = RtStructures.OPAQUE_GEOM_MASK,
                         Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale),
-                        pBLAS = cubeBLAS.Instance.BLAS.Obj
                     };
+                    rtInstances.AddSprite(sprite, this.instanceData[i], spriteInstance);
                     rtInstances.AddTlasBuild(this.instanceData[i]);
                 }
 
@@ -240,6 +234,9 @@ namespace Adventure.WorldMap
             if (graphicsActive)
             {
                 graphicsActive = false;
+
+                spriteInstanceFactory.TryReturn(spriteInstance);
+                rtInstances.RemoveSprite(sprite);
 
                 foreach (var data in instanceData)
                 {
@@ -265,14 +262,9 @@ namespace Adventure.WorldMap
 
         private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            blasInstanceData.vertexOffset = cubeBLAS.Instance.VertexOffset;
-            blasInstanceData.indexOffset = cubeBLAS.Instance.IndexOffset;
-            fixed (BlasInstanceData* ptr = &blasInstanceData)
+            for (var i = 0; i < instanceData.Length; i++)
             {
-                foreach (var data in instanceData)
-                {
-                    primaryHitShader.BindSbt(data.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
-                }
+                spriteInstance.Bind(this.instanceData[i].InstanceName, sbt, tlas, sprite);
             }
         }
 
@@ -281,7 +273,7 @@ namespace Adventure.WorldMap
             if (!physicsCreated)
             {
                 physicsCreated = true;
-                var shape = new Box(0.25f, 1000, 0.25f); //TODO: Each one creates its own, try to load from resources
+                var shape = new Box(0.75f, 1000, 0.25f); //TODO: Each one creates its own, try to load from resources
                 shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
                 staticHandle = bepuScene.Simulation.Statics.Add(
