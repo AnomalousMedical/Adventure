@@ -36,14 +36,7 @@ namespace Adventure.WorldMap
         private readonly FrameEventSprite sprite;
         private TLASInstanceData[] instanceData;
         private readonly RTInstances<WorldMapScene> rtInstances;
-        private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
-        private readonly RayTracingRenderer renderer;
-        private readonly TextureManager textureManager;
-        private readonly ActiveTextures activeTextures;
         private readonly Persistence persistence;
-        private PrimaryHitShader primaryHitShader;
-        private CC0TextureResult cubeTexture;
-        private BlasInstanceData blasInstanceData;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IContextMenu contextMenu;
         private readonly EventManager eventManager;
@@ -90,9 +83,6 @@ namespace Adventure.WorldMap
             IScopedCoroutine coroutine,
             RTInstances<WorldMapScene> rtInstances,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RayTracingRenderer renderer,
-            TextureManager textureManager,
-            ActiveTextures activeTextures,
             Persistence persistence,
             ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             IBepuScene<WorldMapScene> bepuScene,
@@ -121,10 +111,6 @@ namespace Adventure.WorldMap
             this.currentScale = sprite.BaseScale * scale;
 
             this.rtInstances = rtInstances;
-            this.primaryHitShaderFactory = primaryHitShaderFactory;
-            this.renderer = renderer;
-            this.textureManager = textureManager;
-            this.activeTextures = activeTextures;
             this.persistence = persistence;
             this.collidableIdentifier = collidableIdentifier;
             this.bepuScene = bepuScene;
@@ -199,9 +185,7 @@ namespace Adventure.WorldMap
         {
             this.sprite.AnimationChanged -= Sprite_AnimationChanged;
             StopAirshipMode();
-            this.activeTextures.RemoveActiveTexture(this.cubeTexture);
-            primaryHitShaderFactory.TryReturn(primaryHitShader);
-            textureManager.TryReturn(cubeTexture);
+            spriteInstanceFactory.TryReturn(spriteInstance);
             DestroyGraphics();
             eventManager.removeEvent(moveForward);
             eventManager.removeEvent(moveBackward);
@@ -240,7 +224,6 @@ namespace Adventure.WorldMap
             {
                 graphicsActive = false;
 
-                spriteInstanceFactory.TryReturn(spriteInstance);
                 rtInstances.RemoveSprite(sprite);
 
                 foreach (var data in instanceData)
