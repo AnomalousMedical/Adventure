@@ -71,14 +71,7 @@ namespace Adventure.WorldMap
 
         public Vector2 MapSize => mapSize;
 
-        CC0TextureResult countrysideTexture;
-        CC0TextureResult desertTexture;
-        CC0TextureResult snowyTexture;
-        CC0TextureResult forestTexture;
-        CC0TextureResult beachTexture;
-        CC0TextureResult cliffTexture;
-        CC0TextureResult oceanFloorTexture;
-        CC0TextureResult chipTexture;
+        List<CC0TextureResult> loadedTextures = new List<CC0TextureResult>();
 
         public WorldMapInstance
         (
@@ -145,6 +138,7 @@ namespace Adventure.WorldMap
                     var snowyTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Snow006_1K");
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
                     var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground027_1K");
+                    var swampTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Moss001_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
                     var chipTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Chip005_1K");
@@ -154,6 +148,7 @@ namespace Adventure.WorldMap
                     var snowyTextureTask = textureManager.Checkout(snowyTextureDesc);
                     var forestTextureTask = textureManager.Checkout(forestTextureDesc);
                     var beachTextureTask = textureManager.Checkout(beachTextureDesc);
+                    var swampTextureTask = textureManager.Checkout(swampTextureDesc);
                     var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var chipTextureTask = textureManager.Checkout(chipTextureDesc);
@@ -177,6 +172,7 @@ namespace Adventure.WorldMap
                         snowyTextureTask,
                         forestTextureTask,
                         beachTextureTask,
+                        swampTextureTask,
                         cliffTextureTask,
                         oceanFloorTextureTask,
                         chipTextureTask,
@@ -185,14 +181,26 @@ namespace Adventure.WorldMap
                     );
 
                     this.shader = shaderSetup.Result;
-                    this.countrysideTexture = countrysideTextureTask.Result;
-                    this.desertTexture = desertTextureTask.Result;
-                    this.snowyTexture = snowyTextureTask.Result;
-                    this.forestTexture = forestTextureTask.Result;
-                    this.beachTexture = beachTextureTask.Result;
-                    this.cliffTexture = cliffTextureTask.Result;
-                    this.oceanFloorTexture = oceanFloorTextureTask.Result;
-                    this.chipTexture = chipTextureTask.Result;
+
+                    var countrysideTexture = countrysideTextureTask.Result;
+                    var desertTexture = desertTextureTask.Result;
+                    var snowyTexture = snowyTextureTask.Result;
+                    var forestTexture = forestTextureTask.Result;
+                    var beachTexture = beachTextureTask.Result;
+                    var swampTexture = swampTextureTask.Result;
+                    var cliffTexture = cliffTextureTask.Result;
+                    var oceanFloorTexture = oceanFloorTextureTask.Result;
+                    var chipTexture = chipTextureTask.Result;
+
+                    loadedTextures.Add(countrysideTexture);
+                    loadedTextures.Add(desertTexture);
+                    loadedTextures.Add(snowyTexture);
+                    loadedTextures.Add(forestTexture);
+                    loadedTextures.Add(beachTexture);
+                    loadedTextures.Add(swampTexture);
+                    loadedTextures.Add(cliffTexture);
+                    loadedTextures.Add(oceanFloorTexture);
+                    loadedTextures.Add(chipTexture);
 
                     foreach (var data in floorInstanceData)
                     {
@@ -200,7 +208,17 @@ namespace Adventure.WorldMap
                         rtInstances.AddTlasBuild(data);
                     }
 
-                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(this.countrysideTexture, this.desertTexture, this.snowyTexture, this.forestTexture, this.beachTexture, this.cliffTexture, this.oceanFloorTexture, this.chipTexture);
+                    floorBlasInstanceData = this.activeTextures.AddActiveTexture(
+                        countrysideTexture,
+                        desertTexture,
+                        snowyTexture,
+                        forestTexture,
+                        beachTexture,
+                        swampTexture,
+                        cliffTexture,
+                        oceanFloorTexture,
+                        chipTexture);
+
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
@@ -246,22 +264,14 @@ namespace Adventure.WorldMap
             }
             objectResolver.Dispose();
             DestroyPhysics();
-            activeTextures.RemoveActiveTexture(cliffTexture);
-            activeTextures.RemoveActiveTexture(countrysideTexture);
-            activeTextures.RemoveActiveTexture(desertTexture);
-            activeTextures.RemoveActiveTexture(snowyTexture);
-            activeTextures.RemoveActiveTexture(forestTexture);
-            activeTextures.RemoveActiveTexture(beachTexture);
-            activeTextures.RemoveActiveTexture(oceanFloorTexture);
-            activeTextures.RemoveActiveTexture(chipTexture);
-            textureManager.TryReturn(countrysideTexture);
-            textureManager.TryReturn(desertTexture);
-            textureManager.TryReturn(snowyTexture);
-            textureManager.TryReturn(forestTexture);
-            textureManager.TryReturn(beachTexture);
-            textureManager.TryReturn(cliffTexture);
-            textureManager.TryReturn(oceanFloorTexture);
-            textureManager.TryReturn(chipTexture);
+            foreach (var texture in loadedTextures)
+            {
+                activeTextures.RemoveActiveTexture(texture);
+            }
+            foreach (var texture in loadedTextures)
+            {
+                textureManager.TryReturn(texture);
+            }
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(shader);
             foreach(var data in floorInstanceData)
@@ -439,7 +449,7 @@ namespace Adventure.WorldMap
             }
 
             {
-                this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);     
+                this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);
                 this.airshipPortal = airshipPortalSquare;
                 var loc = mapMesh.PointToVector(airshipPortalSquare.x, airshipPortalSquare.y);
 
@@ -509,7 +519,7 @@ namespace Adventure.WorldMap
         {
             var square = new IntVector2
             (
-                Math.Max(0, (int)(currentPosition.x / mapMesh.MapUnitX) % map.MapX), 
+                Math.Max(0, (int)(currentPosition.x / mapMesh.MapUnitX) % map.MapX),
                 Math.Max(0, (int)(currentPosition.z / mapMesh.MapUnitZ) % map.MapY)
             );
             return square;

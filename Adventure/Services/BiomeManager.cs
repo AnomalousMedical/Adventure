@@ -13,7 +13,8 @@ namespace Adventure
         Snowy = 2,
         Forest = 3,
         Beach = 4,
-        Max = Beach + 1,
+        Swamp = 5,
+        Max = Swamp + 1,
         Chip = 1000, //This isn't included in random selection
     }
 
@@ -52,6 +53,8 @@ namespace Adventure
                     return MakeForest();
                 case BiomeType.Beach:
                     return MakeBeach();
+                case BiomeType.Swamp:
+                    return MakeSwamp();
                 case BiomeType.Chip:
                     return MakeChip();
             }
@@ -141,6 +144,27 @@ namespace Adventure
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(10, new PalmTree())
+                }
+            };
+
+            return biome;
+        }
+
+        public Biome MakeSwamp()
+        {
+            var biome = new Biome
+            {
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground049C_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Moss001_1K",
+                BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
+                BgMusicNight = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
+                Treasure = new BiomeTreasure()
+                {
+                    Asset = new Assets.World.TreasureChest(),
+                },
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    new BiomeBackgroundItem(10, new BanyanTree())
                 }
             };
 
