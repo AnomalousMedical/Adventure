@@ -19,41 +19,33 @@ namespace Adventure
             }
             catch (Exception e)
             {
-#if DETAILED_MESSAGES
-                String errorMessage = e.Message + "\n" + e.StackTrace;
-                while (e.InnerException != null)
-                {
-                    e = e.InnerException;
-                    errorMessage += "\n" + e.Message + "\n" + e.StackTrace;
-                }
-#else
                 String errorMessage = e.Message;
-#endif
                 var outDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Anomalous Adventure");
                 var outFile = Path.Combine(outDir, $"crash-{DateTime.UtcNow.ToFileTime()}.txt");
 
                 Directory.CreateDirectory(outDir);
 
-                using var textWriter = new StreamWriter(File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None));
-
-                while (e != null)
+                using (var textWriter = new StreamWriter(File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None)))
                 {
-                    textWriter.WriteLine("Begin " + e.GetType().Name);
-                    textWriter.WriteLine(e.Message);
-                    textWriter.WriteLine(e.StackTrace);
-                    if (e is AggregateException)
+                    while (e != null)
                     {
-                        foreach(var age in ((AggregateException)e).InnerExceptions)
+                        textWriter.WriteLine("Begin " + e.GetType().Name);
+                        textWriter.WriteLine(e.Message);
+                        textWriter.WriteLine(e.StackTrace);
+                        if (e is AggregateException)
                         {
-                            textWriter.WriteLine($"Begin Inner AggregateException {age.GetType().Name}");
-                            textWriter.WriteLine(age.Message);
-                            textWriter.WriteLine(age.StackTrace);
+                            foreach(var age in ((AggregateException)e).InnerExceptions)
+                            {
+                                textWriter.WriteLine($"Begin Inner AggregateException {age.GetType().Name}");
+                                textWriter.WriteLine(age.Message);
+                                textWriter.WriteLine(age.StackTrace);
+                            }
+                            e = null; //On AggregateExceptions we don't walk the InnerException
                         }
-                        e = null; //On AggregateExceptions we don't walk the InnerException
-                    }
-                    else
-                    {
-                        e = e.InnerException;
+                        else
+                        {
+                            e = e.InnerException;
+                        }
                     }
                 }
 
