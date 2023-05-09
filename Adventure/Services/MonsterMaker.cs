@@ -41,7 +41,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest));
             monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Beach));
-            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Swamp));
+            monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp));
         }
 
         /// <summary>
