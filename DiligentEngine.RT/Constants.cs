@@ -101,7 +101,7 @@ namespace DiligentEngine.RT
         {
             return new Constants
             {
-                ClipPlanes = new Vector2(0.1f, 100.0f),
+                ClipPlanes = new Vector2(0.1f, 150.0f),
                 ShadowPCF = 1,
                 MaxRecursion = Math.Min(6, maxRecursionDepth),
 
