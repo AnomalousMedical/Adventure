@@ -135,8 +135,8 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground027_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Rocks013_1K",
-                BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
-                BgMusicNight = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
+                BgMusic = "Music/freepd/Kevin MacLeod - Pickled Pink.ogg",
+                BgMusicNight = "Music/freepd/Kevin MacLeod - Pickled Pink.ogg",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
@@ -156,8 +156,8 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground049C_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Moss001_1K",
-                BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
-                BgMusicNight = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
+                BgMusic = "Music/freepd/Bryan Teoh - Murder On The Bayou.ogg",
+                BgMusicNight = "Music/freepd/Bryan Teoh - Murder On The Bayou.ogg",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
