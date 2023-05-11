@@ -13,7 +13,7 @@ namespace SoundPlugin
 
         public SoundState(SoundPluginOptions options)
         {
-            this.masterVolume = options.MasterVolume;
+            this.MasterVolume = options.MasterVolume;
         }
 
         public float MasterVolume

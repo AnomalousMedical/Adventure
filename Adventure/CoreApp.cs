@@ -69,7 +69,7 @@ namespace Adventure
             });
             services.AddSoundPlugin(pluginManager, o =>
             {
-                o.MasterVolume = 0.25f;
+                o.MasterVolume = options.MasterVolume;
             });
             services.AddSharpGui();
             services.AddFirstPersonFlyCamera(o =>
