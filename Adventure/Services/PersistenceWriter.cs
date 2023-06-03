@@ -1,19 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
-using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
     interface IPersistenceWriter
     {
         void AddSaveBlock(object blocker);
+        string CreateSaveFileName();
+        IEnumerable<string> GetSaveFiles();
         void Load();
         void RemoveSaveBlock(object blocker);
         void Save();
@@ -113,12 +112,31 @@ namespace Adventure.Services
 
         private String GetSaveFile()
         {
-            var outDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Anomalous Adventure");
+            var outDir = GetSaveDirectory();
             var outFile = Path.Combine(outDir, Path.GetFileName(options.CurrentSave));
 
             Directory.CreateDirectory(outDir);
 
             return outFile;
+        }
+
+        public IEnumerable<string> GetSaveFiles()
+        {
+            var outDir = GetSaveDirectory();
+
+            Directory.CreateDirectory(outDir);
+
+            return Directory.GetFiles(outDir, "save*.json", SearchOption.TopDirectoryOnly).Select(i => Path.GetFileName(i));
+        }
+
+        private string GetSaveDirectory()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Anomalous Adventure");
+        }
+
+        public string CreateSaveFileName()
+        {
+            return $"save-{Guid.NewGuid()}.json";
         }
     }
 }

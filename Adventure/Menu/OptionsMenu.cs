@@ -4,11 +4,15 @@ using Engine;
 using Engine.Platform;
 using SharpGui;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Adventure.Menu
 {
     internal class OptionsMenu : IExplorationSubMenu
     {
+        public const float LoadButtonsLayer = 0.15f;
+
         private readonly IScaleHelper scaleHelper;
         private readonly Options options;
         private readonly ISharpGui sharpGui;
@@ -25,9 +29,11 @@ namespace Adventure.Menu
         private readonly SharpButton newGame = new SharpButton() { Text = "New Game" };
         private readonly SharpButton exitGame = new SharpButton() { Text = "Exit Game" };
         private readonly SharpButton back = new SharpButton() { Text = "Back" };
+        private ButtonColumn loadButtons = new ButtonColumn(25, LoadButtonsLayer);
 
         private const int NoSelectedCharacter = -1;
         private int selectedCharacter = NoSelectedCharacter;
+        private List<ButtonColumnItem<String>> saveFiles = null;
 
         public OptionsMenu
         (
@@ -59,8 +65,32 @@ namespace Adventure.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
-            toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
+            if (saveFiles != null)
+            {
+                loadButtons.Margin = scaleHelper.Scaled(10);
+                loadButtons.MaxWidth = scaleHelper.Scaled(900);
+                loadButtons.Bottom = screenPositioner.ScreenSize.Height;
 
+                var newSelection = loadButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
+                if(newSelection != null)
+                {
+                    persistenceWriter.Save();
+                    options.CurrentSave = newSelection;
+                    menu.RequestSubMenu(PreviousMenu, gamepadId);
+                    gameStateRequestor.RequestGameState(setupGameState);
+                    saveFiles = null;
+                }
+
+                if (sharpGui.Button(back, gamepadId, navLeft: loadButtons.TopButton, navRight: loadButtons.TopButton) 
+                    || sharpGui.IsStandardBackPressed(gamepadId))
+                {
+                    saveFiles = null;
+                }
+
+                return;
+            }
+
+            toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
@@ -88,13 +118,13 @@ namespace Adventure.Menu
 
             if(sharpGui.Button(load, gamepadId, navUp: toggleFullscreen.Id, navDown: newGame.Id))
             {
-                gameStateRequestor.RequestGameState(setupGameState);
+                saveFiles = persistenceWriter.GetSaveFiles().Select(i => new ButtonColumnItem<string>(i, i)).ToList();
             }
 
             if (sharpGui.Button(newGame, gamepadId, navUp: load.Id, navDown: exitGame.Id))
             {
                 persistenceWriter.Save();
-                options.CurrentSave = $"save-{Guid.NewGuid()}.json";
+                options.CurrentSave = persistenceWriter.CreateSaveFileName();
                 gameStateRequestor.RequestGameState(setupGameState);
             }
 
