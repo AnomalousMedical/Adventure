@@ -76,7 +76,7 @@ namespace Adventure.Menu
                 {
                     persistenceWriter.Save();
                     options.CurrentSave = newSelection;
-                    menu.RequestSubMenu(PreviousMenu, gamepadId);
+                    menu.RequestSubMenu(null, gamepadId);
                     gameStateRequestor.RequestGameState(setupGameState);
                     saveFiles = null;
                 }
