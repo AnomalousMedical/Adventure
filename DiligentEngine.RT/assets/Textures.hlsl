@@ -3,7 +3,7 @@ int GetMip()
 	//Lame mip calculation, but looks tons better than just mip0.
 	//Need to add screen size and some more info
 	float depth = RayTCurrent();
-	int mip = min(depth / 4, 4);
+	int mip = min(depth / 3 / 4, 4);
 	return mip;
 }
 
