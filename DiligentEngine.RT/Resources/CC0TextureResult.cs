@@ -12,7 +12,7 @@ namespace DiligentEngine.RT.Resources
         private List<AutoPtr<ITexture>> texturePointers = new List<AutoPtr<ITexture>>();
 
         //Don't make this public, load perlin from something in this library
-        public CC0TextureResult()
+        internal CC0TextureResult()
         {
         }
 
@@ -27,7 +27,7 @@ namespace DiligentEngine.RT.Resources
 
         public bool Reflective { get; private set; }
 
-        public void SetBaseColorMap(AutoPtr<ITexture> value, bool hasOpacity, bool reflective)
+        internal void SetBaseColorMap(AutoPtr<ITexture> value, bool hasOpacity, bool reflective)
         {
             this.HasOpacity = hasOpacity;
             this.Reflective = reflective;
