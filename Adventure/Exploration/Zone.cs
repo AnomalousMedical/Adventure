@@ -22,6 +22,7 @@ using System.Diagnostics;
 using DiligentEngine.RT.HLSL;
 using Adventure.Services;
 using Adventure.Assets.World;
+using FreeImageAPI;
 
 namespace Adventure
 {
@@ -168,6 +169,7 @@ namespace Adventure
         private PrimaryHitShader floorShader;
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
+        private CC0TextureResult perlinTexture;
         private readonly TLASInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private TypedIndex boundaryCubeShapeIndex;
@@ -234,7 +236,10 @@ namespace Adventure
             PrimaryHitShader.Factory primaryHitShaderFactory,
             RTInstances<ZoneScene> rtInstances,
             RayTracingRenderer renderer,
-            Persistence persistence
+            Persistence persistence,
+            //Added for perlin
+            TextureLoader textureLoader,
+            GraphicsEngine graphicsEngine
         )
         {
             this.plotItem = description.PlotItem;
@@ -283,6 +288,52 @@ namespace Adventure
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
+                var perlinTask = Task.Run(() =>
+                {
+                    //This does work, but its hacked
+                    //You can set the perlin as the floor and you can see it, but its not a good texture
+                    //need to use fp16 textures
+                    //convert this to its own class and have it load and manage its own textures in the right format
+
+                    var Barriers = new List<StateTransitionDesc>(1);
+
+                    // Create and configure FastNoise object
+                    FastNoiseLite noise = new FastNoiseLite(description.LevelSeed);
+                    noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+
+                    // Gather noise data
+                    var width = 128;
+                    var height = 128;
+
+                    using var bmp = new FreeImageBitmap(width, height, PixelFormat.Format32bppArgb);
+
+                    // Gather noise data
+                    unsafe
+                    {
+                        int index = 0;
+                        var firstPixel = ((uint*)bmp.Scan0.ToPointer()) - ((bmp.Height - 1) * bmp.Width);
+                        var size = bmp.Width * bmp.Height;
+                        var span = new Span<UInt32>(firstPixel, size);
+
+                        for (int y = 0; y < 128; y++)
+                        {
+                            for (int x = 0; x < 128; x++)
+                            {
+                                var pixelValue = (uint)(noise.GetNoise(x, y) * 0xFFu);
+                                span[index++] = pixelValue + (pixelValue << 8) + (pixelValue << 16) + 0xFF000000u;
+                            }
+                        }
+                    }
+
+                    var perlinNoise = textureLoader.CreateTextureFromImage(bmp, 0, "Perlin Noise Texture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
+                    Barriers.Add(new StateTransitionDesc { pResource = perlinNoise.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+
+                    graphicsEngine.ImmediateContext.TransitionResourceStates(Barriers);
+
+                    var result = new CC0TextureResult();
+                    result.SetBaseColorMap(perlinNoise, false, false);
+                    return result;
+                });
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
@@ -354,18 +405,21 @@ namespace Adventure
                 (
                     floorTextureTask,
                     wallTextureTask,
-                    floorShaderSetup
+                    floorShaderSetup,
+                    perlinTask
                 );
 
                 this.floorShader = floorShaderSetup.Result;
                 this.floorTexture = floorTextureTask.Result;
                 this.wallTexture = wallTextureTask.Result;
+                this.perlinTexture = perlinTask.Result;
 
                 this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
 
                 rtInstances.AddShaderTableBinder(Bind);
-                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture);
+                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, perlinTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
+                floorBlasInstanceData.padding = (uint)floorBlasInstanceData.tex2;
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();
@@ -412,8 +466,10 @@ namespace Adventure
             DestroyPhysics();
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
+            activeTextures.RemoveActiveTexture(perlinTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
+            perlinTexture.Dispose(); //This is not loaded with the texture manager
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
