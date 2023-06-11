@@ -302,8 +302,8 @@ namespace Adventure
                     noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 
                     // Gather noise data
-                    var width = 128;
-                    var height = 128;
+                    var width = 1024;
+                    var height = 1024;
 
                     using var bmp = new FreeImageBitmap(width, height, PixelFormat.Format32bppArgb);
 
@@ -315,9 +315,9 @@ namespace Adventure
                         var size = bmp.Width * bmp.Height;
                         var span = new Span<UInt32>(firstPixel, size);
 
-                        for (int y = 0; y < 128; y++)
+                        for (int y = 0; y < height; y++)
                         {
-                            for (int x = 0; x < 128; x++)
+                            for (int x = 0; x < width; x++)
                             {
                                 var pixelValue = (uint)(noise.GetNoise(x, y) * 0xFFu);
                                 span[index++] = pixelValue + (pixelValue << 8) + (pixelValue << 16) + 0xFF000000u;
@@ -419,7 +419,7 @@ namespace Adventure
                 rtInstances.AddShaderTableBinder(Bind);
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, perlinTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
-                floorBlasInstanceData.padding = (uint)floorBlasInstanceData.tex2;
+                floorBlasInstanceData.padding = 2; //The padding is the 3rd texture
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();

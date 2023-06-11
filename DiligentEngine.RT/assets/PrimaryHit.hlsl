@@ -113,6 +113,9 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 GetSampledNormal(mip, uv, posX.tex),
                 GetPhysical(mip, uv, posX.tex)
             );
+
+            //payload.Color = GetBaseColor(0, uv, g_SamLinearWrap, instanceData.padding);
+
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 1:
