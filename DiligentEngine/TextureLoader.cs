@@ -116,6 +116,39 @@ namespace DiligentEngine
             }
         }
 
+        public AutoPtr<ITexture> CreateTextureFromFloatSpan(Span<float> floats, String name, RESOURCE_DIMENSION resouceDimension, uint width, uint height)
+        {
+            TextureDesc TexDesc = new TextureDesc();
+            TexDesc.Name = name;
+            TexDesc.Type = resouceDimension;
+            TexDesc.Width = width;
+            TexDesc.Height = height;
+            TexDesc.MipLevels = 1;
+            TexDesc.Usage = USAGE.USAGE_IMMUTABLE;
+            TexDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
+            TexDesc.Format = TEXTURE_FORMAT.TEX_FORMAT_R32_FLOAT;
+            TexDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_NONE;
+
+            var pSubResources = new List<TextureSubResData>(1);
+
+            unsafe
+            {
+                fixed (float* texData = floats)
+                {
+                    pSubResources.Add(new TextureSubResData()
+                    {
+                        pData = new IntPtr(texData),
+                        Stride = sizeof(float) * width,
+                    });
+
+                    TextureData TexData = new TextureData();
+                    TexData.pSubResources = pSubResources;
+
+                    return graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData); //This does not do anything with this pointer, just pass it along and let the caller handle it
+                }
+            }
+        }
+
         private static void AddBitmapToResources(FreeImageBitmap bitmap, List<TextureSubResData> pSubResources)
         {
             if (bitmap.Stride > 0)
