@@ -160,6 +160,7 @@ namespace Adventure
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly RayTracingRenderer renderer;
         private readonly Persistence persistence;
+        private readonly NoiseTextureManager noiseTextureManager;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly TextureManager textureManager;
@@ -237,9 +238,7 @@ namespace Adventure
             RTInstances<ZoneScene> rtInstances,
             RayTracingRenderer renderer,
             Persistence persistence,
-            //Added for perlin
-            TextureLoader textureLoader,
-            GraphicsEngine graphicsEngine
+            NoiseTextureManager noiseTextureManager
         )
         {
             this.plotItem = description.PlotItem;
@@ -266,6 +265,7 @@ namespace Adventure
             this.rtInstances = rtInstances;
             this.renderer = renderer;
             this.persistence = persistence;
+            this.noiseTextureManager = noiseTextureManager;
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
@@ -288,52 +288,7 @@ namespace Adventure
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
-                var perlinTask = Task.Run(() =>
-                {
-                    //This does work, but its hacked
-                    //You can set the perlin as the floor and you can see it, but its not a good texture
-                    //need to use fp16 textures
-                    //convert this to its own class and have it load and manage its own textures in the right format
-
-                    var Barriers = new List<StateTransitionDesc>(1);
-
-                    // Create and configure FastNoise object
-                    FastNoiseLite noise = new FastNoiseLite(description.LevelSeed);
-                    noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-
-                    // Gather noise data
-                    var width = 1024;
-                    var height = 1024;
-
-                    using var bmp = new FreeImageBitmap(width, height, PixelFormat.Format32bppArgb);
-
-                    // Gather noise data
-                    unsafe
-                    {
-                        int index = 0;
-                        var firstPixel = ((uint*)bmp.Scan0.ToPointer()) - ((bmp.Height - 1) * bmp.Width);
-                        var size = bmp.Width * bmp.Height;
-                        var span = new Span<UInt32>(firstPixel, size);
-
-                        for (int y = 0; y < height; y++)
-                        {
-                            for (int x = 0; x < width; x++)
-                            {
-                                var pixelValue = (uint)(noise.GetNoise(x, y) * 0xFFu);
-                                span[index++] = pixelValue + (pixelValue << 8) + (pixelValue << 16) + 0xFF000000u;
-                            }
-                        }
-                    }
-
-                    var perlinNoise = textureLoader.CreateTextureFromImage(bmp, 0, "Perlin Noise Texture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
-                    Barriers.Add(new StateTransitionDesc { pResource = perlinNoise.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
-
-                    graphicsEngine.ImmediateContext.TransitionResourceStates(Barriers);
-
-                    var result = new CC0TextureResult();
-                    result.SetBaseColorMap(perlinNoise, false, false);
-                    return result;
-                });
+                var perlinTask = noiseTextureManager.GenerateTexture(description.LevelSeed, 1024, 1024);
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
@@ -469,7 +424,7 @@ namespace Adventure
             activeTextures.RemoveActiveTexture(perlinTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
-            perlinTexture.Dispose(); //This is not loaded with the texture manager
+            noiseTextureManager.ReturnTexture(perlinTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);

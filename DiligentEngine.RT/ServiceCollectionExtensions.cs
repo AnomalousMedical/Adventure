@@ -34,6 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<CC0TextureLoader>();
             services.AddSingleton<TextureManager>();
             services.AddSingleton<ActiveTextures>();
+            services.AddSingleton<NoiseTextureManager>();
 
             services.AddSingleton<PrimaryHitShader.Factory>();
 
