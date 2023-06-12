@@ -491,7 +491,7 @@ namespace DungeonGenerator
                 {
                     if (!processedSquares[mapX, mapY])
                     {
-                        RenderEmptySquare(tempSquareInfo, mapY, mapX);
+                        RenderEmptySquare(tempSquareInfo, mapY, mapX, mapWidth, mapHeight);
                     }
                 }
             }
@@ -535,7 +535,7 @@ namespace DungeonGenerator
             //if (map[mapX, mapY] >= csMapbuilder.RoomCell)
             {
                 //Floor
-                GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
+                GetUvs(mapX, mapY, out var topLeft, out var bottomRight, out var globalTopLeft, out var globalBottomRight, mapWidth, mapHeight);
                 floorMesh.AddQuad(
                     new Vector3(left, floorFarLeftY, far),
                     new Vector3(right, floorFarRightY, far),
@@ -547,6 +547,8 @@ namespace DungeonGenerator
                     floorNormal,
                     topLeft,
                     bottomRight,
+                    globalTopLeft,
+                    globalBottomRight,
                     textureIndex);
 
                 if (setAsFloor)
@@ -686,7 +688,7 @@ namespace DungeonGenerator
             return map[x, y];
         }
 
-        private void RenderEmptySquare(MapMeshTempSquareInfo[,] tempSquareInfo, int mapY, int mapX)
+        private void RenderEmptySquare(MapMeshTempSquareInfo[,] tempSquareInfo, int mapY, int mapX, int mapWidth, int mapHeight)
         {
             var left = mapX * MapUnitX;
             var right = left + MapUnitX;
@@ -832,7 +834,7 @@ namespace DungeonGenerator
 
             //var cross = u.cross(v).normalized();
 
-            GetUvs(mapX, mapY, out var topLeft, out var bottomRight);
+            GetUvs(mapX, mapY, out var topLeft, out var bottomRight, out var globalTopLeft, out var globalBottomRight, mapWidth, mapHeight);
 
             floorMesh.AddQuad(
                 leftFar,
@@ -849,14 +851,19 @@ namespace DungeonGenerator
                 //cross,
                 topLeft,
                 bottomRight,
+                globalTopLeft,
+                globalBottomRight,
                 wallTextureIndex);
         }
 
-        private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom)
+        private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom, out Vector2 globalLeftTop, out Vector2 globalRightBottom, float mapWidth, float mapHeight)
         {
             //TODO: Can this be kept between 0 and 1? For now the uvs will be large numbers, this is ok with our sampler
             leftTop = new Vector2(mapX * uvXStride, mapY * uvYStride);
             rightBottom = new Vector2((mapX + 1) * uvXStride, (mapY + 1) * uvYStride);
+
+            globalLeftTop = new Vector2(mapX / mapWidth, (mapY + 1) / mapHeight);
+            globalRightBottom = new Vector2((mapX + 1) / mapWidth, (mapY) / mapHeight);
         }
 
         private Vector3 ComputeNormal(float zLeft, float zRight, float zDown, float zUp, float zUpleft, float zDownright, float ax, float ay)

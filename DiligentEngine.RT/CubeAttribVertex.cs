@@ -25,7 +25,8 @@ namespace DiligentEngine.RT
     [StructLayout(LayoutKind.Sequential)]
     public struct CubeAttribVertex
     {
-        public float4 uv;
+        public float2 uv;
+        public float2 globalUv;
         public float4 tangent;
         public float4 binormal;
         public float4 normal;

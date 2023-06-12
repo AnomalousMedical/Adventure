@@ -76,6 +76,7 @@ namespace Adventure.WorldMap
                     new Vector3(unit, 0, unit),
                     new Vector3(-unit, 0, unit),
                     Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up, 
+                    new Vector2(0f, 0f), new Vector2(0f, 0f),
                     new Vector2(0f, 0f), new Vector2(0f, 0f));
 
                 await Task.WhenAll

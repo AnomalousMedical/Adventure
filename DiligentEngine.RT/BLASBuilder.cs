@@ -18,7 +18,9 @@ namespace DiligentEngine.RT
 
         public Vector3[] CubePos { get; set; }
 
-        public Vector4[] CubeUV { get; set; }
+        public Vector2[] CubeUV { get; set; }
+
+        public Vector2[] GlobalCubeUV { get; set; }
 
         public Vector4[] CubeNormals { get; set; }
 
@@ -172,6 +174,7 @@ namespace DiligentEngine.RT
                     {
                         var vertex = new CubeAttribVertex();
                         vertex.uv = blasMeshDesc.CubeUV[i];
+                        vertex.globalUv = blasMeshDesc.GlobalCubeUV[i];
                         vertex.normal = blasMeshDesc.CubeNormals[i];
                         attrVertices[i] = vertex;
                     }

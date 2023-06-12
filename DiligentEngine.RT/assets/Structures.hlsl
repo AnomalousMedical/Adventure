@@ -24,7 +24,8 @@ struct TextureSet
 };
 
 struct CubeAttribVertex {
-  float4 uv;
+  float2 uv;
+  float2 globalUv;
   float4 tangent;
   float4 binormal;
   float4 normal;

@@ -74,7 +74,10 @@ namespace Adventure.Battle
                         floorMesh.AddQuad(new Vector3(-size, 0, size), new Vector3(size, 0, size), new Vector3(size, 0, -size), new Vector3(-size, 0, -size),
                                           Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                                           new Vector2(0, 0),
-                                          new Vector2(size, size), 0.5f);
+                                          new Vector2(size, size),
+                                          new Vector2(0, 0),
+                                          new Vector2(size, size), 
+                                          0.5f);
 
                         var dirOffset = farbgSize + size;
 
@@ -85,6 +88,8 @@ namespace Adventure.Battle
                             new Vector3(farbgSize - dirOffset, 0, -size),
                             new Vector3(-farbgSize - dirOffset, 0, -size),
                             Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, size),
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
                             0.5f);
@@ -98,6 +103,8 @@ namespace Adventure.Battle
                             Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, size),
                             0.5f);
 
                         //Wall +z
@@ -109,6 +116,8 @@ namespace Adventure.Battle
                             Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                             new Vector2(0, 0),
                             new Vector2(farbgSize, farbgSize),
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, farbgSize),
                             1.5f);
 
                         //Wall -z
@@ -118,6 +127,8 @@ namespace Adventure.Battle
                             new Vector3(farbgSize, 0, -farbgSize - dirOffset),
                             new Vector3(-farbgSize, 0, -farbgSize - dirOffset),
                             Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
+                            new Vector2(0, 0),
+                            new Vector2(farbgSize, farbgSize),
                             new Vector2(0, 0),
                             new Vector2(farbgSize, farbgSize),
                             1.5f);

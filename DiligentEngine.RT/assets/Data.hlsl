@@ -18,7 +18,8 @@ void GetInstanceDataMesh
     out CubeAttribVertex posX,
     out CubeAttribVertex posY,
     out CubeAttribVertex posZ,
-    out float2 uv
+    out float2 uv,
+    out float2 globalUv
 )
 {
     barycentrics = float3(1.0 - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
@@ -32,6 +33,10 @@ void GetInstanceDataMesh
     uv = posX.uv.xy * barycentrics.x +
         posY.uv.xy * barycentrics.y +
         posZ.uv.xy * barycentrics.z;
+
+    globalUv = posX.globalUv.xy * barycentrics.x +
+        posY.globalUv.xy * barycentrics.y +
+        posZ.globalUv.xy * barycentrics.z;
 }
 
 float2 GetTriUvs(uint vertId)

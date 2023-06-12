@@ -36,9 +36,14 @@ namespace DiligentEngine.RT
                         new Vector3(-0.5f,-0.5f,+0.0f), new Vector3(+0.5f,-0.5f,+0.0f), new Vector3(+0.5f,+0.5f,+0.0f), new Vector3(-0.5f,+0.5f,+0.0f), //Front +z
                     };
 
-                    blasDesc.CubeUV = new Vector4[]
+                    blasDesc.CubeUV = new Vector2[]
                     {
-                        new Vector4(1,0,0,0), new Vector4(0,0,0,0), new Vector4(0,1,0,0), new Vector4(1,1,0,0)  //Front +z
+                        new Vector2(1,0), new Vector2(0,0), new Vector2(0,1), new Vector2(1,1)  //Front +z
+                    };
+
+                    blasDesc.GlobalCubeUV = new Vector2[]
+                    {
+                        new Vector2(1,0), new Vector2(0,0), new Vector2(0,1), new Vector2(1,1)  //Front +z
                     };
 
                     blasDesc.CubeNormals = new Vector4[]

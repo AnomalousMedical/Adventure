@@ -16,13 +16,14 @@ void main(
     float3 barycentrics;
     CubeAttribVertex posX, posY, posZ;
     float2 uv;
+    float2 globalUv;
     int mip = GetMip();
     float opacity;
 
     [forcecase] switch (instanceData.dispatchType & 0x1)
     {
         case $$(MESH_DATA_TYPE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             opacity = GetOpacity(mip, uv, g_SamLinearWrap);
             break;
 

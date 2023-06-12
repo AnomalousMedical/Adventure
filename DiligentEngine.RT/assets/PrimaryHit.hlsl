@@ -11,12 +11,13 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float3 barycentrics;
     CubeAttribVertex posX, posY, posZ;
     float2 uv;
+    float2 globalUv;
     int mip = GetMip();
 
     [forcecase] switch (instanceData.dispatchType) 
     {
         case $$(LIGHTANDSHADEBASE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -36,7 +37,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -58,7 +59,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -80,7 +81,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -104,7 +105,8 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+            uv += GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -114,7 +116,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 GetPhysical(mip, uv, posX.tex)
             );
 
-            //payload.Color = GetBaseColor(0, uv, g_SamLinearWrap, instanceData.padding);
+            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding);
 
             break;
 
@@ -131,7 +133,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -157,7 +159,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -181,7 +183,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -207,7 +209,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(GLASSMATERIAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             Glass
             (
                 payload, barycentrics,
@@ -220,7 +222,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(WATERMATERIAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
             Water
             (
                 payload, barycentrics,

@@ -42,14 +42,24 @@ namespace DiligentEngine.RT
                     new Vector3(-0.5f,-0.5f,+0.5f), new Vector3(+0.5f,-0.5f,+0.5f), new Vector3(+0.5f,+0.5f,+0.5f), new Vector3(-0.5f,+0.5f,+0.5f), //Front +z
                     };
 
-                    blasDesc.CubeUV = new Vector4[]
+                    blasDesc.CubeUV = new Vector2[]
                     {
-                    new Vector4(0,0,0,0), new Vector4(0,1,0,0), new Vector4(1,1,0,0), new Vector4(1,0,0,0), //Back -z
-                    new Vector4(1,0,0,0), new Vector4(1,1,0,0), new Vector4(0,1,0,0), new Vector4(0,0,0,0), //Top -y
-                    new Vector4(0,0,0,0), new Vector4(1,0,0,0), new Vector4(1,1,0,0), new Vector4(0,1,0,0), //Left +x
-                    new Vector4(1,0,0,0), new Vector4(1,1,0,0), new Vector4(0,1,0,0), new Vector4(0,0,0,0), //Bottom +y
-                    new Vector4(1,1,0,0), new Vector4(0,1,0,0), new Vector4(0,0,0,0), new Vector4(1,0,0,0), //Right -x
-                    new Vector4(1,0,0,0), new Vector4(0,0,0,0), new Vector4(0,1,0,0), new Vector4(1,1,0,0)  //Front +z
+                    new Vector2(0,0), new Vector2(0,1), new Vector2(1,1), new Vector2(1,0), //Back -z
+                    new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), //Top -y
+                    new Vector2(0,0), new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), //Left +x
+                    new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), //Bottom +y
+                    new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), new Vector2(1,0), //Right -x
+                    new Vector2(1,0), new Vector2(0,0), new Vector2(0,1), new Vector2(1,1)  //Front +z
+                    };
+
+                    blasDesc.GlobalCubeUV = new Vector2[]
+                    {
+                    new Vector2(0,0), new Vector2(0,1), new Vector2(1,1), new Vector2(1,0), //Back -z
+                    new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), //Top -y
+                    new Vector2(0,0), new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), //Left +x
+                    new Vector2(1,0), new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), //Bottom +y
+                    new Vector2(1,1), new Vector2(0,1), new Vector2(0,0), new Vector2(1,0), //Right -x
+                    new Vector2(1,0), new Vector2(0,0), new Vector2(0,1), new Vector2(1,1)  //Front +z
                     };
 
                     blasDesc.CubeNormals = new Vector4[]

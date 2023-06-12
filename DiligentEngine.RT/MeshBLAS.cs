@@ -42,36 +42,41 @@ namespace DiligentEngine.RT
             numIndices = numQuads * 6;
 
             blasDesc.CubePos = new Vector3[NumVertices];
-            blasDesc.CubeUV = new Vector4[NumVertices];
+            blasDesc.CubeUV = new Vector2[NumVertices];
+            blasDesc.GlobalCubeUV = new Vector2[NumVertices];
             blasDesc.CubeNormals = new Vector4[NumVertices];
             blasDesc.Textures = new float[NumVertices];
             blasDesc.Indices = new UInt32[numIndices];
         }
 
-        public void AddQuad(in Vector3 topLeft, in Vector3 topRight, in Vector3 bottomRight, in Vector3 bottomLeft, in Vector3 topLeftNormal, in Vector3 topRightNormal, in Vector3 bottomRightNormal, in Vector3 bottomLeftNormal, in Vector2 uvTopLeft, in Vector2 uvBottomRight, float texture = 0.5f)
+        public void AddQuad(in Vector3 topLeft, in Vector3 topRight, in Vector3 bottomRight, in Vector3 bottomLeft, in Vector3 topLeftNormal, in Vector3 topRightNormal, in Vector3 bottomRightNormal, in Vector3 bottomLeftNormal, in Vector2 uvTopLeft, in Vector2 uvBottomRight, in Vector2 globalUvTopLeft, in Vector2 globalUvBottomRight, float texture = 0.5f)
         {
             //Negating all inputs works pretty well to convert the mesh
             blasDesc.CubePos[currentVert] = -topLeft;
             blasDesc.CubeNormals[currentVert] = ConvertVector(-topLeftNormal);
-            blasDesc.CubeUV[currentVert] = new Vector4(uvTopLeft.x, uvTopLeft.y, 0, 0);
+            blasDesc.CubeUV[currentVert] = new Vector2(uvTopLeft.x, uvTopLeft.y);
+            blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvTopLeft.x, globalUvTopLeft.y);
             blasDesc.Textures[currentVert] = texture;
 
             ++currentVert;
             blasDesc.CubePos[currentVert] = -topRight;
             blasDesc.CubeNormals[currentVert] = ConvertVector(-topRightNormal);
-            blasDesc.CubeUV[currentVert] = new Vector4(uvBottomRight.x, uvTopLeft.y, 0, 0);
+            blasDesc.CubeUV[currentVert] = new Vector2(uvBottomRight.x, uvTopLeft.y);
+            blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvBottomRight.x, globalUvTopLeft.y);
             blasDesc.Textures[currentVert] = texture;
 
             ++currentVert;
             blasDesc.CubePos[currentVert] = -bottomRight;
             blasDesc.CubeNormals[currentVert] = ConvertVector(-bottomRightNormal);
-            blasDesc.CubeUV[currentVert] = new Vector4(uvBottomRight.x, uvBottomRight.y, 0, 0);
+            blasDesc.CubeUV[currentVert] = new Vector2(uvBottomRight.x, uvBottomRight.y);
+            blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvBottomRight.x, globalUvBottomRight.y);
             blasDesc.Textures[currentVert] = texture;
 
             ++currentVert;
             blasDesc.CubePos[currentVert] = -bottomLeft;
             blasDesc.CubeNormals[currentVert] = ConvertVector(-bottomLeftNormal);
-            blasDesc.CubeUV[currentVert] = new Vector4(uvTopLeft.x, uvBottomRight.y, 0, 0);
+            blasDesc.CubeUV[currentVert] = new Vector2(uvTopLeft.x, uvBottomRight.y);
+            blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvTopLeft.x, globalUvBottomRight.y);
             blasDesc.Textures[currentVert] = texture;
 
             ++currentVert;

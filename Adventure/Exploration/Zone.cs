@@ -288,7 +288,7 @@ namespace Adventure
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
-                var perlinTask = noiseTextureManager.GenerateTexture(description.LevelSeed, 1024, 1024);
+                var perlinTask = noiseTextureManager.GenerateTexture(description.LevelSeed, 1024, 1024, FastNoiseLite.NoiseType.OpenSimplex2S);
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
