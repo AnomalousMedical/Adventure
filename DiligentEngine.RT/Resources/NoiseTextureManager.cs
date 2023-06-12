@@ -1,5 +1,4 @@
-﻿using FreeImageAPI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,10 +29,24 @@ public class NoiseTextureManager
             FastNoiseLite noise = new FastNoiseLite(seed);
             noise.SetNoiseType(noiseType);
 
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalOctaves(4);
+            noise.SetFractalLacunarity(2);
+            noise.SetFractalGain(0.9f);
+            noise.SetFractalWeightedStrength(0.7f);
+            noise.SetFractalPingPongStrength(3.0f);
+            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.Euclidean);
+            noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Add);
+            noise.SetCellularJitter(1.0f);
+
             // Gather noise data
 
             var size = width * height;
             var span = new Span<float>(new float[size]);
+
+            var min = float.MaxValue;
+            var max = float.MinValue;
 
             unsafe
             {
@@ -43,9 +56,30 @@ public class NoiseTextureManager
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        span[index++] = noise.GetNoise(x, y);
+                        span[index] = noise.GetNoise(x, y);
+
+                        if (span[index] > max)
+                        {
+                            max = span[index];
+                        }
+
+                        if (span[index] < min)
+                        {
+                            min = span[index];
+                        }
+
+                        ++index;
                     }
                 }
+            }
+
+            var range = max - min;
+            var offset = -min;
+
+            //normalize values
+            for (int i =  0; i < size; ++i)
+            {
+                span[i] = (span[i] + offset) / range;
             }
 
             var perlinNoise = textureLoader.CreateTextureFromFloatSpan(span, "Perlin Noise Texture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, width, height);
