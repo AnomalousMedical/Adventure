@@ -13,6 +13,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float2 uv;
     float2 globalUv;
     int mip = GetMip();
+    float3 baseColor;
+    float3 normalColor;
+    float4 physicalColor;
+    float tex1Blend;
+    float tex2Blend;
 
     [forcecase] switch (instanceData.dispatchType) 
     {
@@ -106,17 +111,31 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
             GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+
+            baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
+            normalColor = GetSampledNormal(mip, uv, posX.tex);
+            physicalColor = GetPhysical(mip, uv, posX.tex);
+
             uv += GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
+
+            //hardcoded index is bad
+            tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, 3/*bad*/).r;
+            tex2Blend = 1.0f - tex1Blend;
+
+            baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
+            normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
+            physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex) * tex2Blend;
+
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
-                GetSampledNormal(mip, uv, posX.tex),
-                GetPhysical(mip, uv, posX.tex)
+                baseColor,
+                normalColor,
+                physicalColor
             );
 
-            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding);
+            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, 3);
 
             break;
 

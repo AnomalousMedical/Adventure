@@ -170,7 +170,8 @@ namespace Adventure
         private PrimaryHitShader floorShader;
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
-        private CC0TextureResult perlinTexture;
+        private CC0TextureResult noiseTexture;
+        private CC0TextureResult edgeDistanceNoiseTexture;
         private readonly TLASInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private TypedIndex boundaryCubeShapeIndex;
@@ -288,7 +289,13 @@ namespace Adventure
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
-                var perlinTask = noiseTextureManager.GenerateTexture(description.LevelSeed, 1024, 1024, FastNoiseLite.NoiseType.OpenSimplex2S);
+                var noise = CreateCommonNoise(description);
+                noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
+                var noiseTask = noiseTextureManager.GenerateTexture(noise, 8192, 8192);
+
+                var distanceNoise = CreateCommonNoise(description);
+                distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
+                var edgeDistanceNoiseTask = noiseTextureManager.GenerateTexture(distanceNoise, 8192, 8192);
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
@@ -361,18 +368,20 @@ namespace Adventure
                     floorTextureTask,
                     wallTextureTask,
                     floorShaderSetup,
-                    perlinTask
+                    noiseTask,
+                    edgeDistanceNoiseTask
                 );
 
                 this.floorShader = floorShaderSetup.Result;
                 this.floorTexture = floorTextureTask.Result;
                 this.wallTexture = wallTextureTask.Result;
-                this.perlinTexture = perlinTask.Result;
+                this.noiseTexture = noiseTask.Result;
+                this.edgeDistanceNoiseTexture = edgeDistanceNoiseTask.Result;
 
                 this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
 
                 rtInstances.AddShaderTableBinder(Bind);
-                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, perlinTexture);
+                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture, edgeDistanceNoiseTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
                 floorBlasInstanceData.padding = 2; //The padding is the 3rd texture
                 rtInstances.AddTlasBuild(floorInstanceData);
@@ -405,6 +414,23 @@ namespace Adventure
             });
         }
 
+        private static FastNoiseLite CreateCommonNoise(Description description)
+        {
+            var noise = new FastNoiseLite(description.LevelSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.ImproveXYPlanes);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
+            noise.SetCellularJitter(1.0f);
+            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.None);
+            noise.SetDomainWarpAmp(160.0f);
+            noise.SetFrequency(0.005f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            return noise;
+        }
+
         internal void RequestDestruction()
         {
             this.destructionRequest.RequestDestruction();
@@ -421,10 +447,12 @@ namespace Adventure
             DestroyPhysics();
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
-            activeTextures.RemoveActiveTexture(perlinTexture);
+            activeTextures.RemoveActiveTexture(noiseTexture);
+            activeTextures.RemoveActiveTexture(edgeDistanceNoiseTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
-            noiseTextureManager.ReturnTexture(perlinTexture);
+            noiseTextureManager.ReturnTexture(noiseTexture);
+            noiseTextureManager.ReturnTexture(edgeDistanceNoiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
