@@ -13,6 +13,14 @@ struct BlasInstanceData
     uint vertexOffset;
     uint dispatchType;
     uint padding;   //also GlassMaterialColor
+    uint extra0;    //also edge distance texture index
+    uint extra1;
+    uint extra2;
+    uint extra3;
+    uint extra4;
+    uint extra5;
+    uint extra6;
+    uint extra7;
 };
 
 struct TextureSet

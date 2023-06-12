@@ -118,8 +118,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
             uv += GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
 
-            //hardcoded index is bad
-            tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, 3/*bad*/).r;
+            tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.extra0).r;
             tex2Blend = 1.0f - tex1Blend;
 
             baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
@@ -135,7 +134,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 physicalColor
             );
 
-            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, 3);
+            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.extra0);
 
             break;
 

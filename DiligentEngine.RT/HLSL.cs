@@ -63,6 +63,14 @@ namespace DiligentEngine.RT.HLSL
         public uint vertexOffset;
         public uint dispatchType;
         public uint padding;
+        public uint extra0;
+        public uint extra1;
+        public uint extra2;
+        public uint extra3;
+        public uint extra4;
+        public uint extra5;
+        public uint extra6;
+        public uint extra7;
     };
 
     public static class GlassInstanceDataCreator

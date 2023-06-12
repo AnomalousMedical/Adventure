@@ -384,6 +384,7 @@ namespace Adventure
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture, edgeDistanceNoiseTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
                 floorBlasInstanceData.padding = 2; //The padding is the 3rd texture
+                floorBlasInstanceData.extra0 = 3; //The distance padding is the 4th texture
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();
