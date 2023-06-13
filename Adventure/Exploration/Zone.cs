@@ -291,11 +291,11 @@ namespace Adventure
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
                 var noise = CreateCommonNoise(description);
                 noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
-                var noiseTask = noiseTextureManager.GenerateTexture(noise, 8192, 8192);
+                var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
 
                 var distanceNoise = CreateCommonNoise(description);
                 distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
-                var edgeDistanceNoiseTask = noiseTextureManager.GenerateTexture(distanceNoise, 8192, 8192);
+                var edgeDistanceNoiseTask = noiseTextureManager.GenerateTexture(distanceNoise, 4096, 4096);
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
