@@ -171,7 +171,6 @@ namespace Adventure
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
         private CC0TextureResult noiseTexture;
-        private CC0TextureResult edgeDistanceNoiseTexture;
         private readonly TLASInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private TypedIndex boundaryCubeShapeIndex;
@@ -289,13 +288,12 @@ namespace Adventure
 
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
+
                 var noise = CreateCommonNoise(description);
                 noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
-                var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
-
                 var distanceNoise = CreateCommonNoise(description);
                 distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
-                var edgeDistanceNoiseTask = noiseTextureManager.GenerateTexture(distanceNoise, 4096, 4096);
+                var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
 
                 this.zoneGenerationTask = Task.Run(() =>
                 {
@@ -368,23 +366,20 @@ namespace Adventure
                     floorTextureTask,
                     wallTextureTask,
                     floorShaderSetup,
-                    noiseTask,
-                    edgeDistanceNoiseTask
+                    noiseTask
                 );
 
                 this.floorShader = floorShaderSetup.Result;
                 this.floorTexture = floorTextureTask.Result;
                 this.wallTexture = wallTextureTask.Result;
                 this.noiseTexture = noiseTask.Result;
-                this.edgeDistanceNoiseTexture = edgeDistanceNoiseTask.Result;
 
                 this.floorInstanceData.pBLAS = mapMesh.FloorMesh.Instance.BLAS.Obj;
 
                 rtInstances.AddShaderTableBinder(Bind);
-                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture, edgeDistanceNoiseTexture);
+                floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
-                floorBlasInstanceData.padding = 2; //The padding is the 3rd texture
-                floorBlasInstanceData.extra0 = 3; //The distance padding is the 4th texture
+                floorBlasInstanceData.padding = 2; //The padding is the noise, which is the 3rd texture
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();
@@ -449,11 +444,9 @@ namespace Adventure
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
             activeTextures.RemoveActiveTexture(noiseTexture);
-            activeTextures.RemoveActiveTexture(edgeDistanceNoiseTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
             noiseTextureManager.ReturnTexture(noiseTexture);
-            noiseTextureManager.ReturnTexture(edgeDistanceNoiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);

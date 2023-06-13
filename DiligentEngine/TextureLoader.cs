@@ -17,6 +17,7 @@ using float4x4 = Engine.Matrix4x4;
 using BOOL = System.Boolean;
 using FreeImageAPI;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace DiligentEngine
 {
@@ -139,6 +140,46 @@ namespace DiligentEngine
                     {
                         pData = new IntPtr(texData),
                         Stride = sizeof(float) * width,
+                    });
+
+                    TextureData TexData = new TextureData();
+                    TexData.pSubResources = pSubResources;
+
+                    return graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData); //This does not do anything with this pointer, just pass it along and let the caller handle it
+                }
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HalfRgTexturePixel
+        {
+            public Half r;
+            public Half g;
+        };
+
+        public unsafe AutoPtr<ITexture> CreateTextureFromFloatSpan(Span<HalfRgTexturePixel> pixels, String name, RESOURCE_DIMENSION resouceDimension, uint width, uint height)
+        {
+            TextureDesc TexDesc = new TextureDesc();
+            TexDesc.Name = name;
+            TexDesc.Type = resouceDimension;
+            TexDesc.Width = width;
+            TexDesc.Height = height;
+            TexDesc.MipLevels = 1;
+            TexDesc.Usage = USAGE.USAGE_IMMUTABLE;
+            TexDesc.BindFlags = BIND_FLAGS.BIND_SHADER_RESOURCE;
+            TexDesc.Format = TEXTURE_FORMAT.TEX_FORMAT_RG16_FLOAT;
+            TexDesc.CPUAccessFlags = CPU_ACCESS_FLAGS.CPU_ACCESS_NONE;
+
+            var pSubResources = new List<TextureSubResData>(1);
+
+            unsafe
+            {
+                fixed (HalfRgTexturePixel* texData = pixels)
+                {
+                    pSubResources.Add(new TextureSubResData()
+                    {
+                        pData = new IntPtr(texData),
+                        Stride = (ulong)sizeof(HalfRgTexturePixel) * width,
                     });
 
                     TextureData TexData = new TextureData();

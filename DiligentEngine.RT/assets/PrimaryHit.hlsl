@@ -18,6 +18,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float4 physicalColor;
     float tex1Blend;
     float tex2Blend;
+    float2 noise;
 
     [forcecase] switch (instanceData.dispatchType) 
     {
@@ -116,9 +117,11 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             normalColor = GetSampledNormal(mip, uv, posX.tex);
             physicalColor = GetPhysical(mip, uv, posX.tex);
 
-            uv += GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
+            noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-            tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.extra0).r;
+            uv += noise.r;
+
+            tex1Blend = noise.g;
             tex2Blend = 1.0f - tex1Blend;
 
             baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
@@ -133,8 +136,6 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 normalColor,
                 physicalColor
             );
-
-            //payload.Color = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.extra0);
 
             break;
 
