@@ -1,20 +1,25 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace DiligentEngine.RT.Resources;
 
 public class NoiseTextureManager
 {
+    private readonly ILogger<NoiseTextureManager> logger;
     private readonly TextureLoader textureLoader;
     private readonly GraphicsEngine graphicsEngine;
 
     public NoiseTextureManager
     (
+        ILogger<NoiseTextureManager> logger,
         TextureLoader textureLoader,
         GraphicsEngine graphicsEngine
     )
     {
+        this.logger = logger;
         this.textureLoader = textureLoader;
         this.graphicsEngine = graphicsEngine;
     }
@@ -25,6 +30,8 @@ public class NoiseTextureManager
 
         var perlinNoise = await Task.Run(() =>
         {
+            var sw = new Stopwatch();
+            sw.Start();
 
             var size = width * height;
             var span = new Span<float>(new float[size]);
@@ -69,6 +76,9 @@ public class NoiseTextureManager
 
             var perlinNoise = textureLoader.CreateTextureFromFloatSpan(span, "Perlin Noise Texture", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, width, height);
             Barriers.Add(new StateTransitionDesc { pResource = perlinNoise.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+
+            sw.Stop();
+            logger.LogInformation($"Noise texture generated in {sw.ElapsedMilliseconds}ms");
 
             return perlinNoise;
         });
