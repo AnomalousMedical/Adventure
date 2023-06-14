@@ -43,6 +43,7 @@ namespace Adventure.WorldMap
         private readonly RayTracingRenderer renderer;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IBiomeManager biomeManager;
+        private readonly NoiseTextureManager noiseTextureManager;
         private readonly csIslandMaze map;
         private readonly IObjectResolver objectResolver;
         private PrimaryHitShader shader;
@@ -72,6 +73,7 @@ namespace Adventure.WorldMap
         public Vector2 MapSize => mapSize;
 
         List<CC0TextureResult> loadedTextures = new List<CC0TextureResult>();
+        CC0TextureResult noiseTexture;
 
         public WorldMapInstance
         (
@@ -86,7 +88,8 @@ namespace Adventure.WorldMap
             RayTracingRenderer renderer,
             IObjectResolverFactory objectResolverFactory,
             IBepuScene<WorldMapScene> bepuScene,
-            IBiomeManager biomeManager
+            IBiomeManager biomeManager,
+            NoiseTextureManager noiseTextureManager
         )
         {
             this.mapScale = description.MapScale;
@@ -103,6 +106,7 @@ namespace Adventure.WorldMap
             this.renderer = renderer;
             this.bepuScene = bepuScene;
             this.biomeManager = biomeManager;
+            this.noiseTextureManager = noiseTextureManager;
             this.map = description.csIslandMaze;
 
             transforms = new[]
@@ -153,6 +157,12 @@ namespace Adventure.WorldMap
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var chipTextureTask = textureManager.Checkout(chipTextureDesc);
 
+                    var noise = CreateCommonNoise(description);
+                    noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
+                    var distanceNoise = CreateCommonNoise(description);
+                    distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
+                    var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
+
                     var shaderSetup = primaryHitShaderFactory.Checkout();
 
                     await Task.Run(() =>
@@ -177,7 +187,8 @@ namespace Adventure.WorldMap
                         oceanFloorTextureTask,
                         chipTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
-                        shaderSetup
+                        shaderSetup,
+                        noiseTask
                     );
 
                     this.shader = shaderSetup.Result;
@@ -191,6 +202,7 @@ namespace Adventure.WorldMap
                     var cliffTexture = cliffTextureTask.Result;
                     var oceanFloorTexture = oceanFloorTextureTask.Result;
                     var chipTexture = chipTextureTask.Result;
+                    noiseTexture = noiseTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
                     loadedTextures.Add(desertTexture);
@@ -217,7 +229,10 @@ namespace Adventure.WorldMap
                         swampTexture,
                         cliffTexture,
                         oceanFloorTexture,
-                        chipTexture);
+                        chipTexture,
+                        noiseTexture);
+
+                    floorBlasInstanceData.padding = 9; //Noise is the 10th texture
 
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
@@ -231,6 +246,23 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
+        }
+
+        private static FastNoiseLite CreateCommonNoise(Description description)
+        {
+            var noise = new FastNoiseLite(0);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.ImproveXYPlanes);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
+            noise.SetCellularJitter(1.0f);
+            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.None);
+            noise.SetDomainWarpAmp(160.0f);
+            noise.SetFrequency(0.005f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            return noise;
         }
 
         internal Vector3 GetAirshipPortalLocation()
@@ -268,10 +300,12 @@ namespace Adventure.WorldMap
             {
                 activeTextures.RemoveActiveTexture(texture);
             }
+            activeTextures.RemoveActiveTexture(noiseTexture);
             foreach (var texture in loadedTextures)
             {
                 textureManager.TryReturn(texture);
             }
+            noiseTextureManager.ReturnTexture(noiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(shader);
             foreach(var data in floorInstanceData)

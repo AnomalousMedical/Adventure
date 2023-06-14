@@ -29,10 +29,12 @@ namespace Adventure.Battle
         private readonly ActiveTextures activeTextures;
         private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
         private readonly RTInstances rtInstances;
+        private readonly NoiseTextureManager noiseTextureManager;
         private PrimaryHitShader floorShader;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private CC0TextureResult floorTexture;
         private CC0TextureResult wallTexture;
+        CC0TextureResult noiseTexture;
         private BlasInstanceData blasInstanceData;
 
         private const float size = 8.5f;
@@ -47,7 +49,8 @@ namespace Adventure.Battle
             TextureManager textureManager,
             ActiveTextures activeTextures,
             PrimaryHitShader.Factory primaryHitShaderFactory,
-            RTInstances<BattleScene> rtInstances
+            RTInstances<BattleScene> rtInstances,
+            NoiseTextureManager noiseTextureManager
         )
         {
             this.destructionRequest = destructionRequest;
@@ -56,6 +59,7 @@ namespace Adventure.Battle
             this.activeTextures = activeTextures;
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.rtInstances = rtInstances;
+            this.noiseTextureManager = noiseTextureManager;
             coroutineRunner.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction();
@@ -67,6 +71,12 @@ namespace Adventure.Battle
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
+                    var noise = CreateCommonNoise(description);
+                    noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
+                    var distanceNoise = CreateCommonNoise(description);
+                    distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
+                    var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
+
                     await Task.Run(() =>
                     {
                         floorMesh.Begin(5);
@@ -76,7 +86,7 @@ namespace Adventure.Battle
                                           new Vector2(0, 0),
                                           new Vector2(size, size),
                                           new Vector2(0, 0),
-                                          new Vector2(size, size), 
+                                          new Vector2(1, 1), 
                                           0.5f);
 
                         var dirOffset = farbgSize + size;
@@ -91,7 +101,7 @@ namespace Adventure.Battle
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
                             new Vector2(0, 0),
-                            new Vector2(farbgSize, size),
+                            new Vector2(1, 1),
                             0.5f);
 
                         //Floor +x
@@ -104,7 +114,7 @@ namespace Adventure.Battle
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
                             new Vector2(0, 0),
-                            new Vector2(farbgSize, size),
+                            new Vector2(1, 1),
                             0.5f);
 
                         //Wall +z
@@ -117,7 +127,7 @@ namespace Adventure.Battle
                             new Vector2(0, 0),
                             new Vector2(farbgSize, farbgSize),
                             new Vector2(0, 0),
-                            new Vector2(farbgSize, farbgSize),
+                            new Vector2(1, 1),
                             1.5f);
 
                         //Wall -z
@@ -130,7 +140,7 @@ namespace Adventure.Battle
                             new Vector2(0, 0),
                             new Vector2(farbgSize, farbgSize),
                             new Vector2(0, 0),
-                            new Vector2(farbgSize, farbgSize),
+                            new Vector2(1, 1),
                             1.5f);
                     });
 
@@ -142,12 +152,14 @@ namespace Adventure.Battle
                     (
                         floorTextureTask,
                         wallTextureTask,
-                        floorShaderSetup
+                        floorShaderSetup,
+                        noiseTask
                     );
 
                     this.floorShader = floorShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
                     this.wallTexture = wallTextureTask.Result;
+                    noiseTexture = noiseTask.Result;
 
                     this.floorInstanceData = new TLASInstanceData()
                     {
@@ -160,7 +172,8 @@ namespace Adventure.Battle
 
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
-                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture);
+                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture);
+                    blasInstanceData.padding = 2;
                     blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Biome.ReflectFloor, false, false);
 
                     loadingTask.SetResult();
@@ -172,6 +185,23 @@ namespace Adventure.Battle
             });
         }
 
+        private static FastNoiseLite CreateCommonNoise(Description description)
+        {
+            var noise = new FastNoiseLite(0);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.ImproveXYPlanes);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
+            noise.SetCellularJitter(1.0f);
+            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
+            noise.SetRotationType3D(FastNoiseLite.RotationType3D.None);
+            noise.SetDomainWarpAmp(160.0f);
+            noise.SetFrequency(0.005f);
+            noise.SetFractalType(FastNoiseLite.FractalType.None);
+            return noise;
+        }
+
         public void RequestDestruction()
         {
             destructionRequest.RequestDestruction();
@@ -181,8 +211,10 @@ namespace Adventure.Battle
         {
             activeTextures.RemoveActiveTexture(wallTexture);
             activeTextures.RemoveActiveTexture(floorTexture);
+            activeTextures.RemoveActiveTexture(noiseTexture);
             textureManager.TryReturn(wallTexture);
             textureManager.TryReturn(floorTexture);
+            noiseTextureManager.ReturnTexture(noiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
