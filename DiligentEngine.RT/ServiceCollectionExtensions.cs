@@ -35,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<TextureManager>();
             services.AddSingleton<ActiveTextures>();
             services.AddSingleton<NoiseTextureManager>();
+            services.AddSingleton<TerrainNoise>();
 
             services.AddSingleton<PrimaryHitShader.Factory>();
 

@@ -238,7 +238,8 @@ namespace Adventure
             RTInstances<ZoneScene> rtInstances,
             RayTracingRenderer renderer,
             Persistence persistence,
-            NoiseTextureManager noiseTextureManager
+            NoiseTextureManager noiseTextureManager,
+            TerrainNoise terrainNoise
         )
         {
             this.plotItem = description.PlotItem;
@@ -289,10 +290,7 @@ namespace Adventure
                 var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                var noise = CreateCommonNoise(description);
-                noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
-                var distanceNoise = CreateCommonNoise(description);
-                distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
+                terrainNoise.CreateTerrainNoise(description.LevelSeed, out var noise, out var distanceNoise);
                 var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
 
                 this.zoneGenerationTask = Task.Run(() =>
@@ -408,23 +406,6 @@ namespace Adventure
                     }
                 }
             });
-        }
-
-        private static FastNoiseLite CreateCommonNoise(Description description)
-        {
-            var noise = new FastNoiseLite(description.LevelSeed);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
-            noise.SetRotationType3D(FastNoiseLite.RotationType3D.ImproveXYPlanes);
-            noise.SetFrequency(0.01f);
-            noise.SetFractalType(FastNoiseLite.FractalType.None);
-            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
-            noise.SetCellularJitter(1.0f);
-            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
-            noise.SetRotationType3D(FastNoiseLite.RotationType3D.None);
-            noise.SetDomainWarpAmp(160.0f);
-            noise.SetFrequency(0.005f);
-            noise.SetFractalType(FastNoiseLite.FractalType.None);
-            return noise;
         }
 
         internal void RequestDestruction()

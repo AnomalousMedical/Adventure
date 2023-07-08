@@ -89,7 +89,8 @@ namespace Adventure.WorldMap
             IObjectResolverFactory objectResolverFactory,
             IBepuScene<WorldMapScene> bepuScene,
             IBiomeManager biomeManager,
-            NoiseTextureManager noiseTextureManager
+            NoiseTextureManager noiseTextureManager,
+            TerrainNoise terrainNoise
         )
         {
             this.mapScale = description.MapScale;
@@ -157,10 +158,7 @@ namespace Adventure.WorldMap
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var chipTextureTask = textureManager.Checkout(chipTextureDesc);
 
-                    var noise = CreateCommonNoise(description);
-                    noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
-                    var distanceNoise = CreateCommonNoise(description);
-                    distanceNoise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div);
+                    terrainNoise.CreateTerrainNoise(0, out var noise, out var distanceNoise);
                     var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();
@@ -246,23 +244,6 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
-        }
-
-        private static FastNoiseLite CreateCommonNoise(Description description)
-        {
-            var noise = new FastNoiseLite(0);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
-            noise.SetRotationType3D(FastNoiseLite.RotationType3D.ImproveXYPlanes);
-            noise.SetFrequency(0.01f);
-            noise.SetFractalType(FastNoiseLite.FractalType.None);
-            noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
-            noise.SetCellularJitter(1.0f);
-            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
-            noise.SetRotationType3D(FastNoiseLite.RotationType3D.None);
-            noise.SetDomainWarpAmp(160.0f);
-            noise.SetFrequency(0.005f);
-            noise.SetFractalType(FastNoiseLite.FractalType.None);
-            return noise;
         }
 
         internal Vector3 GetAirshipPortalLocation()
