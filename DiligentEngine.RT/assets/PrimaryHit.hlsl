@@ -1,6 +1,7 @@
 #include "Structures.hlsl"
 #include "RayUtils.hlsl"
 #include "Data.hlsl"
+#include "MultiTexture.hlsl"
 #include "Lighting.hlsl"
 #include "GlassPrimaryHit.hlsl"
 
@@ -16,9 +17,6 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float3 baseColor;
     float3 normalColor;
     float4 physicalColor;
-    float tex1Blend;
-    float tex2Blend;
-    float2 noise;
 
     [forcecase] switch (instanceData.dispatchType) 
     {
@@ -112,22 +110,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
             GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
-
-            baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
-            normalColor = GetSampledNormal(mip, uv, posX.tex);
-            physicalColor = GetPhysical(mip, uv, posX.tex);
-
-            noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-            uv += noise.r;
-
-            tex1Blend = noise.g;
-            tex2Blend = 1.0f - tex1Blend;
-
-            baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-            normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
-            physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex) * tex2Blend;
-
+            GetMultiBaseNormalPhysical(uv, globalUv, mip, posX, posY, posZ, baseColor, normalColor, physicalColor);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
