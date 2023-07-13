@@ -376,7 +376,7 @@ namespace Adventure
 
                 rtInstances.AddShaderTableBinder(Bind);
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture);
-                floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, false);
+                floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, BlasSpecialMaterial.MultiTexture);
                 floorBlasInstanceData.padding = 2; //The padding is the noise, which is the 3rd texture
                 rtInstances.AddTlasBuild(floorInstanceData);
 

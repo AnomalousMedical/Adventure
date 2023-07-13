@@ -172,7 +172,7 @@ namespace Adventure.Battle
                     rtInstances.AddShaderTableBinder(Bind);
                     blasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture);
                     blasInstanceData.padding = 2;
-                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Biome.ReflectFloor, false, false);
+                    blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Biome.ReflectFloor, false, BlasSpecialMaterial.MultiTexture);
 
                     loadingTask.SetResult();
                 }

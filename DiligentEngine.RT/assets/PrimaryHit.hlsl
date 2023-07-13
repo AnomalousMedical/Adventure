@@ -110,16 +110,14 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
             GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
-            GetMultiBaseNormalPhysical(uv, globalUv, mip, posX, posY, posZ, baseColor, normalColor, physicalColor);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
                 posX, posY, posZ,
-                baseColor,
-                normalColor,
-                physicalColor
+                GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex),
+                GetSampledNormal(mip, uv, posX.tex),
+                GetPhysical(mip, uv, posX.tex)
             );
-
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 1:
@@ -132,6 +130,20 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 GetSampledNormal(mip, uv),
                 GetPhysical(mip, uv)
             );
+            break;
+
+        case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 2:
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+            GetMultiBaseNormalPhysical(uv, globalUv, mip, posX, posY, posZ, baseColor, normalColor, physicalColor);
+            LightAndShadeBaseNormalPhysical
+            (
+                payload, barycentrics,
+                posX, posY, posZ,
+                baseColor,
+                normalColor,
+                physicalColor
+            );
+
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE):

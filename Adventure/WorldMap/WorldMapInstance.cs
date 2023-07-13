@@ -232,7 +232,7 @@ namespace Adventure.WorldMap
 
                     floorBlasInstanceData.padding = 9; //Noise is the 10th texture
 
-                    floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, false);
+                    floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, BlasSpecialMaterial.MultiTexture);
                     rtInstances.AddShaderTableBinder(Bind);
 
                     SetupAreas(description.Areas, description.AirshipSquare, description.AirshipPortalSquare, description.PortalLocations);

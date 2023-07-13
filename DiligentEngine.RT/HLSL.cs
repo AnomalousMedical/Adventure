@@ -100,21 +100,33 @@ namespace DiligentEngine.RT.HLSL
         public int emissiveTexture;
     };
 
+    public enum BlasSpecialMaterial
+    {
+        None,
+        Sprite,
+        MultiTexture,
+        Glass,
+        Water
+    }
+
     public static class BlasInstanceDataConstants
     {
+        //These offsets determine what data type is being handled
         public const uint MeshData = 0;
         public const uint SpriteData = 1;
+        public const uint MultiTextureMeshData = 2;
 
-        public const uint LightAndShadeBase = 2;
-        public const uint LightAndShadeBaseEmissive = 4;
-        public const uint LightAndShadeBaseNormal = 8;
-        public const uint LightAndShadeBaseNormalEmissive = 16;
-        public const uint LightAndShadeBaseNormalPhysical = 32;
-        public const uint LightAndShadeBaseNormalPhysicalEmissive = 64;
-        public const uint LightAndShadeBaseNormalPhysicalReflective = 128;
-        public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 256;
-        public const uint Glass = 512;
-        public const uint Water = 1024;
+        //These are the base flags for the different lighting types
+        public const uint LightAndShadeBase = 8;
+        public const uint LightAndShadeBaseEmissive = 16;
+        public const uint LightAndShadeBaseNormal = 32;
+        public const uint LightAndShadeBaseNormalEmissive = 64;
+        public const uint LightAndShadeBaseNormalPhysical = 128;
+        public const uint LightAndShadeBaseNormalPhysicalEmissive = 256;
+        public const uint LightAndShadeBaseNormalPhysicalReflective = 512;
+        public const uint LightAndShadeBaseNormalPhysicalReflectiveEmissive = 1024;
+        public const uint Glass = 2048;
+        public const uint Water = 4096;
 
         public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive, bool isSprite, bool isGlass = false, bool isWater = false)
         {
@@ -162,12 +174,71 @@ namespace DiligentEngine.RT.HLSL
             return GetSpriteFlag(LightAndShadeBase, isSprite);
         }
 
+        public static uint GetShaderForDescription(bool hasNormal, bool hasPhysical, bool reflective, bool emissive, BlasSpecialMaterial specialMaterial = BlasSpecialMaterial.None)
+        {
+            switch (specialMaterial)
+            {
+                case BlasSpecialMaterial.Water:
+                    return Water;
+                case BlasSpecialMaterial.Glass:
+                    return Glass;
+            }
+
+            if (hasNormal && hasPhysical && reflective)
+            {
+                if (emissive)
+                {
+                    return GetTypeFlag(LightAndShadeBaseNormalPhysicalReflectiveEmissive, specialMaterial);
+                }
+                return GetTypeFlag(LightAndShadeBaseNormalPhysicalReflective, specialMaterial);
+            }
+
+            if (hasNormal && hasPhysical)
+            {
+                if (emissive)
+                {
+                    return GetTypeFlag(LightAndShadeBaseNormalPhysicalEmissive, specialMaterial);
+                }
+                return GetTypeFlag(LightAndShadeBaseNormalPhysical, specialMaterial);
+            }
+
+            if (hasNormal)
+            {
+                if (emissive)
+                {
+                    return GetTypeFlag(LightAndShadeBaseNormalEmissive, specialMaterial);
+                }
+                return GetTypeFlag(LightAndShadeBaseNormal, specialMaterial);
+            }
+
+            if (emissive)
+            {
+                return GetTypeFlag(LightAndShadeBaseEmissive, specialMaterial);
+            }
+            return GetTypeFlag(LightAndShadeBase, specialMaterial);
+        }
+
         private static uint GetSpriteFlag(uint original, bool isSprite)
         {
             if (isSprite)
             {
                 original |= SpriteData;
             }
+            return original;
+        }
+
+        private static uint GetTypeFlag(uint original, BlasSpecialMaterial specialMaterial)
+        {
+            switch (specialMaterial)
+            {
+                case BlasSpecialMaterial.Sprite:
+                    original |= SpriteData;
+                    break;
+                case BlasSpecialMaterial.MultiTexture:
+                    original |= MultiTextureMeshData;
+                    break;
+            }
+
             return original;
         }
     }
