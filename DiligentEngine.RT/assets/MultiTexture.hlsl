@@ -13,9 +13,7 @@ void GetMultiBase
 {
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
@@ -38,9 +36,7 @@ void GetMultiBaseEmissive
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
@@ -64,9 +60,7 @@ void GetMultiBaseNormal
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
     normalColor = GetSampledNormal(mip, uv, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
@@ -92,9 +86,7 @@ void GetMultiBaseNormalEmissive
     normalColor = GetSampledNormal(mip, uv, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
@@ -121,9 +113,7 @@ void GetMultiBaseNormalPhysical
     normalColor = GetSampledNormal(mip, uv, posX.tex);
     physicalColor = GetPhysical(mip, uv, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
@@ -152,9 +142,7 @@ void GetMultiBaseNormalPhysicalEmissive
     physicalColor = GetPhysical(mip, uv, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
-
-    float tex1Blend = noise.r;
+    float tex1Blend = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).r;
     float tex2Blend = 1.0f - tex1Blend;
 
     baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
