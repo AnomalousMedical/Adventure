@@ -84,7 +84,7 @@ namespace Adventure.Battle
                     var wallTexture2Task = textureManager.Checkout(wallTextureDesc2);
 
                     var noise = terrainNoise.CreateBlendTerrainNoise(0);
-                    var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
+                    var noiseTask = noiseTextureManager.GenerateTexture(noise, 512, 512);
 
                     await Task.Run(() =>
                     {
@@ -94,8 +94,8 @@ namespace Adventure.Battle
                                           Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                                           new Vector2(0, 0),
                                           new Vector2(size, size),
-                                          new Vector2(0, 0),
-                                          new Vector2(1, 1), 
+                                          new Vector2(0.3f, 0),
+                                          new Vector2(0.7f, 1), 
                                           FloorTextureIndex,
                                           FloorTexture2Index);
 
@@ -111,7 +111,7 @@ namespace Adventure.Battle
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
                             new Vector2(0, 0),
-                            new Vector2(1, 1),
+                            new Vector2(0.3f, 1),
                             FloorTextureIndex,
                             FloorTexture2Index);
 
@@ -124,8 +124,8 @@ namespace Adventure.Battle
                             Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                             new Vector2(0, 0),
                             new Vector2(farbgSize, size),
-                            new Vector2(0, 0),
-                            new Vector2(1, 1),
+                            new Vector2(0.7f, 0),
+                            new Vector2(1.0f, 1),
                             FloorTextureIndex,
                             FloorTexture2Index);
 
