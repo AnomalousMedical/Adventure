@@ -45,7 +45,7 @@ namespace DiligentEngine.RT
             blasDesc.CubeUV = new Vector2[NumVertices];
             blasDesc.GlobalCubeUV = new Vector2[NumVertices];
             blasDesc.CubeNormals = new Vector4[NumVertices];
-            blasDesc.Textures = new float[NumVertices];
+            blasDesc.Texture1 = new float[NumVertices];
             blasDesc.Texture2 = new float[NumVertices];
             blasDesc.Indices = new UInt32[numIndices];
         }
@@ -62,7 +62,7 @@ namespace DiligentEngine.RT
             blasDesc.CubeNormals[currentVert] = ConvertVector(-topLeftNormal);
             blasDesc.CubeUV[currentVert] = new Vector2(uvTopLeft.x, uvTopLeft.y);
             blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvTopLeft.x, globalUvTopLeft.y);
-            blasDesc.Textures[currentVert] = texture;
+            blasDesc.Texture1[currentVert] = texture;
             blasDesc.Texture2[currentVert] = texture2;
 
             ++currentVert;
@@ -70,7 +70,7 @@ namespace DiligentEngine.RT
             blasDesc.CubeNormals[currentVert] = ConvertVector(-topRightNormal);
             blasDesc.CubeUV[currentVert] = new Vector2(uvBottomRight.x, uvTopLeft.y);
             blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvBottomRight.x, globalUvTopLeft.y);
-            blasDesc.Textures[currentVert] = texture;
+            blasDesc.Texture1[currentVert] = texture;
             blasDesc.Texture2[currentVert] = texture2;
 
             ++currentVert;
@@ -78,7 +78,7 @@ namespace DiligentEngine.RT
             blasDesc.CubeNormals[currentVert] = ConvertVector(-bottomRightNormal);
             blasDesc.CubeUV[currentVert] = new Vector2(uvBottomRight.x, uvBottomRight.y);
             blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvBottomRight.x, globalUvBottomRight.y);
-            blasDesc.Textures[currentVert] = texture;
+            blasDesc.Texture1[currentVert] = texture;
             blasDesc.Texture2[currentVert] = texture2;
 
             ++currentVert;
@@ -86,7 +86,7 @@ namespace DiligentEngine.RT
             blasDesc.CubeNormals[currentVert] = ConvertVector(-bottomLeftNormal);
             blasDesc.CubeUV[currentVert] = new Vector2(uvTopLeft.x, uvBottomRight.y);
             blasDesc.GlobalCubeUV[currentVert] = new Vector2(globalUvTopLeft.x, globalUvBottomRight.y);
-            blasDesc.Textures[currentVert] = texture;
+            blasDesc.Texture1[currentVert] = texture;
             blasDesc.Texture2[currentVert] = texture2;
 
             ++currentVert;

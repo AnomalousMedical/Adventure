@@ -51,7 +51,7 @@ namespace DiligentEngine.RT
                         new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
                     };
 
-                    blasDesc.Textures = new float[4]; //Sprites cannot use these textures, since they override the uvs
+                    blasDesc.Texture1 = new float[4]; //Sprites cannot use these textures, since they override the uvs
                     blasDesc.Texture2 = new float[4]; //Sprites cannot use these textures, since they override the uvs
 
                     // 3   2

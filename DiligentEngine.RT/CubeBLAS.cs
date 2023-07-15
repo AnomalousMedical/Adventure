@@ -72,7 +72,7 @@ namespace DiligentEngine.RT
                     new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0), new Vector4(0, 0, +1, 0)  //Front +z
                     };
 
-                    blasDesc.Textures = new float[]
+                    blasDesc.Texture1 = new float[]
                     {
                     0.5f, 0.5f, 0.5f, 0.5f,
                     0.5f, 0.5f, 0.5f, 0.5f,

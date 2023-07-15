@@ -24,7 +24,7 @@ namespace DiligentEngine.RT
 
         public Vector4[] CubeNormals { get; set; }
 
-        public float[] Textures { get; set; }
+        public float[] Texture1 { get; set; }
 
         public float[] Texture2 { get; set; }
 
@@ -197,9 +197,9 @@ namespace DiligentEngine.RT
 
                         CalculateTangentBitangent(pos1, pos2, pos3, ref vertex1, ref vertex2, ref vertex3);
 
-                        vertex1.tex = blasMeshDesc.Textures[index1];
-                        vertex2.tex = blasMeshDesc.Textures[index2];
-                        vertex3.tex = blasMeshDesc.Textures[index3];
+                        vertex1.tex = blasMeshDesc.Texture1[index1];
+                        vertex2.tex = blasMeshDesc.Texture1[index2];
+                        vertex3.tex = blasMeshDesc.Texture1[index3];
 
                         vertex1.tex2 = blasMeshDesc.Texture2[index1];
                         vertex2.tex2 = blasMeshDesc.Texture2[index2];
