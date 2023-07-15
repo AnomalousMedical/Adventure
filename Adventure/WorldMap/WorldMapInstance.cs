@@ -141,7 +141,7 @@ namespace Adventure.WorldMap
                     var desertTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground025_1K");
                     var snowyTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Snow006_1K");
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
-                    var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground027_1K");
+                    var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground060_1K");
                     var swampTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Moss001_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");

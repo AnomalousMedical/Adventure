@@ -136,8 +136,9 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Ground027_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Rocks013_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground060_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Ground027_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Rocks013_1K",
                 BgMusic = "Music/freepd/Kevin MacLeod - Pickled Pink.ogg",
                 BgMusicNight = "Music/freepd/Kevin MacLeod - Pickled Pink.ogg",
                 Treasure = new BiomeTreasure()
@@ -158,7 +159,9 @@ namespace Adventure
             var biome = new Biome
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground049C_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049A_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Moss001_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Ground023_1K",
                 BgMusic = "Music/freepd/Bryan Teoh - Murder On The Bayou.ogg",
                 BgMusicNight = "Music/freepd/Bryan Teoh - Murder On The Bayou.ogg",
                 Treasure = new BiomeTreasure()
