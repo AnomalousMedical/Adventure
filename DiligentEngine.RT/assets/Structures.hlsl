@@ -38,7 +38,7 @@ struct CubeAttribVertex {
   float4 binormal;
   float4 normal;
   float tex;
-  int pad1;
+  float tex2;
   int pad2;
   int pad3;
 };

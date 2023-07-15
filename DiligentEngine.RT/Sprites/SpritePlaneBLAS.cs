@@ -52,6 +52,7 @@ namespace DiligentEngine.RT
                     };
 
                     blasDesc.Textures = new float[4]; //Sprites cannot use these textures, since they override the uvs
+                    blasDesc.Texture2 = new float[4]; //Sprites cannot use these textures, since they override the uvs
 
                     // 3   2
                     //

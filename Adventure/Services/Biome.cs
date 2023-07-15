@@ -7,7 +7,9 @@ namespace Adventure
     interface IBiome
     {
         string FloorTexture { get; set; }
+        string FloorTexture2 { get; set; }
         string WallTexture { get; set; }
+        string WallTexture2 { get; set; }
         bool ReflectFloor { get; }
         bool ReflectWall { get; }
         BiomeTreasure Treasure { get; set; }
@@ -37,7 +39,11 @@ namespace Adventure
     {
         public string FloorTexture { get; set; }
 
+        public string FloorTexture2 { get; set; }
+
         public string WallTexture { get; set; }
+
+        public string WallTexture2 { get; set; }
 
         public bool ReflectFloor { get; set; }
 

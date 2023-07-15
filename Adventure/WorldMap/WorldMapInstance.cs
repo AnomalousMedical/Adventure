@@ -158,7 +158,7 @@ namespace Adventure.WorldMap
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var chipTextureTask = textureManager.Checkout(chipTextureDesc);
 
-                    terrainNoise.CreateTerrainNoise(0, out var noise, out var distanceNoise);
+                    terrainNoise.CreateOffsetTerrainNoise(0, out var noise, out var distanceNoise);
                     var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();

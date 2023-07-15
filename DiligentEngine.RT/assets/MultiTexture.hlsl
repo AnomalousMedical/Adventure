@@ -141,14 +141,12 @@ void GetMultiBaseNormalPhysical
     //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
-    physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
+    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex2) * tex2Blend;
+    physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex2) * tex2Blend;
 }
 
 void GetMultiBaseNormalPhysicalEmissive

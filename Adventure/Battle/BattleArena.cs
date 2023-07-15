@@ -72,7 +72,7 @@ namespace Adventure.Battle
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
 
-                    terrainNoise.CreateTerrainNoise(0, out var noise, out var distanceNoise);
+                    terrainNoise.CreateOffsetTerrainNoise(0, out var noise, out var distanceNoise);
                     var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
 
                     await Task.Run(() =>

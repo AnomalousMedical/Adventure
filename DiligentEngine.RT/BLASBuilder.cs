@@ -26,6 +26,8 @@ namespace DiligentEngine.RT
 
         public float[] Textures { get; set; }
 
+        public float[] Texture2 { get; set; }
+
         public UInt32[] Indices { get; set; }
 
         public RAYTRACING_BUILD_AS_FLAGS BuildAsFlags { get; set; } = RAYTRACING_BUILD_AS_FLAGS.RAYTRACING_BUILD_AS_PREFER_FAST_TRACE;
@@ -198,6 +200,10 @@ namespace DiligentEngine.RT
                         vertex1.tex = blasMeshDesc.Textures[index1];
                         vertex2.tex = blasMeshDesc.Textures[index2];
                         vertex3.tex = blasMeshDesc.Textures[index3];
+
+                        vertex1.tex2 = blasMeshDesc.Texture2[index1];
+                        vertex2.tex2 = blasMeshDesc.Texture2[index2];
+                        vertex3.tex2 = blasMeshDesc.Texture2[index3];
 
                         attrVertices[index1] = vertex1;
                         attrVertices[index2] = vertex2;

@@ -67,7 +67,7 @@ namespace Adventure
             var biome = new Biome
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Snow006_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Rock022_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Snow004_1K",
                 ReflectFloor = false,
                 EntranceAsset = new SnowyEntrance(),
                 Treasure = new BiomeTreasure()
@@ -89,8 +89,8 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Rock029_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground027_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Ground055S_1K",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
@@ -176,7 +176,9 @@ namespace Adventure
             var biome = new Biome
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049C_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground042_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Ground023_1K",
                 BgMusic = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
                 BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
                 EntranceAsset = new ForestEntrance(),

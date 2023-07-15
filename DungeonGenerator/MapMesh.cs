@@ -56,7 +56,20 @@ namespace DungeonGenerator
             }
         }
 
-        private float wallTextureIndex = 1.5f;
+        private float floorTextureIndex2 = 1.5f;
+        public int FloorTextureIndex2
+        {
+            get
+            {
+                return (int)floorTextureIndex2;
+            }
+            set
+            {
+                floorTextureIndex2 = value + 0.5f;
+            }
+        }
+
+        private float wallTextureIndex = 2.5f;
         public int WallTextureIndex
         {
             get
@@ -66,6 +79,19 @@ namespace DungeonGenerator
             set
             {
                 wallTextureIndex = value + 0.5f;
+            }
+        }
+
+        private float wallTextureIndex2 = 3.5f;
+        public int WallTextureIndex2
+        {
+            get
+            {
+                return (int)wallTextureIndex2;
+            }
+            set
+            {
+                wallTextureIndex2 = value + 0.5f;
             }
         }
 
@@ -833,7 +859,8 @@ namespace DungeonGenerator
                     bottomRight,
                     globalLeftTop,
                     globalRightBottom,
-                    floorTextureIndex);
+                    floorTextureIndex, 
+                    floorTextureIndex2);
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
@@ -1117,7 +1144,8 @@ namespace DungeonGenerator
                 bottomRight,
                 globalLeftTop,
                 globalRightBottom,
-                wallTextureIndex);
+                wallTextureIndex,
+                wallTextureIndex2);
         }
 
         private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom, out Vector2 globalLeftTop, out Vector2 globalRightBottom, float mapWidth, float mapHeight)
