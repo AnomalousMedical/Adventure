@@ -73,7 +73,6 @@ namespace Adventure.WorldMap
         public Vector2 MapSize => mapSize;
 
         List<CC0TextureResult> loadedTextures = new List<CC0TextureResult>();
-        CC0TextureResult noiseTexture;
 
         public WorldMapInstance
         (
@@ -200,7 +199,6 @@ namespace Adventure.WorldMap
                     var cliffTexture = cliffTextureTask.Result;
                     var oceanFloorTexture = oceanFloorTextureTask.Result;
                     var chipTexture = chipTextureTask.Result;
-                    noiseTexture = noiseTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
                     loadedTextures.Add(desertTexture);
@@ -227,12 +225,11 @@ namespace Adventure.WorldMap
                         swampTexture,
                         cliffTexture,
                         oceanFloorTexture,
-                        chipTexture,
-                        noiseTexture);
+                        chipTexture);
 
                     floorBlasInstanceData.padding = 9; //Noise is the 10th texture
 
-                    floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false, BlasSpecialMaterial.MultiTexture);
+                    floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
                     SetupAreas(description.Areas, description.AirshipSquare, description.AirshipPortalSquare, description.PortalLocations);
@@ -281,12 +278,10 @@ namespace Adventure.WorldMap
             {
                 activeTextures.RemoveActiveTexture(texture);
             }
-            activeTextures.RemoveActiveTexture(noiseTexture);
             foreach (var texture in loadedTextures)
             {
                 textureManager.TryReturn(texture);
             }
-            noiseTextureManager.ReturnTexture(noiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(shader);
             foreach(var data in floorInstanceData)
