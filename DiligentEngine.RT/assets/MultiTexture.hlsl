@@ -13,16 +13,12 @@ void GetMultiBase
 {
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
 }
 
 void GetMultiBaseEmissive
@@ -42,17 +38,13 @@ void GetMultiBaseEmissive
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
+    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
 }
 
 void GetMultiBaseNormal
@@ -72,17 +64,13 @@ void GetMultiBaseNormal
     baseColor = GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex);
     normalColor = GetSampledNormal(mip, uv, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
+    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex2) * tex2Blend;
 }
 
 void GetMultiBaseNormalEmissive
@@ -104,18 +92,14 @@ void GetMultiBaseNormalEmissive
     normalColor = GetSampledNormal(mip, uv, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
-    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
+    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex2) * tex2Blend;
+    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
 }
 
 void GetMultiBaseNormalPhysical
@@ -137,8 +121,6 @@ void GetMultiBaseNormalPhysical
     normalColor = GetSampledNormal(mip, uv, posX.tex);
     physicalColor = GetPhysical(mip, uv, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
     float tex1Blend = noise.r;
@@ -170,17 +152,13 @@ void GetMultiBaseNormalPhysicalEmissive
     physicalColor = GetPhysical(mip, uv, posX.tex);
     emissiveColor = GetEmissive(mip, uv, g_SamLinearWrap, posX.tex);
 
-    //You could check the depth to see if this blend is worth it, otherwise just use the mixed up uvs (texture2 here)
-    //It would save lookups in reflections, maybe a precompiler option?
     float2 noise = GetBaseColor(0, globalUv, g_SamPointWrap, instanceData.padding).rg;
 
-    uv += noise.r;
-
-    float tex1Blend = noise.g;
+    float tex1Blend = noise.r;
     float tex2Blend = 1.0f - tex1Blend;
 
-    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
-    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex) * tex2Blend;
-    physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex) * tex2Blend;
-    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex) * tex2Blend;
+    baseColor = baseColor * tex1Blend + GetBaseColor(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
+    normalColor = normalColor * tex1Blend + GetSampledNormal(mip, uv, posX.tex2) * tex2Blend;
+    physicalColor = physicalColor * tex1Blend + GetPhysical(mip, uv, posX.tex2) * tex2Blend;
+    emissiveColor = emissiveColor * tex1Blend + GetEmissive(mip, uv, g_SamLinearWrap, posX.tex2) * tex2Blend;
 }
