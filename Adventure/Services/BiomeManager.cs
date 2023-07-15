@@ -68,6 +68,7 @@ namespace Adventure
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Snow006_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Snow004_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Snow003_1K",
                 ReflectFloor = false,
                 EntranceAsset = new SnowyEntrance(),
                 Treasure = new BiomeTreasure()
@@ -89,8 +90,10 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Ground027_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Ground055S_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground031_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground033_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Ground033_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Ground035_1K",
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
