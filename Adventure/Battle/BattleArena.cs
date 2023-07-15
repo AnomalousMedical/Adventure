@@ -17,6 +17,11 @@ namespace Adventure.Battle
 {
     class BattleArena : IDisposable
     {
+        const float FloorTextureIndex = 0.5f;
+        const float FloorTexture2Index = 1.5f;
+        const float WallTextureIndex = 2.5f;
+        const float WallTexture2Index = 3.5f;
+
         public class Description : SceneObjectDesc
         {
             public IBiome Biome { get; set; }
@@ -33,7 +38,9 @@ namespace Adventure.Battle
         private PrimaryHitShader floorShader;
         private TaskCompletionSource loadingTask = new TaskCompletionSource();
         private CC0TextureResult floorTexture;
+        private CC0TextureResult floorTexture2;
         private CC0TextureResult wallTexture;
+        private CC0TextureResult wallTexture2;
         CC0TextureResult noiseTexture;
         private BlasInstanceData blasInstanceData;
 
@@ -67,13 +74,17 @@ namespace Adventure.Battle
                 try
                 {
                     var floorTextureDesc = new CCOTextureBindingDescription(description.Biome.FloorTexture, reflective: description.Biome.ReflectFloor);
+                    var floorTextureDesc2 = new CCOTextureBindingDescription(description.Biome.FloorTexture2 ?? description.Biome.FloorTexture, reflective: description.Biome.ReflectFloor);
                     var wallTextureDesc = new CCOTextureBindingDescription(description.Biome.WallTexture, reflective: description.Biome.ReflectWall);
+                    var wallTextureDesc2 = new CCOTextureBindingDescription(description.Biome.WallTexture2 ?? description.Biome.WallTexture, reflective: description.Biome.ReflectWall);
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
+                    var floorTexture2Task = textureManager.Checkout(floorTextureDesc2);
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
+                    var wallTexture2Task = textureManager.Checkout(wallTextureDesc2);
 
-                    terrainNoise.CreateOffsetTerrainNoise(0, out var noise, out var distanceNoise);
-                    var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
+                    var noise = terrainNoise.CreateBlendTerrainNoise(0);
+                    var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
 
                     await Task.Run(() =>
                     {
@@ -85,7 +96,8 @@ namespace Adventure.Battle
                                           new Vector2(size, size),
                                           new Vector2(0, 0),
                                           new Vector2(1, 1), 
-                                          0.5f);
+                                          FloorTextureIndex,
+                                          FloorTexture2Index);
 
                         var dirOffset = farbgSize + size;
 
@@ -100,7 +112,8 @@ namespace Adventure.Battle
                             new Vector2(farbgSize, size),
                             new Vector2(0, 0),
                             new Vector2(1, 1),
-                            0.5f);
+                            FloorTextureIndex,
+                            FloorTexture2Index);
 
                         //Floor +x
                         floorMesh.AddQuad(
@@ -113,7 +126,8 @@ namespace Adventure.Battle
                             new Vector2(farbgSize, size),
                             new Vector2(0, 0),
                             new Vector2(1, 1),
-                            0.5f);
+                            FloorTextureIndex,
+                            FloorTexture2Index);
 
                         //Wall +z
                         floorMesh.AddQuad(
@@ -126,7 +140,8 @@ namespace Adventure.Battle
                             new Vector2(farbgSize, farbgSize),
                             new Vector2(0, 0),
                             new Vector2(1, 1),
-                            1.5f);
+                            WallTextureIndex,
+                            WallTexture2Index);
 
                         //Wall -z
                         floorMesh.AddQuad(
@@ -139,7 +154,8 @@ namespace Adventure.Battle
                             new Vector2(farbgSize, farbgSize),
                             new Vector2(0, 0),
                             new Vector2(1, 1),
-                            1.5f);
+                            WallTextureIndex,
+                            WallTexture2Index);
                     });
 
                     await floorMesh.End("BattleArenaFloor");
@@ -156,7 +172,9 @@ namespace Adventure.Battle
 
                     this.floorShader = floorShaderSetup.Result;
                     this.floorTexture = floorTextureTask.Result;
+                    this.floorTexture2 = floorTexture2Task.Result;
                     this.wallTexture = wallTextureTask.Result;
+                    this.wallTexture2 = wallTexture2Task.Result;
                     noiseTexture = noiseTask.Result;
 
                     this.floorInstanceData = new TLASInstanceData()
@@ -170,8 +188,8 @@ namespace Adventure.Battle
 
                     rtInstances.AddTlasBuild(floorInstanceData);
                     rtInstances.AddShaderTableBinder(Bind);
-                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture, wallTexture, noiseTexture);
-                    blasInstanceData.padding = 2;
+                    blasInstanceData = activeTextures.AddActiveTexture(floorTexture, floorTexture2, wallTexture, wallTexture2, noiseTexture);
+                    blasInstanceData.padding = 4; //This is the noise texture index, which is the 5th texture
                     blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, description.Biome.ReflectFloor, false, BlasSpecialMaterial.MultiTexture);
 
                     loadingTask.SetResult();
@@ -191,10 +209,14 @@ namespace Adventure.Battle
         public void Dispose()
         {
             activeTextures.RemoveActiveTexture(wallTexture);
+            activeTextures.RemoveActiveTexture(wallTexture2);
             activeTextures.RemoveActiveTexture(floorTexture);
+            activeTextures.RemoveActiveTexture(floorTexture2);
             activeTextures.RemoveActiveTexture(noiseTexture);
             textureManager.TryReturn(wallTexture);
+            textureManager.TryReturn(wallTexture2);
             textureManager.TryReturn(floorTexture);
+            textureManager.TryReturn(floorTexture2);
             noiseTextureManager.ReturnTexture(noiseTexture);
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
