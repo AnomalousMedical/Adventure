@@ -165,7 +165,9 @@ namespace Adventure.Battle
                     await Task.WhenAll
                     (
                         floorTextureTask,
+                        floorTexture2Task,
                         wallTextureTask,
+                        wallTexture2Task,
                         floorShaderSetup,
                         noiseTask
                     );
