@@ -90,7 +90,7 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Ground031_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Rocks008_1K",
                 FloorTexture2 = "Graphics/Textures/AmbientCG/Ground033_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground033_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Ground035_1K",
@@ -114,9 +114,10 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                //FloorTexture = "Graphics/Textures/AmbientCG/Rocks023_1K",
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049A_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Grass004_1K",
                 BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
                 BgMusicNight = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
                 Treasure = new BiomeTreasure()
