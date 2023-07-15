@@ -92,7 +92,7 @@ public class NoiseTextureManager
         return result;
     }
 
-    public async Task<CC0TextureResult> GenerateDoubleNoiseTexture(FastNoiseLite noise1, FastNoiseLite noise2, int width, int height)
+    public async Task<CC0TextureResult> GenerateDoubleNoiseTexture(FastNoiseLite noise1, FastNoiseLite noise2, int width, int height, int numThreads = 8)
     {
         var Barriers = new List<StateTransitionDesc>(1);
 
@@ -104,7 +104,6 @@ public class NoiseTextureManager
             var size = width * height;
             var pixels = new HalfRgTexturePixel[size];
 
-            var numThreads = 16;
             var partialHeight = height / numThreads;
 
             List<Task<MinMaxResult>> redGeneratorTasks = new List<Task<MinMaxResult>>();
