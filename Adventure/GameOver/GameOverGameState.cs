@@ -89,6 +89,12 @@ namespace Adventure.GameOver
             //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
             if (sharpGui.Button(load, GamepadId.Pad1) || sharpGui.Button(load, GamepadId.Pad2) || sharpGui.Button(load, GamepadId.Pad3) || sharpGui.Button(load, GamepadId.Pad4))
             {
+                if (persistence.Current.Party.OldSchool)
+                {
+                    persistenceWriter.SaveNewSchool();
+                    persistence.Current.Party.OldSchool = false;
+                }
+
                 nextState = setupGameState;
             }
 
