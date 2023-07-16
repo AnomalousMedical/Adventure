@@ -176,6 +176,8 @@ namespace Adventure.Services
             public long Gold { get; set; }
 
             public bool Undefeated { get; set; } = true;
+
+            public bool OldSchool { get; set; } = true;
         }
     }
 }

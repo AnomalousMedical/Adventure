@@ -17,6 +17,7 @@ namespace Adventure.Services
         void RemoveSaveBlock(object blocker);
         void Save();
         void SaveDefeated();
+        void SaveNewSchool();
     }
 
     class PersistenceWriter : IPersistenceWriter, IDisposable
@@ -66,6 +67,16 @@ namespace Adventure.Services
             if (savedState.Party.Undefeated)
             {
                 savedState.Party.Undefeated = false;
+                SaveData(savedState);
+            }
+        }
+
+        public void SaveNewSchool()
+        {
+            var savedState = LoadData();
+            if (savedState.Party.OldSchool)
+            {
+                savedState.Party.OldSchool = false;
                 SaveData(savedState);
             }
         }

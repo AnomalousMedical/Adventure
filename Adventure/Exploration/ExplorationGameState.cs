@@ -15,6 +15,8 @@ namespace Adventure
     {
         bool AllowBattles { get; set; }
 
+        bool Active { get; }
+
         void Link(IBattleGameState battleState, IWorldMapGameState worldMapState);
 
         /// <summary>
@@ -91,9 +93,12 @@ namespace Adventure
             this.worldMapState = worldMapState;
         }
 
+        public bool Active { get; private set; }
+
         public void SetActive(bool active)
         {
             //Stopping them both directions
+            Active = active;
             zoneManager.StopPlayer();
             if (active)
             {

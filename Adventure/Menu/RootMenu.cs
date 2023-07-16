@@ -25,6 +25,7 @@ namespace Adventure.Menu
         private readonly PlayerMenu playerMenu;
         private readonly OptionsMenu optionsMenu;
         private readonly Persistence persistence;
+        private readonly IPersistenceWriter persistenceWriter;
         private readonly BuyMenu buyMenu;
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
@@ -33,6 +34,7 @@ namespace Adventure.Menu
         SharpButton debug = new SharpButton() { Text = "Debug" };
 
         SharpText undefeated = new SharpText() { Text = "Undefeated", Color = Color.White };
+        SharpText oldSchool = new SharpText() { Text = "Old School", Color = Color.White };
         SharpText timePlayed = new SharpText() { Color = Color.White };
 
         public RootMenu(
@@ -44,6 +46,7 @@ namespace Adventure.Menu
             PlayerMenu playerMenu,
             OptionsMenu optionsMenu,
             Persistence persistence,
+            IPersistenceWriter persistenceWriter,
             BuyMenu buyMenu)
         {
             this.sharpGui = sharpGui;
@@ -54,6 +57,7 @@ namespace Adventure.Menu
             this.playerMenu = playerMenu;
             this.optionsMenu = optionsMenu;
             this.persistence = persistence;
+            this.persistenceWriter = persistenceWriter;
             this.buyMenu = buyMenu;
         }
 
@@ -77,7 +81,7 @@ namespace Adventure.Menu
             var infoLayout =
               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
               new MaxWidthLayout(scaleHelper.Scaled(300),
-              new ColumnLayout(undefeated, timePlayed) { Margin = new IntPad(10) }
+              new ColumnLayout(undefeated, oldSchool, timePlayed) { Margin = new IntPad(10) }
             ));
             var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
             infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
@@ -88,6 +92,10 @@ namespace Adventure.Menu
             if (persistence.Current.Party.Undefeated)
             {
                 sharpGui.Text(undefeated);
+            }
+            if (persistence.Current.Party.OldSchool)
+            {
+                sharpGui.Text(oldSchool);
             }
 
             var layout =
@@ -109,6 +117,12 @@ namespace Adventure.Menu
             }
             else if (hasShop && sharpGui.Button(shop, gamepad, navDown: options.Id, navUp: items.Id))
             {
+                if (explorationGameState.Active && persistence.Current.Party.OldSchool)
+                {
+                    persistenceWriter.SaveNewSchool();
+                    persistence.Current.Party.OldSchool = false;
+                }
+
                 buyMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(buyMenu, gamepad);
             }
