@@ -348,8 +348,6 @@ namespace Adventure.Services
 
                 var phase1UniqueStolenTreasures = new List<Treasure>();
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase1UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, true, false, nameof(Steal))));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
                 phase1UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
@@ -439,8 +437,6 @@ namespace Adventure.Services
                 phase2UniqueTreasures.Add(new Treasure(PotionCreator.CreateVitalityBoost()));
 
                 var phase2UniqueStolenTreasures = new List<Treasure>();
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase2UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, true, false, nameof(Steal))));
                 phase2UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
@@ -597,8 +593,6 @@ namespace Adventure.Services
                 phase3UniqueTreasures.Add(new Treasure(PotionCreator.CreateLuckBoost()));
 
                 var phase3UniqueStolenTreasures = new List<Treasure>();
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
-                phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateFerrymansBribe()));
                 phase3UniqueStolenTreasures.Add(new Treasure(DaggerCreator.CreateNormal(nameof(UltimateDagger), phase3TreasureLevel, phase3Adjective, true, true, nameof(Steal), nameof(Haste))));
                 phase3UniqueStolenTreasures.Add(new Treasure(PotionCreator.CreateStrengthBoost()));
@@ -790,6 +784,12 @@ namespace Adventure.Services
 
         public IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems)
         {
+            //Keep this at the top of the list
+            if (plotItems.Contains(PlotItems.Phase1Shop))
+            {
+                yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
+            }
+
             if (plotItems.Contains(PlotItems.Phase3Shop))
             {
                 var treasureLevel = 40;
