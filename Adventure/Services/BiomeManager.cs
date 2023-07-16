@@ -1,5 +1,6 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.World;
+using DiligentEngine.RT.Resources;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,13 @@ namespace Adventure
 
     class BiomeManager : IBiomeManager
     {
+        private readonly TerrainNoise terrainNoise;
+
+        public BiomeManager(TerrainNoise terrainNoise)
+        {
+            this.terrainNoise = terrainNoise;
+        }
+
         public IBiome GetBiome(BiomeType type)
         {
             switch (type)
@@ -206,10 +214,10 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Rock031_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Lava003_1K",
                 FloorTexture2 = "Graphics/Textures/AmbientCG/Ground031_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Rock037_1K",
-                WallTexture2 = "Graphics/Textures/AmbientCG/Lava003_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Rock037_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Lava004_1K",
                 BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
                 BgMusicNight = "Music/opengameart/congusbongus - Mythica.ogg",
                 EntranceAsset = new ForestEntrance(),
@@ -222,7 +230,8 @@ namespace Adventure
                     //new BiomeBackgroundItem(1, new ComputerDesk()),
                     //new BiomeBackgroundItem(3, new Tree())
                 },
-                MaxBackgroundItemRoll = 250
+                MaxBackgroundItemRoll = 250,
+                CreateNoise = seed => terrainNoise.CreateLavaNoise(seed)
             };
 
             return biome;

@@ -83,7 +83,7 @@ namespace Adventure.Battle
                     var wallTextureTask = textureManager.Checkout(wallTextureDesc);
                     var wallTexture2Task = textureManager.Checkout(wallTextureDesc2);
 
-                    var noise = terrainNoise.CreateBlendTerrainNoise(0);
+                    var noise = description.Biome.CreateNoise?.Invoke(0) ?? terrainNoise.CreateBlendTerrainNoise(0);
                     var noiseTask = noiseTextureManager.GenerateTexture(noise, 512, 512);
 
                     await Task.Run(() =>

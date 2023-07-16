@@ -296,7 +296,7 @@ namespace Adventure
                 var wallTextureTask = textureManager.Checkout(wallTextureDesc);
                 var wallTexture2Task = textureManager.Checkout(wallTextureDesc2);
 
-                var noise = terrainNoise.CreateBlendTerrainNoise(description.LevelSeed);
+                var noise = biome.CreateNoise?.Invoke(description.LevelSeed) ?? terrainNoise.CreateBlendTerrainNoise(description.LevelSeed);
 
                 var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
 

@@ -1,6 +1,7 @@
 ﻿using RpgMath;
 using Adventure.Assets;
 using System.Collections.Generic;
+using System;
 
 namespace Adventure
 {
@@ -33,6 +34,7 @@ namespace Adventure
 
         int MaxBackgroundItemRoll { get; set; }
         ISpriteAsset EntranceAsset { get; set; }
+        Func<int, FastNoiseLite> CreateNoise { get; set; }
     }
 
     class Biome : IBiome
@@ -80,6 +82,8 @@ namespace Adventure
         public List<BiomeBackgroundItem> BackgroundItems { get; set; }
 
         public int MaxBackgroundItemRoll { get; set; } = 100;
+
+        public Func<int, FastNoiseLite> CreateNoise { get; set; }
     }
 
     record BiomeBackgroundItem(int Chance, ISpriteAsset Asset);
