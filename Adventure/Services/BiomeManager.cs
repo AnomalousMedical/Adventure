@@ -15,7 +15,7 @@ namespace Adventure
         Beach = 4,
         Swamp = 5,
         Max = Swamp + 1,
-        Chip = 1000, //This isn't included in random selection
+        Volcano = 1000, //This isn't included in random selection
     }
 
     interface IBiomeManager
@@ -55,8 +55,8 @@ namespace Adventure
                     return MakeBeach();
                 case BiomeType.Swamp:
                     return MakeSwamp();
-                case BiomeType.Chip:
-                    return MakeChip();
+                case BiomeType.Volcano:
+                    return MakeVolcano();
             }
 
             throw new IndexOutOfRangeException($"Biome type '{type}' is not supported.");
@@ -115,7 +115,7 @@ namespace Adventure
             var biome = new Biome
             {
                 FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
-                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049A_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground067_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Ground037_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Grass004_1K",
                 BgMusic = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg",
@@ -159,8 +159,8 @@ namespace Adventure
         {
             var biome = new Biome
             {
-                FloorTexture = "Graphics/Textures/AmbientCG/Ground049C_1K",
-                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049A_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground067_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Moss001_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Ground023_1K",
                 BgMusic = "Music/freepd/Bryan Teoh - Murder On The Bayou.ogg",
@@ -202,13 +202,14 @@ namespace Adventure
             return biome;
         }
 
-        public Biome MakeChip()
+        public Biome MakeVolcano()
         {
             var biome = new Biome
             {
-                ReflectFloor = true,
-                FloorTexture = "Graphics/Textures/AmbientCG/Metal032_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Chip005_1K",
+                FloorTexture = "Graphics/Textures/AmbientCG/Rock031_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground031_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Rock037_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Lava003_1K",
                 BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
                 BgMusicNight = "Music/opengameart/congusbongus - Mythica.ogg",
                 EntranceAsset = new ForestEntrance(),
@@ -218,8 +219,8 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(1, new ComputerDesk()),
-                    new BiomeBackgroundItem(3, new Tree())
+                    //new BiomeBackgroundItem(1, new ComputerDesk()),
+                    //new BiomeBackgroundItem(3, new Tree())
                 },
                 MaxBackgroundItemRoll = 250
             };

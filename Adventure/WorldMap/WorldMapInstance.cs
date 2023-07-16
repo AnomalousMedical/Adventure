@@ -145,7 +145,7 @@ namespace Adventure.WorldMap
                     var swampTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Moss001_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
-                    var chipTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Chip005_1K");
+                    var volcanoTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock037_1K");
 
                     var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
                     var desertTextureTask = textureManager.Checkout(desertTextureDesc);
@@ -155,10 +155,7 @@ namespace Adventure.WorldMap
                     var swampTextureTask = textureManager.Checkout(swampTextureDesc);
                     var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
                     var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
-                    var chipTextureTask = textureManager.Checkout(chipTextureDesc);
-
-                    terrainNoise.CreateOffsetTerrainNoise(0, out var noise, out var distanceNoise);
-                    var noiseTask = noiseTextureManager.GenerateDoubleNoiseTexture(noise, distanceNoise, 4096, 4096);
+                    var volcanoTextureTask = textureManager.Checkout(volcanoTextureDesc);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();
 
@@ -182,10 +179,9 @@ namespace Adventure.WorldMap
                         swampTextureTask,
                         cliffTextureTask,
                         oceanFloorTextureTask,
-                        chipTextureTask,
+                        volcanoTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
-                        shaderSetup,
-                        noiseTask
+                        shaderSetup
                     );
 
                     this.shader = shaderSetup.Result;
@@ -198,7 +194,7 @@ namespace Adventure.WorldMap
                     var swampTexture = swampTextureTask.Result;
                     var cliffTexture = cliffTextureTask.Result;
                     var oceanFloorTexture = oceanFloorTextureTask.Result;
-                    var chipTexture = chipTextureTask.Result;
+                    var volcanoTexture = volcanoTextureTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
                     loadedTextures.Add(desertTexture);
@@ -208,7 +204,7 @@ namespace Adventure.WorldMap
                     loadedTextures.Add(swampTexture);
                     loadedTextures.Add(cliffTexture);
                     loadedTextures.Add(oceanFloorTexture);
-                    loadedTextures.Add(chipTexture);
+                    loadedTextures.Add(volcanoTexture);
 
                     foreach (var data in floorInstanceData)
                     {
@@ -225,9 +221,7 @@ namespace Adventure.WorldMap
                         swampTexture,
                         cliffTexture,
                         oceanFloorTexture,
-                        chipTexture);
-
-                    floorBlasInstanceData.padding = 9; //Noise is the 10th texture
+                        volcanoTexture);
 
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);

@@ -757,7 +757,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.EnemyLevel = 51;
                 areaBuilder.IndexInPhase = 2;
-                areaBuilder.Biome = BiomeType.Chip;
+                areaBuilder.Biome = BiomeType.Volcano;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
 
                 //You get all the monsters in this zone
@@ -927,8 +927,8 @@ namespace Adventure.Services
         {
             switch (biome)
             {
-                case BiomeType.Chip:
-                    return (int)BiomeType.Max + 2; //Max is the stand in for the chip zone + 2 for the cliff and sea floor
+                case BiomeType.Volcano:
+                    return (int)BiomeType.Max + 2; //Max is the stand in for the volcano zone + 2 for the cliff and sea floor
                 default:
                     return (int)biome;
             }
