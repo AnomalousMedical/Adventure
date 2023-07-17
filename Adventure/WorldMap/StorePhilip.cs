@@ -8,6 +8,7 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using System;
+using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
@@ -37,6 +38,7 @@ namespace Adventure.WorldMap
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
+        private bool graphicsCreated = false;
         private readonly Vector3[] transforms;
 
         private Vector3 currentPosition;
@@ -88,21 +90,34 @@ namespace Adventure.WorldMap
 
             MoveToPosition();
 
-            coroutine.RunTask(async () =>
+            if (persistence.Current.PlotItems.Contains(PlotItems.Phase3Shop))
             {
-                using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
-
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
-
-                foreach (var data in tlasData)
+                coroutine.RunTask(async () =>
                 {
-                    spriteInstance.UpdateBlas(data);
-                    rtInstances.AddTlasBuild(data);
-                }
+                    await Task.Delay(1);
+                    RequestDestruction();
+                });
+            }
+            else
+            {
+                coroutine.RunTask(async () =>
+                {
+                    using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite);
-            });
+                    this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
+
+                    foreach (var data in tlasData)
+                    {
+                        spriteInstance.UpdateBlas(data);
+                        rtInstances.AddTlasBuild(data);
+                    }
+
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite);
+
+                    graphicsCreated = true;
+                });
+            }
         }
 
         public void CreatePhysics()
@@ -136,12 +151,15 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
-            spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            foreach (var data in tlasData)
+            if (graphicsCreated)
             {
-                rtInstances.RemoveTlasBuild(data);
+                spriteInstanceFactory.TryReturn(spriteInstance);
+                rtInstances.RemoveSprite(sprite);
+                rtInstances.RemoveShaderTableBinder(Bind);
+                foreach (var data in tlasData)
+                {
+                    rtInstances.RemoveTlasBuild(data);
+                }
             }
             DestroyPhysics();
         }
