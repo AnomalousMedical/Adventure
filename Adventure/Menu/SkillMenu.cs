@@ -162,13 +162,16 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             var newSelection = skillButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (!choosingCharacter && newSelection != null)
             {
-                selectedSkill = newSelection;
-                characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                if(characterData.CharacterSheet.CurrentHp > 0)
                 {
-                    var skill = skillFactory.CreateSkill(selectedSkill);
-                    skill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
-                }))
-                .ToList();
+                    selectedSkill = newSelection;
+                    characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                    {
+                        var skill = skillFactory.CreateSkill(selectedSkill);
+                        skill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                    }))
+                    .ToList();
+                }
             }
 
             var hasSkills = skillCount > 0;
