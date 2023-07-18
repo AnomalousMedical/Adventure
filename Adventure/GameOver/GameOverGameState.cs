@@ -86,8 +86,7 @@ namespace Adventure.GameOver
 
             sharpGui.Text(gameOver);
 
-            //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
-            if (sharpGui.Button(load, GamepadId.Pad1) || sharpGui.Button(load, GamepadId.Pad2) || sharpGui.Button(load, GamepadId.Pad3) || sharpGui.Button(load, GamepadId.Pad4))
+            if (sharpGui.Button(load, GamepadId.Pad1, navUp: restart.Id, navDown: restart.Id))
             {
                 if (persistence.Current.Party.OldSchool)
                 {
@@ -98,26 +97,11 @@ namespace Adventure.GameOver
                 nextState = setupGameState;
             }
 
-            if (sharpGui.Button(restart, GamepadId.Pad1) || sharpGui.Button(restart, GamepadId.Pad2) || sharpGui.Button(restart, GamepadId.Pad3) || sharpGui.Button(restart, GamepadId.Pad4))
+            if (sharpGui.Button(restart, GamepadId.Pad1, navUp: load.Id, navDown: load.Id))
             {
                 persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
                 persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
                 persistence.Current.BattleTriggers.ClearData();
-                //This is what takes the party's gold, for now disable it
-                //if (persistence.Current.Party.Gold > 0)
-                //{
-                //    var takeGold = (long)(persistence.Current.Party.Gold * 0.75f);
-                //    persistence.Current.Player.LootDropPosition = zoneManager.GetPlayerLoc();
-                //    persistence.Current.Player.LootDropZone = zoneManager.Current?.Index ?? 0;
-                //    persistence.Current.Player.LootDropGold = takeGold;
-                //    persistence.Current.Party.Gold -= takeGold;
-                //}
-                //else
-                //{
-                //    persistence.Current.Player.LootDropPosition = null;
-                //    persistence.Current.Player.LootDropZone = null;
-                //    persistence.Current.Player.LootDropGold = 0;
-                //}
 
                 foreach (var character in persistence.Current.Party.Members)
                 {
