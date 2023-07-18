@@ -562,6 +562,9 @@ namespace Adventure.Services
 
             //Phase 3
             {
+                //Refill biomes
+                starterBiomes = new List<BiomeType>() { BiomeType.Countryside, BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp };
+
                 //TODO: Add a store in phase 3 and be sure to have a quick shield in it
 
                 var phase3TreasureLevel = 55;
@@ -618,6 +621,7 @@ namespace Adventure.Services
 
                 var uniqueTreasure = phase3UniqueTreasures.Count / 4;
                 var stolenTreasure = phase3UniqueStolenTreasures.Count / 4;
+                int biomeIndex;
 
                 Element firstMonsterElement;
                 //Area 7
@@ -627,7 +631,9 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 0;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
+                areaBuilder.Biome = starterBiomes[biomeIndex];
+                starterBiomes.RemoveAt(biomeIndex);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -655,7 +661,9 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 1;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
+                areaBuilder.Biome = starterBiomes[biomeIndex];
+                starterBiomes.RemoveAt(biomeIndex);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -682,7 +690,9 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 2;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
+                areaBuilder.Biome = starterBiomes[biomeIndex];
+                starterBiomes.RemoveAt(biomeIndex);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -709,7 +719,9 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 3;
-                areaBuilder.Biome = (BiomeType)biomeRandom.Next(0, biomeMax);
+                biomeIndex = biomeRandom.Next(0, starterBiomes.Count);
+                areaBuilder.Biome = starterBiomes[biomeIndex];
+                starterBiomes.RemoveAt(biomeIndex);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
