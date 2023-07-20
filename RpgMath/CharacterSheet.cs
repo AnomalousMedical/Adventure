@@ -193,7 +193,31 @@ namespace RpgMath
         public float TotalHealingBonus => BaseHealingBonus + EquippedItems().Sum(i => i.HealingBonus);
 
         [JsonIgnore]
-        public IEnumerable<Element> AttackElements => MainHand?.AttackElements ?? Enumerable.Empty<Element>();
+        public IEnumerable<Element> AttackElements => AttackElementsFunc();
+
+        IEnumerable<Element> AttackElementsFunc()
+        {
+            if(MainHand?.AttackElements != null)
+            {
+                foreach(var i in MainHand.AttackElements)
+                {
+                    yield return i;
+                }
+            }
+            if(Buffs != null)
+            {
+                foreach(var i in Buffs)
+                {
+                    if (i.AttackElements != null)
+                    {
+                        foreach (var element in i.AttackElements)
+                        {
+                            yield return element;
+                        }
+                    }
+                }
+            }
+        }
 
 
         private Equipment mainHand;
@@ -310,7 +334,7 @@ namespace RpgMath
         public long Attack => BaseStrength + BonusStrength + EquippedItems().Sum(i => i.Strength + i.Attack) + Buffs.Sum(i => i.Strength + i.Attack);
 
         [JsonIgnore]
-        public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent);
+        public long AttackPercent => EquippedItems().Sum(i => i.AttackPercent) + Buffs.Sum(i => i.AttackPercent);
 
         [JsonIgnore]
         public long TotalVitality => BaseVitality + BonusVitality + EquippedItems().Sum(i => i.Vitality) + Buffs.Sum(i => i.Vitality);
