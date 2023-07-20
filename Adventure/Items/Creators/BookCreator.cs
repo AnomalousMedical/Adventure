@@ -15,12 +15,12 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateRestoration(int level, string adjective, bool allowActiveBlock, params String[] spells)
+        public InventoryItem CreateRestoration(int level, string adjective, params String[] spells)
         {
-            return CreateRestoration(nameof(FancyBook), level, adjective, allowActiveBlock, spells);
+            return CreateRestoration(nameof(FancyBook), level, adjective, spells);
         }
 
-        public InventoryItem CreateRestoration(String sprite, int level, string adjective, bool allowActiveBlock, params String[] spells)
+        public InventoryItem CreateRestoration(String sprite, int level, string adjective, params String[] spells)
         {
             var book = new Equipment
             {
@@ -29,7 +29,6 @@ namespace Adventure.Items.Creators
                 Sprite = sprite,
                 Skills = spells.ToArray(),
                 ShowHand = false,
-                AllowActiveBlock = allowActiveBlock
             };
 
             return CreateInventoryItem(book);
