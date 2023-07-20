@@ -65,7 +65,6 @@ namespace Adventure.WorldMap
         private Vector3 descriptionScale;
 
         private GamepadId gamepadId;
-        private bool allowJoystickInput = true;
 
         ButtonEvent moveForward;
         ButtonEvent moveBackward;
@@ -128,10 +127,7 @@ namespace Adventure.WorldMap
             eventManager.addEvent(moveRight);
 
             eventLayer = eventManager[description.EventLayer];
-            eventLayer.OnUpdate += EventLayer_OnUpdate;
-
             landEventLayer = eventManager[description.LandEventLayer];
-            SetupInput();
 
             this.sprite.AnimationChanged += Sprite_AnimationChanged;
 
@@ -191,8 +187,6 @@ namespace Adventure.WorldMap
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
-
-            eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
         }
 
         private void CreateGraphics()
@@ -348,91 +342,7 @@ namespace Adventure.WorldMap
                 landEventLayer.makeFocusLayer();
                 worldMapManager.SetPlayerVisible(true);
                 backgroundMusicPlayer.SetBattleTrack(null);
-            }
-        }
-
-        private void SetupInput()
-        {
-            //These events are owned by this class, so don't have to unsubscribe
-            moveForward.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = false;
-                }
-            };
-            moveForward.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-            moveBackward.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = false;
-                }
-            };
-            moveBackward.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-            moveLeft.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = false;
-                }
-            };
-            moveLeft.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-            moveRight.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = false;
-                }
-            };
-            moveRight.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    l.alertEventsHandled();
-                    allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-        }
-
-        private void EventLayer_OnUpdate(EventLayer eventLayer)
-        {
-            if (eventLayer.EventProcessingAllowed)
-            {
-                if (allowJoystickInput)
-                {
-                    var pad = eventLayer.getGamepad(gamepadId);
-                    var movementDir = pad.LStick;
-                    //characterMover.movementDirection = movementDir.ToSystemNumerics();
-                }
-
-                eventLayer.alertEventsHandled();
-            }
+            }   
         }
 
         public void UpdateInput(Clock clock)
@@ -534,6 +444,8 @@ namespace Adventure.WorldMap
                 {
                     contextMenu.ClearContext(Land);
                 }
+
+                eventLayer.alertEventsHandled();
             }
         }
 
