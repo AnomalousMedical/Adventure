@@ -1,6 +1,7 @@
 ﻿using Adventure.Assets;
 using Adventure.Services;
 using Engine;
+using Engine.Platform;
 using RpgMath;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,45 +27,23 @@ namespace Adventure.Battle.Skills
             return MpCost;
         }
 
+        protected static readonly int BuffTypeId = 1000;
+
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
-            target = battleManager.ValidateTarget(attacker, target);
-
             IEnumerable<IBattleTarget> groupTargets;
-
-            if (HitGroupOnTrigger && triggered && !triggerSpammed)
-            {
-                groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
-            }
-            else
-            {
-                groupTargets = new[] { target };
-            }
-
             var applyEffects = new List<Attachment<BattleScene>>();
 
-            foreach (var currentTarget in groupTargets)
+            target = battleManager.ValidateTarget(attacker, target);
+
+            if (BuffAlliesWithElement && target.BattleTargetType == attacker.BattleTargetType)
             {
-                var resistance = currentTarget.Stats.GetResistance(element);
+                //Buff allies if supported and targeting allies
+                groupTargets = new[] { target }; //For now just 1 target, but might change
 
-                if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
+                foreach (var currentTarget in groupTargets)
                 {
-                    var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, Power);
-                    damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
-                    damage = battleManager.DamageCalculator.RandomVariation(damage);
-
-                    if (triggered)
-                    {
-                        damage *= 2;
-                    }
-
-                    if (triggerSpammed)
-                    {
-                        damage /= 2;
-                    }
-
-                    battleManager.AddDamageNumber(currentTarget, damage);
-                    currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
+                    battleManager.AddDamageNumber(currentTarget, $"{element} Attack", Color.White);
 
                     var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
@@ -81,13 +60,76 @@ namespace Adventure.Battle.Skills
                     });
                     applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
                     applyEffects.Add(applyEffect);
+
+                    var buff = new CharacterBuff()
+                    {
+                        AttackElements = new[] { element },
+                        TimeRemaining = 30 * Clock.SecondsToMicro,
+                        BuffTypeId = BuffTypeId,
+                        QueueTurnsFront = true
+                    };
+                    BuffSpell.UpdateBuffs(buff, currentTarget.Stats.Buffs);
+                }
+            }
+            else
+            {
+                //Cause Damage
+
+                if (HitGroupOnTrigger && triggered && !triggerSpammed)
+                {
+                    groupTargets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
                 }
                 else
                 {
-                    battleManager.AddDamageNumber(currentTarget, "Miss", Color.White);
+                    groupTargets = new[] { target };
+                }
+
+                foreach (var currentTarget in groupTargets)
+                {
+                    var resistance = currentTarget.Stats.GetResistance(element);
+
+                    if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
+                    {
+                        var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, Power);
+                        damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+                        damage = battleManager.DamageCalculator.RandomVariation(damage);
+
+                        if (triggered)
+                        {
+                            damage *= 2;
+                        }
+
+                        if (triggerSpammed)
+                        {
+                            damage /= 2;
+                        }
+
+                        battleManager.AddDamageNumber(currentTarget, damage);
+                        currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
+
+                        var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                        {
+                            ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
+                            o.RenderShadow = false;
+                            o.Sprite = asset.CreateSprite();
+                            o.SpriteMaterial = asset.CreateMaterial();
+                            o.Light = new Light
+                            {
+                                Color = CastColor,
+                                Length = 2.3f,
+                            };
+                            o.LightOffset = new Vector3(0, 0, -0.1f);
+                        });
+                        applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                        applyEffects.Add(applyEffect);
+                    }
+                    else
+                    {
+                        battleManager.AddDamageNumber(currentTarget, "Miss", Color.White);
+                    }
                 }
             }
-
+            
             var effect = new SkillEffect();
             IEnumerator<YieldAction> run()
             {
@@ -120,5 +162,7 @@ namespace Adventure.Battle.Skills
         public Color CastColor => ElementColors.GetElementalColor(element);
 
         public bool HitGroupOnTrigger { get; init; }
+
+        public bool BuffAlliesWithElement { get; set; }
     }
 }

@@ -91,7 +91,7 @@ namespace Adventure.Battle.Skills
             return new SkillEffect(true);
         }
 
-        private static void UpdateBuffs(CharacterBuff buff, List<CharacterBuff> activeBuffs)
+        public static void UpdateBuffs(CharacterBuff buff, List<CharacterBuff> activeBuffs)
         {
             var count = activeBuffs.Count;
             for (var i = 0; i < count; i++)
