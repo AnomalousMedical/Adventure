@@ -524,7 +524,7 @@ namespace Adventure.WorldMap
             var square = new IntVector2
             (
                 Math.Max(0, (int)(currentPosition.x / mapMesh.MapUnitX) % map.MapX),
-                Math.Max(0, (int)(currentPosition.z / mapMesh.MapUnitZ) % map.MapY)
+                Math.Max(0, (int)(currentPosition.z / mapMesh.MapUnitZ + 1) % map.MapY)
             );
             return square;
         }
