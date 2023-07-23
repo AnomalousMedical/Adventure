@@ -31,6 +31,8 @@ namespace Adventure.Services
         {
             public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
+            public bool IsBossDead(int zoneIndex) => BossBattleTriggers.GetData(zoneIndex, 0).Dead;
+
             public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
 
             public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();

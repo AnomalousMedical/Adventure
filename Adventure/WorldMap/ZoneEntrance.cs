@@ -36,6 +36,7 @@ namespace Adventure.WorldMap
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IWorldMapGameState worldMapGameState;
+        private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly Sprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -60,7 +61,8 @@ namespace Adventure.WorldMap
             ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            IWorldMapGameState worldMapGameState)
+            IWorldMapGameState worldMapGameState,
+            Persistence persistence)
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
@@ -71,6 +73,7 @@ namespace Adventure.WorldMap
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.worldMapGameState = worldMapGameState;
+            this.persistence = persistence;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -156,10 +159,16 @@ namespace Adventure.WorldMap
 
         private void HandleCollision(CollisionEvent evt)
         {
+            var entryText = "Enter";
+            if (persistence.Current.IsBossDead(zoneIndex))
+            {
+                entryText = "Enter - Completed";
+            }
+
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Enter", Enter, player.GamepadId);
+                contextMenu.HandleContext(entryText, Enter, player.GamepadId);
             }
         }
 
