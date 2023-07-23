@@ -20,6 +20,7 @@ namespace RpgMath.Tests
         [InlineData(20)]
         [InlineData(64)]
         [InlineData(133)]
+        [InlineData(111)]
         [InlineData(272)]
         public void MagicalDamageEqual(int power = 16)
         {

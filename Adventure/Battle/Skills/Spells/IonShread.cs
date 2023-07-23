@@ -8,7 +8,7 @@ namespace Adventure.Battle.Skills
 {
     class IonShread : ISkill
     {
-        private const int Power = 29;
+        private const int Power = 111;
 
         public bool QueueFront => true;
 
