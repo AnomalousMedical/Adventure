@@ -15,12 +15,12 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, bool allowTrigger, bool allowActiveBlock, params String[] skills)
+        public InventoryItem CreateNormal(int level, string adjective, params String[] skills)
         {
-            return CreateNormal(nameof(DaggerNew), level, adjective, allowTrigger, allowActiveBlock, skills);
+            return CreateNormal(nameof(DaggerNew), level, adjective, skills);
         }
 
-        public InventoryItem CreateNormal(String spriteName, int level, string adjective, bool allowTrigger, bool allowActiveBlock, params String[] skills)
+        public InventoryItem CreateNormal(String spriteName, int level, string adjective, params String[] skills)
         {
             var sword = new Equipment
             {
@@ -29,7 +29,6 @@ namespace Adventure.Items.Creators
                 Sprite = spriteName,
                 Skills = skills.ToArray(),
                 AllowTriggerAttack = true,
-                AllowActiveBlock = level > SpellLevels.Superior //Flawless gets active block
             };
 
             if(level > SpellLevels.Superior)

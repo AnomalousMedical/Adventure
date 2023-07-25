@@ -25,7 +25,6 @@ namespace Adventure.Battle
 
         void AddToActivePlayers(BattlePlayer player);
         void Attack(IBattleTarget attacker, IBattleTarget target, bool isCounter, bool blocked, bool fumbleBlock, bool isPower, bool triggered, bool triggerSpammed);
-        void ChangeBlockingStatus(IBattleTarget blocker);
         Task<IBattleTarget> GetTarget(bool targetPlayers);
 
         /// <summary>
@@ -115,8 +114,6 @@ namespace Adventure.Battle
         private Random targetRandom = new Random();
         private String backgroundMusic;
         private Func<IEnumerable<ITreasure>> stealCb;
-
-        private readonly List<IBattleTarget> guardingPlayers = new List<IBattleTarget>();
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
@@ -539,19 +536,15 @@ namespace Adventure.Battle
         public IBattleTarget GetGuard(IBattleTarget attacker, IBattleTarget target)
         {
             IBattleTarget guard = null;
-            var guards = Enumerable.Empty<IBattleTarget>();
+
             switch (target.BattleTargetType)
             {
                 case BattleTargetType.Enemy:
                     break;
+                    
                 case BattleTargetType.Player:
-                    guards = guardingPlayers;
-                    break;
-            }
-
-            if (!guards.Contains(target))
-            {
-                guard = guards.FirstOrDefault();
+                    guard = players.Where(i => !i.IsDead && i != target && i.Stats.CanBlock).FirstOrDefault();
+                    break;        
             }
 
             return guard;
@@ -662,10 +655,6 @@ namespace Adventure.Battle
                         backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                     }
                 }
-                else if (target.BattleTargetType == BattleTargetType.Player)
-                {
-                    guardingPlayers.Remove(target);
-                }
             }
         }
 
@@ -762,7 +751,6 @@ namespace Adventure.Battle
             cursor.Cancel();
             turnQueue.Clear();
             activePlayers.Clear();
-            guardingPlayers.Clear();
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;
@@ -770,25 +758,6 @@ namespace Adventure.Battle
         public IEnumerable<ITreasure> Steal()
         {
             return stealCb?.Invoke() ?? Enumerable.Empty<ITreasure>();
-        }
-
-        public void ChangeBlockingStatus(IBattleTarget blocker)
-        {
-            switch (blocker.BattleTargetType)
-            {
-                case BattleTargetType.Player:
-                    if (guardingPlayers.Contains(blocker))
-                    {
-                        guardingPlayers.Remove(blocker);
-                    }
-                    else
-                    {
-                        guardingPlayers.Add(blocker);
-                    }
-                    break;
-                case BattleTargetType.Enemy:
-                    break;
-            }
         }
     }
 }

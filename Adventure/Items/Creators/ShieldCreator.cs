@@ -14,7 +14,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, bool quickGuard, string sprite = nameof(ShieldOfReflection))
+        public InventoryItem CreateNormal(int level, string adjective, string sprite = nameof(ShieldOfReflection))
         {
             var shield = new Equipment
             {
@@ -22,7 +22,6 @@ namespace Adventure.Items.Creators
                 Defense = equipmentCurve.GetDefense(level),
                 MagicDefense = equipmentCurve.GetMDefense(level),
                 Sprite = sprite,
-                Skills = quickGuard ? new[] { nameof(QuickGuard) } : new[] { nameof(Guard) },
                 AllowActiveBlock = true,
                 ShowHand = false,
             };

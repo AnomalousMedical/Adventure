@@ -16,7 +16,6 @@ namespace Adventure.Services
         Phase1Shop,
         Phase2Shop,
         Phase3Shop,
-        UniquePhase3Shield
     }
 
     class Persistence
