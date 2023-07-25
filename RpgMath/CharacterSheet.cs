@@ -35,6 +35,7 @@ namespace RpgMath
             s.BaseMagic = 9;
             s.BaseVitality = 14;
             s.BaseSpirit = 9;
+            s.BaseBlockDamageReduction = 0.05f;
 
             MixStats(random, s);
             s.BaseDexterity = random.Next(5, 9);
