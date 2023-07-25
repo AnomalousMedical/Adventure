@@ -591,7 +591,7 @@ namespace Adventure.Battle
                     }
                     if (blocked)
                     {
-                        damage /= 2;
+                        damage -= (long)(damage * target.Stats.BlockDamageReduction);
                         color = Color.Grey;
                     }
                     if (fumbleBlock)

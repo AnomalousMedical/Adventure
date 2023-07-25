@@ -58,6 +58,8 @@ namespace RpgMath
 
         public float HealingBonus { get; set; }
 
+        public float BlockDamageReduction { get; set; }
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

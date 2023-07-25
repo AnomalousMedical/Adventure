@@ -184,6 +184,8 @@ namespace RpgMath
 
         public float BaseItemUsageBonus { get; set; }
 
+        public float BaseBlockDamageReduction { get; set; }
+
         [JsonIgnore]
         public float TotalItemUsageBonus => BaseItemUsageBonus + EquippedItems().Sum(i => i.ItemUsageBonus);
 
@@ -393,6 +395,9 @@ namespace RpgMath
 
         [JsonIgnore]
         public bool CanSeeEnemyInfo => EquippedItems().Any(i => i.ShowEnemyInfo);
+
+        [JsonIgnore]
+        public float BlockDamageReduction => BaseBlockDamageReduction + EquippedItems().Sum(i => i.BlockDamageReduction);
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();
 

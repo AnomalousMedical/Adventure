@@ -30,6 +30,8 @@ namespace RpgMath
         bool QueueTurnsFront { get; }
         Dictionary<Element, Resistance> Resistances { get; }
         bool CanSeeEnemyInfo { get; }
+        float BlockDamageReduction { get; }
+
         Resistance GetResistance(Element element);
     }
 }

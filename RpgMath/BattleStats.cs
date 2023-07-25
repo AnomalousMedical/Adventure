@@ -60,6 +60,8 @@ namespace RpgMath
 
         public bool CanSeeEnemyInfo { get; set; }
 
+        public float BlockDamageReduction { get; set; }
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))
