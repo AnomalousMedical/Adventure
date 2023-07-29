@@ -657,6 +657,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 2;
+                areaBuilder.GateZones = new[] { areaBuilder.StartZone };
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
