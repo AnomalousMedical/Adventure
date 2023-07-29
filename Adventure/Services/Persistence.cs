@@ -9,10 +9,8 @@ namespace Adventure.Services
     enum PlotItems
     {
         PortalKey0,
-        PortalKey1,
         AirshipKey0,
         AirshipKey1,
-        AirshipKey2,
         Phase1Shop,
         Phase2Shop,
         Phase3Shop,

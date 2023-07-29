@@ -15,15 +15,31 @@ namespace Engine
 
         public T GetNext(FIRandom random)
         {
-            if (distributions == null || distributions.Count == 0)
-            {
-                distributions = source.ToList();
-            }
+            EnsureDistributions();
 
             var index = random.Next(distributions.Count);
             var value = distributions[index];
             distributions.RemoveAt(index);
             return value;
+        }
+
+        /// <summary>
+        /// Remove a possibility from the current round of possibilties. This item will come up again once all options have been used.
+        /// </summary>
+        /// <param name="remove"></param>
+        public void RemoveRoundPossibility(T remove)
+        {
+            EnsureDistributions();
+
+            distributions.Remove(remove);
+        }
+
+        private void EnsureDistributions()
+        {
+            if (distributions == null || distributions.Count == 0)
+            {
+                distributions = source.ToList();
+            }
         }
     }
 }
