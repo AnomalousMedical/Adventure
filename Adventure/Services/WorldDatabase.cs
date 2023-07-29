@@ -231,9 +231,8 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var biomes = new List<BiomeType>() { BiomeType.Countryside, BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp };
+            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp };
             var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
-            biomeDistributor.RemoveRoundPossibility(BiomeType.Countryside); //Don't allow countryside until a reset.
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
             var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()

@@ -23,17 +23,6 @@ namespace Engine
             return value;
         }
 
-        /// <summary>
-        /// Remove a possibility from the current round of possibilties. This item will come up again once all options have been used.
-        /// </summary>
-        /// <param name="remove"></param>
-        public void RemoveRoundPossibility(T remove)
-        {
-            EnsureDistributions();
-
-            distributions.Remove(remove);
-        }
-
         private void EnsureDistributions()
         {
             if (distributions == null || distributions.Count == 0)
