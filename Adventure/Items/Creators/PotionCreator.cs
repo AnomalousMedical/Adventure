@@ -69,7 +69,7 @@ namespace Adventure.Items.Creators
             return item;
         }
 
-        public InventoryItem CreateStrengthBoost()
+        public InventoryItem CreateStrengthBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -77,13 +77,13 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Strength Boost";
+            item.Number = amount;
+            item.Name = $"Strength Boost +{amount}";
 
             return item;
         }
 
-        public InventoryItem CreateMagicBoost()
+        public InventoryItem CreateMagicBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -91,13 +91,13 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Magic Boost";
+            item.Number = amount;
+            item.Name = $"Magic Boost +{amount}";
 
             return item;
         }
 
-        public InventoryItem CreateSpiritBoost()
+        public InventoryItem CreateSpiritBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -105,13 +105,13 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Spirit Boost";
+            item.Number = amount;
+            item.Name = $"Spirit Boost +{amount}";
 
             return item;
         }
 
-        public InventoryItem CreateVitalityBoost()
+        public InventoryItem CreateVitalityBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -119,13 +119,13 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Vitality Boost";
+            item.Number = amount;
+            item.Name = $"Vitality Boost +{amount}";
 
             return item;
         }
 
-        public InventoryItem CreateDexterityBoost()
+        public InventoryItem CreateDexterityBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -133,13 +133,13 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Dexterity Boost";
+            item.Number = amount;
+            item.Name = $"Dexterity Boost +{amount}";
 
             return item;
         }
 
-        public InventoryItem CreateLuckBoost()
+        public InventoryItem CreateLuckBoost(int amount)
         {
             var item = new InventoryItem
             {
@@ -147,8 +147,8 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 1;
-            item.Name = "Luck Boost";
+            item.Number = amount;
+            item.Name = $"Luck Boost +{amount}";
 
             return item;
         }
