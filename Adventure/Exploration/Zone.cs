@@ -910,19 +910,20 @@ namespace Adventure
             var bossStealTreasure = description.BossStealTreasure ?? Enumerable.Empty<ITreasure>();
             var uniqueStealTreasure = description.UniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
             var bossUniqueStealTreasure = description.BossUniqueStealTreasure ?? Enumerable.Empty<ITreasure>();
+            var battleTriggerDistributor = new EnumerableDistributor<BattleTrigger>(battleTriggers);
 
             if (battleTriggers.Count > 0)
             {
                 foreach (var treasure in stealTreasure)
                 {
-                    var index = enemyRandom.Next(battleTriggers.Count);
-                    battleTriggers[index].AddStealTreasure(treasure);
+                    battleTriggerDistributor.GetNext(enemyRandom)
+                        .AddStealTreasure(treasure);
                 }
 
                 foreach (var treasure in uniqueStealTreasure)
                 {
-                    var index = enemyRandom.Next(battleTriggers.Count);
-                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                    battleTriggerDistributor.GetNext(enemyRandom)
+                        .AddUniqueStealTreasure(treasure);
                 }
             }
             else
@@ -945,13 +946,13 @@ namespace Adventure
             {
                 foreach (var treasure in bossStealTreasure)
                 {
-                    var index = enemyRandom.Next(battleTriggers.Count);
-                    battleTriggers[index].AddStealTreasure(treasure);
+                    battleTriggerDistributor.GetNext(enemyRandom)
+                        .AddStealTreasure(treasure);
                 }
                 foreach (var treasure in bossUniqueStealTreasure)
                 {
-                    var index = enemyRandom.Next(battleTriggers.Count);
-                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                    battleTriggerDistributor.GetNext(enemyRandom)
+                        .AddUniqueStealTreasure(treasure);
                 }
             }
             else
@@ -965,8 +966,8 @@ namespace Adventure
                 //This is pretty unlikely to happen
                 foreach (var treasure in treasureStack)
                 {
-                    var index = enemyRandom.Next(battleTriggers.Count);
-                    battleTriggers[index].AddUniqueStealTreasure(treasure);
+                    battleTriggerDistributor.GetNext(enemyRandom)
+                        .AddUniqueStealTreasure(treasure);
                 }
                 treasureStack.Clear(); //Visited everything, clear stack
             }
