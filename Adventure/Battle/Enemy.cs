@@ -3,13 +3,8 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
-using FreeImageAPI;
 using RpgMath;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
@@ -36,6 +31,7 @@ namespace Adventure.Battle
         private readonly ICharacterTimer characterTimer;
         private readonly IBattleManager battleManager;
         private readonly ITurnTimer turnTimer;
+        private BattleStats battleStats;
 
         private Vector3 startPosition;
         private Vector3 currentPosition;
@@ -47,9 +43,6 @@ namespace Adventure.Battle
         public Vector3 MagicHitLocation => this.currentPosition + new Vector3(0f, 0f, -0.1f);
 
         public ICharacterTimer CharacterTimer => characterTimer;
-
-        private long currentHp;
-        private long currentMp;
 
         public Enemy(
             RTInstances<BattleScene> rtInstances,
@@ -69,9 +62,9 @@ namespace Adventure.Battle
             this.turnTimer = turnTimer;
             this.sprite = description.Sprite;
             this.sprite.RandomizeFrameTime();
-            this.Stats = description.BattleStats ?? throw new InvalidOperationException("You must include battle stats in an enemy description.");
-            this.currentHp = Stats.Hp;
-            this.currentMp = Stats.Mp;
+            this.battleStats = description.BattleStats ?? throw new InvalidOperationException("You must include battle stats in an enemy description.");
+            this.battleStats.CurrentHp = Stats.Hp;
+            this.battleStats.CurrentMp = Stats.Mp;
             this.GoldReward = description.GoldReward;
 
             turnTimer.AddTimer(characterTimer);
@@ -244,7 +237,7 @@ namespace Adventure.Battle
 
         public void ApplyDamage(IBattleTarget attacker, IDamageCalculator calculator, long damage)
         {
-            currentHp = calculator.ApplyDamage(damage, currentHp, Stats.Hp);
+            battleStats.CurrentHp = calculator.ApplyDamage(damage, battleStats.CurrentHp, Stats.Hp);
         }
 
         public void AttemptMeleeCounter(IBattleTarget attacker)
@@ -259,14 +252,14 @@ namespace Adventure.Battle
 
         public void TakeMp(long mp)
         {
-            currentMp -= mp;
-            if (currentMp < 0)
+            battleStats.CurrentMp -= mp;
+            if (battleStats.CurrentMp < 0)
             {
-                currentMp = 0;
+                battleStats.CurrentMp = 0;
             }
-            else if (currentMp > Stats.Mp)
+            else if (battleStats.CurrentMp > Stats.Mp)
             {
-                currentMp = Stats.Mp;
+                battleStats.CurrentMp = Stats.Mp;
             }
         }
 
@@ -284,11 +277,11 @@ namespace Adventure.Battle
 
         public Vector3 DamageDisplayLocation => currentPosition + new Vector3(0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
-        public IBattleStats Stats { get; }
+        public IBattleStats Stats => battleStats;
 
         public Vector3 CursorDisplayLocation => DamageDisplayLocation;
 
-        public bool IsDead => this.currentHp == 0;
+        public bool IsDead => this.battleStats.CurrentHp == 0;
 
         public BattleTargetType BattleTargetType => BattleTargetType.Enemy;
 

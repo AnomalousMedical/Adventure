@@ -6,6 +6,8 @@ namespace RpgMath
     {
         long Hp { get; }
         long Mp { get; }
+        long CurrentHp { get; }
+        long CurrentMp { get; }
         long Attack { get; }
         long AttackPercent { get; }
         long Defense { get; }
