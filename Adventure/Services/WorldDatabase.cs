@@ -66,7 +66,7 @@ namespace Adventure.Services
         public List<IntVector2> PortalLocations => portalLocations;
         public IntVector2 AirshipStartSquare => airshipStartSquare;
         public IntVector2 AirshipPortalSquare => airshipPortalSquare;
-        public List<IntVector2> StorePhilipLocations { get; } = new List<IntVector2>();
+        public List<IntVector2> StorePhilipLocations { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -175,6 +175,7 @@ namespace Adventure.Services
             //Setup seeds and randoms
             createdZoneSeeds = new List<int>();
             zoneRandom = new FIRandom(newSeed);
+            StorePhilipLocations = new List<IntVector2>();
             var biomeRandom = new FIRandom(newSeed);
             var placementRandom = new FIRandom(newSeed);
             var elementalRandom = new FIRandom(newSeed);
