@@ -737,41 +737,33 @@ namespace Adventure.Services
 
         public IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems)
         {
-            //Keep this at the top of the list
+            if (plotItems.Contains(PlotItems.Phase3Shop))
+            {
+                yield return new ShopEntry("Giant Mana Potion", 135, () => PotionCreator.CreateManaPotion(55));
+            }
+
+            if (plotItems.Contains(PlotItems.Phase2Shop))
+            {
+                yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
+            }
+
+            if (plotItems.Contains(PlotItems.Phase1Shop))
+            {
+                yield return new ShopEntry("Mana Potion", 25, () => PotionCreator.CreateManaPotion(1));
+            }
+
             if (plotItems.Contains(PlotItems.Phase1Shop))
             {
                 yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
             }
 
-            if (plotItems.Contains(PlotItems.Phase3Shop))
+            if (plotItems.Contains(PlotItems.Phase2Shop))
             {
                 var treasureLevel = 40;
-                var adjective = "Mass Produced";
-                yield return new ShopEntry("Giant Mana Potion", 135, () => PotionCreator.CreateManaPotion(55));
-
+                var adjective = "Store Bought";
                 yield return new ShopEntry($"{adjective} Sword", 2400, () => SwordCreator.CreateNormal(treasureLevel, adjective));
                 yield return new ShopEntry($"{adjective} Spear", 2400, () => SpearCreator.CreateNormal(treasureLevel, adjective));
                 yield return new ShopEntry($"{adjective} Mace", 2400, () => MaceCreator.CreateNormal(treasureLevel, adjective));
-            }
-
-            if (plotItems.Contains(PlotItems.Phase2Shop))
-            {
-                var treasureLevel = 25;
-                var adjective = "Store Bought";
-                yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
-                yield return new ShopEntry($"{adjective} Sword", 800, () => SwordCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Spear", 800, () => SpearCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Mace", 800, () => MaceCreator.CreateNormal(treasureLevel, adjective));
-            }
-
-            if (plotItems.Contains(PlotItems.Phase1Shop))
-            {
-                var treasureLevel = 5;
-                var adjective = "Discount";
-                yield return new ShopEntry("Mana Potion", 25, () => PotionCreator.CreateManaPotion(1));
-                yield return new ShopEntry($"{adjective} Sword", 200, () => SwordCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Spear", 200, () => SpearCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Mace", 200, () => MaceCreator.CreateNormal(treasureLevel, adjective));
             }
         }
 
