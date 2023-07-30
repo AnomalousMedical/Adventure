@@ -327,7 +327,6 @@ namespace Adventure.Services
                     new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))),
                     new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 0.25f)),
                     new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Lightning))),
-                    new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(AccessoryCreator.CreateTargetScope())
                 };
 
