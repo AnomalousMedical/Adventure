@@ -543,7 +543,25 @@ namespace Adventure.Battle
                     break;
                     
                 case BattleTargetType.Player:
-                    guard = players.Where(i => !i.IsDead && i != target && i.Stats.CanBlock).FirstOrDefault();
+                    guard = players
+                        .Where(i => !i.IsDead && i != target && i.Stats.CanBlock)
+                        .OrderByDescending(i => i.Stats.CurrentHp)
+                        .FirstOrDefault();
+
+                    //Since the target is ignored above, make sure the guard
+                    //is actually healthier than the target if the target can
+                    //block for themselves.
+                    if(guard != null)
+                    {
+                        if (target.Stats.CanBlock)
+                        {
+                            if(target.Stats.CurrentHp > guard.Stats.CurrentHp)
+                            {
+                                guard = null;
+                            }
+                        }
+                    }
+
                     break;        
             }
 
