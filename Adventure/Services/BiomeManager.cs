@@ -224,6 +224,7 @@ namespace Adventure
                 BgMusicNight = "Music/freepd/Rafael Krux - Lonely Mountain.ogg",
                 EntranceAsset = new ForestEntrance(),
                 MapUnitY = 0.8f,
+                RandomizeMapUnitYDirection = false,
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),

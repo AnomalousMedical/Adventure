@@ -34,7 +34,6 @@ namespace Adventure
 
         public void SetupZone(int zoneIndex, Zone.Description o)
         {
-            var initRandom = new FIRandom(worldDatabase.GetZoneSeed(zoneIndex));
             var areaBuilder = worldDatabase.GetAreaBuilder(zoneIndex);
             if(persistence.Current.World.CompletedAreaLevels.TryGetValue(areaBuilder.Index, out var level))
             {
@@ -44,7 +43,9 @@ namespace Adventure
             {
                 o.EnemyLevel = areaBuilder.EnemyLevel ?? persistence.Current.World.Level;
             }
-            areaBuilder.SetupZone(zoneIndex, o, initRandom);
+
+            areaBuilder.SetupZone(zoneIndex, o,
+                new FIRandom(worldDatabase.GetZoneSeed(zoneIndex))); //This is passed this way on purpose, only use in called function
         }
     }
 }

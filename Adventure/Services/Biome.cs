@@ -22,6 +22,7 @@ namespace Adventure
         string BattleMusic { get; set; }
         string BossBattleMusic { get; set; }
         float MapUnitY { get; set; }
+        bool RandomizeMapUnitYDirection { get; set; }
 
         List<BiomeEnemy> RegularEnemies { get; }
 
@@ -53,6 +54,8 @@ namespace Adventure
         public bool ReflectWall { get; set; }
 
         public float MapUnitY { get; set; } = 0.1f;
+
+        public bool RandomizeMapUnitYDirection { get; set; } = true;
 
         public string BgMusic { get; set; } = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg";
 

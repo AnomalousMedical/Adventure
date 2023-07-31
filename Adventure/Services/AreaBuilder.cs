@@ -92,6 +92,9 @@ namespace Adventure.Services
             o.EnemySeed = initRandom.Next(int.MinValue, int.MaxValue);
             var monsterRandom = new FIRandom(initRandom.Next(int.MinValue, int.MaxValue));
             var areaTreasureRandom = new FIRandom(worldDatabase.CurrentSeed + Index); //This determines if this zone gets part of an area's treasure by rolling its index, it must be the same per area
+            var mapDirectionRandom = new FIRandom(initRandom.Next(int.MinValue, int.MaxValue));
+            //Do not use init random below here
+
             var treasureZoneStart = StartZone;
             var treasureZoneEnd = EndZone + 1;
 
@@ -124,6 +127,10 @@ namespace Adventure.Services
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);
             o.MapUnitY = o.Biome.MapUnitY;
+            if (o.Biome.RandomizeMapUnitYDirection)
+            {
+                o.MapUnitY *= mapDirectionRandom.Next(int.MinValue, int.MaxValue) < 0 ? -1 : 1;
+            }
             var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).Concat(Monsters).ToList();
             regularMonsters = biomeMonsters;
             bossMonster = this.BossMonster ?? biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];
