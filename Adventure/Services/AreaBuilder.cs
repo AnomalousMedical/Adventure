@@ -123,6 +123,7 @@ namespace Adventure.Services
             }
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);
+            o.MapUnitY = o.Biome.MapUnitY;
             var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).Concat(Monsters).ToList();
             regularMonsters = biomeMonsters;
             bossMonster = this.BossMonster ?? biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];

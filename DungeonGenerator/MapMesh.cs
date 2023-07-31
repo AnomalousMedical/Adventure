@@ -41,8 +41,6 @@ namespace DungeonGenerator
         /// </summary>
         public float MapUnitZ { get; } = 2f;
 
-        public float MaxSlopeY { get; set; } = 1f;
-
         private float floorTextureIndex = 0.5f;
         public int FloorTextureIndex
         {
