@@ -220,8 +220,8 @@ namespace Adventure
                 FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049C_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Rock023_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Rock026_1K",
-                BgMusic = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
-                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                BgMusic = "Music/freepd/Rafael Krux - Lonely Mountain.ogg",
+                BgMusicNight = "Music/freepd/Rafael Krux - Lonely Mountain.ogg",
                 EntranceAsset = new ForestEntrance(),
                 MapUnitY = 0.8f,
                 Treasure = new BiomeTreasure()
