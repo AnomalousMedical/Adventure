@@ -224,7 +224,7 @@ namespace Adventure.Services
         
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp };
+            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
             var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
@@ -909,8 +909,9 @@ namespace Adventure.Services
         {
             switch (biome)
             {
+                case BiomeType.Mountain: //temp, give mountain its own thing
                 case BiomeType.Volcano:
-                    return (int)BiomeType.Max + 2; //Max is the stand in for the volcano zone + 2 for the cliff and sea floor
+                    return 8;
                 default:
                     return (int)biome;
             }

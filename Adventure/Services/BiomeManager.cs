@@ -15,7 +15,7 @@ namespace Adventure
         Forest = 3,
         Beach = 4,
         Swamp = 5,
-        Max = Swamp + 1,
+        Mountain = 6,
         Volcano = 1000, //This isn't included in random selection
     }
 
@@ -63,6 +63,8 @@ namespace Adventure
                     return MakeBeach();
                 case BiomeType.Swamp:
                     return MakeSwamp();
+                case BiomeType.Mountain:
+                    return MakeMountain();
                 case BiomeType.Volcano:
                     return MakeVolcano();
             }
@@ -204,6 +206,31 @@ namespace Adventure
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(20, new TallTree())
+                }
+            };
+
+            return biome;
+        }
+
+        public Biome MakeMountain()
+        {
+            var biome = new Biome
+            {
+                FloorTexture = "Graphics/Textures/AmbientCG/Ground025_1K",
+                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground049C_1K",
+                WallTexture = "Graphics/Textures/AmbientCG/Rock023_1K",
+                WallTexture2 = "Graphics/Textures/AmbientCG/Rock026_1K",
+                BgMusic = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                BgMusicNight = "Music/opengameart/HorrorPen - Winds Of Stories.ogg",
+                EntranceAsset = new ForestEntrance(),
+                MapUnitY = 0.8f,
+                Treasure = new BiomeTreasure()
+                {
+                    Asset = new Assets.World.TreasureChest(),
+                },
+                BackgroundItems = new List<BiomeBackgroundItem>
+                {
+                    
                 }
             };
 
