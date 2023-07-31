@@ -349,7 +349,7 @@ namespace Adventure
                         startY = startRoom.Top + startRoom.Height / 2;
                     }
 
-                    mapMesh = new MapMesh(mapBuilder, random, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ);
+                    mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ);
 
                     startPointLocal = mapMesh.PointToVector(startX, startY);
                     var endConnector = mapBuilder.EastConnector.Value;

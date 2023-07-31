@@ -103,7 +103,7 @@ namespace RTDungeonGeneratorTest
 
                         //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);
 
-                        mapMesh = new MapMesh(mapBuilder, random, floorMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
+                        mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: 3.0f, mapUnitY: 0.1f, mapUnitZ: 1.5f);
                     });
 
                     await Task.WhenAll
