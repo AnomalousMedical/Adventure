@@ -1,7 +1,4 @@
-﻿using BepuPhysics;
-using BepuPhysics.Collidables;
-using BepuPlugin;
-using DiligentEngine;
+﻿using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.HLSL;
 using DiligentEngine.RT.Resources;
@@ -9,8 +6,6 @@ using DiligentEngine.RT.ShaderSets;
 using Engine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure.Battle
@@ -25,6 +20,11 @@ namespace Adventure.Battle
         public class Description : SceneObjectDesc
         {
             public IBiome Biome { get; set; }
+
+            /// <summary>
+            /// This is the coordinate that background items should not be placed in front of so they don't block the camera.
+            /// </summary>
+            public float CameraZItemDeadzone { get; set; }
         }
 
         private TLASInstanceData floorInstanceData;
@@ -46,6 +46,7 @@ namespace Adventure.Battle
 
         private const float size = 8.5f;
         private const float farbgSize = 80f;
+        private float CameraZItemDeadzone;
 
         public BattleArena
         (
@@ -68,6 +69,7 @@ namespace Adventure.Battle
             this.primaryHitShaderFactory = primaryHitShaderFactory;
             this.rtInstances = rtInstances;
             this.noiseTextureManager = noiseTextureManager;
+            CameraZItemDeadzone = description.CameraZItemDeadzone;
             coroutineRunner.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction();
@@ -95,7 +97,7 @@ namespace Adventure.Battle
                                           new Vector2(0, 0),
                                           new Vector2(size, size),
                                           new Vector2(0.3f, 0),
-                                          new Vector2(0.7f, 1), 
+                                          new Vector2(0.7f, 1),
                                           FloorTextureIndex,
                                           FloorTexture2Index);
 
@@ -247,7 +249,7 @@ namespace Adventure.Battle
             var zStart = -farbgSize + size + farbgSize + 2f;
             var zEnd = farbgSize + size + farbgSize;
 
-            for(var x = -farbgSize; x < xEnd; x += step)
+            for (var x = -farbgSize; x < xEnd; x += step)
             {
                 for (var z = zStart; z < zEnd; z += step)
                 {
@@ -257,6 +259,11 @@ namespace Adventure.Battle
 
             zStart = -farbgSize - size - farbgSize - 5f;
             zEnd = farbgSize - size - farbgSize;
+
+            if (zEnd > CameraZItemDeadzone)
+            {
+                zEnd = CameraZItemDeadzone;
+            }
 
             for (var x = -farbgSize; x < xEnd; x += step)
             {

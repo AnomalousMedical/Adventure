@@ -206,6 +206,9 @@ namespace Adventure.Battle
             enemies.AddRange(createEnemies);
         }
 
+        private static readonly Vector3 CameraTranslation = new Vector3(-1.0354034f, 2.958224f, -12.394701f);
+        private static readonly Quaternion CameraRotation = new Quaternion(0.057467595f, 0.0049917176f, -0.00028734046f, 0.9983348f);
+
         public void SetActive(bool active)
         {
             if (active != this.Active)
@@ -228,7 +231,7 @@ namespace Adventure.Battle
                     turnTimer.Restart(0, baseDexTotal);
 
                     eventManager[EventLayers.Battle].OnUpdate += eventManager_OnUpdate;
-                    cameraMover.SetPosition(new Vector3(-1.0354034f, 2.958224f, -12.394701f), new Quaternion(0.057467595f, 0.0049917176f, -0.00028734046f, 0.9983348f));
+                    cameraMover.SetPosition(CameraTranslation, CameraRotation);
 
                     var instantAttackChance = targetRandom.Next(100);
                     if (instantAttackChance < 3)
@@ -461,6 +464,7 @@ namespace Adventure.Battle
                 o.Scale = new Vector3(20, 0.1f, 20);
                 o.Translation = new Vector3(0f, o.Scale.y / -2f, 0f);
                 o.Biome = levelManager.Current.Biome;
+                o.CameraZItemDeadzone = CameraTranslation.z - 0.1f;
             });
 
             var biome = levelManager.Current.Biome;
