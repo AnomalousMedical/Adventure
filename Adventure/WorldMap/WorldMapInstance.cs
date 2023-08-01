@@ -62,7 +62,6 @@ namespace Adventure.WorldMap
         private Vector2 mapSize;
         private Vector3[] transforms;
         private Vector3 airshipStartPoint;
-        private IntVector2 airshipPortal;
 
         public bool PhysicsActive => physicsActive;
 
@@ -235,11 +234,6 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
-        }
-
-        internal Vector3 GetAirshipPortalLocation()
-        {
-            return mapMesh.PointToVector(airshipPortal.x, airshipPortal.y);
         }
 
         /// <summary>
@@ -452,25 +446,7 @@ namespace Adventure.WorldMap
                 placeables.Add(water);
             }
 
-            {
-                this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);
-                this.airshipPortal = airshipPortalSquare;
-                var loc = mapMesh.PointToVector(airshipPortalSquare.x, airshipPortalSquare.y);
-
-                var portal = objectResolver.Resolve<AirshipPortal, IslandPortal.Description>(o =>
-                {
-                    o.PortalIndex = -1;
-                    o.MapOffset = loc;
-                    o.Transforms = transforms;
-                    o.Translation = currentPosition + o.MapOffset;
-                    var entrance = new Assets.World.Portal();
-                    o.Sprite = entrance.CreateSprite();
-                    o.SpriteMaterial = entrance.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-                });
-
-                placeables.Add(portal);
-            }
+            this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);
 
             int portalIndex = 0;
             this.portalLocations = portalLocations;
@@ -541,7 +517,7 @@ namespace Adventure.WorldMap
 
         public bool CanLand(in IntVector2 cell)
         {
-            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell) && cell != airshipPortal;
+            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell);
         }
     }
 }

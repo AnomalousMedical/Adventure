@@ -284,7 +284,15 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Take Off", TakeOff, player.GamepadId);
+                if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0)
+                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
+                {
+                    contextMenu.HandleContext("Take Off", TakeOff, player.GamepadId);
+                }
+                else
+                {
+                    contextMenu.HandleContext("Broken", TakeOff, player.GamepadId);
+                }
             }
         }
 
@@ -295,17 +303,21 @@ namespace Adventure.WorldMap
 
         private void TakeOff(ContextMenuArgs args)
         {
-            if (!active)
+            if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0)
+                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
             {
-                persistence.Current.Player.InAirship = true;
-                contextMenu.ClearContext(TakeOff);
-                eventLayer.makeFocusLayer();
-                active = true;
-                currentPosition.y = 3.14f;
-                DestroyPhysics();
-                SyncGraphics();
-                worldMapManager.SetPlayerVisible(false);
-                backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+                if (!active)
+                {
+                    persistence.Current.Player.InAirship = true;
+                    contextMenu.ClearContext(TakeOff);
+                    eventLayer.makeFocusLayer();
+                    active = true;
+                    currentPosition.y = 3.14f;
+                    DestroyPhysics();
+                    SyncGraphics();
+                    worldMapManager.SetPlayerVisible(false);
+                    backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+                }
             }
         }
 

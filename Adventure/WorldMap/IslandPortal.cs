@@ -174,14 +174,7 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            if (persistence.Current.Player.AirshipPosition == null 
-                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0) 
-                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
-            {
-                var portalLoc = worldMapManager.GetAirshipPortal();
-                worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));
-            }
-            else if (persistence.Current.PlotItems.Contains(PlotItems.PortalKey0))
+            if (persistence.Current.PlotItems.Contains(PlotItems.PortalKey0))
             {
                 var portalLoc = worldMapManager.GetPortal(portalIndex + 1);
                 worldMapManager.MovePlayer(portalLoc + new Vector3(0f, 0f, -0.35f));

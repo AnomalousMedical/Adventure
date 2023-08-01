@@ -245,6 +245,7 @@ namespace Adventure.Services
             var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
             var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
             portalLocations.Add(firstIslandSquares[0][0]);
+            portalLocations.Add(airshipPortalSquare);
 
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
