@@ -48,6 +48,8 @@ namespace Adventure
 
             public float MapUnitZ { get; set; } = 1.5f;
 
+            public float CorridorSlopeMultiple { get; set; } = 1.0f;
+
             /// <summary>
             /// Room minimum size
             /// </summary>
@@ -349,7 +351,7 @@ namespace Adventure
                         startY = startRoom.Top + startRoom.Height / 2;
                     }
 
-                    mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ);
+                    mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
                     startPointLocal = mapMesh.PointToVector(startX, startY);
                     var endConnector = mapBuilder.EastConnector.Value;

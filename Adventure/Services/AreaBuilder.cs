@@ -129,7 +129,7 @@ namespace Adventure.Services
             o.MapUnitY = o.Biome.MapUnitY;
             if (o.Biome.RandomizeMapUnitYDirection)
             {
-                o.MapUnitY *= mapDirectionRandom.Next(int.MinValue, int.MaxValue) < 0 ? -1 : 1;
+                o.CorridorSlopeMultiple = mapDirectionRandom.Next(int.MinValue, int.MaxValue) < 0 ? -1.0f : 1.0f;
             }
             var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).Concat(Monsters).ToList();
             regularMonsters = biomeMonsters;

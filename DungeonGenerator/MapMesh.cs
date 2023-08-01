@@ -93,7 +93,7 @@ namespace DungeonGenerator
             }
         }
 
-        public MapMesh(csMapbuilder mapbuilder, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f)
+        public MapMesh(csMapbuilder mapbuilder, MeshBLAS floorMesh, float mapUnitX = 2f, float mapUnitY = 2f, float mapUnitZ = 2f, float corridorSlopeMultiple = 1.0f)
         {
             if (mapbuilder.AllowOtherCorridors)
             {
@@ -138,7 +138,7 @@ namespace DungeonGenerator
                 //New corridor, find new starting point
                 if (cellType != currentCorridor)
                 {
-                    corridorSlope = halfUnitY;
+                    corridorSlope = halfUnitY * corridorSlopeMultiple;
                     currentCorridor = cellType;
 
                     if (north != currentCorridor && north != csMapbuilder.EmptyCell)
