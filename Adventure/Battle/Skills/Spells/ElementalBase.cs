@@ -64,7 +64,7 @@ namespace Adventure.Battle.Skills
                     var buff = new CharacterBuff()
                     {
                         AttackElements = new[] { element },
-                        TimeRemaining = 60 * Clock.SecondsToMicro,
+                        TimeRemaining = 2 * 60 * Clock.SecondsToMicro,
                         BuffTypeId = BuffTypeId,
                         QueueTurnsFront = true
                     };
