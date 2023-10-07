@@ -18,6 +18,8 @@ namespace Adventure.Battle
 
         Vector3 MagicHitLocation { get; }
 
+        Vector3 EffectScale { get; }
+
         public BattleTargetType BattleTargetType { get; }
 
         public void RequestDestruction();

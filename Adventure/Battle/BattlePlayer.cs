@@ -80,6 +80,8 @@ namespace Adventure.Battle
 
         public Vector3 MagicHitLocation => this.currentPosition + new Vector3(0f, 0f, -0.1f);
 
+        public Vector3 EffectScale => Vector3.ScaleIdentity;
+
         public BattleTargetType BattleTargetType => BattleTargetType.Player;
 
         public ICharacterTimer CharacterTimer => characterTimer;

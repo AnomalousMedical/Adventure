@@ -42,6 +42,8 @@ namespace Adventure.Battle
 
         public Vector3 MagicHitLocation => this.currentPosition + new Vector3(0f, 0f, -0.1f);
 
+        public Vector3 EffectScale => this.currentScale;
+
         public ICharacterTimer CharacterTimer => characterTimer;
 
         public Enemy(

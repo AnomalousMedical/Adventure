@@ -707,7 +707,7 @@ namespace Adventure.Battle
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
             });
-            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, target.EffectScale);
             applyEffects.Add(applyEffect);
 
             IEnumerator<YieldAction> run()
