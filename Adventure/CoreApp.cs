@@ -103,6 +103,7 @@ namespace Adventure
             services.AddScoped<Airship.Description>();
             services.AddScoped<Player>();
             services.AddScoped<Player.Description>();
+            services.AddSingleton<BattleAssetLoader>();
             services.AddScoped<BattlePlayer>();
             services.AddScoped<BattlePlayer.Description>();
             services.AddScoped<Enemy>();

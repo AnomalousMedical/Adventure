@@ -11,10 +11,12 @@ namespace Adventure.Battle.Skills
     class ElementalBase : ISkill
     {
         private readonly Element element;
+        private readonly ISpriteAsset asset;
 
-        public ElementalBase(Element element)
+        public ElementalBase(Element element, ISpriteAsset asset = null)
         {
             this.element = element;
+            this.asset = asset ?? new Assets.PixelEffects.FireSpin();
         }
 
         public long GetMpCost(bool triggered, bool triggerSpammed)
@@ -47,7 +49,7 @@ namespace Adventure.Battle.Skills
 
                     var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                     {
-                        ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
+                        ISpriteAsset asset = this.asset;
                         o.RenderShadow = false;
                         o.Sprite = asset.CreateSprite();
                         o.SpriteMaterial = asset.CreateMaterial();
@@ -109,7 +111,7 @@ namespace Adventure.Battle.Skills
 
                         var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                         {
-                            ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
+                            ISpriteAsset asset = this.asset;
                             o.RenderShadow = false;
                             o.Sprite = asset.CreateSprite();
                             o.SpriteMaterial = asset.CreateMaterial();

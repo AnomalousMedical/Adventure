@@ -21,7 +21,7 @@ namespace Adventure.Battle.Skills
 
         public bool DefaultTargetPlayers => true;
 
-        public Color CastColor => Color.FromARGB(0xff63c74c);
+        public Color CastColor => Color.FromARGB(0xffffff74);
 
         public bool HealingItemsOnly { get; set; } = true;
 
@@ -68,7 +68,7 @@ namespace Adventure.Battle.Skills
 
             var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
-                ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
+                ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
@@ -83,7 +83,7 @@ namespace Adventure.Battle.Skills
 
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(1.5);
+                yield return coroutine.WaitSeconds(1.0);
                 applyEffect.RequestDestruction();
             }
             coroutine.Run(run());

@@ -1,11 +1,12 @@
-﻿using RpgMath;
+﻿using Adventure.Assets.PixelEffects;
+using RpgMath;
 
 namespace Adventure.Battle.Skills
 {
     class WeakIce : ElementalBase
     {
         public WeakIce()
-            : base(Element.Ice)
+            : base(Element.Ice, new IceEffect())
         {
             Name = "Weak Ice";
             MpCost = 4;
@@ -17,7 +18,7 @@ namespace Adventure.Battle.Skills
     class Ice : ElementalBase
     {
         public Ice()
-            : base(Element.Ice)
+            : base(Element.Ice, new IceEffect())
         {
             Name = "Ice";
             MpCost = 8;
@@ -29,7 +30,7 @@ namespace Adventure.Battle.Skills
     class StrongIce : ElementalBase
     {
         public StrongIce()
-            : base(Element.Ice)
+            : base(Element.Ice, new IceEffect())
         {
             Name = "Strong Ice";
             MpCost = 17;
@@ -42,7 +43,7 @@ namespace Adventure.Battle.Skills
     class ArchIce : ElementalBase
     {
         public ArchIce()
-            : base(Element.Ice)
+            : base(Element.Ice, new IceEffect())
         {
             Name = "Arch Ice";
             MpCost = 32;

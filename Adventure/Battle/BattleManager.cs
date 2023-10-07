@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Assets;
+using Adventure.Services;
 using Anomalous.OSPlatform;
 using Engine;
 using Engine.Platform;
@@ -93,6 +94,8 @@ namespace Adventure.Battle
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleBuilder battleBuilder;
         private readonly BuffManager buffManager;
+        private readonly IScopedCoroutine coroutine;
+        private readonly BattleAssetLoader battleAssetLoader;
         private readonly IObjectResolver objectResolver;
         private BattleArena battleArena;
         private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
@@ -133,7 +136,9 @@ namespace Adventure.Battle
             ITurnTimer turnTimer,
             IBattleScreenLayout battleScreenLayout,
             IBattleBuilder battleBuilder,
-            BuffManager buffManager)
+            BuffManager buffManager,
+            IScopedCoroutine coroutine,
+            BattleAssetLoader battleAssetLoader)
         {
             this.eventManager = eventManager;
             this.sharpGui = sharpGui;
@@ -149,6 +154,8 @@ namespace Adventure.Battle
             this.battleScreenLayout = battleScreenLayout;
             this.battleBuilder = battleBuilder;
             this.buffManager = buffManager;
+            this.coroutine = coroutine;
+            this.battleAssetLoader = battleAssetLoader;
             this.objectResolver = objectResolverFactory.Create();
 
             cursor = this.objectResolver.Resolve<TargetCursor>();
@@ -597,6 +604,7 @@ namespace Adventure.Battle
 
                 bool isCritical = false;
                 var color = Color.White;
+                ISpriteAsset hitEffect = battleAssetLoader.NormalHit;
                 if (randomizeDamage)
                 {
                     damage = damageCalculator.RandomVariation(damage);
@@ -606,20 +614,24 @@ namespace Adventure.Battle
                     {
                         damage *= 2;
                         color = Color.Orange;
+                        hitEffect = battleAssetLoader.CriticalHit;
                     }
                     if (isPower)
                     {
                         damage *= 2;
+                        hitEffect = battleAssetLoader.CriticalHit;
                     }
                     if (blocked)
                     {
                         damage -= (long)(damage * target.Stats.BlockDamageReduction);
                         color = Color.Grey;
+                        hitEffect = battleAssetLoader.BlockedHit;
                     }
                     if (fumbleBlock)
                     {
                         damage += (long)(damage * 0.25f);
                         color = Color.Red;
+                        hitEffect = battleAssetLoader.CriticalHit;
                     }
 
                     if (triggered)
@@ -627,20 +639,24 @@ namespace Adventure.Battle
                         if (attacker.Stats.CanTriggerAttack)
                         {
                             damage += (long)(damage * 0.5f);
+                            hitEffect = battleAssetLoader.CriticalHit;
                         }
                         else //Penalized if you can't trigger
                         {
                             damage -= (long)(damage * 0.5f);
+                            hitEffect = battleAssetLoader.BlockedHit;
                         }
                     }
 
                     if (triggerSpammed)
                     {
                         damage -= (long)(damage * 0.5f);
+                        hitEffect = battleAssetLoader.CriticalHit;
                     }
                 }
 
                 AddDamageNumber(target, damage, color);
+                ShowHit(target, hitEffect);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -654,6 +670,30 @@ namespace Adventure.Battle
             {
                 AddDamageNumber(target, "Miss", Color.White);
             }
+        }
+
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset)
+        {
+            var applyEffects = new List<Attachment<BattleScene>>();
+
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            {
+                o.RenderShadow = false;
+                o.Sprite = asset.CreateSprite();
+                o.SpriteMaterial = asset.CreateMaterial();
+            });
+            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+            applyEffects.Add(applyEffect);
+
+            IEnumerator<YieldAction> run()
+            {
+                yield return coroutine.WaitSeconds(0.5);
+                foreach (var effect in applyEffects)
+                {
+                    effect.RequestDestruction();
+                }
+            }
+            coroutine.Run(run());
         }
 
         public void HandleDeath(IBattleTarget target)

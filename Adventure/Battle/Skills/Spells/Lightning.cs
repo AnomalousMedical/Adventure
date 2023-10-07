@@ -1,11 +1,12 @@
-﻿using RpgMath;
+﻿using Adventure.Assets.PixelEffects;
+using RpgMath;
 
 namespace Adventure.Battle.Skills
 {
     class WeakLightning : ElementalBase
     {
         public WeakLightning()
-            : base(Element.Electricity)
+            : base(Element.Electricity, new ElectricEffect())
         {
             Name = "Weak Lightning";
             MpCost = 4;
@@ -17,7 +18,7 @@ namespace Adventure.Battle.Skills
     class Lightning : ElementalBase
     {
         public Lightning()
-            : base(Element.Electricity)
+            : base(Element.Electricity, new ElectricEffect())
         {
             Name = "Lightning";
             MpCost = 8;
@@ -29,7 +30,7 @@ namespace Adventure.Battle.Skills
     class StrongLightning : ElementalBase
     {
         public StrongLightning()
-            : base(Element.Electricity)
+            : base(Element.Electricity, new ElectricEffect())
         {
             Name = "Strong Lightning";
             MpCost = 17;
@@ -42,7 +43,7 @@ namespace Adventure.Battle.Skills
     class ArchLightning : ElementalBase
     {
         public ArchLightning()
-            : base(Element.Electricity)
+            : base(Element.Electricity, new ElectricEffect())
         {
             Name = "Arch Lightning";
             MpCost = 32;

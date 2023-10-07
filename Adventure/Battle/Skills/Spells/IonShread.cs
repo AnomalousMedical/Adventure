@@ -51,7 +51,7 @@ namespace Adventure.Battle.Skills
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
-                    ISpriteAsset asset = new Assets.PixelEffects.FireSpin();
+                    ISpriteAsset asset = new Assets.PixelEffects.IonicShreadEffect();
                     o.RenderShadow = false;
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
