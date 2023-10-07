@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.PixelEffects;
 using Adventure.Services;
 using Anomalous.OSPlatform;
 using Engine;
@@ -696,6 +697,30 @@ namespace Adventure.Battle
             coroutine.Run(run());
         }
 
+        private void ShowEnemyDeath(IBattleTarget target)
+        {
+            var applyEffects = new List<Attachment<BattleScene>>();
+
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            {
+                ISpriteAsset asset = new EnemyDeathEffect();
+                o.Sprite = asset.CreateSprite();
+                o.SpriteMaterial = asset.CreateMaterial();
+            });
+            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+            applyEffects.Add(applyEffect);
+
+            IEnumerator<YieldAction> run()
+            {
+                yield return coroutine.WaitSeconds(.95);
+                foreach (var effect in applyEffects)
+                {
+                    effect.RequestDestruction();
+                }
+            }
+            coroutine.Run(run());
+        }
+
         public void HandleDeath(IBattleTarget target)
         {
             if (target.IsDead)
@@ -703,6 +728,7 @@ namespace Adventure.Battle
                 if (enemies.Contains(target))
                 {
                     var enemy = target as Enemy;
+                    ShowEnemyDeath(target);
                     target.RequestDestruction();
                     enemies.Remove(enemy);
                     killedEnemies.Add(enemy);

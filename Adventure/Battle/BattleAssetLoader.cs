@@ -18,6 +18,7 @@ internal class BattleAssetLoader : IDisposable
     public ISpriteAsset Buff { get; } = new Assets.PixelEffects.BuffEffect();
     public ISpriteAsset Electric { get; } = new Assets.PixelEffects.ElectricEffect();
     public ISpriteAsset Heal { get; } = new Assets.PixelEffects.MagicBubbles();
+    public ISpriteAsset EnemyDeath { get; } = new Assets.PixelEffects.EnemyDeathEffect();
 
     private readonly SpriteInstanceFactory spriteInstanceFactory;
 
@@ -42,6 +43,7 @@ internal class BattleAssetLoader : IDisposable
                 this.spriteInstanceFactory.Checkout(Electric.CreateMaterial(), Electric.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(Buff.CreateMaterial(), Buff.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(Heal.CreateMaterial(), Heal.CreateSprite()),
+                this.spriteInstanceFactory.Checkout(EnemyDeath.CreateMaterial(), EnemyDeath.CreateSprite()),
             };
 
             foreach(var task in spriteLoadTasks)
