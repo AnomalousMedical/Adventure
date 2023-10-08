@@ -892,6 +892,10 @@ namespace Adventure.Battle
             cursor.Cancel();
             turnQueue.Clear();
             activePlayers.Clear();
+            foreach(var player in players)
+            {
+                player.PlayVictory();
+            }
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;

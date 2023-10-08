@@ -16,6 +16,7 @@ namespace Adventure.Assets.Players
         const float SpriteStepY = 32f / SpriteHeight;
 
         const int spriteWalkFrameSpeed = (int)(0.2f * Clock.SecondsToMicro);
+        const int victoryFrameSpeed = (int)(0.31f * Clock.SecondsToMicro);
 
         public SpriteMaterialDescription SpriteMaterialDescription { get; protected set; }
 
@@ -152,6 +153,25 @@ namespace Adventure.Assets.Players
                     }
                 })
             },
+            { "victory", new SpriteAnimation(victoryFrameSpeed,
+                new SpriteFrame(SpriteStepX * 3, SpriteStepY * 0, SpriteStepX * 4, SpriteStepY * 1)
+                //new SpriteFrame(SpriteStepX * 2, SpriteStepY * 0, SpriteStepX * 3, SpriteStepY * 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(9, 21, +0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(20, 24, -0.01f, 32, 32), //Left Hand
+                    }
+                },
+                new SpriteFrame(SpriteStepX * 3, SpriteStepY * 0, SpriteStepX * 4, SpriteStepY * 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(16, 23, +0.01f, 32, 32), //Right Hand
+                        SpriteFrameAttachment.FromFramePosition(16, 23, -0.01f, 32, 32), //Left Hand
+                    }
+                })
+            },
             { "cast-left", new SpriteAnimation(spriteWalkFrameSpeed,
                 new SpriteFrame(SpriteStepX * 2, SpriteStepY * 0, SpriteStepX * 3, SpriteStepY * 1)
                 {
@@ -246,6 +266,15 @@ namespace Adventure.Assets.Players
                     }
                 } )
             },
+            { "victory-r-hand", new SpriteAnimation(victoryFrameSpeed,
+                new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
+                    }
+                } )
+            },
             { "cast-left-r-hand", new SpriteAnimation(spriteWalkFrameSpeed,
                 new SpriteFrame(0 / SpriteWidth, 64 / SpriteHeight, 6 / SpriteWidth, 70 / SpriteHeight)
                 {
@@ -330,6 +359,15 @@ namespace Adventure.Assets.Players
                 } )
             },
             { "left-l-hand", new SpriteAnimation(spriteWalkFrameSpeed,
+                new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(3, 2, 0.02f, 6, 6), //Center of hand, aligns to above hand centers
+                    }
+                } )
+            },
+            { "victory-l-hand", new SpriteAnimation(victoryFrameSpeed,
                 new SpriteFrame(6 / SpriteWidth, 64 / SpriteHeight, 12 / SpriteWidth, 70 / SpriteHeight)
                 {
                     Attachments = new List<SpriteFrameAttachment>()

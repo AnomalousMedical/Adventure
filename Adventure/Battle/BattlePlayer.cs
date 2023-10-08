@@ -1047,5 +1047,14 @@ namespace Adventure.Battle
         {
             return (contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown);
         }
+
+        public void PlayVictory()
+        {
+            if(!IsDead)
+            {
+                sprite.SetAnimation("victory");
+                this.currentPosition = this.startPosition;
+            }
+        }
     }
 }
