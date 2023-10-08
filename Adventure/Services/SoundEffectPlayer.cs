@@ -19,27 +19,35 @@ class SoundEffectPlayer : ISoundEffectPlayer
 {
     private readonly SoundManager soundManager;
     private readonly VirtualFileSystem virtualFileSystem;
+    private readonly Options options;
 
     public SoundEffectPlayer
     (
         SoundManager soundManager,
-        VirtualFileSystem virtualFileSystem
+        VirtualFileSystem virtualFileSystem,
+        Options options
     )
     {
         this.soundManager = soundManager;
         this.virtualFileSystem = virtualFileSystem;
+        this.options = options;
     }
 
     public void PlaySound(ISoundEffect soundEffect)
     {
         var stream = virtualFileSystem.openStream(soundEffect.File, FileMode.Open, FileAccess.Read, FileShare.Read);
-        if(soundEffect.Streaming)
+        Source source;
+        if (soundEffect.Streaming)
         {
-            soundManager.StreamPlayAndForgetSound(stream);
+            source = soundManager.StreamPlayAndForgetSound(stream);
         }
         else
         {
-            soundManager.MemoryPlayAndForgetSound(stream);
+            source = soundManager.MemoryPlayAndForgetSound(stream);
+        }
+        if (source != null)
+        {
+            source.Gain = options.SfxVolume;
         }
     }
 }

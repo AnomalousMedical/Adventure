@@ -16,5 +16,9 @@ namespace Adventure.Services
         public String CurrentSave { get; set; } = "save.json";
 
         public float MasterVolume { get; set; } = 1.0f;
+
+        public float MusicVolume { get; set; } = 0.65f;
+
+        public float SfxVolume { get; set; } = 1.0f;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Services;
+using Engine;
 using SoundPlugin;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace Adventure
         private readonly VirtualFileSystem virtualFileSystem;
         private readonly SoundManager soundManager;
         private readonly ICoroutineRunner coroutineRunner;
+        private readonly Options options;
         private SoundAndSource bgMusicSound;
         private SoundAndSource battleMusicSound;
         private bool bgMusicFinished = false;
@@ -28,11 +30,13 @@ namespace Adventure
         public BackgroundMusicPlayer(
             VirtualFileSystem virtualFileSystem, 
             SoundManager soundManager,
-            ICoroutineRunner coroutineRunner)
+            ICoroutineRunner coroutineRunner,
+            Options options)
         {
             this.virtualFileSystem = virtualFileSystem;
             this.soundManager = soundManager;
             this.coroutineRunner = coroutineRunner;
+            this.options = options;
         }
 
         public void Dispose()
@@ -61,6 +65,7 @@ namespace Adventure
                 var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
                 bgMusicSound = soundManager.StreamPlaySound(stream);
                 bgMusicSound.Sound.Repeat = true;
+                bgMusicSound.Source.Gain = options.MusicVolume;
                 bgMusicSound.Source.PlaybackFinished += BgMusic_PlaybackFinished;
                 bgMusicFinished = false;
             }
@@ -111,6 +116,7 @@ namespace Adventure
                 var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
                 battleMusicSound = soundManager.StreamPlaySound(stream);
                 battleMusicSound.Sound.Repeat = true;
+                battleMusicSound.Source.Gain = options.MusicVolume;
 
                 if (bgMusicSound != null)
                 {
