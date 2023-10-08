@@ -316,7 +316,7 @@ namespace Adventure.WorldMap
                     DestroyPhysics();
                     SyncGraphics();
                     worldMapManager.SetPlayerVisible(false);
-                    backgroundMusicPlayer.SetBattleTrack("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+                    backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Fireworks - Alexander Nakarada.ogg");
                 }
             }
         }
@@ -353,7 +353,7 @@ namespace Adventure.WorldMap
                 contextMenu.ClearContext(Land);
                 landEventLayer.makeFocusLayer();
                 worldMapManager.SetPlayerVisible(true);
-                backgroundMusicPlayer.SetBattleTrack(null);
+                backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
             }   
         }
 

@@ -235,7 +235,7 @@ namespace Adventure.Battle
                     numbers.Clear();
                     allowBattleFinish = false;
 
-                    backgroundMusicPlayer.SetBattleTrack(backgroundMusic);
+                    backgroundMusicPlayer.SetBackgroundSong(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
                     var baseDexTotal = 0L;
                     foreach(var player in players)
@@ -284,8 +284,6 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    backgroundMusicPlayer.SetBattleTrack(null);
-
                     foreach (var player in players)
                     {
                         player.RequestDestruction();
@@ -777,6 +775,7 @@ namespace Adventure.Battle
                 {
                     var enemy = target as Enemy;
                     enemies.Remove(enemy);
+                    //This needs to be rewritten to use the turn not the coroutine
                     IEnumerator<YieldAction> run()
                     {
                         yield return coroutine.WaitSeconds(.65);
@@ -791,7 +790,7 @@ namespace Adventure.Battle
                                 allowBattleFinish = true;
                                 return true;
                             });
-                            backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                            backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
                         }
                     }
                     coroutine.Run(run());

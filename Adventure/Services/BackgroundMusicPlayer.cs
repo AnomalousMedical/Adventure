@@ -4,16 +4,12 @@ using SoundPlugin;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure
 {
     interface IBackgroundMusicPlayer
     {
         void SetBackgroundSong(string songFile);
-        void SetBattleTrack(string songFile);
     }
 
     class BackgroundMusicPlayer : IDisposable, IBackgroundMusicPlayer
@@ -23,7 +19,6 @@ namespace Adventure
         private readonly ICoroutineRunner coroutineRunner;
         private readonly Options options;
         private SoundAndSource bgMusicSound;
-        private SoundAndSource battleMusicSound;
         private bool bgMusicFinished = false;
         private String currentBackgroundSong;
 
@@ -42,7 +37,6 @@ namespace Adventure
         public void Dispose()
         {
             DisposeBgSound();
-            battleMusicSound?.Dispose();
         }
 
         private void DisposeBgSound()
@@ -60,7 +54,7 @@ namespace Adventure
             if (currentBackgroundSong == songFile) { return; }
 
             DisposeBgSound();
-            if (battleMusicSound == null && songFile != null)
+            if (songFile != null)
             {
                 var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
                 bgMusicSound = soundManager.StreamPlaySound(stream);
@@ -92,37 +86,6 @@ namespace Adventure
                 }
             }
             coroutineRunner.Run(co());
-        }
-
-        public void SetBattleTrack(String songFile)
-        {
-            battleMusicSound?.Dispose();
-            battleMusicSound = null;
-
-            if (songFile == null)
-            {
-                if (bgMusicSound != null && !bgMusicFinished && !bgMusicSound.Source.Playing)
-                {
-                    bgMusicSound.Source.resume();
-                }
-                else if (bgMusicSound == null && currentBackgroundSong != null)
-                {
-                    //If we should play a song, but it hasn't started yet, this would happen if the bg music changes during a battle.
-                    ResetBackgroundSong();
-                }
-            }
-            else
-            {
-                var stream = virtualFileSystem.openStream(songFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                battleMusicSound = soundManager.StreamPlaySound(stream);
-                battleMusicSound.Sound.Repeat = true;
-                battleMusicSound.Source.Gain = options.MusicVolume;
-
-                if (bgMusicSound != null)
-                {
-                    bgMusicSound.Source.pause();
-                }
-            }
         }
     }
 }
