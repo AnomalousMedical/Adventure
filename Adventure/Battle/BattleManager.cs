@@ -1,5 +1,6 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.PixelEffects;
+using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Anomalous.OSPlatform;
 using Engine;
@@ -97,6 +98,7 @@ namespace Adventure.Battle
         private readonly BuffManager buffManager;
         private readonly IScopedCoroutine coroutine;
         private readonly BattleAssetLoader battleAssetLoader;
+        private readonly ISoundEffectPlayer soundEffectPlayer;
         private readonly IObjectResolver objectResolver;
         private BattleArena battleArena;
         private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
@@ -139,7 +141,8 @@ namespace Adventure.Battle
             IBattleBuilder battleBuilder,
             BuffManager buffManager,
             IScopedCoroutine coroutine,
-            BattleAssetLoader battleAssetLoader)
+            BattleAssetLoader battleAssetLoader,
+            ISoundEffectPlayer soundEffectPlayer)
         {
             this.eventManager = eventManager;
             this.sharpGui = sharpGui;
@@ -157,6 +160,7 @@ namespace Adventure.Battle
             this.buffManager = buffManager;
             this.coroutine = coroutine;
             this.battleAssetLoader = battleAssetLoader;
+            this.soundEffectPlayer = soundEffectPlayer;
             this.objectResolver = objectResolverFactory.Create();
 
             cursor = this.objectResolver.Resolve<TargetCursor>();
@@ -586,26 +590,61 @@ namespace Adventure.Battle
 
             if (damageCalculator.PhysicalHit(attacker.Stats, target.Stats))
             {
+                var weaponSet = HammerSoundEffects.Instance;
+                ISoundEffect soundEffect = null;
+
+                var hitEffect = battleAssetLoader.NormalHit;
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
                 var randomizeDamage = true;
 
                 foreach (var attackElement in attacker.Stats.AttackElements)
                 {
+                    switch (attackElement)
+                    {
+                        case Element.Piercing:
+                            weaponSet = SpearSoundEffects.Instance;
+                            break;
+                        case Element.Slashing:
+                            weaponSet = SwordSoundEffects.Instance;
+                            break;
+                        case Element.Bludgeoning:
+                            weaponSet = HammerSoundEffects.Instance;
+                            break;
+                    }
+
                     var resistance = target.Stats.GetResistance(attackElement);
                     damage = damageCalculator.ApplyResistance(damage, resistance);
-                    if (resistance == Resistance.Death || resistance == Resistance.Recovery)
+                    switch (resistance)
                     {
-                        //This is enough to handle death and recovery for any element.
-                        //The damage returned will be the number needed to apply the effect
-                        //and we just want to stop modifying it immediately and apply it
-                        randomizeDamage = false;
-                        break;
+                        case Resistance.Resist:
+                            hitEffect = battleAssetLoader.BlockedHit;
+                            soundEffect = soundEffect ?? weaponSet.Blocked;
+                            break;
+                        case Resistance.Weak:
+                            hitEffect = battleAssetLoader.StrongHit;
+                            soundEffect = soundEffect ?? weaponSet.Heavy;
+                            break;
+                        case Resistance.Death:
+                        case Resistance.Recovery:
+                            //This is enough to handle death and recovery for any element.
+                            //The damage returned will be the number needed to apply the effect
+                            //and we just want to stop modifying it immediately and apply it
+                            randomizeDamage = false;
+                            break;
+                    }
+
+                    switch (attackElement)
+                    {
+                        case Element.Piercing:
+                        case Element.Slashing:
+                        case Element.Bludgeoning:
+                            soundEffect = soundEffect ?? weaponSet.Normal;
+                            break;
                     }
                 }
 
                 bool isCritical = false;
                 var color = Color.White;
-                ISpriteAsset hitEffect = battleAssetLoader.NormalHit;
                 if (randomizeDamage)
                 {
                     damage = damageCalculator.RandomVariation(damage);
@@ -615,24 +654,23 @@ namespace Adventure.Battle
                     {
                         damage *= 2;
                         color = Color.Orange;
-                        hitEffect = battleAssetLoader.CriticalHit;
                     }
                     if (isPower)
                     {
                         damage *= 2;
-                        hitEffect = battleAssetLoader.CriticalHit;
                     }
                     if (blocked)
                     {
                         damage -= (long)(damage * target.Stats.BlockDamageReduction);
                         color = Color.Grey;
                         hitEffect = battleAssetLoader.BlockedHit;
+                        soundEffect = BlockedSoundEffect.Instance;
                     }
                     if (fumbleBlock)
                     {
                         damage += (long)(damage * 0.25f);
                         color = Color.Red;
-                        hitEffect = battleAssetLoader.CriticalHit;
+                        hitEffect = battleAssetLoader.StrongHit;
                     }
 
                     if (triggered)
@@ -640,7 +678,7 @@ namespace Adventure.Battle
                         if (attacker.Stats.CanTriggerAttack)
                         {
                             damage += (long)(damage * 0.5f);
-                            hitEffect = battleAssetLoader.CriticalHit;
+                            hitEffect = battleAssetLoader.StrongHit;
                         }
                         else //Penalized if you can't trigger
                         {
@@ -652,12 +690,12 @@ namespace Adventure.Battle
                     if (triggerSpammed)
                     {
                         damage -= (long)(damage * 0.5f);
-                        hitEffect = battleAssetLoader.CriticalHit;
+                        hitEffect = battleAssetLoader.StrongHit;
                     }
                 }
 
                 AddDamageNumber(target, damage, color);
-                ShowHit(target, hitEffect);
+                ShowHit(target, hitEffect, soundEffect);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -673,7 +711,7 @@ namespace Adventure.Battle
             }
         }
 
-        private void ShowHit(IBattleTarget target, ISpriteAsset asset)
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect)
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -685,6 +723,11 @@ namespace Adventure.Battle
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
             applyEffects.Add(applyEffect);
+
+            if (soundEffect != null)
+            {
+                soundEffectPlayer.PlaySound(soundEffect);
+            }
 
             IEnumerator<YieldAction> run()
             {

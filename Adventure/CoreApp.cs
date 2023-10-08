@@ -108,6 +108,7 @@ namespace Adventure
             services.AddScoped<BattlePlayer.Description>();
             services.AddScoped<Enemy>();
             services.AddScoped<Enemy.Desc>();
+            services.AddSingleton<ISoundEffectPlayer, SoundEffectPlayer>();
             services.AddSingleton<RTInstances<ZoneScene>>();
             services.AddSingleton<RTInstances<BattleScene>>();
             services.AddSingleton<RTInstances<WorldMapScene>>();
