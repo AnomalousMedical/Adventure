@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.PixelEffects;
+using Adventure.Assets.SoundEffects;
 using RpgMath;
 
 namespace Adventure.Battle.Skills
@@ -6,7 +7,7 @@ namespace Adventure.Battle.Skills
     class WeakLightning : ElementalBase
     {
         public WeakLightning()
-            : base(Element.Electricity, new ElectricEffect())
+            : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Weak Lightning";
             MpCost = 4;
@@ -18,7 +19,7 @@ namespace Adventure.Battle.Skills
     class Lightning : ElementalBase
     {
         public Lightning()
-            : base(Element.Electricity, new ElectricEffect())
+            : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Lightning";
             MpCost = 8;
@@ -30,7 +31,7 @@ namespace Adventure.Battle.Skills
     class StrongLightning : ElementalBase
     {
         public StrongLightning()
-            : base(Element.Electricity, new ElectricEffect())
+            : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Strong Lightning";
             MpCost = 17;
@@ -43,7 +44,7 @@ namespace Adventure.Battle.Skills
     class ArchLightning : ElementalBase
     {
         public ArchLightning()
-            : base(Element.Electricity, new ElectricEffect())
+            : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Arch Lightning";
             MpCost = 32;

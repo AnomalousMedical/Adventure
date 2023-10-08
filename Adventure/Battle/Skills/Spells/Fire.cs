@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.PixelEffects;
+using Adventure.Assets.SoundEffects;
 using RpgMath;
 
 namespace Adventure.Battle.Skills
@@ -6,7 +7,7 @@ namespace Adventure.Battle.Skills
     class WeakFire : ElementalBase
     {
         public WeakFire()
-            : base(Element.Fire, new FireEffect())
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
             Name = "Weak Fire";
             MpCost = 4;
@@ -18,7 +19,7 @@ namespace Adventure.Battle.Skills
     class Fire : ElementalBase
     {
         public Fire()
-            :base(Element.Fire, new FireEffect())
+            :base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
             Name = "Fire";
             MpCost = 8;
@@ -30,7 +31,7 @@ namespace Adventure.Battle.Skills
     class StrongFire : ElementalBase
     {
         public StrongFire()
-            : base(Element.Fire, new FireEffect())
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
             Name = "Strong Fire";
             MpCost = 17;
@@ -43,7 +44,7 @@ namespace Adventure.Battle.Skills
     class ArchFire : ElementalBase
     {
         public ArchFire()
-            : base(Element.Fire, new FireEffect())
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
             Name = "Arch Fire";
             MpCost = 32;

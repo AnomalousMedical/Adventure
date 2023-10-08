@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Engine;
 using RpgMath;
@@ -46,6 +47,7 @@ namespace Adventure.Battle.Skills
                     damage /= 2;
                 }
 
+                battleManager.SoundEffectPlayer.PlaySound(IonShreadSpellSoundEffect.Instance);
                 battleManager.AddDamageNumber(target, damage);
                 target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 

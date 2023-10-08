@@ -51,8 +51,9 @@ namespace Adventure.Battle
         IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetRandomPlayer();
         void PlayerDead(BattlePlayer battlePlayer);
-
         IDamageCalculator DamageCalculator { get; }
+        ISoundEffectPlayer SoundEffectPlayer { get; }
+
         bool AllowActivePlayerGui { get; set; }
 
         void HandleDeath(IBattleTarget target);
@@ -81,6 +82,8 @@ namespace Adventure.Battle
     class BattleManager : IDisposable, IBattleManager
     {
         const long NumberDisplayTime = (long)(0.9f * Clock.SecondsToMicro);
+
+        public ISoundEffectPlayer SoundEffectPlayer => soundEffectPlayer;
 
         private readonly EventManager eventManager;
         private readonly ISharpGui sharpGui;

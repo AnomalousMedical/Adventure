@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -12,11 +13,13 @@ namespace Adventure.Battle.Skills
     {
         private readonly Element element;
         private readonly ISpriteAsset asset;
+        private readonly ISoundEffect soundEffect;
 
-        public ElementalBase(Element element, ISpriteAsset asset = null)
+        public ElementalBase(Element element, ISpriteAsset asset, ISoundEffect soundEffect)
         {
             this.element = element;
-            this.asset = asset ?? new Assets.PixelEffects.FireSpin();
+            this.asset = asset;
+            this.soundEffect = soundEffect;
         }
 
         public long GetMpCost(bool triggered, bool triggerSpammed)
@@ -106,6 +109,7 @@ namespace Adventure.Battle.Skills
                             damage /= 2;
                         }
 
+                        battleManager.SoundEffectPlayer.PlaySound(soundEffect);
                         battleManager.AddDamageNumber(currentTarget, damage);
                         currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
