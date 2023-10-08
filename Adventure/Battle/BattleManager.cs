@@ -753,6 +753,8 @@ namespace Adventure.Battle
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, target.EffectScale);
             applyEffects.Add(applyEffect);
 
+            soundEffectPlayer.PlaySound(DeathSoundEffect.Instance);
+
             IEnumerator<YieldAction> run()
             {
                 yield return coroutine.WaitSeconds(.95);
@@ -771,20 +773,25 @@ namespace Adventure.Battle
                 if (enemies.Contains(target))
                 {
                     var enemy = target as Enemy;
-                    ShowEnemyDeath(target);
-                    target.RequestDestruction();
                     enemies.Remove(enemy);
-                    killedEnemies.Add(enemy);
-                    if (enemies.Count == 0)
+                    IEnumerator<YieldAction> run()
                     {
-                        turnQueue.Insert(0, c =>
+                        yield return coroutine.WaitSeconds(.65);
+                        ShowEnemyDeath(target);
+                        target.RequestDestruction();
+                        killedEnemies.Add(enemy);
+                        if (enemies.Count == 0)
                         {
-                            BattleEnded();
-                            allowBattleFinish = true;
-                            return true;
-                        });
-                        backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                            turnQueue.Insert(0, c =>
+                            {
+                                BattleEnded();
+                                allowBattleFinish = true;
+                                return true;
+                            });
+                            backgroundMusicPlayer.SetBattleTrack("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                        }
                     }
+                    coroutine.Run(run());
                 }
             }
         }
