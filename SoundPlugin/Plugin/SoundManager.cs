@@ -19,6 +19,24 @@ namespace SoundPlugin
             this.logger = logger;
         }
 
+        public Source MemoryPlayAndForgetSound(Stream soundStream)
+        {
+            Source source = openALManager.GetSource();
+            if (source != null)
+            {
+                Sound sound = openALManager.CreateMemorySound(soundStream);
+                oneTimeSounds.Add(source, sound);
+                source.PlaybackFinished += source_PlaybackFinished;
+                source.playSound(sound);
+                return source;
+            }
+            else
+            {
+                logger.LogError("Ran out of sources trying to play sound.");
+            }
+            return null;
+        }
+
         public Source StreamPlayAndForgetSound(Stream soundStream)
         {
             Source source = openALManager.GetSource();

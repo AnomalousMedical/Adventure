@@ -28,7 +28,15 @@ namespace SoundPlugin
 
         public bool playSound(Sound sound)
         {
-            return Source_playSound(Pointer, sound.Pointer);
+            var result = Source_playSound(Pointer, sound.Pointer);
+            if(!result) //This means the sound did not play
+            {
+                if (PlaybackFinished != null)
+                {
+                    PlaybackFinished.Invoke(this);
+                }
+            }
+            return result;
         }
 
         public void stop()
