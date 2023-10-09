@@ -117,6 +117,7 @@ namespace Adventure.Battle
         private List<Func<Clock, bool>> turnQueue = new List<Func<Clock, bool>>(30);
         private Func<Clock, bool> currentTurn = null;
         bool allowBattleFinish = false;
+        bool showEndBattleButton = false;
 
         private TargetCursor cursor;
 
@@ -234,6 +235,7 @@ namespace Adventure.Battle
                     cursor.BattleStarted();
                     numbers.Clear();
                     allowBattleFinish = false;
+                    showEndBattleButton = false;
 
                     backgroundMusicPlayer.SetBackgroundSong(backgroundMusic);
                     var allTimers = players.Select(i => i.CharacterTimer).Concat(enemies.Select(i => i.CharacterTimer));
@@ -342,7 +344,8 @@ namespace Adventure.Battle
                 sharpGui.Text(goldRewardText);
 
                 //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
-                if (sharpGui.Button(endBattle, GamepadId.Pad1) || sharpGui.Button(endBattle, GamepadId.Pad2) || sharpGui.Button(endBattle, GamepadId.Pad3) || sharpGui.Button(endBattle, GamepadId.Pad4))
+                if (showEndBattleButton &&
+                    (sharpGui.Button(endBattle, GamepadId.Pad1) || sharpGui.Button(endBattle, GamepadId.Pad2) || sharpGui.Button(endBattle, GamepadId.Pad3) || sharpGui.Button(endBattle, GamepadId.Pad4)))
                 {
                     party.Gold += goldReward;
 
@@ -775,22 +778,33 @@ namespace Adventure.Battle
                 {
                     var enemy = target as Enemy;
                     enemies.Remove(enemy);
-                    //This needs to be rewritten to use the turn not the coroutine
+
+                    var fanfareDone = false; //This does nothing unless the enemies are all dead, but it must be declared here for scope
+                    if (enemies.Count == 0)
+                    {
+                        //Add a turn that will hold the turn queue up until the coroutine below is complete
+                        turnQueue.Insert(0, c => fanfareDone);
+                    }
+
                     IEnumerator<YieldAction> run()
                     {
-                        yield return coroutine.WaitSeconds(.65);
+                        yield return coroutine.WaitSeconds(0.45);
                         ShowEnemyDeath(target);
                         target.RequestDestruction();
                         killedEnemies.Add(enemy);
-                        if (enemies.Count == 0)
+                        if(enemies.Count == 0)
                         {
-                            turnQueue.Insert(0, c =>
-                            {
-                                BattleEnded();
-                                allowBattleFinish = true;
-                                return true;
-                            });
+                            yield return coroutine.WaitSeconds(0.4);
                             backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                            foreach (var player in players)
+                            {
+                                player.SetVictorious();
+                            }
+                            BattleEnded();
+                            allowBattleFinish = true;
+                            yield return coroutine.WaitSeconds(1.85);
+                            showEndBattleButton = true;
+                            fanfareDone = true;
                         }
                     }
                     coroutine.Run(run());
@@ -891,10 +905,6 @@ namespace Adventure.Battle
             cursor.Cancel();
             turnQueue.Clear();
             activePlayers.Clear();
-            foreach(var player in players)
-            {
-                player.PlayVictory();
-            }
         }
 
         public IDamageCalculator DamageCalculator => damageCalculator;

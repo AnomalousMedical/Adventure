@@ -57,12 +57,12 @@ namespace Adventure.Battle
 
         private IBattleSkills skills;
         private readonly BattleItemMenu itemMenu;
-        private readonly IXpCalculator xpCalculator;
-        private readonly ILevelCalculator levelCalculator;
         private readonly IAssetFactory assetFactory;
         private readonly ISkillFactory skillFactory;
         private readonly EventManager eventManager;
         private readonly IInventoryFunctions inventoryFunctions;
+
+        private bool victorious = false;
 
         public IBattleStats Stats => this.characterSheet;
 
@@ -129,8 +129,6 @@ namespace Adventure.Battle
             ITurnTimer turnTimer,
             IBattleSkills skills,
             BattleItemMenu itemMenu,
-            IXpCalculator xpCalculator,
-            ILevelCalculator levelCalculator,
             IAssetFactory assetFactory,
             ISkillFactory skillFactory,
             EventManager eventManager,
@@ -147,8 +145,6 @@ namespace Adventure.Battle
             this.uiStyle = description.UiStyle;
             this.skills = skills;
             this.itemMenu = itemMenu;
-            this.xpCalculator = xpCalculator;
-            this.levelCalculator = levelCalculator;
             this.assetFactory = assetFactory;
             this.skillFactory = skillFactory;
             this.eventManager = eventManager;
@@ -262,7 +258,7 @@ namespace Adventure.Battle
         {
             if (guiActive != active)
             {
-                guiActive = active;
+                guiActive = active && !victorious;
                 if (guiActive)
                 {
                     this.currentPosition = ActivePosition;
@@ -557,7 +553,7 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    sprite.SetAnimation("stand-left");
+                    sprite.SetAnimation(victorious ? "victory" : "stand-left");
 
                     mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
 
@@ -571,7 +567,7 @@ namespace Adventure.Battle
                 if (remainingTime < 0)
                 {
                     position = end;
-                    sprite.SetAnimation("stand-left");
+                    sprite.SetAnimation(victorious ? "victory" : "stand-left");
                     TurnComplete();
                     done = true;
                 }
@@ -683,7 +679,7 @@ namespace Adventure.Battle
                 if (remainingTime < 0)
                 {
                     this.currentPosition = end;
-                    sprite.SetAnimation("stand-left");
+                    sprite.SetAnimation(victorious ? "victory" : "stand-left");
                     if (deactivatePlayer)
                     {
                         TurnComplete();
@@ -1048,8 +1044,9 @@ namespace Adventure.Battle
             return (contextTriggerJoystick.FirstFrameDown || contextTriggerKeyboard.FirstFrameDown);
         }
 
-        public void PlayVictory()
+        public void SetVictorious()
         {
+            victorious = true;
             if(!IsDead)
             {
                 sprite.SetAnimation("victory");
