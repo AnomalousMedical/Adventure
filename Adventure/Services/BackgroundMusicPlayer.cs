@@ -74,6 +74,7 @@ namespace Adventure
                 resumeMusicToken.PlaybackTime = DateTime.Now - playbackStartTime;
                 bgMusicSound?.Dispose();
                 bgMusicSound = null;
+                resumeMusicToken = null;
             }
         }
 
