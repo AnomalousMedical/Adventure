@@ -47,6 +47,7 @@ namespace Adventure
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
         private Func<Clock, bool> explorationEvent;
+        private ResumeMusicToken resumeMusicToken;
 
         public RTInstances Instances => rtInstances;
 
@@ -189,13 +190,13 @@ namespace Adventure
         private void TimeClock_NightStarted(TimeClock obj)
         {
             var song = zoneManager.Current.Biome.BgMusicNight;
-            backgroundMusicPlayer.SetBackgroundSong(song);
+            resumeMusicToken = backgroundMusicPlayer.SetBackgroundSong(song, resumeMusicToken);
         }
 
         private void TimeClock_DayStarted(TimeClock obj)
         {
             var song = zoneManager.Current.Biome.BgMusic;
-            backgroundMusicPlayer.SetBackgroundSong(song);
+            resumeMusicToken = backgroundMusicPlayer.SetBackgroundSong(song, resumeMusicToken);
         }
 
         private void ZoneManager_ZoneChanged(IZoneManager obj)
@@ -205,7 +206,7 @@ namespace Adventure
             {
                 song = zoneManager.Current.Biome.BgMusicNight;
             }
-            backgroundMusicPlayer.SetBackgroundSong(song);
+            resumeMusicToken = backgroundMusicPlayer.SetBackgroundSong(song, resumeMusicToken);
         }
     }
 }
