@@ -93,8 +93,9 @@ namespace Adventure
                 playbackStartTime = DateTime.Now;
                 if (resumeToken != null && resumeToken.SongFile == songFile)
                 {
-                    bgMusicSound.Source.PlaybackPosition = (float)(resumeToken.PlaybackTime.TotalSeconds % bgMusicSound.Sound.Duration);
-                    playbackStartTime -= resumeToken.PlaybackTime;
+                    var playbackOffset = (float)(resumeToken.PlaybackTime.TotalSeconds % bgMusicSound.Sound.Duration);
+                    bgMusicSound.Source.PlaybackPosition = playbackOffset;
+                    playbackStartTime -= TimeSpan.FromSeconds(playbackOffset);
                 }
                 bgMusicSound.Source.Gain = options.MusicVolume;
                 bgMusicSound.Source.PlaybackFinished += BgMusic_PlaybackFinished;
