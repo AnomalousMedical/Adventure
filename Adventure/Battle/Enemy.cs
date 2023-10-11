@@ -1,4 +1,5 @@
-﻿using DiligentEngine;
+﻿using Adventure.Assets.SoundEffects;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
@@ -19,6 +20,8 @@ namespace Adventure.Battle
             public BattleStats BattleStats { get; set; }
 
             public long GoldReward { get; set; }
+
+            public ISoundEffect SoundEffect { get; set; }
         }
 
         private readonly RTInstances<BattleScene> rtInstances;
@@ -46,6 +49,8 @@ namespace Adventure.Battle
 
         public ICharacterTimer CharacterTimer => characterTimer;
 
+        public ISoundEffect DefaultAttackSoundEffect { get; private set; }
+
         public Enemy(
             RTInstances<BattleScene> rtInstances,
             IDestructionRequest destructionRequest,
@@ -68,6 +73,7 @@ namespace Adventure.Battle
             this.battleStats.CurrentHp = Stats.Hp;
             this.battleStats.CurrentMp = Stats.Mp;
             this.GoldReward = description.GoldReward;
+            this.DefaultAttackSoundEffect = description.SoundEffect;
 
             turnTimer.AddTimer(characterTimer);
             characterTimer.TurnReady += CharacterTimer_TurnReady;

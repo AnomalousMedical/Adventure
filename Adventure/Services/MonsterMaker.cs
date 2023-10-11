@@ -1,5 +1,6 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.Enemies;
+using Adventure.Assets.SoundEffects;
 using Engine;
 using RpgMath;
 using System;
@@ -17,11 +18,11 @@ namespace Adventure.Services
         void PopulateBiome(IBiome biome, IEnumerable<MonsterInfo> regularEnemies, MonsterInfo boss);
     }
 
-    record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances, BiomeType NativeBiome)
+    record MonsterInfo(ISpriteAsset Asset, Dictionary<Element, Resistance> Resistances, BiomeType NativeBiome, ISoundEffect AttackSound)
     {
     }
 
-    record MonsterAssetInfo(ISpriteAsset Asset, BiomeType NativeBiome);
+    record MonsterAssetInfo(ISpriteAsset Asset, BiomeType NativeBiome, ISoundEffect AttackSound);
 
     class MonsterMaker : IMonsterMaker
     {
@@ -30,18 +31,18 @@ namespace Adventure.Services
 
         public MonsterMaker()
         {
-            monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside));
-            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy));
-            monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy));
-            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy));
-            monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert));
-            monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain));
-            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert));
-            monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest));
-            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside));
-            monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest));
-            monsterAssets.Add(new MonsterAssetInfo(new GreatWhiteShark(), BiomeType.Beach));
-            monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp));
+            monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside, BatSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy, OgreNewSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy, WolfSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy, OrcKnightOldSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert, SalamanderFirebrandSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest, ThornHunterSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside, TinyDinoSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest, WanderingMushroomNewSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new GreatWhiteShark(), BiomeType.Beach, GreatWhiteSharkSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp, AlligatorSoundEffect.Instance));
         }
 
         /// <summary>
@@ -97,7 +98,8 @@ namespace Adventure.Services
                         { weakElement, Resistance.Weak },
                         { resistElement, Resistance.Resist }
                     },
-                    NativeBiome: monsterAsset.NativeBiome
+                    NativeBiome: monsterAsset.NativeBiome,
+                    AttackSound: monsterAsset.AttackSound
                 );
 
                 monsters.Add(monster);
@@ -147,7 +149,8 @@ namespace Adventure.Services
             {
                 Asset = monster.Asset.CreateAnotherInstance(),
                 EnemyCurve = standardEnemyCurve,
-                Resistances = enemyResistances
+                Resistances = enemyResistances,
+                AttackSound = monster.AttackSound,
             };
 
             if (absorbElement != null)

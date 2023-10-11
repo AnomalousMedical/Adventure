@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Assets.World;
 using DiligentEngine.RT.Resources;
 using RpgMath;
@@ -31,6 +32,8 @@ namespace Adventure
         public IEnemyCurve EnemyCurve { get; set; }
 
         public Dictionary<Element, Resistance> Resistances { get; set; }
+
+        public ISoundEffect AttackSound { get; set; }
     }
 
     class BiomeTreasure

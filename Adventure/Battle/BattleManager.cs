@@ -595,7 +595,8 @@ namespace Adventure.Battle
             if (damageCalculator.PhysicalHit(attacker.Stats, target.Stats))
             {
                 var weaponSet = HammerSoundEffects.Instance;
-                ISoundEffect soundEffect = null;
+                ISoundEffect soundEffect = attacker.DefaultAttackSoundEffect;
+                ISoundEffect blockedSound = null;
 
                 var hitEffect = battleAssetLoader.NormalHit;
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
@@ -668,7 +669,7 @@ namespace Adventure.Battle
                         damage -= (long)(damage * target.Stats.BlockDamageReduction);
                         color = Color.Grey;
                         hitEffect = battleAssetLoader.BlockedHit;
-                        soundEffect = BlockedSoundEffect.Instance;
+                        blockedSound = BlockedSoundEffect.Instance;
                     }
                     if (fumbleBlock)
                     {
@@ -699,7 +700,7 @@ namespace Adventure.Battle
                 }
 
                 AddDamageNumber(target, damage, color);
-                ShowHit(target, hitEffect, soundEffect);
+                ShowHit(target, hitEffect, soundEffect, blockedSound);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -715,7 +716,7 @@ namespace Adventure.Battle
             }
         }
 
-        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect)
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound)
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -731,6 +732,11 @@ namespace Adventure.Battle
             if (soundEffect != null)
             {
                 soundEffectPlayer.PlaySound(soundEffect);
+            }
+
+            if(blockedSound != null)
+            {
+                soundEffectPlayer.PlaySound(blockedSound);
             }
 
             IEnumerator<YieldAction> run()

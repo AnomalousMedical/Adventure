@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Adventure.Assets.SoundEffects;
+using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
@@ -41,5 +42,7 @@ namespace Adventure.Battle
         void AttemptMeleeCounter(IBattleTarget attacker);
 
         bool TryContextTrigger();
+
+        ISoundEffect DefaultAttackSoundEffect { get; }
     }
 }

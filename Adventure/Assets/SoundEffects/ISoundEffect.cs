@@ -1,14 +1,14 @@
 ﻿namespace Adventure.Assets.SoundEffects;
 
-interface ISoundEffect
+public interface ISoundEffect
 {
     public string File { get; }
 
-    public bool Streaming { get; }
+    public bool Streaming => false;
 }
 
 
-interface IWeaponSoundEffects
+public interface IWeaponSoundEffects
 {
     public ISoundEffect Blocked { get; }
 

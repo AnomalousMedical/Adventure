@@ -38,6 +38,7 @@ namespace Adventure.Battle
                 var curve = biomeEnemy.EnemyCurve;
                 c.Sprite = biomeEnemy.Asset.CreateSprite();
                 c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();
+                c.SoundEffect = biomeEnemy.AttackSound;
                 c.BattleStats = new BattleStats()
                 {
                     Hp = curve.GetHp(level, enemyType),
@@ -74,6 +75,7 @@ namespace Adventure.Battle
                     var curve = biomeEnemy.EnemyCurve;
                     c.Sprite = biomeEnemy.Asset.CreateSprite();
                     c.SpriteMaterial = biomeEnemy.Asset.CreateMaterial();
+                    c.SoundEffect = biomeEnemy.AttackSound;
                     c.BattleStats = new BattleStats()
                     {
                         Hp = curve.GetHp(level, enemyType),

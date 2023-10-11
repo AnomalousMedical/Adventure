@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Items;
 using Adventure.Services;
 using DiligentEngine;
@@ -28,6 +29,8 @@ namespace Adventure.Battle
         private CharacterSheet characterSheet;
         private Inventory inventory;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
+
+        public ISoundEffect DefaultAttackSoundEffect => PunchSoundEffect.Instance;
 
         private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
