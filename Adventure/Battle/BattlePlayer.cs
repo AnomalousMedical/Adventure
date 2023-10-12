@@ -645,11 +645,22 @@ namespace Adventure.Battle
                 }
                 else if (remainingTime > standEndTime)
                 {
-                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
-                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
                     sprite.SetAnimation("stand-left");
                     interpolate = 0.0f;
                     start = end = GetAttackLocation(target);
+
+                    var slerpAmount = (remainingTime - standEndTime) / (float)standEndTime;
+                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+
+                    if (this.Stats.CanTriggerAttack && triggerManager.Activated && remainingTime > swingTime)
+                    {
+                        offHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+                    }
+
+                    if (triggerManager.Spammed)
+                    {
+                        offHandItem?.SetAdditionalRotation(Quaternion.Identity);
+                    }
 
                     if (needsAttack && remainingTime < swingTime)
                     {
@@ -671,6 +682,7 @@ namespace Adventure.Battle
                     sprite.SetAnimation("right");
 
                     mainHandItem?.SetAdditionalRotation(Quaternion.Identity);
+                    offHandItem?.SetAdditionalRotation(Quaternion.Identity);
 
                     start = GetAttackLocation(target);
                     end = attackStartPosition;
