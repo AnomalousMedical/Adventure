@@ -595,7 +595,7 @@ namespace Adventure.Battle
             if (damageCalculator.PhysicalHit(attacker.Stats, target.Stats))
             {
                 var weaponSet = HammerSoundEffects.Instance;
-                ISoundEffect soundEffect = attacker.DefaultAttackSoundEffect;
+                ISoundEffect soundEffect = null;
                 ISoundEffect blockedSound = null;
 
                 var hitEffect = battleAssetLoader.NormalHit;
@@ -647,6 +647,8 @@ namespace Adventure.Battle
                             break;
                     }
                 }
+
+                soundEffect = soundEffect ?? attacker.DefaultAttackSoundEffect;
 
                 bool isCritical = false;
                 var color = Color.White;
