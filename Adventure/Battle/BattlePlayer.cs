@@ -580,6 +580,14 @@ namespace Adventure.Battle
                 if (castEffect != null)
                 {
                     var scale = sprite.BaseScale * this.currentScale;
+                    if (triggerManager.Spammed)
+                    {
+                        scale *= 0.72f;
+                    }
+                    else if (triggerManager.Activated)
+                    {
+                        scale *= 1.63f;
+                    }
                     castEffect.SetWorldPosition(position, this.currentOrientation, castEffect.BaseScale * scale);
                 }
 
