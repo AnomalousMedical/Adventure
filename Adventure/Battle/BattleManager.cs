@@ -597,6 +597,7 @@ namespace Adventure.Battle
                 var weaponSet = HammerSoundEffects.Instance;
                 ISoundEffect soundEffect = null;
                 ISoundEffect blockedSound = null;
+                var dualHit = false;
 
                 var hitEffect = battleAssetLoader.NormalHit;
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
@@ -685,24 +686,24 @@ namespace Adventure.Battle
                         if (attacker.Stats.CanTriggerAttack)
                         {
                             damage += (long)(damage * 0.5f);
-                            hitEffect = battleAssetLoader.StrongHit;
+                            dualHit = true;
                         }
                         else //Penalized if you can't trigger
                         {
                             damage -= (long)(damage * 0.5f);
-                            hitEffect = battleAssetLoader.BlockedHit;
+                            color = Color.Grey;
                         }
                     }
 
                     if (triggerSpammed)
                     {
                         damage -= (long)(damage * 0.5f);
-                        hitEffect = battleAssetLoader.StrongHit;
+                        color = Color.Grey;
                     }
                 }
 
                 AddDamageNumber(target, damage, color);
-                ShowHit(target, hitEffect, soundEffect, blockedSound);
+                ShowHit(target, hitEffect, soundEffect, blockedSound, dualHit);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -718,7 +719,9 @@ namespace Adventure.Battle
             }
         }
 
-        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound)
+        private readonly Vector3 HitScale = Vector3.ScaleIdentity * 0.5f;
+
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, bool dualHit)
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -728,8 +731,21 @@ namespace Adventure.Battle
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
             });
-            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+            
+            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, HitScale);
             applyEffects.Add(applyEffect);
+
+            if (dualHit)
+            {
+                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                {
+                    o.RenderShadow = false;
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+                applyEffect.SetPosition(target.MagicHitLocation - new Vector3(0.2f, 0f, 0f), Quaternion.Identity, HitScale);
+                applyEffects.Add(applyEffect);
+            }
 
             if (soundEffect != null)
             {
