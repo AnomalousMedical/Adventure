@@ -9,6 +9,8 @@ namespace Adventure
 
         bool CanUseOnPickup { get; }
 
+        bool CanEquipOnPickup { get; }
+
         void GiveTo(Inventory inventory);
 
         void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions);
@@ -21,6 +23,8 @@ namespace Adventure
         public string InfoText => inventoryItem.Name;
 
         public bool CanUseOnPickup => inventoryItem.CanUseOnPickup;
+
+        public bool CanEquipOnPickup => inventoryItem.Equipment != null;
 
         public Treasure(InventoryItem inventoryItem)
         {
