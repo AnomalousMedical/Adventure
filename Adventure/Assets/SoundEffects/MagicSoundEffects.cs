@@ -35,3 +35,21 @@ class IonShreadSpellSoundEffect : ISoundEffect
 
     public bool Streaming => false;
 }
+
+class WarCrySpellSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new WarCrySpellSoundEffect();
+
+    public string File => "SoundEffects/qubodup/166540__qubodup__success-quest-complete-rpg-sound.ogg";
+
+    public bool Streaming => false;
+}
+
+class CureSpellSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new CureSpellSoundEffect();
+
+    public string File => "SoundEffects/shyguy014/458533__shyguy014__healpop.ogg";
+
+    public bool Streaming => false;
+}

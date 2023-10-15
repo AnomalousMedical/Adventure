@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -24,6 +25,8 @@ namespace Adventure.Battle.Skills
         public Color CastColor => Color.FromARGB(0xffffff74);
 
         public bool HealingItemsOnly { get; set; } = true;
+
+        public ISoundEffect SoundEffect { get; set; }
 
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
@@ -80,6 +83,10 @@ namespace Adventure.Battle.Skills
                 o.LightOffset = new Vector3(0, 0, -0.1f);
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+            if (SoundEffect != null)
+            {
+                battleManager.SoundEffectPlayer.PlaySound(SoundEffect);
+            }
 
             IEnumerator<YieldAction> run()
             {
@@ -142,6 +149,7 @@ namespace Adventure.Battle.Skills
             Amount = 30;
             Name = "Battle Cry";
             MpCost = 35;
+            SoundEffect = WarCrySpellSoundEffect.Instance;
         }
     }
 
@@ -152,6 +160,7 @@ namespace Adventure.Battle.Skills
             Amount = 45;
             Name = "War Cry";
             MpCost = 48;
+            SoundEffect = WarCrySpellSoundEffect.Instance;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Engine;
 using RpgMath;
@@ -63,6 +64,8 @@ namespace Adventure.Battle.Skills
             }
 
             var applyEffects = new List<Attachment<BattleScene>>();
+
+            battleManager.SoundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
 
             foreach (var currentTarget in targets)
             {
