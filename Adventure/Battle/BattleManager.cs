@@ -720,6 +720,7 @@ namespace Adventure.Battle
         }
 
         private readonly Vector3 HitScale = Vector3.ScaleIdentity * 0.5f;
+        private readonly Vector3 SecondaryHitScale = Vector3.ScaleIdentity * 0.4f;
 
         private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, bool dualHit)
         {
@@ -743,7 +744,7 @@ namespace Adventure.Battle
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
-                applyEffect.SetPosition(target.MagicHitLocation - new Vector3(0.2f, 0f, 0f), Quaternion.Identity, HitScale);
+                applyEffect.SetPosition(target.MagicHitLocation - new Vector3(0.2f, 0f, 0f), Quaternion.Identity, SecondaryHitScale);
                 applyEffects.Add(applyEffect);
             }
 
