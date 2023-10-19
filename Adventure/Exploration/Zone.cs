@@ -205,6 +205,7 @@ namespace Adventure
         private bool connectNextToWorld;
         private PlotItems? plotItem;
         private LootDropTrigger lootDropTrigger;
+        private ushort startRoomIndex = ushort.MaxValue;
 
         private Task zoneGenerationTask;
         private Vector3 mapUnits;
@@ -344,11 +345,14 @@ namespace Adventure
                     else
                     {
                         Rectangle startRoom = new Rectangle(int.MaxValue, 0, 0, 0);
-                        foreach (var room in mapBuilder.Rooms)
+                        var numRooms = mapBuilder.Rooms.Count;
+                        for(ushort i = 0; i < numRooms; i++)
                         {
+                            var room = mapBuilder.Rooms[i];
                             if (room.Left < startRoom.Left)
                             {
                                 startRoom = room;
+                                this.startRoomIndex = i;
                             }
                         }
 
@@ -713,10 +717,22 @@ namespace Adventure
             var rooms = mapMesh.MapBuilder.GetDesiredRooms().ToList();
             var skipRooms = 0;
 
+            int GetRoom()
+            {
+                int roomIndex;
+                do
+                {
+                    roomIndex = rooms[skipRooms];
+                    skipRooms++;
+                } while (roomIndex == startRoomIndex);
+
+                return roomIndex;
+            }
+
             if (placeKey)
             {
                 //This might not be possible, so the key will go in a corridor later if it isn't placed here
-                var keyRoomIndex = rooms[skipRooms++];
+                var keyRoomIndex = GetRoom();
                 var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 PlaceKey(point);
@@ -725,7 +741,7 @@ namespace Adventure
             //Philip gets a room always
             if (placePhilip)
             {
-                var philipRoom = rooms[skipRooms++];
+                var philipRoom = GetRoom();
                 var room = mapMesh.MapBuilder.Rooms[philipRoom];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
@@ -740,9 +756,10 @@ namespace Adventure
                 this.placeables.Add(philip);
             }
 
-            foreach(var partyMember in partyMembers)
+            var partyMemberIndex = 0;
+            foreach (var partyMember in partyMembers)
             {
-                var partyMemberRoom = rooms[skipRooms++];
+                var partyMemberRoom = GetRoom();
                 var room = mapMesh.MapBuilder.Rooms[partyMemberRoom];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
@@ -750,6 +767,7 @@ namespace Adventure
                 var partyMemberObject = objectResolver.Resolve<PartyMemberTrigger, PartyMemberTrigger.Description>(o =>
                 {
                     o.ZoneIndex = index;
+                    o.InstanceId = partyMemberIndex++;
                     o.MapOffset = mapLoc;
                     o.Translation = currentPosition + o.MapOffset;
                     o.Sprite = partyMember.PlayerSprite;
