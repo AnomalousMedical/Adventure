@@ -49,6 +49,7 @@ namespace Adventure.Services
         private int currentSeed;
         private FIRandom zoneRandom;
         private readonly Persistence persistence;
+        private readonly IInventoryFunctions inventoryFunctions;
         private List<IntVector2> portalLocations;
         private IntVector2 airshipStartSquare;
         private IntVector2 airshipPortalSquare;
@@ -131,7 +132,8 @@ namespace Adventure.Services
             ArmorCreator armorCreator,
             PotionCreator potionCreator,
             DaggerCreator daggerCreator,
-            BookCreator bookCreator
+            BookCreator bookCreator,
+            IInventoryFunctions inventoryFunctions
         )
         {
             this.persistence = persistence;
@@ -147,6 +149,7 @@ namespace Adventure.Services
             PotionCreator = potionCreator;
             DaggerCreator = daggerCreator;
             BookCreator = bookCreator;
+            this.inventoryFunctions = inventoryFunctions;
         }
 
         public int GetZoneSeed(int zoneIndex)
@@ -224,11 +227,16 @@ namespace Adventure.Services
             usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
         }
 
+        const int phase0TreasureLevel = 1;
+        const int phase1TreasureLevel = 20;
+
         public IEnumerable<Persistence.CharacterData> CreateParty()
         {
             var characterRandom = new FIRandom(this.currentSeed);
 
             {
+                var weapon = new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty"));
+                var offHand = new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Rusty", 0.15f));
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
                 sheet.Name = "Bob";
                 var hero = new Persistence.CharacterData()
@@ -237,6 +245,9 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
+                GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
+                GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Rusty", 0.15f)));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, "Common")));
                 yield return hero;
             }
 
@@ -249,6 +260,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common")));
                 yield return hero;
             }
 
@@ -261,6 +273,9 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
+                GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, "Busted")));
+                GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel, "Rusty", nameof(Steal))));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Common")));
                 yield return hero;
             }
 
@@ -273,10 +288,19 @@ namespace Adventure.Services
                     CharacterSheet = sheet
                 };
                 hero.CharacterSheet.Rest();
+                GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
+                GiveAndEquip(hero, new Treasure(BookCreator.CreateRestoration(phase0TreasureLevel, "Torn", nameof(Cure))));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common")));
                 yield return hero;
             }
         }
-        
+
+        void GiveAndEquip(Persistence.CharacterData hero, Treasure treasure)
+        {
+            treasure.GiveTo(hero.Inventory);
+            treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions);
+        }
+
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
@@ -306,19 +330,17 @@ namespace Adventure.Services
             IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
             IslandInfo thirdStorePhilipIsland;
 
-            var phase1TreasureLevel = 20;
             var phase1Adjective = "Common";
 
             //Phase 0
             {
                 var startingBiome = BiomeType.Countryside;
-                var phase0TreasureLevel = 1;
-                var phase0Adjective = "Busted";
+                
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
                 var bossResistance = firstBoss.Resistances.Where(i => i.Value == Resistance.Weak && i.Key > Element.MagicStart && i.Key < Element.MagicEnd);
                 var startingElementStaff = bossResistance.Any() ? bossResistance.Select(i => i.Key).First() : Element.Fire;
                 string[] spells;
-                string staffName = $"{phase0Adjective} ";
+                string staffName = $"Cracked ";
                 switch (startingElementStaff)
                 {
                     case Element.Ice:
@@ -336,25 +358,11 @@ namespace Adventure.Services
                 }
                 var phase0UniqueTreasures = new List<Treasure>
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)),
                     new Treasure(ElementalStaffCreator.CreateNormal(phase0TreasureLevel, staffName, spells)),
-                    new Treasure(BookCreator.CreateRestoration(phase0TreasureLevel, phase0Adjective, nameof(Cure))),
-                    new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)),
-                    new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, phase0Adjective)),
-
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)),
                     new Treasure(PotionCreator.CreateHealthPotion(phase0TreasureLevel)),
                     new Treasure(PotionCreator.CreateHealthPotion(phase0TreasureLevel)),
-
-                    new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, phase0Adjective, 0.15f)),
-                    new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel, phase0Adjective, nameof(Steal))),
-
-                    //Armor comes from phase 1 level on purpose
-                    new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, phase1Adjective))
                 };
 
                 //Area 1
