@@ -38,42 +38,6 @@ namespace Adventure.Services
                 gameState.Party.Members.Add(hero);
             }
 
-            {
-                var sheet = CharacterSheet.CreateStartingMage(characterRandom);
-                sheet.Name = "Magic Joe";
-                var hero = new Persistence.CharacterData()
-                {
-                    PlayerSprite = nameof(Assets.Players.MagePlayerSprite),
-                    CharacterSheet = sheet,
-                };
-                hero.CharacterSheet.Rest();
-                gameState.Party.Members.Add(hero);
-            }
-
-            {
-                var sheet = CharacterSheet.CreateStartingThief(characterRandom);
-                sheet.Name = "Stabby McStabface";
-                var hero = new Persistence.CharacterData()
-                {
-                    PlayerSprite = nameof(Assets.Players.ThiefPlayerSprite),
-                    CharacterSheet = sheet,
-                };
-                hero.CharacterSheet.Rest();
-                gameState.Party.Members.Add(hero);
-            }
-
-            {
-                var sheet = CharacterSheet.CreateStartingSage(characterRandom);
-                sheet.Name = "Wendy";
-                var hero = new Persistence.CharacterData()
-                {
-                    PlayerSprite = nameof(Assets.Players.ClericPlayerSprite),
-                    CharacterSheet = sheet
-                };
-                hero.CharacterSheet.Rest();
-                gameState.Party.Members.Add(hero);
-            }
-
             return gameState;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Adventure.Assets;
 using Adventure.Battle;
 using Adventure.Battle.Skills;
+using Adventure.Exploration;
 using Adventure.GameOver;
 using Adventure.Items;
 using Adventure.Items.Actions;
@@ -139,6 +140,8 @@ namespace Adventure
             services.AddScoped<BattleTrigger.Description>();
             services.AddScoped<TreasureTrigger>();
             services.AddScoped<TreasureTrigger.Description>();
+            services.AddScoped<PartyMemberTrigger>();
+            services.AddScoped<PartyMemberTrigger.Description>();
             services.AddScoped<Gate>();
             services.AddScoped<Gate.Description>();
             services.AddScoped<Key>();

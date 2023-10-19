@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Exploration;
+using Adventure.Items;
 using Engine;
 using RpgMath;
 using System;
@@ -37,6 +38,8 @@ namespace Adventure.Services
             public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueBossStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
 
             public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; init; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
+
+            public PersistenceEntry<PartyMemberTrigger.PersistenceData> PartyMemberTriggers { get; init; } = new PersistenceEntry<PartyMemberTrigger.PersistenceData>();
 
             public PersistenceEntry<Key.PersistenceData> Keys { get; init; } = new PersistenceEntry<Key.PersistenceData>();
 

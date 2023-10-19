@@ -254,6 +254,45 @@ namespace Adventure.Services
             var phase1TreasureLevel = 20;
             var phase1Adjective = "Common";
 
+            var characterRandom = new FIRandom(seed); //DON'T DO THIS IT WILL MAKE CHARACTER STATS REPEAT
+
+            var partyMembers = new List<Persistence.CharacterData>();
+            {
+                var sheet = CharacterSheet.CreateStartingMage(characterRandom);
+                sheet.Name = "Magic Joe";
+                var hero = new Persistence.CharacterData()
+                {
+                    PlayerSprite = nameof(Assets.Players.MagePlayerSprite),
+                    CharacterSheet = sheet,
+                };
+                hero.CharacterSheet.Rest();
+                partyMembers.Add(hero);
+            }
+
+            {
+                var sheet = CharacterSheet.CreateStartingThief(characterRandom);
+                sheet.Name = "Stabby McStabface";
+                var hero = new Persistence.CharacterData()
+                {
+                    PlayerSprite = nameof(Assets.Players.ThiefPlayerSprite),
+                    CharacterSheet = sheet,
+                };
+                hero.CharacterSheet.Rest();
+                partyMembers.Add(hero);
+            }
+
+            {
+                var sheet = CharacterSheet.CreateStartingSage(characterRandom);
+                sheet.Name = "Wendy";
+                var hero = new Persistence.CharacterData()
+                {
+                    PlayerSprite = nameof(Assets.Players.ClericPlayerSprite),
+                    CharacterSheet = sheet
+                };
+                hero.CharacterSheet.Rest();
+                partyMembers.Add(hero);
+            }
+
             //Phase 0
             {
                 var startingBiome = BiomeType.Countryside;
@@ -314,6 +353,7 @@ namespace Adventure.Services
                 areaBuilder.Treasure = phase0UniqueTreasures;
                 areaBuilder.StartEnd = true;
                 areaBuilder.MaxMainCorridorBattles = 1;
+                areaBuilder.PartyMembers = partyMembers;
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
             }

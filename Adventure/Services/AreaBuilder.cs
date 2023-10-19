@@ -85,6 +85,8 @@ namespace Adventure.Services
 
         public MonsterInfo BossMonster { get; set; }
 
+        public IEnumerable<Persistence.CharacterData> PartyMembers { get; set; }
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -138,6 +140,7 @@ namespace Adventure.Services
             o.Treasure = Treasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
             o.StealTreasure = StealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
             o.UniqueStealTreasure = UniqueStealTreasure?.Where(i => areaTreasureRandom.Next(treasureZoneStart, treasureZoneEnd) == zoneIndex);
+            o.PartyMembers = PartyMembers;
 
             if (o.MakeBoss) //This assumes 1 boss per area
             {

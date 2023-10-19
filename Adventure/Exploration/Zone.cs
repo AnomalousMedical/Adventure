@@ -23,6 +23,7 @@ using DiligentEngine.RT.HLSL;
 using Adventure.Services;
 using Adventure.Assets.World;
 using FreeImageAPI;
+using Adventure.Exploration;
 
 namespace Adventure
 {
@@ -156,6 +157,8 @@ namespace Adventure
 
             public PlotItems? PlotItem { get; set; }
 
+            public IEnumerable<Persistence.CharacterData> PartyMembers { get; set; }
+
             public int Area { get; set; }
         }
 
@@ -197,6 +200,7 @@ namespace Adventure
         private int enemyLevel;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
+        private IEnumerable<Persistence.CharacterData> partyMembers;
         private bool connectPreviousToWorld;
         private bool connectNextToWorld;
         private PlotItems? plotItem;
@@ -274,6 +278,7 @@ namespace Adventure
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
+            this.partyMembers = description.PartyMembers ?? Enumerable.Empty<Persistence.CharacterData>();
 
             this.currentPosition = description.Translation;
 
@@ -733,6 +738,24 @@ namespace Adventure
                     o.Translation = currentPosition + o.MapOffset;
                 });
                 this.placeables.Add(philip);
+            }
+
+            foreach(var partyMember in partyMembers)
+            {
+                var partyMemberRoom = rooms[skipRooms++];
+                var room = mapMesh.MapBuilder.Rooms[partyMemberRoom];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var mapLoc = mapMesh.PointToVector(point.x, point.y);
+
+                var partyMemberObject = objectResolver.Resolve<PartyMemberTrigger, PartyMemberTrigger.Description>(o =>
+                {
+                    o.ZoneIndex = index;
+                    o.MapOffset = mapLoc;
+                    o.Translation = currentPosition + o.MapOffset;
+                    o.Sprite = partyMember.PlayerSprite;
+                    o.PartyMember = partyMember;
+                });
+                this.placeables.Add(partyMemberObject);
             }
 
             //The plot item goes in the exit corridor, not the room
