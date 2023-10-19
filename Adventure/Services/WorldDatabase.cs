@@ -227,7 +227,6 @@ namespace Adventure.Services
         public IEnumerable<Persistence.CharacterData> CreateParty()
         {
             var characterRandom = new FIRandom(this.currentSeed);
-            var partyMembers = new List<Persistence.CharacterData>();
 
             {
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
@@ -238,7 +237,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                partyMembers.Add(hero);
+                yield return hero;
             }
 
             {
@@ -250,7 +249,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                partyMembers.Add(hero);
+                yield return hero;
             }
 
             {
@@ -262,7 +261,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                partyMembers.Add(hero);
+                yield return hero;
             }
 
             {
@@ -274,10 +273,8 @@ namespace Adventure.Services
                     CharacterSheet = sheet
                 };
                 hero.CharacterSheet.Rest();
-                partyMembers.Add(hero);
+                yield return hero;
             }
-
-            return partyMembers;
         }
         
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
