@@ -4,6 +4,7 @@ using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
 using SharpGui;
+using System.Linq;
 
 namespace Adventure
 {
@@ -85,6 +86,10 @@ namespace Adventure
                 zoneManager.DestroyPlayers();
                 this.persistenceWriter.Load();
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
+                if(persistence.Current.Party.Members.Count == 0)
+                {
+                    persistence.Current.Party.Members.Add(this.worldDatabase.CreateParty().First());
+                }
                 timeClock.ResetToPersistedTime();
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
 

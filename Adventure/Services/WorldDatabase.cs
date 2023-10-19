@@ -17,6 +17,8 @@ namespace Adventure.Services
         int GetLevelDelta(int area);
         void Reset(int newSeed);
         IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems);
+        IEnumerable<Persistence.CharacterData> CreateParty();
+
         IBiomeManager BiomeManager { get; }
         SwordCreator SwordCreator { get; }
         SpearCreator SpearCreator { get; }
@@ -221,42 +223,24 @@ namespace Adventure.Services
             airshipPortalSquare = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
             usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
         }
-        
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+
+        public IEnumerable<Persistence.CharacterData> CreateParty()
         {
-            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
-            var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
-
-            var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
-            var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
-            {
-                { Element.Fire, MonsterMaker.CreateElemental(seed, Element.Fire) },
-                { Element.Ice, MonsterMaker.CreateElemental(seed, Element.Ice) },
-                { Element.Electricity, MonsterMaker.CreateElemental(seed, Element.Electricity) }
-            };
-
-            var filled = new bool[map.MapX, map.MapY];
-            int area = 0;
-            AreaBuilder areaBuilder;
-            var zoneCounter = new ZoneCounter();
-
-            //Setup islands                      
-            var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
-            var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
-            var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
-            portalLocations.Add(firstIslandSquares[0][0]);
-            portalLocations.Add(airshipPortalSquare);
-
-            IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
-            IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
-            IslandInfo thirdStorePhilipIsland;
-
-            var phase1TreasureLevel = 20;
-            var phase1Adjective = "Common";
-
-            var characterRandom = new FIRandom(seed); //DON'T DO THIS IT WILL MAKE CHARACTER STATS REPEAT
-
+            var characterRandom = new FIRandom(this.currentSeed);
             var partyMembers = new List<Persistence.CharacterData>();
+
+            {
+                var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
+                sheet.Name = "Bob";
+                var hero = new Persistence.CharacterData()
+                {
+                    PlayerSprite = nameof(Assets.Players.FighterPlayerSprite),
+                    CharacterSheet = sheet,
+                };
+                hero.CharacterSheet.Rest();
+                partyMembers.Add(hero);
+            }
+
             {
                 var sheet = CharacterSheet.CreateStartingMage(characterRandom);
                 sheet.Name = "Magic Joe";
@@ -292,6 +276,41 @@ namespace Adventure.Services
                 hero.CharacterSheet.Rest();
                 partyMembers.Add(hero);
             }
+
+            return partyMembers;
+        }
+        
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        {
+            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
+            var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
+
+            var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
+            var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
+            {
+                { Element.Fire, MonsterMaker.CreateElemental(seed, Element.Fire) },
+                { Element.Ice, MonsterMaker.CreateElemental(seed, Element.Ice) },
+                { Element.Electricity, MonsterMaker.CreateElemental(seed, Element.Electricity) }
+            };
+
+            var filled = new bool[map.MapX, map.MapY];
+            int area = 0;
+            AreaBuilder areaBuilder;
+            var zoneCounter = new ZoneCounter();
+
+            //Setup islands                      
+            var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
+            var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
+            var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
+            portalLocations.Add(firstIslandSquares[0][0]);
+            portalLocations.Add(airshipPortalSquare);
+
+            IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
+            IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
+            IslandInfo thirdStorePhilipIsland;
+
+            var phase1TreasureLevel = 20;
+            var phase1Adjective = "Common";
 
             //Phase 0
             {
@@ -353,7 +372,7 @@ namespace Adventure.Services
                 areaBuilder.Treasure = phase0UniqueTreasures;
                 areaBuilder.StartEnd = true;
                 areaBuilder.MaxMainCorridorBattles = 1;
-                areaBuilder.PartyMembers = partyMembers;
+                areaBuilder.PartyMembers = CreateParty().Skip(1);
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
             }

@@ -24,19 +24,6 @@ namespace Adventure.Services
             var gameState = new Persistence.GameState();
             gameState.World.Seed = seed;
             gameState.World.Level = 1;
-            var characterRandom = new FIRandom(seed);
-
-            {
-                var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
-                sheet.Name = "Bob";
-                var hero = new Persistence.CharacterData()
-                {
-                    PlayerSprite = nameof(Assets.Players.FighterPlayerSprite),
-                    CharacterSheet = sheet,
-                };
-                hero.CharacterSheet.Rest();
-                gameState.Party.Members.Add(hero);
-            }
 
             return gameState;
         }
