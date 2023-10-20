@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Assets;
+using RpgMath;
 
 namespace Adventure.Exploration
 {
@@ -20,6 +21,10 @@ namespace Adventure.Exploration
     {
         public class Description : SceneObjectDesc
         {
+            public int PrimaryHand = RightHand;
+
+            public int SecondaryHand = LeftHand;
+
             public int ZoneIndex { get; set; }
 
             public int InstanceId { get; set; }
@@ -31,6 +36,9 @@ namespace Adventure.Exploration
             public Persistence.CharacterData PartyMember { get; set; }
         }
 
+        public const int RightHand = 0;
+        public const int LeftHand = 1;
+
         public record struct PersistenceData(bool Found);
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -39,6 +47,7 @@ namespace Adventure.Exploration
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
         private readonly IExplorationMenu explorationMenu;
+        private readonly IAssetFactory assetFactory;
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -54,7 +63,15 @@ namespace Adventure.Exploration
         private Persistence.CharacterData partyMember;
         private bool graphicsVisible = false;
         private bool graphicsLoaded;
+        private readonly IObjectResolver objectResolver;
         private readonly IPlayerSprite playerSpriteInfo;
+        private int primaryHand;
+        private int secondaryHand;
+
+        private Attachment<ZoneScene> mainHandItem;
+        private Attachment<ZoneScene> offHandItem;
+        private Attachment<ZoneScene> mainHandHand;
+        private Attachment<ZoneScene> offHandHand;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -71,8 +88,10 @@ namespace Adventure.Exploration
             IContextMenu contextMenu,
             Persistence persistence,
             IExplorationMenu explorationMenu,
-            IAssetFactory assetFactory)
+            IAssetFactory assetFactory,
+            IObjectResolverFactory objectResolverFactory)
         {
+            objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
             this.sprite = new FrameEventSprite(playerSpriteInfo.Animations);
             this.partyMember = description.PartyMember;
@@ -87,7 +106,10 @@ namespace Adventure.Exploration
             this.contextMenu = contextMenu;
             this.persistence = persistence;
             this.explorationMenu = explorationMenu;
+            this.assetFactory = assetFactory;
             this.mapOffset = description.MapOffset;
+            this.primaryHand = description.PrimaryHand;
+            this.secondaryHand = description.SecondaryHand;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
@@ -102,6 +124,7 @@ namespace Adventure.Exploration
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -178,6 +201,10 @@ namespace Adventure.Exploration
                 rtInstances.AddTlasBuild(tlasData);
                 rtInstances.AddShaderTableBinder(Bind);
                 rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+
+                //This version does not subscribe to character sheet events, since the trigger is not under anything's control
+                OnMainHandModified(partyMember.CharacterSheet);
+                OnOffHandModified(partyMember.CharacterSheet);
             }
         }
 
@@ -189,6 +216,18 @@ namespace Adventure.Exploration
                 rtInstances.RemoveSprite(sprite);
                 rtInstances.RemoveShaderTableBinder(Bind);
                 rtInstances.RemoveTlasBuild(tlasData);
+
+                mainHandItem?.RequestDestruction();
+                mainHandItem = null;
+
+                offHandItem?.RequestDestruction();
+                offHandItem = null;
+
+                mainHandHand?.RequestDestruction();
+                mainHandHand = null;
+
+                offHandHand?.RequestDestruction();
+                offHandHand = null;
             }
         }
 
@@ -202,6 +241,7 @@ namespace Adventure.Exploration
             currentPosition = zonePosition + mapOffset;
             currentPosition.y += currentScale.y / 2;
             this.tlasData.Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale);
+            Sprite_FrameChanged(sprite);
         }
 
         private void HandleCollision(CollisionEvent evt)
@@ -237,6 +277,134 @@ namespace Adventure.Exploration
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
+        }
+
+        private void OnMainHandModified(CharacterSheet characterSheet)
+        {
+            mainHandItem?.RequestDestruction();
+            mainHandItem = null;
+            if (characterSheet.MainHand?.Sprite != null)
+            {
+                mainHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
+
+            if (characterSheet.MainHand?.ShowHand != false)
+            {
+                if (mainHandHand == null)
+                {
+                    mainHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (mainHandHand != null)
+            {
+                mainHandHand.RequestDestruction();
+                mainHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
+        }
+
+        private void OnOffHandModified(CharacterSheet characterSheet)
+        {
+            offHandItem?.RequestDestruction();
+            offHandItem = null;
+            if (characterSheet.OffHand?.Sprite != null)
+            {
+                offHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                {
+                    var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
+                    o.Orientation = asset.GetOrientation();
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+            }
+
+            if (characterSheet.OffHand?.ShowHand != false)
+            {
+                if (offHandHand == null)
+                {
+                    offHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    {
+                        o.Sprite = new Sprite(playerSpriteInfo.Animations)
+                        {
+                            BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
+                        };
+                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                    });
+                }
+            }
+            else if (offHandHand != null)
+            {
+                offHandHand.RequestDestruction();
+                offHandHand = null;
+            }
+            Sprite_AnimationChanged(sprite);
+            Sprite_FrameChanged(sprite);
+        }
+
+        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        {
+            if (mainHandHand != null)
+            {
+                switch (primaryHand)
+                {
+                    case RightHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case LeftHand:
+                        mainHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+
+            if (offHandHand != null)
+            {
+                switch (secondaryHand)
+                {
+                    case RightHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
+                        break;
+                    case LeftHand:
+                        offHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
+                        break;
+                }
+            }
+        }
+
+        private void Sprite_FrameChanged(FrameEventSprite obj)
+        {
+            var finalPosition = currentPosition;
+            finalPosition.y += currentScale.y / 2.0f;
+
+            var frame = obj.GetCurrentFrame();
+
+            Vector3 offset;
+            var scale = sprite.BaseScale * this.currentScale;
+
+            var primaryAttach = frame.Attachments[this.primaryHand];
+            offset = scale * primaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + finalPosition;
+            mainHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
+
+            var secondaryAttach = frame.Attachments[this.secondaryHand];
+            offset = scale * secondaryAttach.translate;
+            offset = Quaternion.quatRotate(this.currentOrientation, offset) + finalPosition;
+            offHandItem?.SetPosition(offset, this.currentOrientation, scale);
+            offHandHand?.SetPosition(offset, this.currentOrientation, scale);
         }
     }
 }
