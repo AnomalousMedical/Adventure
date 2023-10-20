@@ -39,7 +39,6 @@ namespace Adventure.Exploration
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
         private readonly IExplorationMenu explorationMenu;
-        private readonly TreasureMenu treasureMenu;
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -53,6 +52,9 @@ namespace Adventure.Exploration
         private int instanceId;
         private PersistenceData state;
         private Persistence.CharacterData partyMember;
+        private bool graphicsVisible = false;
+        private bool graphicsLoaded;
+        private readonly IPlayerSprite playerSpriteInfo;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -69,10 +71,9 @@ namespace Adventure.Exploration
             IContextMenu contextMenu,
             Persistence persistence,
             IExplorationMenu explorationMenu,
-            TreasureMenu treasureMenu,
             IAssetFactory assetFactory)
         {
-            var playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
+            playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
             this.sprite = new FrameEventSprite(playerSpriteInfo.Animations);
             this.partyMember = description.PartyMember;
             this.zoneIndex = description.ZoneIndex;
@@ -86,7 +87,6 @@ namespace Adventure.Exploration
             this.contextMenu = contextMenu;
             this.persistence = persistence;
             this.explorationMenu = explorationMenu;
-            this.treasureMenu = treasureMenu;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -102,22 +102,27 @@ namespace Adventure.Exploration
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
-
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, sprite);
 
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                graphicsLoaded = true;
 
-                if (state.Found)
+                if (!state.Found)
                 {
-                    sprite.SetAnimation("open");
+                    AddGraphics();
                 }
             });
+        }
+
+        public void Dispose()
+        {
+            RemoveGraphics();
+            DestroyPhysics();
+
+            spriteInstanceFactory.TryReturn(spriteInstance);
         }
 
         public void Reset()
@@ -125,11 +130,13 @@ namespace Adventure.Exploration
             this.state = persistence.Current.PartyMemberTriggers.GetData(zoneIndex, instanceId);
             if (state.Found)
             {
-                sprite.SetAnimation("open");
+                RemoveGraphics();
+                DestroyPhysics();
             }
             else
             {
-                sprite.SetAnimation("closed");
+                AddGraphics();
+                CreatePhysics();
             }
         }
 
@@ -162,13 +169,27 @@ namespace Adventure.Exploration
             }
         }
 
-        public void Dispose()
+        private void AddGraphics()
         {
-            spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
-            DestroyPhysics();
+            if (graphicsLoaded && !graphicsVisible)
+            {
+                graphicsVisible = true;
+
+                rtInstances.AddTlasBuild(tlasData);
+                rtInstances.AddShaderTableBinder(Bind);
+                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+            }
+        }
+
+        private void RemoveGraphics()
+        {
+            if (graphicsVisible)
+            {
+                graphicsVisible = false;
+                rtInstances.RemoveSprite(sprite);
+                rtInstances.RemoveShaderTableBinder(Bind);
+                rtInstances.RemoveTlasBuild(tlasData);
+            }
         }
 
         public void RequestDestruction()
@@ -208,6 +229,9 @@ namespace Adventure.Exploration
             state.Found = true;
             persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
             persistence.Current.Party.Members.Add(this.partyMember);
+
+            RemoveGraphics();
+            DestroyPhysics();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
