@@ -722,6 +722,10 @@ namespace Adventure
                 int roomIndex;
                 do
                 {
+                    if(skipRooms > rooms.Count)
+                    {
+                        return rooms[rooms.Count - 1];
+                    }
                     roomIndex = rooms[skipRooms];
                     skipRooms++;
                 } while (roomIndex == startRoomIndex);
@@ -761,7 +765,24 @@ namespace Adventure
             {
                 var partyMemberRoom = GetRoom();
                 var room = mapMesh.MapBuilder.Rooms[partyMemberRoom];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                Point point;
+                switch (partyMemberIndex) //This will only really work with 4 characters
+                {
+                    case 0:
+                        point = new Point(room.Left + room.Width, room.Top + room.Height);
+                        break;
+                    case 1:
+                        point = new Point(room.Left + room.Width, room.Top);
+                        break;
+                    case 2:
+                        point = new Point(room.Left, room.Top + room.Height);
+                        break;
+                    case 3:
+                        point = new Point(room.Left, room.Top);
+                        break;
+                    default:
+                        throw new NotImplementedException("Currently only supports 4 characters in a zone.");
+                }
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
 
                 var partyMemberObject = objectResolver.Resolve<PartyMemberTrigger, PartyMemberTrigger.Description>(o =>
