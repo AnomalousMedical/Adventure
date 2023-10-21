@@ -12,6 +12,8 @@ namespace Adventure.Menu
         private const int NumLines = 2;
         private IEnumerator<String> words;
         private string lastWord = String.Empty;
+        private string contents;
+        private int lastWidth;
 
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
@@ -41,13 +43,16 @@ namespace Adventure.Menu
 
         public void SetText(String contents)
         {
+            this.contents = contents;
+            lastWord = "";
             words = FindWords(contents).GetEnumerator();
             UpdateText();
         }
 
         private bool UpdateText()
         {
-            var screenWidth = Math.Min(screenPositioner.ScreenSize.Width - scaleHelper.Scaled(300), scaleHelper.Scaled(700));
+            var screenWidth = GetTextBoxWidth();
+            lastWidth = screenWidth;
             var lineWidth = 0;
             var foundLines = 0;
             var sb = new StringBuilder(500);
@@ -117,6 +122,11 @@ namespace Adventure.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
+            if(GetTextBoxWidth() != lastWidth)
+            {
+                SetText(contents);
+            }
+
             {
                 var layout = new MarginLayout(new IntPad(0, scaleHelper.Scaled(10), 0, 0), new PanelLayout(panel, this.text));
                 layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
@@ -137,6 +147,11 @@ namespace Adventure.Menu
                     menu.RequestSubMenu(null, gamepadId);
                 }
             }
+        }
+
+        private int GetTextBoxWidth()
+        {
+            return Math.Min(screenPositioner.ScreenSize.Width - scaleHelper.Scaled(300), scaleHelper.Scaled(700));
         }
     }
 }
