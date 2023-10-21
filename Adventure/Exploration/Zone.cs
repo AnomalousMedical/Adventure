@@ -157,7 +157,7 @@ namespace Adventure
 
             public PlotItems? PlotItem { get; set; }
 
-            public IEnumerable<Persistence.CharacterData> PartyMembers { get; set; }
+            public IEnumerable<PartyMember> PartyMembers { get; set; }
 
             public int Area { get; set; }
         }
@@ -200,7 +200,7 @@ namespace Adventure
         private int enemyLevel;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
-        private IEnumerable<Persistence.CharacterData> partyMembers;
+        private IEnumerable<PartyMember> partyMembers;
         private bool connectPreviousToWorld;
         private bool connectNextToWorld;
         private PlotItems? plotItem;
@@ -279,7 +279,7 @@ namespace Adventure
             this.goPrevious = description.GoPrevious;
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
-            this.partyMembers = description.PartyMembers ?? Enumerable.Empty<Persistence.CharacterData>();
+            this.partyMembers = description.PartyMembers ?? Enumerable.Empty<PartyMember>();
 
             this.currentPosition = description.Translation;
 
@@ -791,7 +791,7 @@ namespace Adventure
                     o.InstanceId = partyMemberIndex++;
                     o.MapOffset = mapLoc;
                     o.Translation = currentPosition + o.MapOffset;
-                    o.Sprite = partyMember.PlayerSprite;
+                    o.Sprite = partyMember.CharacterData.PlayerSprite;
                     o.PartyMember = partyMember;
                 });
                 this.placeables.Add(partyMemberObject);

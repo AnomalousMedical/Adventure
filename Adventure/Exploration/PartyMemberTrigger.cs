@@ -33,7 +33,7 @@ namespace Adventure.Exploration
 
             public String Sprite { get; set; }
 
-            public Persistence.CharacterData PartyMember { get; set; }
+            public PartyMember PartyMember { get; set; }
         }
 
         public const int RightHand = 0;
@@ -62,7 +62,7 @@ namespace Adventure.Exploration
         private int zoneIndex;
         private int instanceId;
         private PersistenceData state;
-        private Persistence.CharacterData partyMember;
+        private PartyMember partyMember;
         private bool graphicsVisible = false;
         private bool graphicsLoaded;
         private readonly IObjectResolver objectResolver;
@@ -208,8 +208,8 @@ namespace Adventure.Exploration
                 rtInstances.AddSprite(sprite, tlasData, spriteInstance);
 
                 //This version does not subscribe to character sheet events, since the trigger is not under anything's control
-                OnMainHandModified(partyMember.CharacterSheet);
-                OnOffHandModified(partyMember.CharacterSheet);
+                OnMainHandModified(partyMember.CharacterData.CharacterSheet);
+                OnOffHandModified(partyMember.CharacterData.CharacterSheet);
             }
         }
 
@@ -272,13 +272,13 @@ namespace Adventure.Exploration
 
             coroutine.RunTask(async () =>
             {
-                await textDialog.ShowTextAndWait("Hello nice to meet you. I will join you.", explorationMenu, args.GamepadId);
+                await textDialog.ShowTextAndWait(this.partyMember.Greeting, explorationMenu, args.GamepadId);
 
                 //If something were to go wrong handing out the party member it would be lost, but the
                 //other option opens it up to duplication
                 state.Found = true;
                 persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
-                persistence.Current.Party.Members.Add(this.partyMember);
+                persistence.Current.Party.Members.Add(this.partyMember.CharacterData);
 
                 RemoveGraphics();
                 DestroyPhysics();

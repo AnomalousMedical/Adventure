@@ -85,7 +85,7 @@ namespace Adventure.Services
 
         public MonsterInfo BossMonster { get; set; }
 
-        public IEnumerable<Persistence.CharacterData> PartyMembers { get; set; }
+        public IEnumerable<PartyMember> PartyMembers { get; set; }
 
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
