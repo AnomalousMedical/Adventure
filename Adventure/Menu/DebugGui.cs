@@ -96,22 +96,22 @@ namespace Adventure.Menu
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(allowBattle, gamepad, navUp: toggleCamera.Id, navDown: philip.Id, navRight: battle.Id, navLeft: battle.Id))
+            if (sharpGui.Button(allowBattle, gamepad, navUp: toggleCamera.Id, navDown: levelWorld.Id, navRight: battle.Id, navLeft: battle.Id))
             {
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
 
-            if (sharpGui.Button(philip, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: levelWorld.Id, navRight: levelWorld.Id))
+            if (sharpGui.Button(philip, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: testDialog.Id, navRight: levelWorld.Id))
             {
                 explorationMenu.RequestSubMenu(philipRoot, gamepad);
             }
 
-            if (sharpGui.Button(levelWorld, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
+            if (sharpGui.Button(levelWorld, gamepad, navUp: allowBattle.Id, navDown: goEnd.Id, navLeft: philip.Id, navRight: testDialog.Id))
             {
                 explorationGameState.LevelUpWorld();
             }
 
-            if (sharpGui.Button(testDialog, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
+            if (sharpGui.Button(testDialog, gamepad, navUp: allowBattle.Id, navDown: goWorld.Id, navLeft: levelWorld.Id, navRight: philip.Id))
             {
                 const string lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
                 
@@ -130,13 +130,13 @@ namespace Adventure.Menu
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(goEnd, gamepad, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goWorld.Id))
+            if (sharpGui.Button(goEnd, gamepad, navUp: levelWorld.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goWorld.Id))
             {
                 zoneManager.GoEndPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(goWorld, gamepad, navUp: philip.Id, navDown: goPreviousLevel.Id, navLeft: goEnd.Id, navRight: goStart.Id))
+            if (sharpGui.Button(goWorld, gamepad, navUp: testDialog.Id, navDown: goPreviousLevel.Id, navLeft: goEnd.Id, navRight: goStart.Id))
             {
                 explorationGameState.RequestWorldMap();
                 explorationMenu.RequestSubMenu(null, gamepad);
