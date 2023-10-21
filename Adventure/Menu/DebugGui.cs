@@ -114,8 +114,14 @@ namespace Adventure.Menu
             if (sharpGui.Button(testDialog, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
             {
                 const string lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-                textDialog.SetText(lorem);
-                explorationMenu.RequestSubMenu(textDialog, gamepad);
+                
+                coroutineRunner.RunTask(async () =>
+                {
+                    await textDialog.ShowTextAndWait(lorem, explorationMenu, gamepad);
+                    await textDialog.ShowTextAndWait("What Lorem Again?", explorationMenu, gamepad);
+                    await textDialog.ShowTextAndWait(lorem, explorationMenu, gamepad);
+                    await textDialog.ShowTextAndWait("What Lorem Again????", explorationMenu, gamepad);
+                });
             }
 
             if (sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goWorld.Id, navRight: goEnd.Id))

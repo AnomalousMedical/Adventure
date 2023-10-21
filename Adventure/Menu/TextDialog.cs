@@ -4,6 +4,7 @@ using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Adventure.Menu
 {
@@ -14,6 +15,7 @@ namespace Adventure.Menu
         private string lastWord = String.Empty;
         private string contents;
         private int lastWidth;
+        private TaskCompletionSource currentTask;
 
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
@@ -47,6 +49,22 @@ namespace Adventure.Menu
             lastWord = "";
             words = FindWords(contents).GetEnumerator();
             UpdateText();
+        }
+
+        public Task WaitForCurrentText()
+        {
+            if(currentTask == null)
+            {
+                currentTask = new TaskCompletionSource();
+            }
+            return currentTask.Task;
+        }
+
+        public Task ShowTextAndWait(String contents, IExplorationMenu explorationMenu, GamepadId gamepad)
+        {
+            SetText(contents);
+            explorationMenu.RequestSubMenu(this, gamepad);
+            return WaitForCurrentText();
         }
 
         private bool UpdateText()
@@ -145,6 +163,9 @@ namespace Adventure.Menu
                 if (!UpdateText())
                 {
                     menu.RequestSubMenu(null, gamepadId);
+                    var tempTask = currentTask;
+                    currentTask = null;
+                    tempTask?.SetResult();
                 }
             }
         }
