@@ -47,7 +47,7 @@ namespace Adventure.Menu
 
         private bool UpdateText()
         {
-            var screenWidth = screenPositioner.ScreenSize.Width - scaleHelper.Scaled(300);
+            var screenWidth = Math.Min(screenPositioner.ScreenSize.Width - scaleHelper.Scaled(300), scaleHelper.Scaled(700));
             var lineWidth = 0;
             var foundLines = 0;
             var sb = new StringBuilder(500);
