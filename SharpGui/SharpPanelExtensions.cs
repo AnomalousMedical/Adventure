@@ -21,13 +21,6 @@ namespace SharpGui
 
             var look = style.Normal;
 
-            // Check whether the panel should look focused
-            bool regionHit = state.RegionHitByMouse(left, top, right, bottom);
-            if (regionHit)
-            {
-                look = style.Hover;
-            }
-
             //Draw shadow
             if (look.ShadowOffset.x > 0 && look.ShadowOffset.y > 0)
             {
@@ -54,12 +47,7 @@ namespace SharpGui
 
         public static IntSize2 GetDesiredSize(this SharpPanel panel, SharpGuiState state, SharpStyle style)
         {
-            var rect = panel.Rect;
             var look = style.Normal;
-            if (state.RegionHitByMouse(rect.Left, rect.Top, rect.Right, rect.Bottom))
-            {
-                look = style.Hover;
-            }
 
             panel.CalcIntPad = look.Border + look.Padding;
 
