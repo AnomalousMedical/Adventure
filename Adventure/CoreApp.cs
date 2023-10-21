@@ -171,6 +171,7 @@ namespace Adventure
             services.AddSingleton<IWorldDatabase, WorldDatabase>();
             services.AddSingleton<IBattleManager, BattleManager>();
             services.AddSingleton<IMonsterMaker, MonsterMaker>();
+            services.AddSingleton<TextDialog>();
             services.AddScoped<BattleArena>();
             services.AddScoped<BattleArena.Description>();
             services.AddSingleton<IBiomeManager, BiomeManager>();

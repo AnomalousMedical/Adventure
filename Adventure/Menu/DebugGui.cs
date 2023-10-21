@@ -28,6 +28,7 @@ namespace Adventure.Menu
         private readonly PhilipRootMenu philipRoot;
         private readonly FlyCameraManager flyCameraManager;
         private readonly Persistence persistence;
+        private readonly TextDialog textDialog;
         SharpButton goNextLevel = new SharpButton() { Text = "Next Stage" };
         SharpButton goPreviousLevel = new SharpButton() { Text = "Previous Stage" };
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
@@ -38,6 +39,7 @@ namespace Adventure.Menu
         SharpButton levelWorld = new SharpButton() { Text = "Level World" };
         SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
+        SharpButton testDialog = new SharpButton() { Text = "Test Dialog" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
         SharpSliderHorizontal currentHour;
 
@@ -53,7 +55,8 @@ namespace Adventure.Menu
             ILevelCalculator levelCalculator,
             PhilipRootMenu philipRoot,
             FlyCameraManager flyCameraManager,
-            Persistence persistence
+            Persistence persistence,
+            TextDialog textDialog
         )
         {
             this.sharpGui = sharpGui;
@@ -67,6 +70,7 @@ namespace Adventure.Menu
             this.philipRoot = philipRoot;
             this.flyCameraManager = flyCameraManager;
             this.persistence = persistence;
+            this.textDialog = textDialog;
             currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
         }
 
@@ -79,7 +83,7 @@ namespace Adventure.Menu
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip, levelWorld), new RowLayout(goStart, goEnd, goWorld), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip, levelWorld, testDialog), new RowLayout(goStart, goEnd, goWorld), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
@@ -105,6 +109,13 @@ namespace Adventure.Menu
             if (sharpGui.Button(levelWorld, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
             {
                 explorationGameState.LevelUpWorld();
+            }
+
+            if (sharpGui.Button(testDialog, gamepad, navUp: battle.Id, navDown: goStart.Id, navLeft: philip.Id, navRight: philip.Id))
+            {
+                const string lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+                textDialog.SetText(lorem);
+                explorationMenu.RequestSubMenu(textDialog, gamepad);
             }
 
             if (sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
