@@ -43,11 +43,13 @@ namespace Adventure.Exploration
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
         private readonly IExplorationMenu explorationMenu;
         private readonly IAssetFactory assetFactory;
+        private readonly TextDialog textDialog;
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -89,7 +91,8 @@ namespace Adventure.Exploration
             Persistence persistence,
             IExplorationMenu explorationMenu,
             IAssetFactory assetFactory,
-            IObjectResolverFactory objectResolverFactory)
+            IObjectResolverFactory objectResolverFactory,
+            TextDialog textDialog)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -100,6 +103,7 @@ namespace Adventure.Exploration
             this.state = persistence.Current.PartyMemberTriggers.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
@@ -107,6 +111,7 @@ namespace Adventure.Exploration
             this.persistence = persistence;
             this.explorationMenu = explorationMenu;
             this.assetFactory = assetFactory;
+            this.textDialog = textDialog;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -264,14 +269,20 @@ namespace Adventure.Exploration
         private void Recruit(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Recruit);
-            //If something were to go wrong handing out treasure it would be lost, but the
-            //other option opens it up to duplication
-            state.Found = true;
-            persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
-            persistence.Current.Party.Members.Add(this.partyMember);
 
-            RemoveGraphics();
-            DestroyPhysics();
+            coroutine.RunTask(async () =>
+            {
+                await textDialog.ShowTextAndWait("Hello nice to meet you. I will join you.", explorationMenu, args.GamepadId);
+
+                //If something were to go wrong handing out the party member it would be lost, but the
+                //other option opens it up to duplication
+                state.Found = true;
+                persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
+                persistence.Current.Party.Members.Add(this.partyMember);
+
+                RemoveGraphics();
+                DestroyPhysics();
+            });
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
