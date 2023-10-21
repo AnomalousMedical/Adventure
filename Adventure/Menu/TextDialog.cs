@@ -11,7 +11,7 @@ namespace Adventure.Menu
     {
         private const int NumLines = 2;
         private IEnumerator<String> words;
-        private string lastWord = "";
+        private string lastWord = String.Empty;
 
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
@@ -20,6 +20,11 @@ namespace Adventure.Menu
         private SharpText text = new SharpText()
         {
             Color = Color.Black,
+        };
+
+        private SharpButton nextButton = new SharpButton()
+        {
+            Text = "Next"
         };
 
         public TextDialog
@@ -37,18 +42,24 @@ namespace Adventure.Menu
         public void SetText(String contents)
         {
             words = FindWords(contents).GetEnumerator();
-            DoSetText();
+            UpdateText();
         }
 
-        private void DoSetText()
+        private bool UpdateText()
         {
-            var foundLines = 0;
-            var sb = new StringBuilder(500);
-            sb.Append(lastWord);
             var screenWidth = screenPositioner.ScreenSize.Width - scaleHelper.Scaled(300);
             var lineWidth = 0;
-            var addSpace = false;
-            while (words.MoveNext() && foundLines < NumLines)
+            var foundLines = 0;
+            var sb = new StringBuilder(500);
+
+            var addSpace = lastWord != String.Empty;
+            if (addSpace)
+            {
+                sb.Append(lastWord);
+                lastWord = String.Empty;
+            }
+
+            while (words.MoveNext())
             {
                 var word = words.Current;
                 var wordWidth = sharpGui.MeasureText(word).Width;
@@ -59,13 +70,16 @@ namespace Adventure.Menu
                     {
                         sb.Append('\n');
                         lineWidth = 0;
+                        addSpace = false;
                     }
                     else
                     {
                         lastWord = word;
+                        break;
                     }
                 }
-                else if(addSpace)
+
+                if (addSpace)
                 {
                     sb.Append(' ');
                 }
@@ -75,6 +89,8 @@ namespace Adventure.Menu
             }
 
             this.text.UpdateText(sb.ToString());
+
+            return sb.Length > 0;
         }
 
         private IEnumerable<String> FindWords(string contents)
@@ -101,11 +117,26 @@ namespace Adventure.Menu
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
-            var layout = new PanelLayout(panel, this.text);
-            layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+            {
+                var layout = new MarginLayout(new IntPad(0, scaleHelper.Scaled(10), 0, 0), new PanelLayout(panel, this.text));
+                layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+            }
+
+            {
+                var layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), nextButton);
+                layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
+            }
 
             sharpGui.Panel(panel);
             sharpGui.Text(text);
+
+            if (sharpGui.Button(nextButton) || sharpGui.IsStandardNextPressed(gamepadId))
+            {
+                if (!UpdateText())
+                {
+                    menu.RequestSubMenu(null, gamepadId);
+                }
+            }
         }
     }
 }
