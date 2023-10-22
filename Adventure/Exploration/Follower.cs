@@ -168,6 +168,7 @@ namespace Adventure
         public void Dispose()
         {
             disposed = true;
+            this.followerManager.RemoveFollower(followerNode);
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
             sprite.FrameChanged -= Sprite_FrameChanged;
