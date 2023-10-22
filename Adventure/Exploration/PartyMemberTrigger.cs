@@ -170,6 +170,12 @@ namespace Adventure.Exploration
 
         public void CreatePhysics()
         {
+            this.state = persistence.Current.PartyMemberTriggers.GetData(zoneIndex, instanceId);
+            if (this.state.Found)
+            {
+                return;
+            }
+
             if (!physicsCreated)
             {
                 physicsCreated = true;
