@@ -22,6 +22,8 @@ namespace Adventure
         public CharacterSheet CharacterSheet { get; set; }
 
         public FollowerManager FollowerManager { get; set; }
+
+        public bool StartVisible { get; set; } = true;
     }
 
     class Follower<T> : IDisposable
@@ -50,6 +52,9 @@ namespace Adventure
         private int secondaryHand;
 
         private bool disposed;
+        private bool graphicsActive;
+        private bool graphicsReady;
+        private bool makeGraphicsActive;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -60,7 +65,7 @@ namespace Adventure
             public Vector3? Location { get; set; }
         }
 
-        class FollowerNode<T> : IFollowerNode
+        class FollowerNode : IFollowerNode
         {
             private Follower<T> follower;
 
@@ -74,7 +79,7 @@ namespace Adventure
                 follower.SetLocationAndMovement(args.NewLocation, args.MovementDirection, args.Moving);
             }
         }
-        private FollowerNode<T> followerNode;
+        private FollowerNode followerNode;
 
         public Follower
         (
@@ -90,8 +95,9 @@ namespace Adventure
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
+            this.makeGraphicsActive = description.StartVisible;
             this.followerManager = description.FollowerManager;
-            this.followerNode = new FollowerNode<T>(this);
+            this.followerNode = new FollowerNode(this);
             this.followerManager.AddFollower(followerNode);
 
             this.assetFactory = assetFactory;
@@ -136,6 +142,7 @@ namespace Adventure
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
                 this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, sprite);
+                graphicsReady = true;
 
                 if (this.disposed)
                 {
@@ -143,9 +150,7 @@ namespace Adventure
                     return; //Stop loading
                 }
 
-                rtInstances.AddTlasBuild(tlasData);
-                rtInstances.AddShaderTableBinder(Bind);
-                rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                SetGraphicsActive(makeGraphicsActive);
 
                 sprite.AnimationChanged += Sprite_AnimationChanged;
                 sprite.FrameChanged += Sprite_FrameChanged;
@@ -163,9 +168,7 @@ namespace Adventure
             sprite.FrameChanged -= Sprite_FrameChanged;
             sprite.AnimationChanged -= Sprite_AnimationChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
-            rtInstances.RemoveSprite(sprite);
-            rtInstances.RemoveShaderTableBinder(Bind);
-            rtInstances.RemoveTlasBuild(tlasData);
+            SetGraphicsActive(false);
             objectResolver.Dispose();
         }
 
@@ -215,6 +218,34 @@ namespace Adventure
         public void RequestDestruction()
         {
             destructionRequest.RequestDestruction();
+        }
+
+        public void SetGraphicsActive(bool active)
+        {
+            makeGraphicsActive = active;
+            if (graphicsActive != active && graphicsReady)
+            {
+                if (active)
+                {
+                    rtInstances.AddTlasBuild(tlasData);
+                    rtInstances.AddShaderTableBinder(Bind);
+                    rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                    graphicsActive = true;
+                }
+                else
+                {
+                    rtInstances.RemoveSprite(sprite);
+                    rtInstances.RemoveShaderTableBinder(Bind);
+                    rtInstances.RemoveTlasBuild(tlasData);
+                    graphicsActive = false;
+                }
+
+                mainHandHand?.SetGraphicsActive(active);
+                mainHandItem?.SetGraphicsActive(active);
+
+                offHandHand?.SetGraphicsActive(active);
+                offHandItem?.SetGraphicsActive(active);
+            }
         }
 
         private void Sprite_AnimationChanged(FrameEventSprite obj)

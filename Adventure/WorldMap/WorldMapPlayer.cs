@@ -282,6 +282,11 @@ namespace Adventure.WorldMap
 
                 offHandHand?.SetGraphicsActive(active);
                 offHandItem?.SetGraphicsActive(active);
+
+                foreach(var follower in followers)
+                {
+                    follower.SetGraphicsActive(active);
+                }
             }
         }
 
@@ -652,6 +657,7 @@ namespace Adventure.WorldMap
                     c.PlayerSprite = follower.PlayerSprite;
                     c.CharacterSheet = follower.CharacterSheet;
                     c.FollowerManager = followerManager;
+                    c.StartVisible = this.graphicsActive;
                 });
                 this.followers.Add(followerInstance);
             }
