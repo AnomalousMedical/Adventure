@@ -69,11 +69,15 @@ namespace Adventure.Services
             if (distancePercent > 2.0f) //More than 2x distance, move to leader position
             {
                 leaderStartLocation = location;
+                const float zOffset = 0.15f;
+                var offset = new Vector3(0, 0, zOffset);
                 foreach (var entry in followers)
                 {
-                    args.NewLocation = location;
+                    var offsetLoc = location + offset;
+                    offset.z += zOffset;
+                    args.NewLocation = offsetLoc;
                     entry.Node.UpdateLocation(args);
-                    entry.EndPosition = entry.StartPosition = location;
+                    entry.EndPosition = entry.StartPosition = offsetLoc;
                     entry.DistancePercent = 0.0f;
                 }
             }
