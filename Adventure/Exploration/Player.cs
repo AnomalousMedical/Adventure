@@ -71,8 +71,6 @@ namespace Adventure
         ButtonEvent moveBackward;
         ButtonEvent moveRight;
         ButtonEvent moveLeft;
-        ButtonEvent sprint;
-        ButtonEvent jump;
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 5, -12);
@@ -118,8 +116,6 @@ namespace Adventure
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
             this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
             this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
-            this.sprint = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_LSHIFT });
-            this.jump = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_SPACE });
 
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -132,8 +128,6 @@ namespace Adventure
             eventManager.addEvent(moveBackward);
             eventManager.addEvent(moveLeft);
             eventManager.addEvent(moveRight);
-            eventManager.addEvent(sprint);
-            eventManager.addEvent(jump);
 
             eventLayer = eventManager[description.EventLayer];
             eventLayer.OnUpdate += EventLayer_OnUpdate;
@@ -230,8 +224,6 @@ namespace Adventure
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
-            eventManager.removeEvent(sprint);
-            eventManager.removeEvent(jump);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
 
@@ -332,38 +324,6 @@ namespace Adventure
                     if (characterMover.movementDirection.X > 0.5f) { characterMover.movementDirection.X = 0; }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-            jump.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.tryJump = true;
-                    l.alertEventsHandled();
-                }
-            };
-            jump.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.tryJump = false;
-                    l.alertEventsHandled();
-                }
-            };
-            sprint.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.speed = 4;
-                    l.alertEventsHandled();
-                }
-            };
-            sprint.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.speed = 7;
-                    l.alertEventsHandled();
                 }
             };
         }
