@@ -434,7 +434,8 @@ namespace Adventure
         {
             for(int i = 0; i < players.Length; i++)
             {
-                var playerCharacter = party.ActiveCharacters.Where(c => c.Player == i).FirstOrDefault();
+                var currentPlayerCharacters = party.ActiveCharacters.Where(c => c.Player == i);
+                var playerCharacter = currentPlayerCharacters.FirstOrDefault();
                 if (playerCharacter != null)
                 {
                     if (players[i] == null)
@@ -446,6 +447,8 @@ namespace Adventure
                             c.CharacterSheet = playerCharacter.CharacterSheet;
                             c.Gamepad = (GamepadId)i;
                         });
+
+                        players[i].CreateFollowers(currentPlayerCharacters.Skip(1));
                     }
                 }
                 else

@@ -44,8 +44,10 @@ namespace Adventure
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
+        private readonly FollowerManager followerManager;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
+        private List<Follower> followers = new List<Follower>();
 
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
@@ -105,12 +107,14 @@ namespace Adventure
             CameraMover cameraMover,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             Persistence persistence,
-            IAssetFactory assetFactory
+            IAssetFactory assetFactory,
+            FollowerManager followerManager
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
+            this.followerManager = followerManager;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -338,6 +342,7 @@ namespace Adventure
             this.currentPosition = finalLoc;
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+            this.followerManager.LeaderMoved(this.currentPosition);
             Sprite_FrameChanged(sprite);
         }
 
@@ -381,6 +386,7 @@ namespace Adventure
                 this.currentPosition = location.Value;
                 this.persistence.Current.Player.Position = this.currentPosition;
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+                this.followerManager.LeaderMoved(this.currentPosition);
                 Sprite_FrameChanged(sprite);
             }
         }
@@ -400,6 +406,7 @@ namespace Adventure
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+            this.followerManager.LeaderMoved(this.currentPosition);
             Sprite_FrameChanged(sprite);
 
             var movementDir = characterMover.movementDirection;
@@ -590,6 +597,26 @@ namespace Adventure
             }
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
+        }
+
+        internal void CreateFollowers(IEnumerable<Persistence.CharacterData> newFollowers)
+        {
+            foreach(var follower in this.followers)
+            {
+                follower.RequestDestruction();
+            }
+
+            foreach(var follower in newFollowers)
+            {
+                var followerInstance = this.objectResolver.Resolve<Follower, Follower.Description>(c =>
+                {
+                    c.Translation = this.currentPosition;
+                    c.PlayerSprite = follower.PlayerSprite;
+                    c.CharacterSheet = follower.CharacterSheet;
+                    c.FollowerManager = followerManager;
+                });
+                this.followers.Add(followerInstance);
+            }
         }
     }
 }
