@@ -69,18 +69,9 @@ namespace Adventure
                 this.follower = follower;
             }
 
-            public Vector3 CurrentLocation => follower.currentPosition;
-
             public void UpdateLocation(FollowerManagerArgs args)
             {
-                if (args.Moving)
-                {
-                    follower.SetLocationAndMovement(args.NewLocation, args.MovementDirection);
-                }
-                else
-                {
-                    follower.SetStandDirection(args.MovementDirection);
-                }
+                follower.SetLocationAndMovement(args.NewLocation, args.MovementDirection, args.Moving);
             }
         }
         private FollowerNode followerNode;
@@ -182,34 +173,34 @@ namespace Adventure
             objectResolver.Dispose();
         }
 
-        public void SetLocationAndMovement(in Vector3 location, in Vector3 movementDir)
+        public void SetLocationAndMovement(in Vector3 location, in Vector3 movementDir, bool moving)
         {
             //var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
 
             if (movementDir.z > 0.3f)
             {
-                var anim = "up";
+                var anim = moving ? "up" : "stand-up";
                 sprite.SetAnimation(anim);
                 mainHandItem?.SetAnimation(anim);
                 offHandItem?.SetAnimation(anim);
             }
             else if (movementDir.z < -0.3f)
             {
-                var anim = "down";
+                var anim = moving ? "down" : "stand-down";
                 sprite.SetAnimation(anim);
                 mainHandItem?.SetAnimation(anim);
                 offHandItem?.SetAnimation(anim);
             }
             else if (movementDir.x > 0)
             {
-                var anim = "right";
+                var anim = moving ? "right" : "stand-right";
                 sprite.SetAnimation(anim);
                 mainHandItem?.SetAnimation(anim);
                 offHandItem?.SetAnimation(anim);
             }
             else if (movementDir.x < 0)
             {
-                var anim = "left";
+                var anim = moving ? "left" : "stand-left";
                 sprite.SetAnimation(anim);
                 mainHandItem?.SetAnimation(anim);
                 offHandItem?.SetAnimation(anim);
@@ -217,42 +208,6 @@ namespace Adventure
 
             this.currentPosition = location;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-            Sprite_FrameChanged(sprite);
-        }
-
-        public void SetStandDirection(in Vector3 movementDir)
-        {
-            //var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
-
-            if (movementDir.z > 0.3f)
-            {
-                var anim = "stand-up";
-                sprite.SetAnimation(anim);
-                mainHandItem?.SetAnimation(anim);
-                offHandItem?.SetAnimation(anim);
-            }
-            else if (movementDir.z < -0.3f)
-            {
-                var anim = "stand-down";
-                sprite.SetAnimation(anim);
-                mainHandItem?.SetAnimation(anim);
-                offHandItem?.SetAnimation(anim);
-            }
-            else if (movementDir.x > 0)
-            {
-                var anim = "stand-right";
-                sprite.SetAnimation(anim);
-                mainHandItem?.SetAnimation(anim);
-                offHandItem?.SetAnimation(anim);
-            }
-            else if (movementDir.x < 0)
-            {
-                var anim = "stand-left";
-                sprite.SetAnimation(anim);
-                mainHandItem?.SetAnimation(anim);
-                offHandItem?.SetAnimation(anim);
-            }
-
             Sprite_FrameChanged(sprite);
         }
 

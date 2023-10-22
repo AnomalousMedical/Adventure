@@ -342,7 +342,7 @@ namespace Adventure
             this.currentPosition = finalLoc;
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-            this.followerManager.LeaderMoved(this.currentPosition);
+            this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
             Sprite_FrameChanged(sprite);
         }
 
@@ -386,7 +386,7 @@ namespace Adventure
                 this.currentPosition = location.Value;
                 this.persistence.Current.Player.Position = this.currentPosition;
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-                this.followerManager.LeaderMoved(this.currentPosition);
+                this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
                 Sprite_FrameChanged(sprite);
             }
         }
@@ -406,7 +406,7 @@ namespace Adventure
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-            this.followerManager.LeaderMoved(this.currentPosition);
+            this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
             Sprite_FrameChanged(sprite);
 
             var movementDir = characterMover.movementDirection;

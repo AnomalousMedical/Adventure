@@ -7,8 +7,6 @@ namespace Adventure.Services
 {
     interface IFollowerNode
     {
-        public Vector3 CurrentLocation { get; }
-
         public void UpdateLocation(FollowerManagerArgs args);
     }
 
@@ -35,6 +33,8 @@ namespace Adventure.Services
             public Vector3 StartPosition { get; set; }
 
             public Vector3 EndPosition { get; set; }
+
+            public Vector3 LastPosition { get; set; }
 
             public Vector3 MovementDirection { get; set; }
 
@@ -68,7 +68,7 @@ namespace Adventure.Services
             }
         }
 
-        public void LeaderMoved(in Vector3 location)
+        public void LeaderMoved(in Vector3 location, bool activeMove)
         {
             var leaderLocDiff = location - leaderStartLocation;
             var distancePercent = leaderLocDiff.length() / (characterDistance);
@@ -117,16 +117,16 @@ namespace Adventure.Services
                     {
                         entry.DistancePercent = distancePercent;
 
-                        args.NewLocation = entry.StartPosition.lerp(entry.EndPosition, distancePercent);
-                        args.MovementDirection = entry.MovementDirection;
-                        args.Moving = true;
+                        args.NewLocation = entry.LastPosition = entry.StartPosition.lerp(entry.EndPosition, distancePercent);
+                        args.Moving = activeMove;
                     }
                     else
                     {
-                        args.MovementDirection = entry.MovementDirection;
+                        args.NewLocation = entry.LastPosition;
                         args.Moving = false;
                     }
 
+                    args.MovementDirection = entry.MovementDirection;
                     entry.Node.UpdateLocation(args);
                 }
             }
