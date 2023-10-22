@@ -50,7 +50,7 @@ namespace Adventure.Exploration
         private readonly IExplorationMenu explorationMenu;
         private readonly IAssetFactory assetFactory;
         private readonly TextDialog textDialog;
-        private readonly IZoneManager zoneManager;
+        private readonly PartyMemberManager partyMemberManager;
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -94,7 +94,7 @@ namespace Adventure.Exploration
             IAssetFactory assetFactory,
             IObjectResolverFactory objectResolverFactory,
             TextDialog textDialog,
-            IZoneManager zoneManager)
+            PartyMemberManager partyMemberManager)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -114,7 +114,7 @@ namespace Adventure.Exploration
             this.explorationMenu = explorationMenu;
             this.assetFactory = assetFactory;
             this.textDialog = textDialog;
-            this.zoneManager = zoneManager;
+            this.partyMemberManager = partyMemberManager;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -287,12 +287,10 @@ namespace Adventure.Exploration
                 //other option opens it up to duplication
                 state.Found = true;
                 persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
-                persistence.Current.Party.Members.Add(this.partyMember.CharacterData);
+                partyMemberManager.AddToParty(this.partyMember);
 
                 RemoveGraphics();
                 DestroyPhysics();
-
-                zoneManager.ManagePlayers();
             });
         }
 

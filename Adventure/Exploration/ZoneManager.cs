@@ -50,6 +50,7 @@ namespace Adventure
         private readonly IWorldManager worldManager;
         private readonly Persistence persistence;
         private readonly Sky sky;
+        private readonly PartyMemberManager partyMemberManager;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -63,7 +64,8 @@ namespace Adventure
             IObjectResolverFactory objectResolverFactory,
             Persistence persistence,
             IBepuScene<ZoneScene> bepuScene, //Inject this so it is created earlier and destroyed later
-            Sky sky
+            Sky sky,
+            PartyMemberManager partyMemberManager
         )
         {
             objectResolver = objectResolverFactory.Create();
@@ -72,6 +74,8 @@ namespace Adventure
             this.worldManager = worldManager;
             this.persistence = persistence;
             this.sky = sky;
+            this.partyMemberManager = partyMemberManager;
+            this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
         public async Task Restart(bool allowHoldZone = true)
@@ -189,6 +193,7 @@ namespace Adventure
         public void Dispose()
         {
             objectResolver.Dispose();
+            partyMemberManager.PartyChanged -= PartyMemberManager_PartyChanged;
         }
 
         public Task WaitForCurrent()
@@ -486,6 +491,11 @@ namespace Adventure
                     }
                 }
             }
+        }
+
+        private void PartyMemberManager_PartyChanged()
+        {
+            ManagePlayers();
         }
     }
 }

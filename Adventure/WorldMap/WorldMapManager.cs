@@ -28,6 +28,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
+        private readonly PartyMemberManager partyMemberManager;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer player;
@@ -38,18 +39,22 @@ namespace Adventure.WorldMap
             IObjectResolverFactory objectResolverFactory,
             IWorldDatabase worldDatabase,
             IBepuScene<WorldMapScene> bepuScene, //Inject this here so it is created earlier and destroyed later
-            Party party
+            Party party,
+            PartyMemberManager partyMemberManager
         )
         {
             this.objectResolver = objectResolverFactory.Create();
             this.worldDatabase = worldDatabase;
             this.party = party;
+            this.partyMemberManager = partyMemberManager;
             this.bepuScene = bepuScene;
+            this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
         public void Dispose()
         {
             objectResolver.Dispose();
+            this.partyMemberManager.PartyChanged -= PartyMemberManager_PartyChanged;
         }
 
         public bool PhysicsActive => worldMapInstance?.PhysicsActive == true && !airship.Active;
@@ -99,7 +104,7 @@ namespace Adventure.WorldMap
                 o.CharacterSheet = playerCharacter.CharacterSheet;
                 o.Gamepad = GamepadId.Pad1;
             });
-            player.CreateFollowers(party.ActiveCharacters.Skip(1));
+            CreateFollowers();
 
             airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
             {
@@ -120,6 +125,11 @@ namespace Adventure.WorldMap
             worldMapInstance.SetupPhysics();
         }
 
+        private void CreateFollowers()
+        {
+            player.CreateFollowers(party.ActiveCharacters.Skip(1));
+        }
+
         public Vector3 GetPortal(int portalIndex)
         {
             return worldMapInstance?.GetPortalLocation(portalIndex) ?? Vector3.Zero;
@@ -133,6 +143,11 @@ namespace Adventure.WorldMap
         public void Update(Clock clock)
         {
             airship.UpdateInput(clock);
+        }
+
+        private void PartyMemberManager_PartyChanged()
+        {
+            CreateFollowers();
         }
     }
 }
