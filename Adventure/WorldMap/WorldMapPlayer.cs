@@ -122,6 +122,7 @@ namespace Adventure.WorldMap
 
             this.assetFactory = assetFactory;
             this.followerManager = followerManager;
+            this.followerManager.CharacterDistance = this.followerManager.CharacterDistance * description.Scale.x;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -647,6 +648,7 @@ namespace Adventure.WorldMap
                 var followerInstance = this.objectResolver.Resolve<Follower<WorldMapScene>, FollowerDescription>(c =>
                 {
                     c.Translation = this.currentPosition;
+                    c.Scale = this.currentScale;
                     c.PlayerSprite = follower.PlayerSprite;
                     c.CharacterSheet = follower.CharacterSheet;
                     c.FollowerManager = followerManager;

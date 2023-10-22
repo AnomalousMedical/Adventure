@@ -50,6 +50,18 @@ namespace Adventure.Services
         {
         }
 
+        public float CharacterDistance
+        {
+            get
+            {
+                return characterDistance;
+            }
+            set
+            {
+                characterDistance = value;
+            }
+        }
+
         public void AddFollower(IFollowerNode follower)
         {
             followers.Add(new Entry(follower, leaderStartLocation));
