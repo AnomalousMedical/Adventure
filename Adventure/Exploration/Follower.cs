@@ -11,22 +11,22 @@ using System;
 
 namespace Adventure
 {
-    class Follower : IDisposable
+    class FollowerDescription : SceneObjectDesc
     {
-        public class Description : SceneObjectDesc
-        {
-            public int PrimaryHand = RightHand;
-            public int SecondaryHand = LeftHand;
-            public String PlayerSprite { get; set; }
-            public CharacterSheet CharacterSheet { get; set; }
+        public int PrimaryHand = Player.RightHand;
 
-            public FollowerManager FollowerManager { get; set; }
-        }
+        public int SecondaryHand = Player.LeftHand;
 
-        public const int RightHand = 0;
-        public const int LeftHand = 1;
+        public String PlayerSprite { get; set; }
 
-        private readonly RTInstances<ZoneScene> rtInstances;
+        public CharacterSheet CharacterSheet { get; set; }
+
+        public FollowerManager FollowerManager { get; set; }
+    }
+
+    class Follower<T> : IDisposable
+    {
+        private readonly RTInstances<T> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -37,12 +37,12 @@ namespace Adventure
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
 
-        private Attachment<ZoneScene> mainHandItem;
-        private Attachment<ZoneScene> offHandItem;
+        private Attachment<T> mainHandItem;
+        private Attachment<T> offHandItem;
 
         private IPlayerSprite playerSpriteInfo;
-        private Attachment<ZoneScene> mainHandHand;
-        private Attachment<ZoneScene> offHandHand;
+        private Attachment<T> mainHandHand;
+        private Attachment<T> offHandHand;
 
         private CharacterSheet characterSheet;
 
@@ -60,11 +60,11 @@ namespace Adventure
             public Vector3? Location { get; set; }
         }
 
-        class FollowerNode : IFollowerNode
+        class FollowerNode<T> : IFollowerNode
         {
-            private Follower follower;
+            private Follower<T> follower;
 
-            public FollowerNode(Follower follower)
+            public FollowerNode(Follower<T> follower)
             {
                 this.follower = follower;
             }
@@ -74,20 +74,16 @@ namespace Adventure
                 follower.SetLocationAndMovement(args.NewLocation, args.MovementDirection, args.Moving);
             }
         }
-        private FollowerNode followerNode;
+        private FollowerNode<T> followerNode;
 
         public Follower
         (
-            RTInstances<ZoneScene> rtInstances,
+            RTInstances<T> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
             SpriteInstanceFactory spriteInstanceFactory,
             IObjectResolverFactory objectResolverFactory,
-            IBepuScene<ZoneScene> bepuScene,
-            EventManager eventManager,
-            Description description,
-            CameraMover cameraMover,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            FollowerDescription description,
             Persistence persistence,
             IAssetFactory assetFactory
         )
@@ -95,7 +91,7 @@ namespace Adventure
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.followerManager = description.FollowerManager;
-            this.followerNode = new FollowerNode(this);
+            this.followerNode = new FollowerNode<T>(this);
             this.followerManager.AddFollower(followerNode);
 
             this.assetFactory = assetFactory;
@@ -227,10 +223,10 @@ namespace Adventure
             {
                 switch (primaryHand)
                 {
-                    case RightHand:
+                    case Player.RightHand:
                         mainHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
                         break;
-                    case LeftHand:
+                    case Player.LeftHand:
                         mainHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
                         break;
                 }
@@ -240,10 +236,10 @@ namespace Adventure
             {
                 switch (secondaryHand)
                 {
-                    case RightHand:
+                    case Player.RightHand:
                         offHandHand.SetAnimation(obj.CurrentAnimationName + "-r-hand");
                         break;
-                    case LeftHand:
+                    case Player.LeftHand:
                         offHandHand.SetAnimation(obj.CurrentAnimationName + "-l-hand");
                         break;
                 }
@@ -281,7 +277,7 @@ namespace Adventure
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<T>, Attachment<T>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -294,7 +290,7 @@ namespace Adventure
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<T>, Attachment<T>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -319,7 +315,7 @@ namespace Adventure
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<T>, Attachment<T>.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -332,7 +328,7 @@ namespace Adventure
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<T>, Attachment<T>.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {

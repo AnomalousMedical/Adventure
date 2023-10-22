@@ -99,6 +99,7 @@ namespace Adventure.WorldMap
                 o.CharacterSheet = playerCharacter.CharacterSheet;
                 o.Gamepad = GamepadId.Pad1;
             });
+            player.CreateFollowers(party.ActiveCharacters.Skip(1));
 
             airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
             {

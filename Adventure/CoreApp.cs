@@ -99,8 +99,8 @@ namespace Adventure
             services.AddSingleton<IStartExplorationGameState, StartExplorationGameState>();
             services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<FollowerManager>();
-            services.AddScoped<Follower>();
-            services.AddScoped<Follower.Description>();
+            services.AddScoped(typeof(Follower<>));
+            services.AddScoped<FollowerDescription>();
             services.AddScoped<WorldMapPlayer>();
             services.AddScoped<WorldMapPlayer.Description>();
             services.AddScoped<Airship>();

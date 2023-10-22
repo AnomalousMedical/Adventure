@@ -47,7 +47,7 @@ namespace Adventure
         private readonly FollowerManager followerManager;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
-        private List<Follower> followers = new List<Follower>();
+        private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
 
         private FrameEventSprite sprite;
         private SpriteInstance spriteInstance;
@@ -599,7 +599,7 @@ namespace Adventure
             Sprite_FrameChanged(sprite);
         }
 
-        internal void CreateFollowers(IEnumerable<Persistence.CharacterData> newFollowers)
+        public void CreateFollowers(IEnumerable<Persistence.CharacterData> newFollowers)
         {
             foreach(var follower in this.followers)
             {
@@ -608,7 +608,7 @@ namespace Adventure
 
             foreach(var follower in newFollowers)
             {
-                var followerInstance = this.objectResolver.Resolve<Follower, Follower.Description>(c =>
+                var followerInstance = this.objectResolver.Resolve<Follower<ZoneScene>, FollowerDescription>(c =>
                 {
                     c.Translation = this.currentPosition;
                     c.PlayerSprite = follower.PlayerSprite;
