@@ -15,6 +15,8 @@ namespace Adventure.Services
     class FollowerManagerArgs
     {
         public Vector3 NewLocation { get; set; }
+        public Vector3 MovementDirection { get; set; }
+        public bool Moving { get; set; }
     }
 
     class FollowerManager
@@ -31,6 +33,8 @@ namespace Adventure.Services
             public Vector3 StartPosition { get; set; }
 
             public Vector3 EndPosition { get; set; }
+
+            public Vector3 MovementDirection { get; set; }
 
             public IFollowerNode Node { get; init; }
         }
@@ -76,9 +80,12 @@ namespace Adventure.Services
                     var offsetLoc = location + offset;
                     offset.z += zOffset;
                     args.NewLocation = offsetLoc;
+                    args.MovementDirection = new Vector3(0f, 0f, -1f);
+                    args.Moving = false;
                     entry.Node.UpdateLocation(args);
                     entry.EndPosition = entry.StartPosition = offsetLoc;
                     entry.DistancePercent = 0.0f;
+                    entry.MovementDirection = new Vector3(0f, 0f, -1f);
                 }
             }
             else
@@ -95,6 +102,7 @@ namespace Adventure.Services
                         entry.EndPosition = inFrontLocation;
                         inFrontLocation = entry.StartPosition;
                         entry.DistancePercent = 0.0f;
+                        entry.MovementDirection = (entry.EndPosition - entry.StartPosition).normalized();
                     }
 
                     //Remove 1.0 and allow the rest of the frame to continue below with remainder
@@ -105,10 +113,19 @@ namespace Adventure.Services
                 {
                     if (entry.DistancePercent < distancePercent)
                     {
-                        args.NewLocation = entry.StartPosition.lerp(entry.EndPosition, distancePercent);
-                        entry.Node.UpdateLocation(args);
                         entry.DistancePercent = distancePercent;
+
+                        args.NewLocation = entry.StartPosition.lerp(entry.EndPosition, distancePercent);
+                        args.MovementDirection = entry.MovementDirection;
+                        args.Moving = true;
                     }
+                    else
+                    {
+                        args.MovementDirection = entry.MovementDirection;
+                        args.Moving = false;
+                    }
+
+                    entry.Node.UpdateLocation(args);
                 }
             }
         }

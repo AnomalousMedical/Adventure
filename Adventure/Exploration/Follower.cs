@@ -55,11 +55,6 @@ namespace Adventure
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        private System.Numerics.Vector2 movementDir;
-        private const float MovingBoundary = 0.001f;
-        public bool IsMoving => !(movementDir.X < MovingBoundary && movementDir.X > -MovingBoundary
-                             && movementDir.Y < MovingBoundary && movementDir.Y > -MovingBoundary);
-
         public record struct PersistedData
         {
             public Vector3? Location { get; set; }
@@ -78,7 +73,14 @@ namespace Adventure
 
             public void UpdateLocation(FollowerManagerArgs args)
             {
-                follower.SetLocation(args.NewLocation);
+                if (args.Moving)
+                {
+                    follower.SetLocationAndMovement(args.NewLocation, args.MovementDirection);
+                }
+                else
+                {
+                    follower.SetStandDirection(args.MovementDirection);
+                }
             }
         }
         private FollowerNode followerNode;
@@ -180,12 +182,77 @@ namespace Adventure
             objectResolver.Dispose();
         }
 
-        public void SetLocation(in Vector3 location)
+        public void SetLocationAndMovement(in Vector3 location, in Vector3 movementDir)
         {
             //var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
 
+            if (movementDir.z > 0.3f)
+            {
+                var anim = "up";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.z < -0.3f)
+            {
+                var anim = "down";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.x > 0)
+            {
+                var anim = "right";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.x < 0)
+            {
+                var anim = "left";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+
             this.currentPosition = location;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+            Sprite_FrameChanged(sprite);
+        }
+
+        public void SetStandDirection(in Vector3 movementDir)
+        {
+            //var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
+
+            if (movementDir.z > 0.3f)
+            {
+                var anim = "stand-up";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.z < -0.3f)
+            {
+                var anim = "stand-down";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.x > 0)
+            {
+                var anim = "stand-right";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+            else if (movementDir.x < 0)
+            {
+                var anim = "stand-left";
+                sprite.SetAnimation(anim);
+                mainHandItem?.SetAnimation(anim);
+                offHandItem?.SetAnimation(anim);
+            }
+
             Sprite_FrameChanged(sprite);
         }
 
