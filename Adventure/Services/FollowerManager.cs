@@ -23,9 +23,11 @@ namespace Adventure.Services
     {
         class Entry
         {
-            public Entry(IFollowerNode node)
+            public Entry(IFollowerNode node, Vector3 startPos)
             {
                 this.Node = node;
+                this.StartPosition = startPos;
+                this.EndPosition = startPos;
             }
 
             public float DistancePercent { get; set; }
@@ -50,7 +52,7 @@ namespace Adventure.Services
 
         public void AddFollower(IFollowerNode follower)
         {
-            followers.Add(new Entry(follower));
+            followers.Add(new Entry(follower, leaderStartLocation));
         }
 
         public void RemoveFollower(IFollowerNode follower)
