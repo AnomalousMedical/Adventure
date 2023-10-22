@@ -447,9 +447,9 @@ namespace Adventure
                             c.CharacterSheet = playerCharacter.CharacterSheet;
                             c.Gamepad = (GamepadId)i;
                         });
-
-                        players[i].CreateFollowers(currentPlayerCharacters.Skip(1));
                     }
+
+                    players[i].CreateFollowers(currentPlayerCharacters.Skip(1));
                 }
                 else
                 {

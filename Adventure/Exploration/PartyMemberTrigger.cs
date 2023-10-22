@@ -50,6 +50,7 @@ namespace Adventure.Exploration
         private readonly IExplorationMenu explorationMenu;
         private readonly IAssetFactory assetFactory;
         private readonly TextDialog textDialog;
+        private readonly IZoneManager zoneManager;
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -92,7 +93,8 @@ namespace Adventure.Exploration
             IExplorationMenu explorationMenu,
             IAssetFactory assetFactory,
             IObjectResolverFactory objectResolverFactory,
-            TextDialog textDialog)
+            TextDialog textDialog,
+            IZoneManager zoneManager)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -112,6 +114,7 @@ namespace Adventure.Exploration
             this.explorationMenu = explorationMenu;
             this.assetFactory = assetFactory;
             this.textDialog = textDialog;
+            this.zoneManager = zoneManager;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -288,6 +291,8 @@ namespace Adventure.Exploration
 
                 RemoveGraphics();
                 DestroyPhysics();
+
+                zoneManager.ManagePlayers();
             });
         }
 
