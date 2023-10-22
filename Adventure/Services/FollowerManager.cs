@@ -35,30 +35,28 @@ namespace Adventure.Services
             public IFollowerNode Node { get; init; }
         }
 
-        private List<Entry> leadersToFollowers = new List<Entry>();
+        private List<Entry> followers = new List<Entry>();
         private Vector3 leaderStartLocation;
-        private float characterDistance = 2.0f;
+        private float characterDistance = 1.63f;
         private FollowerManagerArgs args = new FollowerManagerArgs();
-        private readonly ILogger<FollowerManager> logger;
 
-        public FollowerManager(ILogger<FollowerManager> logger)
+        public FollowerManager()
         {
-            this.logger = logger;
         }
 
         public void AddFollower(IFollowerNode follower)
         {
-            leadersToFollowers.Add(new Entry(follower));
+            followers.Add(new Entry(follower));
         }
 
         public void RemoveFollower(IFollowerNode follower)
         {
-            var count = leadersToFollowers.Count;
+            var count = followers.Count;
             for (int i = 0; i < count; ++i)
             {
-                if (leadersToFollowers[i].Node == follower)
+                if (followers[i].Node == follower)
                 {
-                    leadersToFollowers.RemoveAt(i);
+                    followers.RemoveAt(i);
                     break;
                 }
             }
@@ -66,26 +64,40 @@ namespace Adventure.Services
 
         public void LeaderMoved(in Vector3 location)
         {
-            var distancePercent = (location - leaderStartLocation).length2() / characterDistance;
-            if (distancePercent > 1.0f)
+            var leaderLocDiff = location - leaderStartLocation;
+            var distancePercent = leaderLocDiff.length() / (characterDistance);
+            if (distancePercent > 2.0f) //More than 2x distance, move to leader position
             {
                 leaderStartLocation = location;
-                var inFrontLocation = leaderStartLocation;
-
-                logger.LogInformation("Rollover Leader at {0}", leaderStartLocation);
-
-                foreach(var entry in leadersToFollowers)
+                foreach (var entry in followers)
                 {
-                    args.NewLocation = entry.EndPosition;
+                    args.NewLocation = location;
                     entry.Node.UpdateLocation(args);
-                    entry.EndPosition = inFrontLocation;
-                    inFrontLocation = entry.StartPosition = entry.Node.CurrentLocation;
+                    entry.EndPosition = entry.StartPosition = location;
                     entry.DistancePercent = 0.0f;
                 }
             }
             else
             {
-                foreach (var entry in leadersToFollowers)
+                if (distancePercent > 1.0f) //Moved more than 1.0, first simulate what would have happened at 1.0
+                {
+                    leaderStartLocation = leaderStartLocation + leaderLocDiff.normalized() * characterDistance;
+                    var inFrontLocation = leaderStartLocation;
+
+                    //Simulate 1.0
+                    foreach (var entry in followers)
+                    {
+                        entry.StartPosition = entry.EndPosition;
+                        entry.EndPosition = inFrontLocation;
+                        inFrontLocation = entry.StartPosition;
+                        entry.DistancePercent = 0.0f;
+                    }
+
+                    //Remove 1.0 and allow the rest of the frame to continue below with remainder
+                    distancePercent -= 1.0f;
+                }
+
+                foreach (var entry in followers)
                 {
                     if (entry.DistancePercent < distancePercent)
                     {
