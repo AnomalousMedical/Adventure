@@ -83,12 +83,12 @@ namespace Adventure.Services
             }
             else
             {
-                if (distancePercent > 1.0f) //Moved more than 1.0, first simulate what would have happened at 1.0
+                if (distancePercent > 1.0f)
                 {
+                    //Moved more than 1.0, first simulate what would have happened at 1.0
                     leaderStartLocation = leaderStartLocation + leaderLocDiff.normalized() * characterDistance;
                     var inFrontLocation = leaderStartLocation;
 
-                    //Simulate 1.0
                     foreach (var entry in followers)
                     {
                         entry.StartPosition = entry.EndPosition;
