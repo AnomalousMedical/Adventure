@@ -160,6 +160,10 @@ namespace Adventure
             public IEnumerable<PartyMember> PartyMembers { get; set; }
 
             public int Area { get; set; }
+            public int PadTop { get; set; } = 75;
+            public int PadBottom { get; set; } = 75;
+            public int PadLeft { get; set; }
+            public int PadRight { get; set; }
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -231,6 +235,8 @@ namespace Adventure
         public bool LoadNextLevel => !connectNextToWorld;
 
         public int Area { get; init; }
+
+        public Size2 Size { get; private set; }
 
         public Zone
         (
@@ -334,10 +340,7 @@ namespace Adventure
                         mapBuilder.AddWestConnector();
                     }
 
-                    //This kinda works, but needs a fix for multiple levels and needs to extend corridors all the way to the edges
-                    var previousPad = 0;// description.ConnectPreviousToWorld || !description.GoPrevious ? 35 : 0;
-                    var nextPad = 0;// description.ConnectNextToWorld ? 35 : 0;
-                    mapBuilder.AddPadding(75, 75, previousPad, nextPad);
+                    mapBuilder.AddPadding(description.PadTop, description.PadBottom, description.PadLeft, description.PadRight);
 
                     int startX, startY;
                     if (description.GoPrevious)
@@ -363,6 +366,8 @@ namespace Adventure
                         startX = startRoom.Left + startRoom.Width / 2;
                         startY = startRoom.Top + startRoom.Height / 2;
                     }
+
+                    this.Size = new Size2(description.MapUnitX * mapBuilder.Map_Size.Width, description.MapUnitZ * mapBuilder.Map_Size.Height);
 
                     mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
