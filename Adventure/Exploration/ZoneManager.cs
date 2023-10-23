@@ -139,13 +139,13 @@ namespace Adventure
             }
             else
             {
-                currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
+                currentZone = CreateZone(false, new Vector3(0, 0, 0), currentZoneIndex);
                 await currentZone.WaitForGeneration();
             }
 
             if (currentZone.LoadNextLevel)
             {
-                nextZone = CreateZone(new Vector3(150, 0, 0), currentZoneIndex + 1);
+                nextZone = CreateZone(false, new Vector3(currentZone.Size.Width, 0, 0), currentZoneIndex + 1);
             }
             else
             {
@@ -154,7 +154,8 @@ namespace Adventure
 
             if(currentZone.LoadPreviousLevel)
             {
-                previousZone = CreateZone(new Vector3(-150, 0, 0), currentZoneIndex - 1);
+                //This one guesses 150 since it doesn't know yet, but will also shift left before it is ever visible
+                previousZone = CreateZone(true, new Vector3(-150, 0, 0), currentZoneIndex - 1);
             }
             else
             {
@@ -177,14 +178,14 @@ namespace Adventure
             {
                 await nextZone.WaitForGeneration();
                 var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
-                nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+                nextZone.SetPosition(new Vector3(currentZone.Size.Width, nextOffset.y, nextOffset.z));
             }
 
             if (previousZone != null)
             {
                 await previousZone.WaitForGeneration();
                 var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
-                previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+                previousZone.SetPosition(new Vector3(-previousZone.Size.Width, previousOffset.y, previousOffset.z));
             }
 
             changingZone = false;
@@ -234,7 +235,7 @@ namespace Adventure
             }
 
             //Shuffle zones
-            previousZone?.SetPosition(new Vector3(-150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
+            previousZone?.SetPosition(new Vector3(-previousZone.Size.Width * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
             previousZone?.RequestDestruction();
             previousZone = currentZone;
             currentZone = nextZone;
@@ -246,7 +247,7 @@ namespace Adventure
             //Create new zone
             if (currentZone.LoadNextLevel)
             {
-                nextZone = CreateZone(new Vector3(150, 0, 0), nextZoneIndex);
+                nextZone = CreateZone(false, new Vector3(currentZone.Size.Width, 0, 0), nextZoneIndex);
             }
             else
             {
@@ -256,12 +257,12 @@ namespace Adventure
             //Physics changeover
             previousZone.DestroyPhysics();
             var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
-            previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+            previousZone.SetPosition(new Vector3(-previousZone.Size.Width, previousOffset.y, previousOffset.z));
             currentZone.SetPosition(new Vector3(0, 0, 0));
             currentZone.SetupPhysics();
 
             var playerLoc = triggerLoc;
-            var playerOffset = new Vector3(-150f, previousOffset.y, previousOffset.z);
+            var playerOffset = new Vector3(-previousZone.Size.Width, previousOffset.y, previousOffset.z);
             playerLoc += playerOffset;
             sky.CelestialOffset += playerOffset;
             var offsetCamera = true;
@@ -284,7 +285,7 @@ namespace Adventure
             {
                 await nextZone.WaitForGeneration();
                 var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
-                nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+                nextZone.SetPosition(new Vector3(currentZone.Size.Width, nextOffset.y, nextOffset.z));
             }
         }
 
@@ -320,7 +321,7 @@ namespace Adventure
             }
 
             //Shuffle zones
-            nextZone?.SetPosition(new Vector3(150 * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
+            nextZone?.SetPosition(new Vector3(currentZone.Size.Width * 2, 0, 0)); //TODO: Hack, move the zone to an out of the way position, the flickering zones are the zone being removed
             nextZone?.RequestDestruction();
             nextZone = currentZone;
             currentZone = previousZone;
@@ -328,7 +329,8 @@ namespace Adventure
             if (currentZone.LoadPreviousLevel)
             {
                 var previousZoneIndex = persistence.Current.Zone.CurrentIndex - 1;
-                previousZone = CreateZone(new Vector3(-150, 0, 0), previousZoneIndex);
+                //This 150 is a guess, but it will shift before becoming visible
+                previousZone = CreateZone(true, new Vector3(-150, 0, 0), previousZoneIndex);
             }
             else
             {
@@ -338,12 +340,12 @@ namespace Adventure
             //Physics changeover
             nextZone.DestroyPhysics();
             var nextOffset = currentZone.LocalEndPoint - nextZone.LocalStartPoint;
-            nextZone.SetPosition(new Vector3(150, nextOffset.y, nextOffset.z));
+            nextZone.SetPosition(new Vector3(currentZone.Size.Width, nextOffset.y, nextOffset.z));
             currentZone.SetPosition(new Vector3(0, 0, 0));
             currentZone.SetupPhysics();
 
             var playerLoc = triggerLoc;
-            var playerOffset = new Vector3(150f, nextOffset.y, nextOffset.z);
+            var playerOffset = new Vector3(currentZone.Size.Width, nextOffset.y, nextOffset.z);
             playerLoc += playerOffset;
             sky.CelestialOffset += playerOffset;
             var offsetCamera = true;
@@ -366,16 +368,25 @@ namespace Adventure
             {
                 await previousZone.WaitForGeneration();
                 var previousOffset = currentZone.LocalStartPoint - previousZone.LocalEndPoint;
-                previousZone.SetPosition(new Vector3(-150, previousOffset.y, previousOffset.z));
+                previousZone.SetPosition(new Vector3(-previousZone.Size.Width, previousOffset.y, previousOffset.z));
             }
         }
 
-        private Zone CreateZone(Vector3 translation, int zoneIndex)
+        private Zone CreateZone(bool shiftLeft, Vector3 translation, int zoneIndex)
         {
             return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
             {
                 worldManager.SetupZone(zoneIndex, o);
                 o.Translation = translation;
+                o.ShiftLeft = shiftLeft;
+                if(o.ConnectPreviousToWorld)
+                {
+                    o.PadLeft = 35;
+                }
+                if (o.ConnectNextToWorld)
+                {
+                    o.PadRight = 35;
+                }
             });
         }
 

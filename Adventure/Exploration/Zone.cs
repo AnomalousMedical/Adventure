@@ -35,6 +35,11 @@ namespace Adventure
 
             public Vector3 Translation { get; set; } = Vector3.Zero;
 
+            /// <summary>
+            /// Set this to true to shift the zone to the left by its size after this size is known.
+            /// </summary>
+            public bool ShiftLeft { get; set; }
+
             public int LevelSeed { get; set; }
 
             public int EnemySeed { get; set; }
@@ -286,8 +291,15 @@ namespace Adventure
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
             this.partyMembers = description.PartyMembers ?? Enumerable.Empty<PartyMember>();
+            this.Size = new Size2(description.MapUnitX * (description.Width + description.PadLeft + description.PadRight), 
+                                  description.MapUnitZ * (description.Height + description.PadTop + description.PadBottom));
 
+            //Set current position and shift if requested
             this.currentPosition = description.Translation;
+            if (description.ShiftLeft)
+            {
+                this.currentPosition += new Vector3(-this.Size.Width, 0, 0);
+            }
 
             this.floorInstanceData = new TLASInstanceData()
             {
@@ -366,8 +378,6 @@ namespace Adventure
                         startX = startRoom.Left + startRoom.Width / 2;
                         startY = startRoom.Top + startRoom.Height / 2;
                     }
-
-                    this.Size = new Size2(description.MapUnitX * mapBuilder.Map_Size.Width, description.MapUnitZ * mapBuilder.Map_Size.Height);
 
                     mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
