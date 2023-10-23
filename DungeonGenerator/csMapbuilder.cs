@@ -139,13 +139,13 @@ namespace RogueLikeMapBuilder
             //Using 0 based index for direct lookups
             ushort room = 0;
             var sorter = new List<RoomSorter>(roomCorridorCount.Count);
-            foreach(var i in roomCorridorCount)
+            foreach (var i in roomCorridorCount)
             {
                 int weight = i * SHIFT + room;
 
                 //If the room is a connector room, make it less likely to have something
                 var offsetRoom = room + RoomCell;
-                if(offsetRoom == WestConnectorRoom || offsetRoom == EastConnectorRoom || offsetRoom == NorthConnectorRoom || offsetRoom == SouthConnectorRoom)
+                if (offsetRoom == WestConnectorRoom || offsetRoom == EastConnectorRoom || offsetRoom == NorthConnectorRoom || offsetRoom == SouthConnectorRoom)
                 {
                     weight = int.MaxValue - room;
                 }
@@ -364,63 +364,79 @@ namespace RogueLikeMapBuilder
 
         }
 
-        public void AddTopBottomPad(int topRows, int bottomRows)
+        public void AddPadding(int topRows, int bottomRows, int leftRows, int rightRows)
         {
-            var width = Map_Size.Width;
+            var oldWidth = Map_Size.Width;
+            var newWidth = oldWidth + leftRows + rightRows;
             var oldHeight = Map_Size.Height;
             var oldMap = map;
             var newHeight = oldHeight + topRows + bottomRows;
 
-            Map_Size = new Size(width, newHeight);
-            map = new ushort[width, newHeight];
+            Map_Size = new Size(newWidth, newHeight);
+            map = new ushort[newWidth, newHeight];
 
             for (int y = 0; y < oldHeight; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int x = 0; x < oldWidth; ++x)
                 {
-                    map[x, y + topRows] = oldMap[x, y];
+                    map[x + leftRows, y + topRows] = oldMap[x, y];
                 }
             }
 
-            Point AddTopPadding(Point point)
+            Point AddPadding(Point point)
             {
+                point.x += leftRows;
                 point.y += topRows;
                 return point;
             }
 
-            Rectangle AddTopPaddingRect(Rectangle rect)
+            Rectangle AddPaddingRect(Rectangle rect)
             {
+                rect.Left += leftRows;
                 rect.Top += topRows;
                 return rect;
             }
 
-            lBuilltCorridors = lBuilltCorridors.Select(AddTopPadding).ToList();
-            lPotentialCorridor = lPotentialCorridor.Select(AddTopPadding).ToList();
+            lBuilltCorridors = lBuilltCorridors.Select(AddPadding).ToList();
+            lPotentialCorridor = lPotentialCorridor.Select(AddPadding).ToList();
 
             if (EastConnector != null)
             {
-                EastConnector = AddTopPadding(EastConnector.Value);
+                EastConnector = AddPadding(EastConnector.Value);
+                //var y = EastConnector.Value.y;
+                //var cell = map[EastConnector.Value.x, y];
+                //for (int x = EastConnector.Value.x; x < newWidth; ++x)
+                //{
+                //    map[x, y] = cell;
+                //}
             }
 
             if (WestConnector != null)
             {
-                WestConnector = AddTopPadding(WestConnector.Value);
+                WestConnector = AddPadding(WestConnector.Value);
+                //var y = WestConnector.Value.y;
+                //var cell = map[WestConnector.Value.x, y];
+                //for (int x = WestConnector.Value.x; x > -1; --x)
+                //{
+                //    Point_Set(x, y, cell);
+                //    lBuilltCorridors.Add(new Point(x, y));
+                //}
             }
 
             if (NorthConnector != null)
             {
-                NorthConnector = AddTopPadding(NorthConnector.Value);
+                NorthConnector = AddPadding(NorthConnector.Value);
             }
 
             if (SouthConnector != null)
             {
-                SouthConnector = AddTopPadding(SouthConnector.Value);
+                SouthConnector = AddPadding(SouthConnector.Value);
             }
 
-            rctBuiltRooms = rctBuiltRooms.Select(AddTopPaddingRect).ToList();
-            rctCurrentRoom = AddTopPaddingRect(rctCurrentRoom);
-            startRoom = AddTopPaddingRect(startRoom);
-            endRoom = AddTopPaddingRect(endRoom);
+            rctBuiltRooms = rctBuiltRooms.Select(AddPaddingRect).ToList();
+            rctCurrentRoom = AddPaddingRect(rctCurrentRoom);
+            startRoom = AddPaddingRect(startRoom);
+            endRoom = AddPaddingRect(endRoom);
         }
 
         public void AddNorthConnector()

@@ -333,7 +333,11 @@ namespace Adventure
                     {
                         mapBuilder.AddWestConnector();
                     }
-                    mapBuilder.AddTopBottomPad(75, 75);
+
+                    //This kinda works, but needs a fix for multiple levels and needs to extend corridors all the way to the edges
+                    var previousPad = 0;// description.ConnectPreviousToWorld || !description.GoPrevious ? 35 : 0;
+                    var nextPad = 0;// description.ConnectNextToWorld ? 35 : 0;
+                    mapBuilder.AddPadding(75, 75, previousPad, nextPad);
 
                     int startX, startY;
                     if (description.GoPrevious)
