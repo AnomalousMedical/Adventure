@@ -751,7 +751,7 @@ namespace Adventure
                 int roomIndex;
                 do
                 {
-                    if(skipRooms > rooms.Count)
+                    if(skipRooms >= rooms.Count)
                     {
                         return rooms[rooms.Count - 1];
                     }
@@ -760,33 +760,6 @@ namespace Adventure
                 } while (roomIndex == startRoomIndex);
 
                 return roomIndex;
-            }
-
-            if (placeKey)
-            {
-                //This might not be possible, so the key will go in a corridor later if it isn't placed here
-                var keyRoomIndex = GetRoom();
-                var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                PlaceKey(point);
-            }
-
-            //Philip gets a room always
-            if (placePhilip)
-            {
-                var philipRoom = GetRoom();
-                var room = mapMesh.MapBuilder.Rooms[philipRoom];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                var mapLoc = mapMesh.PointToVector(point.x, point.y);
-
-                placePhilip = false;
-                var philip = objectResolver.Resolve<Philip, Philip.Description>(o =>
-                {
-                    o.ZoneIndex = index;
-                    o.MapOffset = mapLoc;
-                    o.Translation = currentPosition + o.MapOffset;
-                });
-                this.placeables.Add(philip);
             }
 
             var partyMemberIndex = 0;
@@ -824,6 +797,36 @@ namespace Adventure
                     o.PartyMember = partyMember;
                 });
                 this.placeables.Add(partyMemberObject);
+            }
+
+            //Reset skip rooms, the players go in the corners so these other things can go in too
+            skipRooms = 0;
+
+            if (placeKey)
+            {
+                //This might not be possible, so the key will go in a corridor later if it isn't placed here
+                var keyRoomIndex = GetRoom();
+                var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                PlaceKey(point);
+            }
+
+            //Philip gets a room always
+            if (placePhilip)
+            {
+                var philipRoom = GetRoom();
+                var room = mapMesh.MapBuilder.Rooms[philipRoom];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var mapLoc = mapMesh.PointToVector(point.x, point.y);
+
+                placePhilip = false;
+                var philip = objectResolver.Resolve<Philip, Philip.Description>(o =>
+                {
+                    o.ZoneIndex = index;
+                    o.MapOffset = mapLoc;
+                    o.Translation = currentPosition + o.MapOffset;
+                });
+                this.placeables.Add(philip);
             }
 
             //The plot item goes in the exit corridor, not the room
