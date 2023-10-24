@@ -346,13 +346,23 @@ namespace Adventure
                         Room_Min = description.RoomMin
                     };
                     mapBuilder.Build_ConnectedStartRooms();
-                    mapBuilder.AddEastConnector();
+                    mapBuilder.FindEastConnector();
                     if (description.GoPrevious)
                     {
-                        mapBuilder.AddWestConnector();
+                        mapBuilder.FindWestConnector();
                     }
 
                     mapBuilder.AddPadding(description.PadTop, description.PadBottom, description.PadLeft, description.PadRight);
+
+                    if (mapBuilder.EastConnector.HasValue)
+                    {
+                        mapBuilder.BuildEastConnector();
+                    }
+
+                    if (mapBuilder.WestConnector.HasValue)
+                    {
+                        mapBuilder.BuildWestConnector();
+                    }
 
                     int startX, startY;
                     if (description.GoPrevious)

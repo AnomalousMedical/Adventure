@@ -97,8 +97,10 @@ namespace RTDungeonGeneratorTest
                         mapBuilder.Build_ConnectedStartRooms();
                         mapBuilder.AddNorthConnector();
                         mapBuilder.AddSouthConnector();
-                        mapBuilder.AddWestConnector();
-                        mapBuilder.AddEastConnector();
+                        mapBuilder.FindWestConnector();
+                        mapBuilder.BuildWestConnector();
+                        mapBuilder.FindEastConnector();
+                        mapBuilder.BuildEastConnector();
                         sw.Stop();
 
                         //DumpDungeon(mapBuilder, description.Seed, sw.ElapsedMilliseconds);

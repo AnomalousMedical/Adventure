@@ -45,6 +45,9 @@ namespace RogueLikeMapBuilder
         private Rectangle startRoom;
         private Rectangle endRoom;
 
+        private Point? westConnectorStart;
+        private Point? eastConnectorStart;
+
         public Point? EastConnector { get; set; }
 
         public Point? WestConnector { get; set; }
@@ -403,24 +406,13 @@ namespace RogueLikeMapBuilder
             if (EastConnector != null)
             {
                 EastConnector = AddPadding(EastConnector.Value);
-                //var y = EastConnector.Value.y;
-                //var cell = map[EastConnector.Value.x, y];
-                //for (int x = EastConnector.Value.x; x < newWidth; ++x)
-                //{
-                //    map[x, y] = cell;
-                //}
+                eastConnectorStart = AddPadding(eastConnectorStart.Value);
             }
 
             if (WestConnector != null)
             {
                 WestConnector = AddPadding(WestConnector.Value);
-                //var y = WestConnector.Value.y;
-                //var cell = map[WestConnector.Value.x, y];
-                //for (int x = WestConnector.Value.x; x > -1; --x)
-                //{
-                //    Point_Set(x, y, cell);
-                //    lBuilltCorridors.Add(new Point(x, y));
-                //}
+                westConnectorStart = AddPadding(westConnectorStart.Value);
             }
 
             if (NorthConnector != null)
@@ -528,7 +520,7 @@ namespace RogueLikeMapBuilder
             SouthConnectorIndex = map[x, 0];
         }
 
-        public void AddWestConnector()
+        public void FindWestConnector()
         {
             var width = Map_Size.Width;
             var height = Map_Size.Height;
@@ -551,6 +543,15 @@ namespace RogueLikeMapBuilder
                 }
             }
 
+            westConnectorStart = new Point(x, y);
+            WestConnector = new Point(0, y);
+        }
+
+        public void BuildWestConnector()
+        {
+            var x = westConnectorStart.Value.x;
+            var y = westConnectorStart.Value.y;
+
             //Make sure there was nothing left over
             lPotentialCorridor.Clear();
 
@@ -568,11 +569,10 @@ namespace RogueLikeMapBuilder
                 Corridor_Build(true);
             }
 
-            WestConnector = new Point(0, y);
             WestConnectorIndex = map[0, y];
         }
 
-        public void AddEastConnector()
+        public void FindEastConnector()
         {
             var width = Map_Size.Width;
             var height = Map_Size.Height;
@@ -596,6 +596,16 @@ namespace RogueLikeMapBuilder
                 }
             }
 
+            eastConnectorStart = new Point(x, y);
+            EastConnector = new Point(startX, y);
+        }
+
+        public void BuildEastConnector()
+        {
+            var startX = Map_Size.Width - 1;
+            var x = eastConnectorStart.Value.x;
+            var y = eastConnectorStart.Value.y;
+
             //Make sure there was nothing left over
             lPotentialCorridor.Clear();
 
@@ -613,7 +623,6 @@ namespace RogueLikeMapBuilder
                 Corridor_Build(true);
             }
 
-            EastConnector = new Point(startX, y);
             EastConnectorIndex = map[startX, y];
         }
 
