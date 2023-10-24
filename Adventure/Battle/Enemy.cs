@@ -123,6 +123,7 @@ namespace Adventure.Battle
             var target = battleManager.GetRandomPlayer();
             IBattleTarget guard = null; //This is the guard that moved, if there was one
             IBattleTarget guardInput = null; //This is the character input to check for guard
+            IBattleTarget originalTarget = null; //The target that was targeted before the guard took over
             bool findGuard = true;
             bool startGuard = true;
             var blockManager = new ContextTriggerManager();
@@ -174,7 +175,7 @@ namespace Adventure.Battle
                         if (guardInput != null && guardInput != target)
                         {
                             guard = guardInput;
-                            guard.MoveToGuard(target.MeleeAttackLocation);
+                            originalTarget = target;
                             target = guard;
                         }
                     }
@@ -204,6 +205,10 @@ namespace Adventure.Battle
                     TurnComplete();
                     guard?.MoveToStart();
                     done = true;
+                }
+                else
+                {
+                    guard?.MoveToGuard(originalTarget.MeleeAttackLocation);
                 }
 
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
