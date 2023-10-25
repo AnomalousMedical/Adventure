@@ -326,6 +326,9 @@ namespace Adventure
 
                 var noiseTask = noiseTextureManager.GenerateTexture(noise, 4096, 4096);
 
+                Point startPoint = new Point();
+                Point endPoint = new Point();
+
                 this.zoneGenerationTask = Task.Run(() =>
                 {
                     var sw = new Stopwatch();
@@ -364,12 +367,10 @@ namespace Adventure
                         mapBuilder.BuildWestConnector();
                     }
 
-                    int startX, startY;
                     if (description.GoPrevious)
                     {
                         var startConnector = mapBuilder.WestConnector.Value;
-                        startX = startConnector.x;
-                        startY = startConnector.y;
+                        startPoint = startConnector;
                     }
                     else
                     {
@@ -385,15 +386,18 @@ namespace Adventure
                             }
                         }
 
-                        startX = startRoom.Left + startRoom.Width / 2;
-                        startY = startRoom.Top + startRoom.Height / 2;
+                        startPoint = new Point
+                        (
+                            startRoom.Left + startRoom.Width / 2,
+                            startRoom.Top + startRoom.Height / 2
+                        );
                     }
 
                     mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
-                    startPointLocal = mapMesh.PointToVector(startX, startY);
-                    var endConnector = mapBuilder.EastConnector.Value;
-                    endPointLocal = mapMesh.PointToVector(endConnector.x, endConnector.y);
+                    startPointLocal = mapMesh.PointToVector(startPoint.x, startPoint.y);
+                    endPoint = mapBuilder.EastConnector.Value;
+                    endPointLocal = mapMesh.PointToVector(endPoint.x, endPoint.y);
 
                     sw.Stop();
                     logger.LogInformation($"Generated zone {description.Index} seed {description.LevelSeed} in {sw.ElapsedMilliseconds} ms.");
@@ -440,13 +444,41 @@ namespace Adventure
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
 
+                var signpostAsset = new Signpost();
+                if (description.GoPrevious)
+                {
+                    var mapLoc = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) - new Vector3(0f, 0f, mapMesh.MapUnitZ / 2.0f);
+                    var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
+                    {
+                        o.MapOffset = mapLoc;
+                        o.Translation = currentPosition + o.MapOffset;
+                        o.Sprite = signpostAsset.CreateSprite();
+                        o.SpriteMaterial = signpostAsset.CreateMaterial();
+                        o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
+                    });
+                    this.placeables.Add(bgItem);
+                }
+
+                {
+                    var mapLoc = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) - new Vector3(0f, 0f, mapMesh.MapUnitZ / 2.0f);
+                    var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
+                    {
+                        o.MapOffset = mapLoc;
+                        o.Translation = currentPosition + o.MapOffset;
+                        o.Sprite = signpostAsset.CreateSprite();
+                        o.SpriteMaterial = signpostAsset.CreateMaterial();
+                        o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
+                    });
+                    this.placeables.Add(bgItem);
+                }
+
                 if (biome.BackgroundItems != null)
                 {
                     CreateBackgroundItems(enemyRandom, biome);
                 }
 
                 ResetLootDrop();
-                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
+                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);                
 
                 //Since this is async the physics can be active before the placeables are created
                 if (physicsActive)
