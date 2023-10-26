@@ -222,7 +222,7 @@ namespace Adventure.Battle
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.SpriteMaterialDescription, sprite);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.Tier1, sprite);
 
                 if (this.disposed)
                 {
@@ -1003,7 +1003,7 @@ namespace Adventure.Battle
                         {
                             BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
                         };
-                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                        o.SpriteMaterial = playerSpriteInfo.Tier1;
                     });
                 }
             }
@@ -1042,7 +1042,7 @@ namespace Adventure.Battle
                         {
                             BaseScale = new Vector3(0.1875f, 0.1875f, 1.0f)
                         };
-                        o.SpriteMaterial = playerSpriteInfo.SpriteMaterialDescription;
+                        o.SpriteMaterial = playerSpriteInfo.Tier1;
                     });
                 }
             }

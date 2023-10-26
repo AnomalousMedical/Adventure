@@ -18,7 +18,11 @@ namespace Adventure.Assets.Players
         const int spriteWalkFrameSpeed = (int)(0.2f * Clock.SecondsToMicro);
         const int victoryFrameSpeed = (int)(0.31f * Clock.SecondsToMicro);
 
-        public SpriteMaterialDescription SpriteMaterialDescription { get; protected set; }
+        public SpriteMaterialDescription Tier1 { get; protected set; }
+
+        public SpriteMaterialDescription Tier2 { get; protected set; }
+
+        public SpriteMaterialDescription Tier3 { get; protected set; }
 
         public Dictionary<String, SpriteAnimation> Animations => animations;
 
