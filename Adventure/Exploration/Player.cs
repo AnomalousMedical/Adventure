@@ -37,6 +37,7 @@ namespace Adventure
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly EventManager eventManager;
@@ -143,6 +144,7 @@ namespace Adventure
 
             characterSheet.OnMainHandModified += OnMainHandModified;
             characterSheet.OnOffHandModified += OnOffHandModified;
+            characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -150,6 +152,7 @@ namespace Adventure
 
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.bepuScene = bepuScene;
             this.bepuScene.OnUpdated += BepuScene_OnUpdated;
@@ -200,7 +203,7 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.Tier1, sprite);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(playerSpriteInfo.GetTier(characterSheet.EquipmentTier), sprite);
 
                 if (this.disposed)
                 {
@@ -222,6 +225,7 @@ namespace Adventure
         public void Dispose()
         {
             disposed = true;
+            characterSheet.OnBodyModified -= CharacterSheet_OnBodyModified;
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
             eventManager.removeEvent(moveForward);
@@ -552,7 +556,7 @@ namespace Adventure
                     });
                 }
             }
-            else if(mainHandHand != null)
+            else if (mainHandHand != null)
             {
                 mainHandHand.RequestDestruction();
                 mainHandHand = null;
@@ -590,7 +594,7 @@ namespace Adventure
                     });
                 }
             }
-            else if(offHandHand != null)
+            else if (offHandHand != null)
             {
                 offHandHand.RequestDestruction();
                 offHandHand = null;
@@ -599,14 +603,38 @@ namespace Adventure
             Sprite_FrameChanged(sprite);
         }
 
+        private void CharacterSheet_OnBodyModified(CharacterSheet obj)
+        {
+             coroutine.RunTask(SwapSprites());
+        }
+
+        private async Task SwapSprites()
+        {
+            using var destructionBlock = destructionRequest.BlockDestruction();
+
+            var loadingTier = characterSheet.EquipmentTier;
+            var newSprite = await spriteInstanceFactory.Checkout(playerSpriteInfo.GetTier(loadingTier), sprite);
+
+            if (this.disposed || loadingTier != characterSheet.EquipmentTier)
+            {
+                this.spriteInstanceFactory.TryReturn(newSprite);
+                return; //Stop loading
+            }
+
+            rtInstances.RemoveSprite(sprite);
+            this.spriteInstanceFactory.TryReturn(spriteInstance);
+            this.spriteInstance = newSprite;
+            rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+        }
+
         public void CreateFollowers(IEnumerable<Persistence.CharacterData> newFollowers)
         {
-            foreach(var follower in this.followers)
+            foreach (var follower in this.followers)
             {
                 follower.RequestDestruction();
             }
 
-            foreach(var follower in newFollowers)
+            foreach (var follower in newFollowers)
             {
                 var followerInstance = this.objectResolver.Resolve<Follower<ZoneScene>, FollowerDescription>(c =>
                 {

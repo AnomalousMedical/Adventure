@@ -247,7 +247,7 @@ namespace Adventure.Services
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
                 GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Rusty", 0.15f)));
-                GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, "Common")));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -264,7 +264,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common")));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -283,7 +283,7 @@ namespace Adventure.Services
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, "Busted")));
                 GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel, "Rusty", nameof(Steal))));
-                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Common")));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -302,7 +302,7 @@ namespace Adventure.Services
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
                 GiveAndEquip(hero, new Treasure(BookCreator.CreateRestoration(phase0TreasureLevel, "Torn", nameof(Cure))));
-                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common")));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -465,10 +465,10 @@ namespace Adventure.Services
 
                 var phase2Armors = new List<Treasure>()
                 {
-                    new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel, phase2Adjective)),
-                    new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective)),
+                    new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
+                    new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
+                    new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
+                    new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
                 };
 
                 var phase2Accessories = new List<Treasure>()
@@ -583,10 +583,10 @@ namespace Adventure.Services
 
                 var phase3Armors = new List<Treasure>
                 {
-                    new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel, phase3Adjective)),
-                    new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective)),
-                    new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective)),
+                    new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
+                    new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
+                    new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
+                    new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
                 };
 
                 var phase3Accessories = new List<Treasure>

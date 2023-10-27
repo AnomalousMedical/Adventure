@@ -200,16 +200,16 @@ namespace RpgMath
 
         IEnumerable<Element> AttackElementsFunc()
         {
-            if(MainHand?.AttackElements != null)
+            if (MainHand?.AttackElements != null)
             {
-                foreach(var i in MainHand.AttackElements)
+                foreach (var i in MainHand.AttackElements)
                 {
                     yield return i;
                 }
             }
-            if(Buffs != null)
+            if (Buffs != null)
             {
-                foreach(var i in Buffs)
+                foreach (var i in Buffs)
                 {
                     if (i.AttackElements != null)
                     {
@@ -232,7 +232,7 @@ namespace RpgMath
             }
             set
             {
-                if(mainHand == value) { return; }
+                if (mainHand == value) { return; }
 
                 mainHand = value;
                 if (mainHand?.TwoHanded == true)
@@ -269,7 +269,20 @@ namespace RpgMath
 
         public event Action<CharacterSheet, CharacterEffect> OnEffectApplied;
 
-        public Equipment Body { get; set; }
+        private Equipment body;
+        public Equipment Body
+        {
+            get
+            {
+                return body;
+            }
+            set
+            {
+                body = value;
+                OnBodyModified?.Invoke(this);
+            }
+        }
+        public event Action<CharacterSheet> OnBodyModified;
 
         public Equipment Accessory { get; set; }
 
@@ -318,6 +331,9 @@ namespace RpgMath
         }
 
         [JsonIgnore]
+        public EquipmentTier EquipmentTier => body?.Tier ?? EquipmentTier.Tier1;
+
+        [JsonIgnore]
         public bool CanBlock => OffHand?.AllowActiveBlock == true || MainHand?.AllowActiveBlock == true || Accessory?.AllowActiveBlock == true || Body?.AllowActiveBlock == true;
 
         [JsonIgnore]
@@ -353,7 +369,7 @@ namespace RpgMath
 
         [JsonIgnore]
         public long MagicAttack => BaseMagic + BonusMagic + EquippedItems().Sum(i => i.Magic + i.MagicAttack) + Buffs.Sum(i => i.Magic + i.MagicAttack);
-        
+
         [JsonIgnore]
         public long MagicAttackPercent => EquippedItems().Sum(i => i.MagicAttackPercent) + Buffs.Sum(i => i.MagicAttackPercent);
 
@@ -409,7 +425,7 @@ namespace RpgMath
         {
             get
             {
-                foreach(var item in EquippedItems())
+                foreach (var item in EquippedItems())
                 {
                     if (item.Skills != null)
                     {

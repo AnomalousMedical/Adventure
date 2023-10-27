@@ -4,6 +4,13 @@ using System.Text;
 
 namespace RpgMath
 {
+    public enum EquipmentTier
+    {
+        Tier1,
+        Tier2,
+        Tier3,
+    }
+
     public class Equipment
     {
         public String Name { get; set; }
@@ -65,6 +72,8 @@ namespace RpgMath
         public IEnumerable<Element> AttackElements { get; set; }
 
         public Guid? Id { get; set; }
+
+        public EquipmentTier Tier { get; set; }
 
         public void EnsureEquipmentId()
         {
