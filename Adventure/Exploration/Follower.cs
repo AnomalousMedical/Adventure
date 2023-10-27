@@ -8,6 +8,7 @@ using Engine;
 using Engine.Platform;
 using RpgMath;
 using System;
+using System.Threading.Tasks;
 
 namespace Adventure
 {
@@ -31,6 +32,7 @@ namespace Adventure
         private readonly RTInstances<T> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
@@ -113,6 +115,7 @@ namespace Adventure
 
             characterSheet.OnMainHandModified += OnMainHandModified;
             characterSheet.OnOffHandModified += OnOffHandModified;
+            characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -120,6 +123,7 @@ namespace Adventure
 
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
@@ -163,6 +167,7 @@ namespace Adventure
         {
             disposed = true;
             this.followerManager.RemoveFollower(followerNode);
+            characterSheet.OnBodyModified -= CharacterSheet_OnBodyModified;
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
             sprite.FrameChanged -= Sprite_FrameChanged;
@@ -376,6 +381,30 @@ namespace Adventure
             }
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
+        }
+
+        private void CharacterSheet_OnBodyModified(CharacterSheet obj)
+        {
+            coroutine.RunTask(SwapSprites());
+        }
+
+        private async Task SwapSprites()
+        {
+            using var destructionBlock = destructionRequest.BlockDestruction();
+
+            var loadingTier = characterSheet.EquipmentTier;
+            var newSprite = await spriteInstanceFactory.Checkout(playerSpriteInfo.GetTier(loadingTier), sprite);
+
+            if (this.disposed || loadingTier != characterSheet.EquipmentTier)
+            {
+                this.spriteInstanceFactory.TryReturn(newSprite);
+                return; //Stop loading
+            }
+
+            rtInstances.RemoveSprite(sprite);
+            this.spriteInstanceFactory.TryReturn(spriteInstance);
+            this.spriteInstance = newSprite;
+            rtInstances.AddSprite(sprite, tlasData, spriteInstance);
         }
     }
 }

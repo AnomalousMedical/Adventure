@@ -11,6 +11,7 @@ using RpgMath;
 using SharpGui;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
@@ -212,6 +213,7 @@ namespace Adventure.Battle
 
             characterSheet.OnMainHandModified += OnMainHandModified;
             characterSheet.OnOffHandModified += OnOffHandModified;
+            characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -278,6 +280,7 @@ namespace Adventure.Battle
 
         public void Dispose()
         {
+            characterSheet.OnBodyModified -= CharacterSheet_OnBodyModified;
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
 
@@ -1075,6 +1078,30 @@ namespace Adventure.Battle
                 sprite.SetAnimation("victory");
                 this.currentPosition = this.startPosition;
             }
+        }
+
+        private void CharacterSheet_OnBodyModified(CharacterSheet obj)
+        {
+            coroutine.RunTask(SwapSprites());
+        }
+
+        private async Task SwapSprites()
+        {
+            using var destructionBlock = destructionRequest.BlockDestruction();
+
+            var loadingTier = characterSheet.EquipmentTier;
+            var newSprite = await spriteInstanceFactory.Checkout(playerSpriteInfo.GetTier(loadingTier), sprite);
+
+            if (this.disposed || loadingTier != characterSheet.EquipmentTier)
+            {
+                this.spriteInstanceFactory.TryReturn(newSprite);
+                return; //Stop loading
+            }
+
+            rtInstances.RemoveSprite(sprite);
+            this.spriteInstanceFactory.TryReturn(spriteInstance);
+            this.spriteInstance = newSprite;
+            rtInstances.AddSprite(sprite, tlasData, spriteInstance);
         }
     }
 }

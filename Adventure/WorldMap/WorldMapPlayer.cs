@@ -42,6 +42,7 @@ namespace Adventure.WorldMap
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly TLASInstanceData tlasData;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly EventManager eventManager;
@@ -155,6 +156,7 @@ namespace Adventure.WorldMap
 
             characterSheet.OnMainHandModified += OnMainHandModified;
             characterSheet.OnOffHandModified += OnOffHandModified;
+            characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -162,6 +164,7 @@ namespace Adventure.WorldMap
 
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.bepuScene = bepuScene;
             this.bepuScene.OnUpdated += BepuScene_OnUpdated;
@@ -235,6 +238,7 @@ namespace Adventure.WorldMap
         public void Dispose()
         {
             disposed = true;
+            characterSheet.OnBodyModified -= CharacterSheet_OnBodyModified;
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
             eventManager.removeEvent(moveForward);
@@ -661,6 +665,30 @@ namespace Adventure.WorldMap
                 });
                 this.followers.Add(followerInstance);
             }
+        }
+
+        private void CharacterSheet_OnBodyModified(CharacterSheet obj)
+        {
+            coroutine.RunTask(SwapSprites());
+        }
+
+        private async Task SwapSprites()
+        {
+            using var destructionBlock = destructionRequest.BlockDestruction();
+
+            var loadingTier = characterSheet.EquipmentTier;
+            var newSprite = await spriteInstanceFactory.Checkout(playerSpriteInfo.GetTier(loadingTier), sprite);
+
+            if (this.disposed || loadingTier != characterSheet.EquipmentTier)
+            {
+                this.spriteInstanceFactory.TryReturn(newSprite);
+                return; //Stop loading
+            }
+
+            rtInstances.RemoveSprite(sprite);
+            this.spriteInstanceFactory.TryReturn(spriteInstance);
+            this.spriteInstance = newSprite;
+            rtInstances.AddSprite(sprite, tlasData, spriteInstance);
         }
     }
 }
