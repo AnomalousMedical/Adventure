@@ -464,7 +464,10 @@ namespace Adventure
                         case "down":
                         case "left":
                         case "right":
-                            sprite.SetAnimation($"stand-{sprite.CurrentAnimationName}");
+                            var animation = $"stand-{sprite.CurrentAnimationName}";
+                            sprite.SetAnimation(animation);
+                            mainHandItem?.SetAnimation(animation);
+                            offHandItem?.SetAnimation(animation);
                             break;
                     }
                 }
