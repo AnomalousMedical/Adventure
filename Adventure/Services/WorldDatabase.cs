@@ -455,9 +455,9 @@ namespace Adventure.Services
                 var phase2Adjective = "Quality";
                 var phase2Weapons = new List<Treasure>()
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)),
-                    new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)),
-                    new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective)),
+                    new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSword))),
+                    new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSpear))),
+                    new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateHammer))),
                     new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, nameof(MegaCure), nameof(BattleCry), nameof(Focus))),
                     new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f)),
                     new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning))),
@@ -573,9 +573,9 @@ namespace Adventure.Services
                 var phase3Adjective = "Superior";
                 var phase3Weapons = new List<Treasure>
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateSword))),
-                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateSpear))),
-                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(UltimateHammer))),
+                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalSword))),
+                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalSpear))),
+                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalHammer))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(UltimateStaff), phase3TreasureLevel, "Arch Mage's", nameof(IonShread), nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))),
                     new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 0.45f, nameof(UltimateShield))),
                     new Treasure(BookCreator.CreateRestoration(nameof(UltimateBook), phase3TreasureLevel, phase3Adjective, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))),
