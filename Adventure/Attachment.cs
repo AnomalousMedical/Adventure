@@ -13,7 +13,7 @@ namespace Adventure
         {
             public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
-            public Sprite Sprite { get; set; }
+            public ISprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
 
@@ -31,7 +31,7 @@ namespace Adventure
         private readonly RTInstances<T> rtInstances;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly LightManager lightManager;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly Light light;
         private readonly Vector3 lightOffset;

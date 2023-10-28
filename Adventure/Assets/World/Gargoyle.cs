@@ -40,7 +40,7 @@ namespace Adventure.Assets.World
             return defaultMaterial;
         }
 
-        public Sprite CreateSprite()
+        public ISprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(34f / 32f, 1, 1) };
         }

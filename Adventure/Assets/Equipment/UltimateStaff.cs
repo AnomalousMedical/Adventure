@@ -42,7 +42,7 @@ namespace Adventure.Assets.Equipment
             },
         };
 
-        public Sprite CreateSprite()
+        public ISprite CreateSprite()
         {
             return new Sprite(animations)
             { BaseScale = new Vector3(18f / 64f * 1.45f, 1.45f, 1.0f) };

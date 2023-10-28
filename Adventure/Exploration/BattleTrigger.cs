@@ -44,7 +44,7 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly Description description;

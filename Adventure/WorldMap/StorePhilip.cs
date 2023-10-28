@@ -18,7 +18,7 @@ namespace Adventure.WorldMap
         {
             public Vector3[] Transforms { get; set; }
 
-            public Sprite Sprite { get; set; }
+            public ISprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
@@ -31,7 +31,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly IWorldDatabase worldDatabase;
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;

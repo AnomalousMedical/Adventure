@@ -12,7 +12,7 @@ namespace Adventure.Battle
         {
             public Vector3 MapOffset { get; set; }
 
-            public Sprite Sprite { get; set; }
+            public ISprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
@@ -21,7 +21,7 @@ namespace Adventure.Battle
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly Vector3 mapOffset;
         private bool graphicsCreated = false;

@@ -26,7 +26,7 @@ namespace Adventure.Assets.Equipment
             return defaultMaterial;
         }
 
-        public Sprite CreateSprite()
+        public ISprite CreateSprite()
         {
             return new Sprite() { BaseScale = new Vector3(21f / 29f * 0.5f, 0.5f, 0.5f) };
         }

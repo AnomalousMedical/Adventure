@@ -27,7 +27,7 @@ namespace Adventure
 
             public Vector3 MapOffset { get; set; }
 
-            public Sprite Sprite { get; set; } = Gargoyle.CreateSprite();
+            public ISprite Sprite { get; set; } = Gargoyle.CreateSprite();
 
             public SpriteMaterialDescription SpriteMaterial { get; set; } = Gargoyle.CreateMaterial();
         }
@@ -41,7 +41,7 @@ namespace Adventure
         private readonly PhilipRootMenu rootMenu;
         private readonly IZoneManager zoneManager;
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;

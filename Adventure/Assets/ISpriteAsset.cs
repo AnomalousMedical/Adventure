@@ -12,7 +12,7 @@ namespace Adventure.Assets
     {
         Quaternion GetOrientation() => Quaternion.Identity;
 
-        Sprite CreateSprite();
+        ISprite CreateSprite();
 
         SpriteMaterialDescription CreateMaterial();
 

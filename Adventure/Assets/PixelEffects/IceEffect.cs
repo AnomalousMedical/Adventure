@@ -29,7 +29,7 @@ namespace Adventure.Assets.PixelEffects
             { "default", new SpriteAnimation((int)(16f * Clock.MilliToMicroseconds), SpriteBuilder.CreateAnimatedSprite(257, 253, 9, 9 * 7)) },
         };
 
-        public Sprite CreateSprite()
+        public ISprite CreateSprite()
         {
             return new Sprite(animations)
             { BaseScale = new Vector3(1, 1, 1) };

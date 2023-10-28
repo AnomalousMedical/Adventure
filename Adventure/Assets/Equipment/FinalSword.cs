@@ -5,14 +5,13 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class UltimateDagger : ISpriteAsset
+    class FinalSword : ISpriteAsset
     {
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/UltimateDagger.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/FinalSword.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff425d5a, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xffffeb00, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-            new SpriteMaterialTextureItem(0xff1e1e1e, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(0xff201309, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff5e6166, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
@@ -34,38 +33,34 @@ namespace Adventure.Assets.Equipment
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
         {
             { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(0, 0, 1, 1)
+                new SpriteFrame(0, 0, 1f / 3f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(5, 27, 0, 13, 33), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(6.5f, 38.5f, 0, 14, 45), //Center of grip
                     }
-                } )
-            },
-            { "right", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1, 0, 0, 1)
+                },
+                new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(6.5f, 38.5f, 0, 14, 45), //Center of grip
                     }
-                } )
-            },
-            { "up", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1, 0, 0, 1)
+                },
+                new SpriteFrame(2f / 3f, 0f, 1, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(6.5f, 38.5f, 0, 14, 45), //Center of grip
                     }
-                } )
+                })
             },
         };
 
         public ISprite CreateSprite()
         {
-            return new Sprite(animations)
-            { BaseScale = new Vector3(13f / 33f * 1.3f, 1.3f, 1.0f) };
+            return new KeepTimeSprite(animations)
+            { BaseScale = new Vector3(14f / 45f * 1.45f, 1.45f, 1.0f) };
         }
     }
 }

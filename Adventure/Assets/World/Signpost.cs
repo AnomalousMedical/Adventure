@@ -24,7 +24,7 @@ class Signpost : ISpriteAsset
         return defaultMaterial;
     }
 
-    public Sprite CreateSprite()
+    public ISprite CreateSprite()
     {
         return new Sprite() { BaseScale = new Vector3(1f, 1f, 1f) };
     }

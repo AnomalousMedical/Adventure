@@ -59,7 +59,7 @@ namespace Adventure.Assets.Enemies
             );
         }
 
-        public Sprite CreateSprite()
+        public ISprite CreateSprite()
         {
             return new Sprite(animations: new Dictionary<string, SpriteAnimation>
             {

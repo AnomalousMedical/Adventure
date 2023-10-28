@@ -26,7 +26,7 @@ namespace Adventure
 
             public Vector3 MapOffset { get; set; }
 
-            public Sprite Sprite { get; set; }
+            public ISprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
 
@@ -39,7 +39,7 @@ namespace Adventure
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
-        private readonly Sprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;

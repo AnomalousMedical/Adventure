@@ -81,7 +81,7 @@ namespace DiligentEngine.RT.Sprites
         private long duration;
         private int frame;
 
-        public Vector3 BaseScale;
+        public Vector3 BaseScale { get; set; }
 
         private static readonly Dictionary<String, SpriteAnimation> defaultAnimation = new Dictionary<string, SpriteAnimation>()
         {
@@ -166,7 +166,7 @@ namespace DiligentEngine.RT.Sprites
         private long duration;
         private int frame;
 
-        public Vector3 BaseScale = Vector3.ScaleIdentity;
+        public Vector3 BaseScale { get; set; } = Vector3.ScaleIdentity;
 
         public event Action<FrameEventSprite> AnimationChanged;
         public event Action<FrameEventSprite> FrameChanged;
@@ -225,6 +225,103 @@ namespace DiligentEngine.RT.Sprites
             {
                 FrameChanged.Invoke(this);
             }
+        }
+
+        public void RandomizeFrameTime()
+        {
+            var oldFrame = frame;
+            //This is converted to int, but its still random
+            //Anything into the long territory will be a pretty long animation anyway
+            frameTime = Random.Shared.Next(0, (int)duration);
+            if (FrameChanged != null && frame != oldFrame)
+            {
+                FrameChanged.Invoke(this);
+            }
+        }
+
+        public SpriteFrame GetCurrentFrame()
+        {
+            return current.frames[frame];
+        }
+
+        public String CurrentAnimationName => currentName;
+
+        public int FrameIndex => frame;
+
+        public IReadOnlyDictionary<String, SpriteAnimation> Animations => animations;
+    }
+
+    public class KeepTimeSprite : ISprite
+    {
+        private Dictionary<String, SpriteAnimation> animations;
+        private SpriteAnimation current;
+        private String currentName;
+        private long frameTime;
+        private long duration;
+        private int frame;
+
+        public Vector3 BaseScale { get; set; }
+
+        private static readonly Dictionary<String, SpriteAnimation> defaultAnimation = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
+                {
+                    Left = 0f,
+                    Top = 0f,
+                    Right = 1f,
+                    Bottom = 1f,
+                    Attachments = new List<SpriteFrameAttachment>(){ new SpriteFrameAttachment() }
+                } })
+            }
+        };
+
+        public KeepTimeSprite()
+            : this(defaultAnimation)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor to supply an animation. The animations can be shared between multiple instances.
+        /// </summary>
+        /// <param name="animations"></param>
+        public KeepTimeSprite(Dictionary<String, SpriteAnimation> animations)
+        {
+            this.animations = animations;
+            SetAnimation(animations.Keys.First());
+        }
+
+        public void RandomizeFrameTime()
+        {
+            //This is converted to int, but its still random
+            //Anything into the long territory will be a pretty long animation anyway
+            frameTime = Random.Shared.Next(0, (int)duration);
+        }
+
+        public void SetAnimation(String animationName)
+        {
+            if (animationName == currentName)
+            {
+                return;
+            }
+
+            currentName = animationName;
+
+            if (!animations.TryGetValue(animationName, out current))
+            {
+                var first = animations.First();
+                current = first.Value;
+                currentName = first.Key;
+            }
+            duration = current.duration;
+            frameTime = frameTime % duration;
+        }
+
+        public void Update(Clock clock)
+        {
+            frameTime += clock.DeltaTimeMicro;
+            frameTime %= duration;
+            frame = (int)((float)frameTime / duration * current.frames.Length);
         }
 
         public SpriteFrame GetCurrentFrame()
