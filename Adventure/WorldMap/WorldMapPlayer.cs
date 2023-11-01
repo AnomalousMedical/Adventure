@@ -1,4 +1,6 @@
-﻿using BepuPhysics;
+﻿using Adventure.Assets;
+using Adventure.Services;
+using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
 using BepuPlugin.Characters;
@@ -7,15 +9,10 @@ using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
-using Adventure.Assets;
-using Adventure.Services;
+using RpgMath;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using RpgMath;
 
 namespace Adventure.WorldMap
 {
@@ -79,8 +76,6 @@ namespace Adventure.WorldMap
         ButtonEvent moveBackward;
         ButtonEvent moveRight;
         ButtonEvent moveLeft;
-        ButtonEvent sprint;
-        ButtonEvent jump;
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 5, -12);
@@ -129,8 +124,6 @@ namespace Adventure.WorldMap
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
             this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
             this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
-            this.sprint = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_LSHIFT });
-            this.jump = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_SPACE });
 
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -143,8 +136,6 @@ namespace Adventure.WorldMap
             eventManager.addEvent(moveBackward);
             eventManager.addEvent(moveLeft);
             eventManager.addEvent(moveRight);
-            eventManager.addEvent(sprint);
-            eventManager.addEvent(jump);
 
             eventLayer = eventManager[description.EventLayer];
             eventLayer.OnUpdate += EventLayer_OnUpdate;
@@ -245,8 +236,6 @@ namespace Adventure.WorldMap
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
-            eventManager.removeEvent(sprint);
-            eventManager.removeEvent(jump);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
 
@@ -386,38 +375,6 @@ namespace Adventure.WorldMap
                     if (characterMover.movementDirection.X > 0.5f) { characterMover.movementDirection.X = 0; }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
-                }
-            };
-            jump.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.tryJump = true;
-                    l.alertEventsHandled();
-                }
-            };
-            jump.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.tryJump = false;
-                    l.alertEventsHandled();
-                }
-            };
-            sprint.FirstFrameDownEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.speed = 2f;
-                    l.alertEventsHandled();
-                }
-            };
-            sprint.FirstFrameUpEvent += l =>
-            {
-                if (l.EventProcessingAllowed)
-                {
-                    characterMover.speed = 3.5f;
-                    l.alertEventsHandled();
                 }
             };
         }
