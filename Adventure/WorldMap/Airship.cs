@@ -312,9 +312,6 @@ namespace Adventure.WorldMap
                     contextMenu.ClearContext(TakeOff);
                     eventLayer.makeFocusLayer();
                     active = true;
-                    currentPosition.y = 3.14f;
-                    DestroyPhysics();
-                    SyncGraphics();
                     worldMapManager.SetPlayerVisible(false);
                     backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Fireworks - Alexander Nakarada.ogg");
                 }
@@ -334,6 +331,7 @@ namespace Adventure.WorldMap
                 worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
                 StopAirshipMode();
                 SyncGraphics();
+                DestroyPhysics();
                 CreatePhysics();
                 switch (sprite.CurrentAnimationName)
                 {
@@ -440,6 +438,7 @@ namespace Adventure.WorldMap
                 }
 
                 currentPosition += offset;
+                currentPosition.y = 3.14f;
                 cameraMover.OffsetCurrentPosition(offset);
 
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
