@@ -161,7 +161,7 @@ namespace Adventure.Items.Creators
                 CanUseOnPickup = true,
             };
 
-            item.Number = 5;
+            item.Number = 3;
             item.Name = "Level Boost";
 
             return item;
