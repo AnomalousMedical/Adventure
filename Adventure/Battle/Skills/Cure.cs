@@ -156,7 +156,7 @@ namespace Adventure.Battle.Skills
     {
         public UltraCure()
         {
-            MpCost = 36;
+            MpCost = 42;
             Amount = 65;
             Name = "Ultra Cure";
             TriggerHitMultiple = true;
