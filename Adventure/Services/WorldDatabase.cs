@@ -747,7 +747,7 @@ namespace Adventure.Services
                 var island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
-                areaBuilder.EndZone = zoneCounter.GetZoneEnd(2);
+                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.EnemyLevel = 51;
                 areaBuilder.IndexInPhase = 2;
