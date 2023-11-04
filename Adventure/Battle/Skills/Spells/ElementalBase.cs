@@ -89,6 +89,8 @@ namespace Adventure.Battle.Skills
                     groupTargets = new[] { target };
                 }
 
+                battleManager.SoundEffectPlayer.PlaySound(soundEffect);
+
                 foreach (var currentTarget in groupTargets)
                 {
                     var resistance = currentTarget.Stats.GetResistance(element);
@@ -109,7 +111,6 @@ namespace Adventure.Battle.Skills
                             damage /= 2;
                         }
 
-                        battleManager.SoundEffectPlayer.PlaySound(soundEffect);
                         battleManager.AddDamageNumber(currentTarget, damage);
                         currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
