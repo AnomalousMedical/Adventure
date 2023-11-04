@@ -564,7 +564,7 @@ namespace Adventure.Battle
                     
                 case BattleTargetType.Player:
                     guard = players
-                        .Where(i => !i.IsDead && i != target && i.Stats.CanBlock)
+                        .Where(i => !i.IsDead && i != target && i.Stats.CanBlock && !i.IsDefending)
                         .OrderByDescending(i => i.Stats.CurrentHp)
                         .FirstOrDefault();
 
@@ -699,6 +699,12 @@ namespace Adventure.Battle
                     {
                         damage -= (long)(damage * 0.5f);
                         color = Color.Grey;
+                    }
+
+                    if (target.IsDefending)
+                    {
+                        damage -= (long)(damage * 0.5f);
+                        color = Color.LightBlue;
                     }
                 }
 

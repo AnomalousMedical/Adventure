@@ -46,5 +46,7 @@ namespace Adventure.Battle
         ISoundEffect DefaultAttackSoundEffect { get; }
 
         bool OffHandRaised { get; set; }
+
+        bool IsDefending { get; }
     }
 }

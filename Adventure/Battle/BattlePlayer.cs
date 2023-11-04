@@ -78,6 +78,8 @@ namespace Adventure.Battle
 
         private Vector3 ActivePosition => this.startPosition + new Vector3(-1.65f, 0f, 0f);
 
+        private Vector3 DefendPosition => this.startPosition + new Vector3(+0.78f, 0f, 0f);
+
         public Vector3 CursorDisplayLocation => this.currentPosition + new Vector3(-0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
         public Vector3 MeleeAttackLocation => this.currentPosition - new Vector3(sprite.BaseScale.x * 0.5f, 0, 0);
@@ -109,6 +111,7 @@ namespace Adventure.Battle
                 }
             }
         }
+        public bool IsDefending { get; private set; }
 
         private Vector3 startPosition;
 
@@ -282,10 +285,18 @@ namespace Adventure.Battle
                 {
                     this.currentPosition = ActivePosition;
                     name.Color = Color.LightBlue;
+                    IsDefending = false;
                 }
                 else
                 {
-                    this.currentPosition = this.startPosition;
+                    if (IsDefending)
+                    {
+                        this.currentPosition = DefendPosition;
+                    }
+                    else
+                    {
+                        this.currentPosition = this.startPosition;
+                    }
                     name.Color = Color.White;
                 }
                 Sprite_FrameChanged(sprite);
@@ -432,6 +443,15 @@ namespace Adventure.Battle
 
             if (sharpGui.Button(defendButton, gamepadId, navUp: itemButton.Id, navDown: attackButton.Id, style: uiStyle))
             {
+                IsDefending = true;
+                battleManager.QueueTurn(c =>
+                {
+                    TurnComplete();
+                    return true;
+                });
+                battleManager.DeactivateCurrentPlayer();
+                this.currentPosition = DefendPosition;
+                Sprite_FrameChanged(sprite);
                 didSomething = true;
             }
 

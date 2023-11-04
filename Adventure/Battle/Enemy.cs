@@ -162,7 +162,7 @@ namespace Adventure.Battle
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
                     blockManager.CheckTrigger(guardInput, guardInput.Stats.CanBlock);
-                    guardInput.OffHandRaised = blockManager.Activated && !blockManager.Spammed;
+                    guardInput.OffHandRaised = blockManager.Activated && !blockManager.Spammed && !guardInput.IsDefending && !guardInput.IsDead;
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -175,7 +175,7 @@ namespace Adventure.Battle
                     if (startGuard && blockManager.Activated && !blockManager.Spammed)
                     {
                         startGuard = false;
-                        if (guardInput != null && guardInput != target)
+                        if (guardInput != null && guardInput != target && !guardInput.IsDefending && !guardInput.IsDead)
                         {
                             guard = guardInput;
                             originalTarget = target;
@@ -299,6 +299,8 @@ namespace Adventure.Battle
         public Vector3 CursorDisplayLocation => DamageDisplayLocation;
 
         public bool IsDead => this.battleStats.CurrentHp == 0;
+
+        public bool IsDefending => false;
 
         public BattleTargetType BattleTargetType => BattleTargetType.Enemy;
 
