@@ -17,7 +17,7 @@ namespace Adventure.Services
 
         public float MasterVolume { get; set; } = 1.0f;
 
-        public float MusicVolume { get; set; } = 0.65f;
+        public float MusicVolume { get; set; } = 0.35f;
 
         public float SfxVolume { get; set; } = 1.0f;
     }
