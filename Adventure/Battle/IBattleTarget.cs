@@ -44,5 +44,7 @@ namespace Adventure.Battle
         bool TryContextTrigger();
 
         ISoundEffect DefaultAttackSoundEffect { get; }
+
+        bool OffHandRaised { get; set; }
     }
 }

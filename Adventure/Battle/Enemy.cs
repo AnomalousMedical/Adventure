@@ -51,6 +51,8 @@ namespace Adventure.Battle
 
         public ISoundEffect DefaultAttackSoundEffect { get; private set; }
 
+        public bool OffHandRaised { get; set; }
+
         public Enemy(
             RTInstances<BattleScene> rtInstances,
             IDestructionRequest destructionRequest,
@@ -160,6 +162,7 @@ namespace Adventure.Battle
                     end = GetAttackLocation(target);
                     interpolate = (remainingTime - standStartTime) / (float)standStartTime;
                     blockManager.CheckTrigger(guardInput, guardInput.Stats.CanBlock);
+                    guardInput.OffHandRaised = blockManager.Activated && !blockManager.Spammed;
                 }
                 else if (remainingTime > standEndTime)
                 {
@@ -184,6 +187,7 @@ namespace Adventure.Battle
                     {
                         needsAttack = false;
                         battleManager.Attack(this, target, false, blockManager.Activated, blockManager.Spammed, false, false, false);
+                        guardInput.OffHandRaised = false;
                     }
                 }
                 else

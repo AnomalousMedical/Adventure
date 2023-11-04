@@ -96,6 +96,20 @@ namespace Adventure.Battle
 
         public long BaseDexterity => characterSheet.BaseDexterity;
 
+        private bool offHandRaised = false;
+        public bool OffHandRaised
+        {
+            get => offHandRaised;
+            set
+            {
+                if (offHandRaised != value)
+                {
+                    offHandRaised = value;
+                    Sprite_FrameChanged(sprite);
+                }
+            }
+        }
+
         private Vector3 startPosition;
 
         private static readonly Skills.Attack attack = new Skills.Attack();
@@ -877,7 +891,12 @@ namespace Adventure.Battle
             mainHandHand?.SetPosition(offset, this.currentOrientation, scale);
 
             var secondaryAttach = frame.Attachments[this.secondaryHand];
-            offset = scale * secondaryAttach.translate;
+            offset = secondaryAttach.translate;
+            if (offHandRaised)
+            {
+                offset += new Vector3(0f, 0.11f, 0f);
+            }
+            offset = offset * scale;
             offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
             offHandItem?.SetPosition(offset, this.currentOrientation, scale);
             offHandHand?.SetPosition(offset, this.currentOrientation, scale);
