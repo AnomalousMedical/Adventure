@@ -1,6 +1,7 @@
 ﻿using Adventure.Services;
 using Engine;
 using Engine.Platform;
+using System;
 
 namespace Adventure.Battle.Skills
 {
@@ -30,7 +31,7 @@ namespace Adventure.Battle.Skills
             this.pickUpTreasureMenu = pickUpTreasureMenu;
             battleManager.AllowActivePlayerGui = false;
             var treasures = battleManager.Steal();
-            pickUpTreasureMenu.GatherTreasures(treasures);
+            pickUpTreasureMenu.GatherTreasures(treasures, TimeSpan.FromSeconds(1));
         }
 
         public bool Finished { get; private set; }

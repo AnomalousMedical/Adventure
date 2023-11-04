@@ -24,7 +24,7 @@ namespace Adventure.Menu
 
         public void GatherTreasures(IEnumerable<ITreasure> treasure)
         {
-            pickUpTreasureMenu.GatherTreasures(treasure);
+            pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500));
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)

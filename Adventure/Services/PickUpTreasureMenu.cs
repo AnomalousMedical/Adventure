@@ -2,6 +2,7 @@
 using Engine;
 using Engine.Platform;
 using SharpGui;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,6 +35,7 @@ class PickUpTreasureMenu
     private int currentSheet;
     private bool replacingItem = false;
     private bool equippingItem = false;
+    private DateTime allowPickupTime;
 
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
 
@@ -55,11 +57,12 @@ class PickUpTreasureMenu
         this.inventoryFunctions = inventoryFunctions;
     }
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure)
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay)
     {
         this.currentTreasure = new Stack<ITreasure>(treasure);
         persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
         replacingItem = false;
+        allowPickupTime = DateTime.Now + pickupDelay;
     }
 
     public bool Update(GamepadId gamepadId)
@@ -147,6 +150,11 @@ class PickUpTreasureMenu
         sharpGui.Text(currentCharacter);
         sharpGui.Text(inventoryInfo);
         sharpGui.Text(itemInfo);
+
+        if(DateTime.Now < allowPickupTime)
+        {
+            return false;
+        }
 
         if(equippingItem)
         {
