@@ -162,7 +162,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = 3;
-            item.Name = "Level Boost";
+            item.Name = "Mysterious Bubbling Potion";
 
             return item;
         }
