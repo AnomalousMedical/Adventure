@@ -11,7 +11,7 @@ namespace Adventure.Battle.Skills
     {
         private const int Power = 111;
 
-        public bool QueueFront => true;
+        public bool QueueFront => false;
 
         public long GetMpCost(bool triggered, bool triggerSpammed)
         {
