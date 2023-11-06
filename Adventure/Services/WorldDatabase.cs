@@ -774,11 +774,6 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
                     new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
                     new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel)),
                 };
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
