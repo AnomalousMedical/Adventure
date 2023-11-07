@@ -18,6 +18,7 @@ namespace Adventure
         Swamp = 5,
         Mountain = 6,
         Volcano = 1000, //This isn't included in random selection
+        FinalBoss = 30000
     }
 
     interface IBiomeManager

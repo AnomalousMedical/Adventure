@@ -39,7 +39,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest, ThornHunterSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.Countryside, TinyDinoSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest, WanderingMushroomNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new GreatWhiteShark(), BiomeType.Beach, GreatWhiteSharkSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp, AlligatorSoundEffect.Instance));
