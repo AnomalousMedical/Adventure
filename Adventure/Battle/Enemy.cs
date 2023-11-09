@@ -133,6 +133,17 @@ namespace Adventure.Battle
 
             battleManager.QueueTurn(c =>
             {
+                //If there is a counter attack just do that
+                if (counterAttack != null)
+                {
+                    var complete = counterAttack.Invoke(c, this);
+                    if (complete)
+                    {
+                        counterAttack = null;
+                    }
+                    return false;
+                }
+
                 var done = false;
                 remainingTime -= c.DeltaTimeMicro;
                 Vector3 start;
@@ -188,42 +199,18 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    if(counterAttack != null)
-                    {
-                        start = end = GetAttackLocation(target);
-                        interpolate = 0.0f;
-                        var complete = counterAttack.Invoke(c, this);
-                        if (complete)
-                        {
-                            counterAttack = null;
-                            if (IsDead)
-                            {
-                                remainingTime = long.MinValue;
-                                battleManager.HandleDeath(this);
-                            }
-                        }
-                        else
-                        {
-                            //Cancel out the time that was removed during a counter attack
-                            //This way the rest of the algorithm works the same way
-                            remainingTime += c.DeltaTimeMicro;
-                        }
-                    }
-                    else
-                    {
-                        //sprite.SetAnimation("right");
+                    //sprite.SetAnimation("right");
 
-                        //sword.SetAdditionalRotation(Quaternion.Identity);
+                    //sword.SetAdditionalRotation(Quaternion.Identity);
 
-                        start = GetAttackLocation(target);
-                        end = this.startPosition;
-                        interpolate = remainingTime / (float)standEndTime;
-                    }
+                    start = GetAttackLocation(target);
+                    end = this.startPosition;
+                    interpolate = remainingTime / (float)standEndTime;
                 }
 
                 this.currentPosition = end.lerp(start, interpolate);
 
-                if (remainingTime < 0)
+                if (remainingTime < 0 || IsDead)
                 {
                     sprite.SetAnimation("stand-left");
                     TurnComplete();
