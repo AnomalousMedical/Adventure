@@ -458,6 +458,11 @@ namespace Adventure.WorldMap
 
                 eventLayer.alertEventsHandled();
             }
+            else
+            {
+                //This is a hack since active can go false, not really sure what effect this will have
+                active = persistence.Current.Player.InAirship;
+            }
         }
 
         private void Sprite_AnimationChanged(FrameEventSprite obj)
