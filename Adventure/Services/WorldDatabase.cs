@@ -236,7 +236,7 @@ namespace Adventure.Services
 
             {
                 var weapon = new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty"));
-                var offHand = new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Rusty", 0.15f));
+                var offHand = new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Buckler", 0.15f, nameof(Buckler)));
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
                 sheet.Name = "Bob";
                 var hero = new Persistence.CharacterData()
@@ -406,7 +406,7 @@ namespace Adventure.Services
                     new Treasure(SpearCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
                     new Treasure(MaceCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
                     new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))),
-                    new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 0.25f)),
+                    new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 0.25f, nameof(ShieldOfReflection))),
                     new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Lightning))),
                     new Treasure(AccessoryCreator.CreateTargetScope())
                 };
@@ -460,7 +460,7 @@ namespace Adventure.Services
                     new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSpear))),
                     new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateHammer))),
                     new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, nameof(MegaCure), nameof(BattleCry), nameof(Focus))),
-                    new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f)),
+                    new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f, nameof(UltimateShield))),
                     new Treasure(ElementalStaffCreator.CreateNormal(phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning))),
                 };
 
@@ -580,7 +580,7 @@ namespace Adventure.Services
                     new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalSpear))),
                     new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalHammer))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(UltimateStaff), phase3TreasureLevel, "Arch Mage's", nameof(IonShread), nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))),
-                    new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 0.45f, nameof(UltimateShield))),
+                    new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 0.45f, nameof(FinalShield))),
                     new Treasure(BookCreator.CreateRestoration(nameof(UltimateBook), phase3TreasureLevel, phase3Adjective, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))),
                 };
 
