@@ -35,6 +35,7 @@ namespace Adventure.Battle
         private readonly IBattleManager battleManager;
         private readonly ITurnTimer turnTimer;
         private BattleStats battleStats;
+        private Func<Clock, IBattleTarget, bool> counterAttack;
 
         private Vector3 startPosition;
         private Vector3 currentPosition;
@@ -132,11 +133,6 @@ namespace Adventure.Battle
 
             battleManager.QueueTurn(c =>
             {
-                if (IsDead)
-                {
-                    return true;
-                }
-
                 var done = false;
                 remainingTime -= c.DeltaTimeMicro;
                 Vector3 start;
@@ -192,13 +188,37 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    //sprite.SetAnimation("right");
+                    if(counterAttack != null)
+                    {
+                        start = end = GetAttackLocation(target);
+                        interpolate = 0.0f;
+                        var complete = counterAttack.Invoke(c, this);
+                        if (complete)
+                        {
+                            counterAttack = null;
+                            if (IsDead)
+                            {
+                                remainingTime = long.MinValue;
+                                battleManager.HandleDeath(this);
+                            }
+                        }
+                        else
+                        {
+                            //Cancel out the time that was removed during a counter attack
+                            //This way the rest of the algorithm works the same way
+                            remainingTime += c.DeltaTimeMicro;
+                        }
+                    }
+                    else
+                    {
+                        //sprite.SetAnimation("right");
 
-                    //sword.SetAdditionalRotation(Quaternion.Identity);
+                        //sword.SetAdditionalRotation(Quaternion.Identity);
 
-                    start = GetAttackLocation(target);
-                    end = this.startPosition;
-                    interpolate = remainingTime / (float)standEndTime;
+                        start = GetAttackLocation(target);
+                        end = this.startPosition;
+                        interpolate = remainingTime / (float)standEndTime;
+                    }
                 }
 
                 this.currentPosition = end.lerp(start, interpolate);
@@ -220,6 +240,11 @@ namespace Adventure.Battle
 
                 return done;
             });
+        }
+
+        public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)
+        {
+            this.counterAttack = counter;
         }
 
         private Vector3 GetAttackLocation(IBattleTarget target)

@@ -632,11 +632,11 @@ namespace Adventure.Battle
             }, skill.QueueFront || characterSheet.QueueTurnsFront);
         }
 
+        private readonly Quaternion swingEnd = Quaternion.Identity;
+        private readonly Quaternion swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
+
         private void Melee(IBattleTarget target, ISkill skill, bool queueFront, bool deactivatePlayer)
         {
-            var swingEnd = Quaternion.Identity;
-            var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
-
             long remainingTime = (long)(1.8f * Clock.SecondsToMicro);
             long standTime = (long)(0.2f * Clock.SecondsToMicro);
             long standStartTime = remainingTime / 2;
@@ -954,7 +954,51 @@ namespace Adventure.Battle
 
         public void AttemptMeleeCounter(IBattleTarget attacker)
         {
-            Melee(attacker, counterAttack, true, false);
+            long standTime = (long)(0.2f * Clock.SecondsToMicro);
+            long remainingTime = standTime;
+            long standStartTime = standTime;
+            long swingTime = standStartTime - standTime / 3;
+            long standEndTime = standStartTime - standTime;
+            bool needsAttack = true;
+            ISkill skill = counterAttack;
+            ISkillEffect skillEffect = null;
+
+            attacker.SetCounterAttack((c, t) =>
+            {
+                var finished = false;
+
+                remainingTime -= c.DeltaTimeMicro;
+
+                if (remainingTime > standEndTime)
+                {
+                    //If there is an effect, just let it run
+                    if (skillEffect != null && !skillEffect.Finished)
+                    {
+                        skillEffect.Update(c);
+                        return false;
+                    }
+
+                    sprite.SetAnimation("stand-left");
+
+                    var slerpAmount = remainingTime / (float)standTime;
+                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+
+                    if (needsAttack && remainingTime < swingTime)
+                    {
+                        needsAttack = false;
+                        skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, t, false, false);
+                    }
+                }
+                else
+                {
+                    mainHandItem?.SetAdditionalRotation(swingEnd);
+                    finished = true;
+                }
+
+                Sprite_FrameChanged(sprite);
+
+                return finished;
+            });
         }
 
         public void Resurrect(IDamageCalculator calculator, long damage)
@@ -1122,6 +1166,11 @@ namespace Adventure.Battle
         private void CharacterSheet_OnBodyModified(CharacterSheet obj)
         {
             coroutine.RunTask(SwapSprites());
+        }
+
+        public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)
+        {
+            //Does nothing
         }
 
         private async Task SwapSprites()

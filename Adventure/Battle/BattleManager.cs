@@ -717,7 +717,15 @@ namespace Adventure.Battle
                 {
                     target.AttemptMeleeCounter(attacker);
                 }
-                HandleDeath(target);
+
+                //Counter attacks are turns within a turn, so the target in
+                //that case is the IBattleTarget currently running the active
+                //turn. It must be allowed to continue and must handle death
+                //for itself.
+                if (!isCounter)
+                {
+                    HandleDeath(target);
+                }
             }
             else
             {
