@@ -955,7 +955,7 @@ namespace Adventure.Battle
         public void AttemptMeleeCounter(IBattleTarget attacker)
         {
             long standTime = (long)(0.2f * Clock.SecondsToMicro);
-            long remainingTime = standTime;
+            long remainingTime = standTime + (long)(0.187f * Clock.SecondsToMicro);
             long standStartTime = standTime;
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
@@ -969,33 +969,36 @@ namespace Adventure.Battle
 
                 remainingTime -= c.DeltaTimeMicro;
 
-                if (remainingTime > standEndTime)
+                if (remainingTime < standStartTime)
                 {
-                    //If there is an effect, just let it run
-                    if (skillEffect != null && !skillEffect.Finished)
+                    if (remainingTime > standEndTime)
                     {
-                        skillEffect.Update(c);
-                        return false;
+                        //If there is an effect, just let it run
+                        if (skillEffect != null && !skillEffect.Finished)
+                        {
+                            skillEffect.Update(c);
+                            return false;
+                        }
+
+                        sprite.SetAnimation("stand-left");
+
+                        var slerpAmount = remainingTime / (float)standTime;
+                        mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
+
+                        if (needsAttack && remainingTime < swingTime)
+                        {
+                            needsAttack = false;
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, t, false, false);
+                        }
+                    }
+                    else
+                    {
+                        mainHandItem?.SetAdditionalRotation(swingEnd);
+                        finished = true;
                     }
 
-                    sprite.SetAnimation("stand-left");
-
-                    var slerpAmount = remainingTime / (float)standTime;
-                    mainHandItem?.SetAdditionalRotation(swingStart.slerp(swingEnd, slerpAmount));
-
-                    if (needsAttack && remainingTime < swingTime)
-                    {
-                        needsAttack = false;
-                        skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, t, false, false);
-                    }
+                    Sprite_FrameChanged(sprite);
                 }
-                else
-                {
-                    mainHandItem?.SetAdditionalRotation(swingEnd);
-                    finished = true;
-                }
-
-                Sprite_FrameChanged(sprite);
 
                 return finished;
             });
