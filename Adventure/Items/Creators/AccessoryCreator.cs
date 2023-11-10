@@ -18,7 +18,7 @@ namespace Adventure.Items.Creators
             var accessory = new Equipment
             {
                 Name = $"Counter attack accessory",
-                CounterPercent = 60L
+                CounterPercent = 40L
             };
 
             return CreateInventoryItem(accessory);
