@@ -30,7 +30,7 @@ namespace Engine.Platform.Input
             pad.fireMovement(lStick, rStick, lTrigger, rTrigger);
         }
 
-        public abstract void Update();
+        public abstract bool Update();
     }
 
     public class NullGamepadHardware : GamepadHardware
@@ -44,9 +44,9 @@ namespace Engine.Platform.Input
             
         }
 
-        public override void Update()
+        public override bool Update()
         {
-            
+            return false;
         }
     }
 }

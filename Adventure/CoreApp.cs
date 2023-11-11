@@ -67,6 +67,22 @@ namespace Adventure
             services.AddOSPlatform(pluginManager, o =>
             {
                 o.EventLayersType = typeof(EventLayers);
+                o.EventManagerCreated = em =>
+                {
+                    em.InputModeSwitched += ems =>
+                    {
+                        Console.WriteLine(ems.CurrentInputMode);
+                        switch (ems.CurrentInputMode)
+                        {
+                            case InputMode.Gamepad:
+                                mainWindow.setCursor(CursorType.Hidden);
+                                break;
+                            default:
+                                mainWindow.setCursor(CursorType.Arrow);
+                                break;
+                        }
+                    };
+                };
             });
             services.AddSoundPlugin(pluginManager, o =>
             {

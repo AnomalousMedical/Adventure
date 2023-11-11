@@ -23,7 +23,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<EventManager>(s =>
             {
-                return new EventManager(s.GetRequiredService<InputHandler>(), Enum.GetValues(options.EventLayersType), s.GetRequiredService<ILogger<EventManager>>());
+                var eventManager = new EventManager(s.GetRequiredService<InputHandler>(), Enum.GetValues(options.EventLayersType), s.GetRequiredService<ILogger<EventManager>>());
+                options.EventManagerCreated?.Invoke(eventManager);
+                return eventManager;
             });
 
             services.TryAddSingleton<SystemTimer, NativeSystemTimer>();

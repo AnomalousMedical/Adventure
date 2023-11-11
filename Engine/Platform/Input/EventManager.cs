@@ -8,6 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Engine.Platform
 {
+    public enum InputMode
+    {
+        KeyboardMouse,
+        Gamepad
+    }
+
     /// <summary>
     /// The event manager tracks input from the keyboard and mouse and tracks this
     /// information in Events that abstract the physical button press from the event
@@ -45,6 +51,10 @@ namespace Engine.Platform
         private GamepadHardware pad2Hardware;
         private GamepadHardware pad3Hardware;
         private GamepadHardware pad4Hardware;
+
+        public event Action<EventManager> InputModeSwitched;
+        private InputMode currentInputMode = InputMode.KeyboardMouse;
+        public InputMode CurrentInputMode { get { return currentInputMode; } }
 
         /// <summary>
         /// Constructor takes the input handler to use and an enumearble over the layer keys in order that they should be processed
@@ -103,11 +113,29 @@ namespace Engine.Platform
             //Process the whole update with the same focus layer
             EventLayer currentFocusLayer = focusLayer;
 
-            pad1Hardware.Update();
-            pad2Hardware.Update();
-            pad3Hardware.Update();
-            pad4Hardware.Update();
+            var processedGamepad = pad1Hardware.Update();
+            processedGamepad = pad2Hardware.Update() || processedGamepad;
+            processedGamepad = pad3Hardware.Update() || processedGamepad;
+            processedGamepad = pad4Hardware.Update() || processedGamepad;
             mouse.capture();
+
+            if (mouse.RelativePosition != IntVector3.Zero)
+            {
+                if (currentInputMode != InputMode.KeyboardMouse)
+                {
+                    currentInputMode = InputMode.KeyboardMouse;
+                    InputModeSwitched?.Invoke(this);
+                }
+            }
+            else if (processedGamepad)
+            {
+                if (currentInputMode != InputMode.Gamepad)
+                {
+                    currentInputMode = InputMode.Gamepad;
+                    InputModeSwitched?.Invoke(this);
+                }
+            }
+
             bool allowEventProcessing = true; //The first layer always gets all events
 
             //If there is a focus layer, process it first

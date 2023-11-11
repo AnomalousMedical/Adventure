@@ -232,6 +232,7 @@ void Win32Window::setCursor(CursorType cursor)
 		hCursor = LoadCursor(NULL, IDC_ARROW);
 		break;
 	}
+	SetCursor(hCursor);
 }
 
 void CALLBACK OnExited(void* context, BOOLEAN isTimeOut)

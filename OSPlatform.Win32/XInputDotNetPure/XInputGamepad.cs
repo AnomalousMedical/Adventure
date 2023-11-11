@@ -61,12 +61,14 @@ namespace OSPlatform.Win32.XInputDotNetPure
             }
         }
 
-        public override void Update()
+        public override bool Update()
         {
             //Have to poll xinput
             var state = GamePad.GetState(playerIndex);
+            var processed = false;
             if(lastState.PacketNumber != state.PacketNumber)
             {
+                processed = true;
                 process(lastState.Buttons.A, state.Buttons.A, GamepadButtonCode.XInput_A);
                 process(lastState.Buttons.B, state.Buttons.B, GamepadButtonCode.XInput_B);
                 process(lastState.Buttons.X, state.Buttons.X, GamepadButtonCode.XInput_X);
@@ -95,6 +97,8 @@ namespace OSPlatform.Win32.XInputDotNetPure
 
                 this.lastState = state;
             }
+
+            return processed;
         }
     }
 }
