@@ -21,6 +21,9 @@ Win32Window::Win32Window(HWND parent, String title, int x, int y, int width, int
 {
 	window = CreateWindowEx(NULL, WIN32_WINDOW_CLASS, title, WS_OVERLAPPEDWINDOW, x, y, width, height, parent, NULL, wndclass.hInstance, NULL);
 	SetWindowLongPtr(window, GWLP_USERDATA, (LONG_PTR)this);
+	BYTE CursorMaskAND[] = { 0xFF };
+	BYTE CursorMaskXOR[] = { 0x00 };
+	hiddenCursor = CreateCursor(NULL, 0, 0, 1, 1, CursorMaskAND, CursorMaskXOR);
 	setCursor(Arrow);
 
 	for (int i = 0; i < MouseButtonCode::NUM_BUTTONS; ++i)
@@ -41,7 +44,7 @@ Win32Window::Win32Window(HWND parent, String title, int x, int y, int width, int
 
 Win32Window::~Win32Window()
 {
-
+	DestroyCursor(hiddenCursor);
 }
 
 void Win32Window::setTitle(String title)
@@ -221,6 +224,9 @@ void Win32Window::setCursor(CursorType cursor)
 		break;
 	case Link:
 		hCursor = LoadCursor(NULL, IDC_ARROW);
+		break;
+	case Hidden:
+		hCursor = hiddenCursor;
 		break;
 	default:
 		hCursor = LoadCursor(NULL, IDC_ARROW);

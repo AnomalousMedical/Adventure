@@ -10,6 +10,7 @@ enum CursorType
     SizeVert = 5,
     Hand = 6,
     Link = 7,
+	Hidden = 8,
 };
 
 enum class OnscreenKeyboardMode

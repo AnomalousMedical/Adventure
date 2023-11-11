@@ -83,6 +83,7 @@ private:
 	static WNDCLASSEX wndclass;
 	HWND keyboardHwnd;
 	HCURSOR hCursor;
+	HCURSOR hiddenCursor;
 	bool mouseDown[MouseButtonCode::NUM_BUTTONS];
 	WINDOWPLACEMENT previousWindowPlacement;
 	bool allowWindowSizeMessages;
