@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using Adventure.Services;
+using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
@@ -30,37 +31,45 @@ namespace Adventure.Assets.Equipment
         {
             return defaultMaterial;
         }
-
-        private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
+        private static readonly Dictionary<string, SpriteAnimation> animations = FuncOp.Create(() =>
         {
-            { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(0, 0, 1, 1)
-                {
-                    Attachments = new List<SpriteFrameAttachment>()
+            var normalAttachments = new List<SpriteFrameAttachment>()
+            {
+                SpriteFrameAttachment.FromFramePosition(5, 27, 0, 13, 33), //Center of grip
+            };
+
+            var reversedAttachments = new List<SpriteFrameAttachment>()
+            {
+                SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
+            };
+
+            var animSpeed = 5000000;
+
+            var defaultOrientation = new SpriteAnimation(animSpeed,
+                    new SpriteFrame(0, 0, 1, 1)
                     {
-                        SpriteFrameAttachment.FromFramePosition(5, 27, 0, 13, 33), //Center of grip
-                    }
-                } )
-            },
-            { "right", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1, 0, 0, 1)
-                {
-                    Attachments = new List<SpriteFrameAttachment>()
+                        Attachments = normalAttachments
+                    });
+
+            var reversedOrientation = new SpriteAnimation(animSpeed,
+                    new SpriteFrame(1f, 0f, 0f, 1f)
                     {
-                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
-                    }
-                } )
-            },
-            { "up", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
-                new SpriteFrame(1, 0, 0, 1)
-                {
-                    Attachments = new List<SpriteFrameAttachment>()
-                    {
-                        SpriteFrameAttachment.FromFramePosition(7, 27, 0, 13, 33), //Center of grip
-                    }
-                } )
-            },
-        };
+                        Attachments = reversedAttachments
+                    });
+
+            var anims = new Dictionary<string, SpriteAnimation>()
+            {
+                { "default", defaultOrientation },
+                { "right", reversedOrientation },
+                { "up", defaultOrientation },
+                { "stand-right", reversedOrientation },
+                { "stand-up", defaultOrientation },
+                { "down", reversedOrientation },
+                { "stand-down", reversedOrientation },
+            };
+
+            return anims;
+        });
 
         public ISprite CreateSprite()
         {
