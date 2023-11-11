@@ -643,6 +643,7 @@ namespace Adventure.Battle
             long swingTime = standStartTime - standTime / 3;
             long standEndTime = standStartTime - standTime;
             bool needsAttack = true;
+            queueFront = queueFront || characterSheet.QueueTurnsFront;
             ISkillEffect skillEffect = null;
             if (deactivatePlayer)
             {
@@ -842,7 +843,7 @@ namespace Adventure.Battle
                 Sprite_FrameChanged(sprite);
 
                 return done;
-            });
+            }, characterSheet.QueueTurnsFront);
         }
 
         private void DestroyCastEffect()
