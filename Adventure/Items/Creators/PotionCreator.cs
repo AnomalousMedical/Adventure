@@ -9,6 +9,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(RestoreMp),
+                CanUseOnPickup = true,
             };
 
             if (level < SpellLevels.Regular)
@@ -35,6 +36,7 @@ namespace Adventure.Items.Creators
             var item = new InventoryItem
             {
                 Action = nameof(RestoreHp),
+                CanUseOnPickup = true,
             };
 
             if (level < SpellLevels.Regular)
