@@ -722,11 +722,11 @@ namespace Adventure
             var numSquares = currentIndex - corridorStartIndex;
             var maxFights = Math.Min(Math.Max(numSquares / 10, 2), maxPossibleFights);
             var minFights = Math.Max(numSquares / 20, 1);
-            if (minFights > maxFights)
+            var numEnemies = maxFights;
+            if (minFights < maxFights)
             {
-                minFights = 1;
+                numEnemies = enemyRandom.Next(minFights, maxFights);
             }
-            var numEnemies = enemyRandom.Next(minFights, maxFights);
             for (int i = 0; i < numEnemies; ++i)
             {
                 var corridorTry = 0;
