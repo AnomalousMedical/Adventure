@@ -28,7 +28,7 @@ namespace Adventure.GameOver
         private readonly IPersistenceWriter persistenceWriter;
         private readonly ISetupGameState setupGameState;
         private IGameState nextState;
-        private SharpButton load = new SharpButton() { Text = "Load" };
+        //private SharpButton load = new SharpButton() { Text = "Load" };
         private SharpButton restart = new SharpButton() { Text = "Restart" };
         private SharpText gameOver = new SharpText("Game Over");
         private ILayoutItem layout;
@@ -55,7 +55,7 @@ namespace Adventure.GameOver
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
             this.setupGameState = setupGameState;
-            layout = new ColumnLayout(gameOver, load, restart) { Margin = new IntPad(10) };
+            layout = new ColumnLayout(gameOver, /*load,*/ restart) { Margin = new IntPad(10) };
         }
 
         public void Link(IGameState nextState)
@@ -86,18 +86,18 @@ namespace Adventure.GameOver
 
             sharpGui.Text(gameOver);
 
-            if (sharpGui.Button(load, GamepadId.Pad1, navUp: restart.Id, navDown: restart.Id))
-            {
-                if (persistence.Current.Party.OldSchool)
-                {
-                    persistenceWriter.SaveNewSchool();
-                    persistence.Current.Party.OldSchool = false;
-                }
+            //if (sharpGui.Button(load, GamepadId.Pad1, navUp: restart.Id, navDown: restart.Id))
+            //{
+            //    if (persistence.Current.Party.OldSchool)
+            //    {
+            //        persistenceWriter.SaveNewSchool();
+            //        persistence.Current.Party.OldSchool = false;
+            //    }
 
-                nextState = setupGameState;
-            }
+            //    nextState = setupGameState;
+            //}
 
-            if (sharpGui.Button(restart, GamepadId.Pad1, navUp: load.Id, navDown: load.Id))
+            if (sharpGui.Button(restart, GamepadId.Pad1/*, navUp: load.Id, navDown: load.Id*/))
             {
                 persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
                 persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;

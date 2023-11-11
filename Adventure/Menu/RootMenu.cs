@@ -86,7 +86,7 @@ namespace Adventure.Menu
             var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
             infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
-            var hasShop = persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop);
+            var hasShop = !explorationGameState.Active && persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop);
 
             sharpGui.Text(timePlayed);
             if (persistence.Current.Party.Undefeated)
@@ -117,11 +117,11 @@ namespace Adventure.Menu
             }
             else if (hasShop && sharpGui.Button(shop, gamepad, navDown: options.Id, navUp: items.Id))
             {
-                if (explorationGameState.Active && persistence.Current.Party.OldSchool)
-                {
-                    persistenceWriter.SaveNewSchool();
-                    persistence.Current.Party.OldSchool = false;
-                }
+                //if (explorationGameState.Active && persistence.Current.Party.OldSchool)
+                //{
+                //    persistenceWriter.SaveNewSchool();
+                //    persistence.Current.Party.OldSchool = false;
+                //}
 
                 buyMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(buyMenu, gamepad);
