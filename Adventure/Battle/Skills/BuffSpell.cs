@@ -210,9 +210,10 @@ namespace Adventure.Battle.Skills
         {
             Amount = 100;
             Name = "Haste";
-            MpCost = 48;
+            MpCost = 87;
             HealingItemsOnly = false;
-        }
+            Duration = 23 * Clock.SecondsToMicro;
+    }
 
         public override string DamageNumberText => "Haste";
 
