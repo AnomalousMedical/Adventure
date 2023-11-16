@@ -103,7 +103,7 @@ namespace Adventure
             }
             else
             {
-                currentZone = CreateZone(false, new Vector3(0, 0, 0), currentZoneIndex);
+                currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
                 await currentZone.WaitForGeneration();
             }
 
@@ -133,21 +133,12 @@ namespace Adventure
             return currentZone?.WaitForGeneration() ?? Task.CompletedTask;
         }
 
-        private Zone CreateZone(bool shiftLeft, Vector3 translation, int zoneIndex)
+        private Zone CreateZone(Vector3 translation, int zoneIndex)
         {
             return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
             {
                 worldManager.SetupZone(zoneIndex, o);
                 o.Translation = translation;
-                o.ShiftLeft = shiftLeft;
-                if(o.ConnectPreviousToWorld)
-                {
-                    o.PadLeft = 35;
-                }
-                if (o.ConnectNextToWorld)
-                {
-                    o.PadRight = 35;
-                }
             });
         }
 

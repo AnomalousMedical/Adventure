@@ -109,8 +109,6 @@ namespace Adventure.Services
             o.RoomMax = new IntSize2(6, 6); //Between 3-6 is good here, 3 for more cityish with small rooms, 6 for more open with more big rooms, sometimes connected
             o.CorridorMaxLength = 4;
             o.GoPrevious = zoneIndex != 0;
-            o.ConnectPreviousToWorld = zoneIndex == StartZone;
-            o.ConnectNextToWorld = zoneIndex == EndZone;
             o.MaxMainCorridorBattles = MaxMainCorridorBattles;
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;

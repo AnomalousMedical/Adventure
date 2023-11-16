@@ -35,11 +35,6 @@ namespace Adventure
 
             public Vector3 Translation { get; set; } = Vector3.Zero;
 
-            /// <summary>
-            /// Set this to true to shift the zone to the left by its size after this size is known.
-            /// </summary>
-            public bool ShiftLeft { get; set; }
-
             public int LevelSeed { get; set; }
 
             public int EnemySeed { get; set; }
@@ -137,10 +132,6 @@ namespace Adventure
             /// </summary>
             public int EnemyLevel { get; set; }
 
-            public bool ConnectPreviousToWorld { get; set; }
-
-            public bool ConnectNextToWorld { get; set; }
-
             /// <summary>
             /// The number of battles for the level's "main" corridor.
             /// Must be at least 1, default is int.MaxValue. This will
@@ -167,8 +158,8 @@ namespace Adventure
             public int Area { get; set; }
             public int PadTop { get; set; } = 75;
             public int PadBottom { get; set; } = 75;
-            public int PadLeft { get; set; }
-            public int PadRight { get; set; }
+            public int PadLeft { get; set; } = 35;
+            public int PadRight { get; set; } = 35;
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -210,8 +201,6 @@ namespace Adventure
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
         private IEnumerable<PartyMember> partyMembers;
-        private bool connectPreviousToWorld;
-        private bool connectNextToWorld;
         private PlotItems? plotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
@@ -259,8 +248,6 @@ namespace Adventure
         )
         {
             this.plotItem = description.PlotItem;
-            this.connectPreviousToWorld = description.ConnectPreviousToWorld;
-            this.connectNextToWorld = description.ConnectNextToWorld;
             this.StartEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
@@ -292,10 +279,6 @@ namespace Adventure
 
             //Set current position and shift if requested
             this.currentPosition = description.Translation;
-            if (description.ShiftLeft)
-            {
-                this.currentPosition += new Vector3(-this.Size.Width, 0, 0);
-            }
 
             this.floorInstanceData = new TLASInstanceData()
             {
@@ -612,8 +595,6 @@ namespace Adventure
                 {
                     o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                     o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
-                    o.GoPrevious = true;
-                    o.GoWorld = connectPreviousToWorld;
                 });
             }
 
@@ -621,8 +602,6 @@ namespace Adventure
             {
                 o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
                 o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
-                o.GoPrevious = false;
-                o.GoWorld = connectNextToWorld;
             });
 
             foreach (var placeable in placeables)
