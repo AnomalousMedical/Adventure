@@ -29,8 +29,6 @@ namespace Adventure.Menu
         private readonly FlyCameraManager flyCameraManager;
         private readonly Persistence persistence;
         private readonly TextDialog textDialog;
-        SharpButton goNextLevel = new SharpButton() { Text = "Next Stage" };
-        SharpButton goPreviousLevel = new SharpButton() { Text = "Previous Stage" };
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
         SharpButton goEnd = new SharpButton() { Text = "Go End" };
         SharpButton goWorld = new SharpButton() { Text = "Go World" };
@@ -83,7 +81,7 @@ namespace Adventure.Menu
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip, levelWorld, testDialog), new RowLayout(goStart, goEnd, goWorld), new RowLayout(goNextLevel, goPreviousLevel), toggleCamera) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(philip, levelWorld, testDialog), new RowLayout(goStart, goEnd, goWorld), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
@@ -124,33 +122,25 @@ namespace Adventure.Menu
                 });
             }
 
-            if (sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: goNextLevel.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
+            if (sharpGui.Button(goStart, gamepad, navUp: philip.Id, navDown: toggleCamera.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(goEnd, gamepad, navUp: levelWorld.Id, navDown: goPreviousLevel.Id, navLeft: goStart.Id, navRight: goWorld.Id))
+            if (sharpGui.Button(goEnd, gamepad, navUp: levelWorld.Id, navDown: toggleCamera.Id, navLeft: goStart.Id, navRight: goWorld.Id))
             {
                 zoneManager.GoEndPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(goWorld, gamepad, navUp: testDialog.Id, navDown: goPreviousLevel.Id, navLeft: goEnd.Id, navRight: goStart.Id))
+            if (sharpGui.Button(goWorld, gamepad, navUp: testDialog.Id, navDown: toggleCamera.Id, navLeft: goEnd.Id, navRight: goStart.Id))
             {
                 explorationGameState.RequestWorldMap();
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, gamepad, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
-            {
-            }
-
-            if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, gamepad, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
-            {
-            }
-
-            if (sharpGui.Button(toggleCamera, gamepad, navUp: goNextLevel.Id, navDown: battle.Id))
+            if (sharpGui.Button(toggleCamera, gamepad, navUp: goStart.Id, navDown: battle.Id))
             {
                 flyCameraManager.Enabled = !flyCameraManager.Enabled;
             }
