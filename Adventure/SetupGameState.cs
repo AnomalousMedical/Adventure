@@ -106,8 +106,6 @@ namespace Adventure
                         this.nextState = explorationGameState;
                         await zoneManager.Restart(lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
-                        await zoneManager.WaitForPrevious();
-                        await zoneManager.WaitForNext();
                         rtInstances = zoneInstances;
                     }
 

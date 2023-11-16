@@ -55,8 +55,6 @@ namespace Adventure
                 coroutineRunner.RunTask(async () =>
                 {
                     await zoneManager.WaitForCurrent();
-                    await zoneManager.WaitForPrevious();
-                    await zoneManager.WaitForNext();
                     finished = true;
                 });
             }

@@ -144,14 +144,10 @@ namespace Adventure.Menu
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goNextLevel, gamepad, navUp: goStart.Id, navDown: toggleCamera.Id, navLeft: goPreviousLevel.Id, navRight: goPreviousLevel.Id))
             {
-                coroutineRunner.RunTask(zoneManager.GoNext());
-                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (!zoneManager.ChangingZone && sharpGui.Button(goPreviousLevel, gamepad, navUp: goEnd.Id, navDown: toggleCamera.Id, navLeft: goNextLevel.Id, navRight: goNextLevel.Id))
             {
-                coroutineRunner.RunTask(zoneManager.GoPrevious());
-                explorationMenu.RequestSubMenu(null, gamepad);
             }
 
             if (sharpGui.Button(toggleCamera, gamepad, navUp: goNextLevel.Id, navDown: battle.Id))

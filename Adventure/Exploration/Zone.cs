@@ -235,10 +235,6 @@ namespace Adventure
 
         public int Index => index;
 
-        public bool LoadPreviousLevel => index - 1 > -1 && !connectPreviousToWorld;
-
-        public bool LoadNextLevel => !connectNextToWorld;
-
         public int Area { get; init; }
 
         public Size2 Size { get; private set; }

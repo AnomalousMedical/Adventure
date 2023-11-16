@@ -75,21 +75,7 @@ namespace Adventure
         {
             coroutineRunner.RunTask(async () =>
             {
-                if (this.goWorld)
-                {
-                    explorationGameState.RequestWorldMap();
-                }
-                else
-                {
-                    if (this.goPrevious)
-                    {
-                        await zoneManager.GoPrevious(playerLoc);
-                    }
-                    else
-                    {
-                        await zoneManager.GoNext(playerLoc);
-                    }
-                }
+                explorationGameState.RequestWorldMap();
             });
         }
     }
