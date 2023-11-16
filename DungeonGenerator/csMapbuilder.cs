@@ -47,6 +47,8 @@ namespace RogueLikeMapBuilder
 
         private Point? westConnectorStart;
         private Point? eastConnectorStart;
+        private Point? southConnectorStart;
+        private Point? northConnectorStart;
 
         public Point? EastConnector { get; set; }
 
@@ -418,11 +420,13 @@ namespace RogueLikeMapBuilder
             if (NorthConnector != null)
             {
                 NorthConnector = AddPadding(NorthConnector.Value);
+                northConnectorStart = AddPadding(northConnectorStart.Value);
             }
 
             if (SouthConnector != null)
             {
                 SouthConnector = AddPadding(SouthConnector.Value);
+                southConnectorStart = AddPadding(southConnectorStart.Value);
             }
 
             rctBuiltRooms = rctBuiltRooms.Select(AddPaddingRect).ToList();
@@ -431,7 +435,7 @@ namespace RogueLikeMapBuilder
             endRoom = AddPaddingRect(endRoom);
         }
 
-        public void AddNorthConnector()
+        public void FindNorthConnector()
         {
             var width = Map_Size.Width;
             var height = Map_Size.Height;
@@ -455,6 +459,16 @@ namespace RogueLikeMapBuilder
                 }
             }
 
+            northConnectorStart = new Point(x, y);
+            NorthConnector = new Point(x, yStart);
+        }
+
+        public void BuildNorthConnector()
+        {
+            var x = northConnectorStart.Value.x;
+            var y = northConnectorStart.Value.y;
+            var yStart = Map_Size.Height - 1;
+
             //Make sure there was nothing left over
             lPotentialCorridor.Clear();
 
@@ -472,11 +486,11 @@ namespace RogueLikeMapBuilder
                 Corridor_Build(true);
             }
 
-            NorthConnector = new Point(x, yStart);
+            
             NorthConnectorIndex = map[x, yStart];
         }
 
-        public void AddSouthConnector()
+        public void FindSouthConnector()
         {
             var width = Map_Size.Width;
             var height = Map_Size.Height;
@@ -499,6 +513,15 @@ namespace RogueLikeMapBuilder
                 }
             }
 
+            southConnectorStart = new Point(x, y);
+            SouthConnector = new Point(x, 0);
+        }
+
+        public void BuildSouthConnector() 
+        {
+            var x = southConnectorStart.Value.x;
+            var y = southConnectorStart.Value.y;
+
             //Make sure there was nothing left over
             lPotentialCorridor.Clear();
 
@@ -516,7 +539,6 @@ namespace RogueLikeMapBuilder
                 Corridor_Build(true);
             }
 
-            SouthConnector = new Point(x, 0);
             SouthConnectorIndex = map[x, 0];
         }
 

@@ -95,11 +95,14 @@ namespace RTDungeonGeneratorTest
                         mapBuilder.Corridor_Max = 4;
                         mapBuilder.Horizontal = false;
                         mapBuilder.Build_ConnectedStartRooms();
-                        mapBuilder.AddNorthConnector();
-                        mapBuilder.AddSouthConnector();
+                        mapBuilder.FindNorthConnector();
+                        mapBuilder.FindSouthConnector();
                         mapBuilder.FindWestConnector();
-                        mapBuilder.BuildWestConnector();
                         mapBuilder.FindEastConnector();
+                        mapBuilder.AddPadding(20, 20, 20, 20);
+                        mapBuilder.BuildSouthConnector();
+                        mapBuilder.BuildNorthConnector();
+                        mapBuilder.BuildWestConnector();
                         mapBuilder.BuildEastConnector();
                         sw.Stop();
 
