@@ -235,8 +235,6 @@ namespace Adventure.Services
             var characterRandom = new FIRandom(this.currentSeed);
 
             {
-                var weapon = new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty"));
-                var offHand = new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Buckler", 0.15f, nameof(Buckler)));
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
                 sheet.Name = "Bob";
                 var hero = new Persistence.CharacterData()
@@ -246,7 +244,7 @@ namespace Adventure.Services
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
-                GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Rusty", 0.15f)));
+                GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Buckler", 0.15f, nameof(Buckler))));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
