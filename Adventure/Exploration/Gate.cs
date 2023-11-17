@@ -28,6 +28,8 @@ namespace Adventure
             public int Zone { get; set; }
 
             public int InstanceId { get; set; }
+
+            public bool Rotated { get; set; }
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -85,7 +87,7 @@ namespace Adventure
             this.currentOrientation = description.Orientation;
             this.currentScale = sprite.BaseScale * description.Scale;
 
-            blasRotation = new Quaternion(Vector3.UnitY, 0.48f * MathF.PI);
+            blasRotation = description.Rotated ? new Quaternion(Vector3.UnitY, 0.48f * MathF.PI) : Quaternion.Identity;
             blasOffset = new Vector3(-0.85f, 0f, 0f);
 
             var finalPosition = currentPosition;

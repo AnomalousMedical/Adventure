@@ -504,23 +504,24 @@ namespace Adventure
         {
             Vector3 startSignpostOffset;
             Vector3 endSignpostOffset;
+            var zOffset = mapMesh.MapUnitZ / -2.0f;
             switch (alignment)
             {
                 case Alignment.EastWest:
                 case Alignment.WestEast:
                 default:
-                    var offset = new Vector3(0f, 0f, mapMesh.MapUnitZ / -2.0f);
+                    var offset = new Vector3(0f, 0f, zOffset);
                     startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) + offset;
                     endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) + offset;
                     break;
 
                 case Alignment.NorthSouth:
-                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, 0f);
-                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, 0f);
+                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, zOffset);
+                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, zOffset);
                     break;
                 case Alignment.SouthNorth:
-                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, 0f);
-                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, 0f);
+                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, zOffset);
+                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, zOffset);
                     break;
             }
 
@@ -1004,6 +1005,7 @@ namespace Adventure
                     o.Sprite = gateAsset.CreateSprite();
                     o.SpriteMaterial = gateAsset.CreateMaterial();
                     o.Zone = index;
+                    o.Rotated = alignment == Alignment.WestEast || alignment == Alignment.EastWest;
                     o.InstanceId = 0; //Only ever 1 gate
                 });
                 placeables.Add(gate);
