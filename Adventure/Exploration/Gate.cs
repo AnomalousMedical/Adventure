@@ -88,7 +88,7 @@ namespace Adventure
             this.currentScale = sprite.BaseScale * description.Scale;
 
             blasRotation = description.Rotated ? new Quaternion(Vector3.UnitY, 0.48f * MathF.PI) : Quaternion.Identity;
-            blasOffset = new Vector3(-0.85f, 0f, 0f);
+            blasOffset = description.Rotated ? new Vector3(-0.85f, 0f, 0f) : Vector3.Zero;
 
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
