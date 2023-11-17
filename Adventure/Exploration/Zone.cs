@@ -29,6 +29,14 @@ namespace Adventure
 {
     class Zone : IDisposable
     {
+        public enum Alignment
+        {
+            WestEast,
+            EastWest,
+            NorthSouth,
+            SouthNorth,
+        }
+
         public class Description
         {
             public int Index { get; set; }
@@ -160,6 +168,8 @@ namespace Adventure
             public int PadBottom { get; set; } = 75;
             public int PadLeft { get; set; } = 35;
             public int PadRight { get; set; } = 35;
+
+            public Alignment Alignment { get; set; } = Alignment.WestEast;
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -228,6 +238,8 @@ namespace Adventure
 
         public Size2 Size { get; private set; }
 
+        private Alignment alignment;
+
         public Zone
         (
             IDestructionRequest destructionRequest,
@@ -271,6 +283,7 @@ namespace Adventure
             this.persistence = persistence;
             this.noiseTextureManager = noiseTextureManager;
             this.goPrevious = description.GoPrevious;
+            this.alignment = description.Alignment;
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
             this.partyMembers = description.PartyMembers ?? Enumerable.Empty<PartyMember>();
@@ -328,10 +341,28 @@ namespace Adventure
                         Room_Min = description.RoomMin
                     };
                     mapBuilder.Build_ConnectedStartRooms();
-                    mapBuilder.FindEastConnector();
-                    if (description.GoPrevious)
+
+                    switch (alignment)
                     {
-                        mapBuilder.FindWestConnector();
+                        case Alignment.EastWest:
+                            mapBuilder.FindEastConnector();
+                            mapBuilder.FindWestConnector();
+                            break;
+                        case Alignment.WestEast:
+                            mapBuilder.FindEastConnector();
+                            if (description.GoPrevious)
+                            {
+                                mapBuilder.FindWestConnector();
+                            }
+                            break;
+                        case Alignment.SouthNorth:
+                            mapBuilder.FindSouthConnector();
+                            mapBuilder.FindNorthConnector();
+                            break;
+                        case Alignment.NorthSouth:
+                            mapBuilder.FindSouthConnector();
+                            mapBuilder.FindNorthConnector();
+                            break;
                     }
 
                     mapBuilder.AddPadding(description.PadTop, description.PadBottom, description.PadLeft, description.PadRight);
@@ -346,36 +377,62 @@ namespace Adventure
                         mapBuilder.BuildWestConnector();
                     }
 
-                    if (description.GoPrevious)
+                    if (mapBuilder.NorthConnector.HasValue)
                     {
-                        var startConnector = mapBuilder.WestConnector.Value;
-                        startPoint = startConnector;
+                        mapBuilder.BuildNorthConnector();
                     }
-                    else
-                    {
-                        Rectangle startRoom = new Rectangle(int.MaxValue, 0, 0, 0);
-                        var numRooms = mapBuilder.Rooms.Count;
-                        for(ushort i = 0; i < numRooms; i++)
-                        {
-                            var room = mapBuilder.Rooms[i];
-                            if (room.Left < startRoom.Left)
-                            {
-                                startRoom = room;
-                                this.startRoomIndex = i;
-                            }
-                        }
 
-                        startPoint = new Point
-                        (
-                            startRoom.Left + startRoom.Width / 2,
-                            startRoom.Top + startRoom.Height / 2
-                        );
+                    if (mapBuilder.SouthConnector.HasValue)
+                    {
+                        mapBuilder.BuildSouthConnector();
+                    }
+
+                    switch (alignment)
+                    {
+                        case Alignment.EastWest:
+                            startPoint = mapBuilder.EastConnector.Value;
+                            endPoint = mapBuilder.WestConnector.Value;
+                            break;
+                        case Alignment.WestEast:
+                            if (description.GoPrevious)
+                            {
+                                startPoint = mapBuilder.WestConnector.Value;
+                            }
+                            else
+                            {
+                                Rectangle startRoom = new Rectangle(int.MaxValue, 0, 0, 0);
+                                var numRooms = mapBuilder.Rooms.Count;
+                                for (ushort i = 0; i < numRooms; i++)
+                                {
+                                    var room = mapBuilder.Rooms[i];
+                                    if (room.Left < startRoom.Left)
+                                    {
+                                        startRoom = room;
+                                        this.startRoomIndex = i;
+                                    }
+                                }
+
+                                startPoint = new Point
+                                (
+                                    startRoom.Left + startRoom.Width / 2,
+                                    startRoom.Top + startRoom.Height / 2
+                                );
+                            }
+                            endPoint = mapBuilder.EastConnector.Value;
+                            break;
+                        case Alignment.SouthNorth:
+                            startPoint = mapBuilder.SouthConnector.Value;
+                            endPoint = mapBuilder.NorthConnector.Value;
+                            break;
+                        case Alignment.NorthSouth:
+                            startPoint = mapBuilder.NorthConnector.Value;
+                            endPoint = mapBuilder.SouthConnector.Value;
+                            break;
                     }
 
                     mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
                     startPointLocal = mapMesh.PointToVector(startPoint.x, startPoint.y);
-                    endPoint = mapBuilder.EastConnector.Value;
                     endPointLocal = mapMesh.PointToVector(endPoint.x, endPoint.y);
 
                     sw.Stop();
@@ -422,34 +479,7 @@ namespace Adventure
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
-
-                var signpostAsset = new Signpost();
-                if (description.GoPrevious)
-                {
-                    var mapLoc = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) - new Vector3(0f, 0f, mapMesh.MapUnitZ / 2.0f);
-                    var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
-                    {
-                        o.MapOffset = mapLoc;
-                        o.Translation = currentPosition + o.MapOffset;
-                        o.Sprite = signpostAsset.CreateSprite();
-                        o.SpriteMaterial = signpostAsset.CreateMaterial();
-                        o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
-                    });
-                    this.placeables.Add(bgItem);
-                }
-
-                {
-                    var mapLoc = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) - new Vector3(0f, 0f, mapMesh.MapUnitZ / 2.0f);
-                    var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
-                    {
-                        o.MapOffset = mapLoc;
-                        o.Translation = currentPosition + o.MapOffset;
-                        o.Sprite = signpostAsset.CreateSprite();
-                        o.SpriteMaterial = signpostAsset.CreateMaterial();
-                        o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
-                    });
-                    this.placeables.Add(bgItem);
-                }
+                PlaceSignpost(description, startPoint, endPoint);
 
                 if (biome.BackgroundItems != null)
                 {
@@ -457,7 +487,7 @@ namespace Adventure
                 }
 
                 ResetLootDrop();
-                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);                
+                AddStolenTreasure(description, enemyRandom, battleTriggers, bossBattleTrigger, treasureStack);
 
                 //Since this is async the physics can be active before the placeables are created
                 if (physicsActive)
@@ -468,6 +498,57 @@ namespace Adventure
                     }
                 }
             });
+        }
+
+        private void PlaceSignpost(Description description, Point startPoint, Point endPoint)
+        {
+            Vector3 startSignpostOffset;
+            Vector3 endSignpostOffset;
+            switch (alignment)
+            {
+                case Alignment.EastWest:
+                case Alignment.WestEast:
+                default:
+                    var offset = new Vector3(0f, 0f, mapMesh.MapUnitZ / -2.0f);
+                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) + offset;
+                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) + offset;
+                    break;
+
+                case Alignment.NorthSouth:
+                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y + 1) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, 0f);
+                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, 0f);
+                    break;
+                case Alignment.SouthNorth:
+                    startSignpostOffset = mapMesh.PointToVector(startPoint.x, startPoint.y) + new Vector3(mapMesh.MapUnitX / -2.0f, 0f, 0f);
+                    endSignpostOffset = mapMesh.PointToVector(endPoint.x, endPoint.y + 1) + new Vector3(mapMesh.MapUnitX / 2.0f, 0f, 0f);
+                    break;
+            }
+
+            var signpostAsset = new Signpost();
+            if (description.GoPrevious)
+            {
+                var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
+                {
+                    o.MapOffset = startSignpostOffset;
+                    o.Translation = currentPosition + o.MapOffset;
+                    o.Sprite = signpostAsset.CreateSprite();
+                    o.SpriteMaterial = signpostAsset.CreateMaterial();
+                    o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
+                });
+                this.placeables.Add(bgItem);
+            }
+
+            {
+                var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
+                {
+                    o.MapOffset = endSignpostOffset;
+                    o.Translation = currentPosition + o.MapOffset;
+                    o.Sprite = signpostAsset.CreateSprite();
+                    o.SpriteMaterial = signpostAsset.CreateMaterial();
+                    o.Scale = new Vector3(1.5f, 1.5f, 1.0f);
+                });
+                this.placeables.Add(bgItem);
+            }
         }
 
         internal void RequestDestruction()
@@ -589,19 +670,42 @@ namespace Adventure
                 staticHandles.Add(staticHandle);
             }
 
+            Vector3 nextZoneConnectorOffset;
+            Vector3 previousZoneConnectorOffset;
+            switch (alignment)
+            {
+                default:
+                case Alignment.WestEast:
+                    nextZoneConnectorOffset = new Vector3(1f, 0f, 0f);
+                    previousZoneConnectorOffset = new Vector3(-1f, 0f, 0f);
+                    break;
+                case Alignment.EastWest:
+                    nextZoneConnectorOffset = new Vector3(-1f, 0f, 0f);
+                    previousZoneConnectorOffset = new Vector3(1f, 0f, 0f);
+                    break;
+                case Alignment.SouthNorth:
+                    nextZoneConnectorOffset = new Vector3(0f, 0f, 1f);
+                    previousZoneConnectorOffset = new Vector3(0f, 0f, -1f);
+                    break;
+                case Alignment.NorthSouth:
+                    nextZoneConnectorOffset = new Vector3(0f, 0f, -1f);
+                    previousZoneConnectorOffset = new Vector3(0f, 0f, 1f);
+                    break;
+            }
+
             if (goPrevious)
             {
                 this.previousZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
                 {
                     o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
-                    o.Translation = StartPoint + new Vector3(-mapUnits.x * 2f, 0f, 0f);
+                    o.Translation = StartPoint + mapUnits.x * 2f * previousZoneConnectorOffset;
                 });
             }
 
             this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
             {
                 o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
-                o.Translation = EndPoint + new Vector3(mapUnits.x * 2f, 0f, 0f);
+                o.Translation = EndPoint + mapUnits.x * 2f * nextZoneConnectorOffset;
             });
 
             foreach (var placeable in placeables)
@@ -836,14 +940,31 @@ namespace Adventure
                 this.placeables.Add(philip);
             }
 
+            Vector3 endZoneItemOffset;
+            switch (alignment)
+            {
+                default:
+                case Alignment.WestEast:
+                    endZoneItemOffset = new Vector3(1f, 0f, 0f);
+                    break;
+                case Alignment.EastWest:
+                    endZoneItemOffset = new Vector3(-1f, 0f, 0f);
+                    break;
+                case Alignment.SouthNorth:
+                    endZoneItemOffset = new Vector3(0f, 0f, 1f);
+                    break;
+                case Alignment.NorthSouth:
+                    endZoneItemOffset = new Vector3(0f, 0f, -1f);
+                    break;
+            }
+
             //The plot item goes in the exit corridor, not the room
             if (this.plotItem != null)
             {
-                var point = mapMesh.MapBuilder.EastConnector.Value;
                 var plotItemPlaceable = objectResolver.Resolve<PlotItemPlaceable, PlotItemPlaceable.Description>(o =>
                 {
-                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
-                    o.Translation = currentPosition + o.MapOffset + new Vector3(2.25f, 0f, 0f);
+                    o.MapOffset = endPointLocal;
+                    o.Translation = currentPosition + o.MapOffset + 2.25f * endZoneItemOffset;
                     var gateAsset = biome.KeyAsset;
                     o.Sprite = gateAsset.CreateSprite();
                     o.SpriteMaterial = gateAsset.CreateMaterial();
@@ -856,11 +977,10 @@ namespace Adventure
             //The boss goes in the exit corridor, not the room
             if (placeBoss)
             {
-                var point = mapMesh.MapBuilder.EastConnector.Value;
                 bossBattleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
                 {
-                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
-                    o.Translation = currentPosition + o.MapOffset + new Vector3(1.25f, 0f, 0f);
+                    o.MapOffset = endPointLocal;
+                    o.Translation = currentPosition + o.MapOffset + 1.25f * endZoneItemOffset;
                     o.TriggerEnemy = biome.BossEnemy;
                     o.Zone = index;
                     o.Area = Area;
@@ -876,10 +996,9 @@ namespace Adventure
             //The gate goes in the exit corridor, not the room
             if (placeGate)
             {
-                var point = mapMesh.MapBuilder.EastConnector.Value;
                 var gate = objectResolver.Resolve<Gate, Gate.Description>(o =>
                 {
-                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
+                    o.MapOffset = endPointLocal;
                     o.Translation = currentPosition + o.MapOffset;
                     var gateAsset = biome.GateAsset;
                     o.Sprite = gateAsset.CreateSprite();
