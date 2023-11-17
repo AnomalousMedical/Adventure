@@ -185,6 +185,7 @@ namespace Adventure.Services
             var placementRandom = new FIRandom(newSeed);
             var elementalRandom = new FIRandom(newSeed);
             var treasureRandom = new FIRandom(newSeed);
+            var alignmentRandom = new FIRandom(newSeed);
             currentSeed = newSeed;
 
             //Setup map
@@ -212,7 +213,7 @@ namespace Adventure.Services
             usedIslands[map.IslandSizeOrder[2]] = true;
 
             SetupAirshipIsland(placementRandom, out airshipStartSquare, out airshipPortalSquare, usedSquares, usedIslands, map);
-            areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, portalLocations, usedSquares, usedIslands, map).ToList();
+            areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, portalLocations, usedSquares, usedIslands, map).ToList();
         }
 
         private static void SetupAirshipIsland(FIRandom placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
@@ -315,7 +316,7 @@ namespace Adventure.Services
             treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions);
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
             var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
@@ -332,6 +333,7 @@ namespace Adventure.Services
             int area = 0;
             AreaBuilder areaBuilder;
             var zoneCounter = new ZoneCounter();
+            var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
 
             //Setup islands                      
             var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
@@ -431,6 +433,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 areaBuilder.Location = firstIslandSquares[1][1];
                 areaBuilder.Treasure = RemoveRandomItems(phase1UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[]
@@ -513,6 +516,7 @@ namespace Adventure.Services
                 areaBuilder.PlotItem = PlotItems.AirshipKey0;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = secondIslandSquares[0][1];
@@ -544,6 +548,7 @@ namespace Adventure.Services
                 areaBuilder.PlotItem = PlotItems.AirshipKey1;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
                 areaBuilder.Location = thirdIslandSquares[0][1];
@@ -645,6 +650,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -678,6 +684,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -711,6 +718,7 @@ namespace Adventure.Services
                 areaBuilder.GateZones = new[] { areaBuilder.StartZone };
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
+                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 firstMonsterElement = GetElementForBiome(areaBuilder.Biome);
                 areaBuilder.Monsters = elementalMonsters[GetRandomMagicElement(elementalRandom)]
                     .Concat(elementalMonsters[GetRandomMagicElement(elementalRandom, firstMonsterElement)])
@@ -757,6 +765,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = BiomeType.Volcano;
                 areaBuilder.MaxMainCorridorBattles = 4;
+                areaBuilder.Alignment = alignmentRandom.Next(2) == 0 ? Zone.Alignment.EastWest : Zone.Alignment.WestEast;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
 
                 //You get all the monsters in this zone

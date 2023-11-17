@@ -87,6 +87,8 @@ namespace Adventure.Services
 
         public IEnumerable<PartyMember> PartyMembers { get; set; }
 
+        public Zone.Alignment Alignment { get; set; } = Zone.Alignment.WestEast;
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -119,6 +121,7 @@ namespace Adventure.Services
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
             o.StartEnd = StartEnd;
             o.Area = Index;
+            o.Alignment = Alignment;
 
             if(zoneIndex == EndZone && PlotItem != null)
             {
