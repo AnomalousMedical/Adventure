@@ -761,7 +761,7 @@ namespace Adventure.Services
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
-                areaBuilder.EnemyLevel = 51;
+                areaBuilder.EnemyLevel = 61;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = BiomeType.Volcano;
                 areaBuilder.MaxMainCorridorBattles = 4;
