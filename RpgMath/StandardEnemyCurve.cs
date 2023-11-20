@@ -15,7 +15,7 @@ namespace RpgMath
             if (level < 10)
             {
                 //1-10
-                value = (long)NumberFunctions.lerp(40f, 200f, (level) / 10f);
+                value = (long)NumberFunctions.lerp(0f, 200f, (level) / 10f);
             }
             else if (level < 20)
             {
@@ -70,7 +70,14 @@ namespace RpgMath
             switch (enemyType)
             {
                 case EnemyType.Boss:
-                    value *= (level / 10 * 2 + 7);
+                    if(level < 10)
+                    {
+                        value = 323;
+                    }
+                    else
+                    {
+                        value *= (level / 10 * 2 + 7);
+                    }
                     break;
                 case EnemyType.Badass:
                     value *= 2;
