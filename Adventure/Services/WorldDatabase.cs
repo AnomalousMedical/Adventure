@@ -74,7 +74,7 @@ namespace Adventure.Services
         public int GetLevelDelta(int currentLevel)
         {
             var delta = 5;
-            var levelBreaks = new int[] { 14, 25, 31, 36, 44, 51, 56 };
+            var levelBreaks = new int[] { 17, 29, 36, 44, 51, 56, 61 };
 
             foreach (var levelBreak in levelBreaks)
             {
