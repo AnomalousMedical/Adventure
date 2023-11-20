@@ -3,6 +3,7 @@ using Adventure.WorldMap;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
+using RpgMath;
 using SharpGui;
 using System.Linq;
 
@@ -28,6 +29,7 @@ namespace Adventure
         private readonly IPersistenceWriter persistenceWriter;
         private readonly IWorldDatabase worldDatabase;
         private readonly ITimeClock timeClock;
+        private readonly PartyMemberManager partyMemberManager;
         private IGameState nextState;
         private bool finished = false;
 
@@ -51,7 +53,8 @@ namespace Adventure
             RayTracingRenderer rayTracingRenderer,
             IPersistenceWriter persistenceWriter,
             IWorldDatabase worldDatabase,
-            ITimeClock timeClock
+            ITimeClock timeClock,
+            PartyMemberManager partyMemberManager
         )
         {
             this.zoneManager = zoneManager;
@@ -67,6 +70,7 @@ namespace Adventure
             this.persistenceWriter = persistenceWriter;
             this.worldDatabase = worldDatabase;
             this.timeClock = timeClock;
+            this.partyMemberManager = partyMemberManager;
         }
 
         public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
@@ -88,7 +92,8 @@ namespace Adventure
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
                 if(persistence.Current.Party.Members.Count == 0)
                 {
-                    persistence.Current.Party.Members.Add(this.worldDatabase.CreateParty().First().CharacterData);
+                    var partyMember = this.worldDatabase.CreateParty().First();
+                    partyMemberManager.AddToParty(partyMember);
                 }
                 timeClock.ResetToPersistedTime();
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
