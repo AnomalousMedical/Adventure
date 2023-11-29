@@ -204,7 +204,6 @@ namespace Adventure
             services.AddSingleton<IBattleScreenLayout, BattleScreenLayout>();
             services.AddSingleton<IFirstGameStateBuilder, FirstGameStateBuilder>();
             services.AddSingleton<IExplorationGameState, ExplorationGameState>();
-            services.AddSingleton<ISimpleActivator, SimpleActivator>();
             services.AddSingleton<IAssetFactory, AssetFactory>();
             services.AddSingleton<ISkillFactory, SkillFactory>();
             services.AddSingleton<Party>();

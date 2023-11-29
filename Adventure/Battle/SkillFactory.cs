@@ -1,9 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Battle.Skills;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Battle
 {
@@ -14,16 +10,73 @@ namespace Adventure.Battle
 
     class SkillFactory : ISkillFactory
     {
-        private readonly ISimpleActivator simpleActivator;
-
-        public SkillFactory(ISimpleActivator simpleActivator)
+        public SkillFactory()
         {
-            this.simpleActivator = simpleActivator;
+
         }
 
         public ISkill CreateSkill(String name)
         {
-            return simpleActivator.CreateInstance<ISkill>($"Adventure.Battle.Skills.{name}");
+            switch (name)
+            {
+                case nameof(WeakFire):
+                    return new WeakFire();
+                case nameof(Fire):
+                    return new Fire();
+                case nameof(StrongFire):
+                    return new StrongFire();
+                case nameof(ArchFire):
+                    return new ArchFire();
+
+                case nameof(WeakIce):
+                    return new WeakIce();
+                case nameof(Ice):
+                    return new Ice();
+                case nameof(StrongIce):
+                    return new StrongIce();
+                case nameof(ArchIce):
+                    return new ArchIce();
+
+                case nameof(WeakLightning):
+                    return new WeakLightning();
+                case nameof(Lightning):
+                    return new Lightning();
+                case nameof(StrongLightning):
+                    return new StrongLightning();
+                case nameof(ArchLightning):
+                    return new ArchLightning();
+
+                case nameof(IonShread):
+                    return new IonShread();
+
+                case nameof(BattleCry):
+                    return new BattleCry();
+                case nameof(WarCry):
+                    return new WarCry();
+
+                case nameof(Focus):
+                    return new Focus();
+                case nameof(IntenseFocus):
+                    return new IntenseFocus();
+                case nameof(Haste):
+                    return new Haste();
+
+                case nameof(Cure):
+                    return new Cure();
+                case nameof(MegaCure):
+                    return new MegaCure();
+                case nameof(UltraCure):
+                    return new UltraCure();
+
+                case nameof(Reanimate):
+                    return new Reanimate();
+
+                case nameof(Steal):
+                    return new Steal();
+
+                default:
+                    throw new NotImplementedException(name);
+            }
         }
     }
 }
