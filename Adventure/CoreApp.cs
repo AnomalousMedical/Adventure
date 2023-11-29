@@ -23,7 +23,7 @@ namespace Adventure
 {
     public class CoreApp : App
     {
-        private OptionsWriter optionsWriter = new OptionsWriter();
+        private GameOptionsWriter optionsWriter = new GameOptionsWriter();
         private NativeOSWindow mainWindow;
         private UpdateTimer mainTimer;
 
@@ -99,7 +99,7 @@ namespace Adventure
             services.AddRpgMath();
 
             //Add this app's services
-            services.AddSingleton<Options>(options);
+            services.AddSingleton<GameOptions>(options);
             services.AddSingleton<FlyCameraManager>();
             services.AddSingleton<SceneTestUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();

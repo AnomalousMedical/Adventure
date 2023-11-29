@@ -26,7 +26,7 @@ namespace Adventure.Services
         private readonly Persistence persistence;
         private readonly IGenesysModule genesysModule;
         private readonly ISeedProvider seedProvider;
-        private readonly Options options;
+        private readonly GameOptions options;
         private HashSet<object> saveBlockers = new HashSet<object>();
         private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -34,7 +34,7 @@ namespace Adventure.Services
             WriteIndented = true,
         };
 
-        public PersistenceWriter(ILogger<PersistenceWriter> logger, Persistence persistence, IGenesysModule genesysModule, ISeedProvider seedProvider, Options options)
+        public PersistenceWriter(ILogger<PersistenceWriter> logger, Persistence persistence, IGenesysModule genesysModule, ISeedProvider seedProvider, GameOptions options)
         {
             this.logger = logger;
             this.persistence = persistence;

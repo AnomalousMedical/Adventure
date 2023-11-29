@@ -19,13 +19,13 @@ class SoundEffectPlayer : ISoundEffectPlayer
 {
     private readonly SoundManager soundManager;
     private readonly VirtualFileSystem virtualFileSystem;
-    private readonly Options options;
+    private readonly GameOptions options;
 
     public SoundEffectPlayer
     (
         SoundManager soundManager,
         VirtualFileSystem virtualFileSystem,
-        Options options
+        GameOptions options
     )
     {
         this.soundManager = soundManager;

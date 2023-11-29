@@ -14,7 +14,7 @@ namespace Adventure.Menu
         public const float LoadButtonsLayer = 0.15f;
 
         private readonly IScaleHelper scaleHelper;
-        private readonly Options options;
+        private readonly GameOptions options;
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private readonly NativeOSWindow nativeOSWindow;
@@ -38,7 +38,7 @@ namespace Adventure.Menu
         public OptionsMenu
         (
             IScaleHelper scaleHelper,
-            Options options,
+            GameOptions options,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
             NativeOSWindow nativeOSWindow,

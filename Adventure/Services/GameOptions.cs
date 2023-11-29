@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
-    class Options
+    class GameOptions
     {
         public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.D3D12;
 

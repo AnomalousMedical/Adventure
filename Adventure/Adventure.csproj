@@ -6,6 +6,7 @@
 	<ApplicationIcon>Adventure.ico</ApplicationIcon>
     <Configurations>Debug;Release;RelMDeb</Configurations>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

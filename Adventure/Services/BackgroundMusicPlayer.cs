@@ -42,7 +42,7 @@ namespace Adventure
         private readonly VirtualFileSystem virtualFileSystem;
         private readonly SoundManager soundManager;
         private readonly ICoroutineRunner coroutineRunner;
-        private readonly Options options;
+        private readonly GameOptions options;
         private SoundAndSource bgMusicSound;
         private bool bgMusicFinished = false;
         private String currentBackgroundSong;
@@ -53,7 +53,7 @@ namespace Adventure
             VirtualFileSystem virtualFileSystem,
             SoundManager soundManager,
             ICoroutineRunner coroutineRunner,
-            Options options)
+            GameOptions options)
         {
             this.virtualFileSystem = virtualFileSystem;
             this.soundManager = soundManager;

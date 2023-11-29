@@ -12,16 +12,18 @@ using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
-    class OptionsWriter : IDisposable
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(GameOptions))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    internal partial class SourceGenerationContext : JsonSerializerContext
     {
-        private Options options;
-        private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-        {
-            Converters = { new JsonStringEnumConverter() },
-            WriteIndented = true,
-        };
+    }
 
-        public OptionsWriter()
+    class GameOptionsWriter : IDisposable
+    {
+        private GameOptions options;
+
+        public GameOptionsWriter()
         {
         }
 
@@ -38,29 +40,24 @@ namespace Adventure.Services
 
             var outFile = GetFile();
             using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-            JsonSerializer.Serialize(stream, options, jsonSerializerOptions);
+            JsonSerializer.Serialize(stream, options, SourceGenerationContext.Default.GameOptions);
         }
 
-        public Options Load()
+        public GameOptions Load()
         {
             var outFile = GetFile();
 
             if (!File.Exists(outFile))
             {
-                options = new Options();
+                options = new GameOptions();
             }
             else
             {
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                options = JsonSerializer.Deserialize<Options>(stream, jsonSerializerOptions);
+                options = JsonSerializer.Deserialize<GameOptions>(stream, SourceGenerationContext.Default.GameOptions);
             }
 
-            var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddCommandLine(Environment.GetCommandLineArgs());
-            var envConfiguration = configBuilder.Build();
-            envConfiguration.Bind(options);
-
-            return options ?? new Options();
+            return options ?? new GameOptions();
         }
 
         private String GetFile()
