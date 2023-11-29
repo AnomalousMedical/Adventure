@@ -23,14 +23,6 @@ namespace Adventure.Services
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(Persistence))]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [JsonSerializable(typeof(PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerPersistenceData")]
-    [JsonSerializable(typeof(PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerUniqueStolenTreasureData")]
-    [JsonSerializable(typeof(PersistenceEntry<TreasureTrigger.TreasureTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryTreasureTriggerPersistenceData")]
-    [JsonSerializable(typeof(PersistenceEntry<PartyMemberTrigger.PartyMemberTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryPartyMemberTriggerPersistenceData")]
-    [JsonSerializable(typeof(PersistenceEntry<Key.KeyPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryKeyPersistenceData")]
-
-    //[JsonSerializable(typeof(Dictionary<PersistenceEntry<BattleTrigger.PersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerPersistenceData")]
     internal partial class PersistenceWriterSourceGenerationContext : JsonSerializerContext
     {
     }
