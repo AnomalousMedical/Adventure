@@ -12,13 +12,6 @@ using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(GameOptions))]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    internal partial class SourceGenerationContext : JsonSerializerContext
-    {
-    }
-
     class GameOptionsWriter : IDisposable
     {
         private GameOptions options;
@@ -40,7 +33,7 @@ namespace Adventure.Services
 
             var outFile = GetFile();
             using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-            JsonSerializer.Serialize(stream, options, SourceGenerationContext.Default.GameOptions);
+            JsonSerializer.Serialize(stream, options, GameOptionsSourceGenerationContext.Default.GameOptions);
         }
 
         public GameOptions Load()
@@ -54,7 +47,7 @@ namespace Adventure.Services
             else
             {
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                options = JsonSerializer.Deserialize<GameOptions>(stream, SourceGenerationContext.Default.GameOptions);
+                options = JsonSerializer.Deserialize<GameOptions>(stream, GameOptionsSourceGenerationContext.Default.GameOptions);
             }
 
             return options ?? new GameOptions();

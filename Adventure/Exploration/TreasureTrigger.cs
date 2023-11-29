@@ -30,7 +30,7 @@ class TreasureTrigger : IDisposable, IZonePlaceable
         public ITreasure Treasure { get; set; }
     }
 
-    public record struct PersistenceData(bool Open);
+    public record struct TreasureTriggerPersistenceData(bool Open);
 
     private readonly RTInstances<ZoneScene> rtInstances;
     private readonly IDestructionRequest destructionRequest;
@@ -51,7 +51,7 @@ class TreasureTrigger : IDisposable, IZonePlaceable
     private bool physicsCreated = false;
     private int zoneIndex;
     private int instanceId;
-    private PersistenceData state;
+    private TreasureTriggerPersistenceData state;
     private List<ITreasure> treasure = new List<ITreasure>();
 
     private Vector3 currentPosition;

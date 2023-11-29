@@ -49,7 +49,7 @@ namespace Adventure
         private bool physicsCreated = false;
         private bool graphicsVisible = false;
         private bool graphicsLoaded = false;
-        private Key.PersistenceData state;
+        private Key.KeyPersistenceData state;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;

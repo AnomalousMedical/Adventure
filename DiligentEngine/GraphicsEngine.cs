@@ -9,6 +9,7 @@ using Uint32 = System.UInt32;
 using Uint64 = System.UInt64;
 using Float32 = System.Single;
 using Uint16 = System.UInt16;
+using System.Text.Json.Serialization;
 
 namespace DiligentEngine
 {
@@ -20,6 +21,7 @@ namespace DiligentEngine
             RayTracing = 1 << 1,
         };
 
+        [JsonConverter(typeof(JsonStringEnumConverter<GraphicsEngine.RenderApi>))]
         public enum RenderApi : Uint32
         {
             Vulkan = 0,

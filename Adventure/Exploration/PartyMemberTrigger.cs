@@ -39,7 +39,7 @@ namespace Adventure.Exploration
         public const int RightHand = 0;
         public const int LeftHand = 1;
 
-        public record struct PersistenceData(bool Found);
+        public record struct PartyMemberTriggerPersistenceData(bool Found);
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -62,7 +62,7 @@ namespace Adventure.Exploration
         private bool physicsCreated = false;
         private int zoneIndex;
         private int instanceId;
-        private PersistenceData state;
+        private PartyMemberTriggerPersistenceData state;
         private PartyMember partyMember;
         private bool graphicsVisible = false;
         private bool graphicsLoaded;

@@ -35,8 +35,8 @@ namespace Adventure
             public bool IsBoss { get; set; }
         }
 
-        public record struct PersistenceData(bool Dead, bool StolenFrom);
-        private PersistenceData state;
+        public record struct BattleTriggerPersistenceData(bool Dead, bool StolenFrom);
+        private BattleTriggerPersistenceData state;
 
         public record struct UniqueStolenTreasureData(bool Stolen);
 
@@ -300,9 +300,9 @@ namespace Adventure
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
         }
 
-        private static PersistenceData GetState(Description description, Persistence persistence)
+        private static BattleTriggerPersistenceData GetState(Description description, Persistence persistence)
         {
-            PersistenceData result;
+            BattleTriggerPersistenceData result;
             if (description.IsBoss)
             {
                 result = persistence.Current.BossBattleTriggers.GetData(description.Zone, description.Index);
@@ -314,7 +314,7 @@ namespace Adventure
             return result;
         }
 
-        private static void SetState(Description description, Persistence persistence, PersistenceData data)
+        private static void SetState(Description description, Persistence persistence, BattleTriggerPersistenceData data)
         {
             if (description.IsBoss)
             {

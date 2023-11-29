@@ -31,7 +31,7 @@ namespace Adventure
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
-        public record struct PersistenceData(bool Taken, bool GateOpened);
+        public record struct KeyPersistenceData(bool Taken, bool GateOpened);
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -51,7 +51,7 @@ namespace Adventure
         private bool graphicsCreated = false;
         private int zoneIndex;
         private int instanceId;
-        private PersistenceData state;
+        private KeyPersistenceData state;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;

@@ -3,10 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Adventure.Services
 {
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(GameOptions))]
+    internal partial class GameOptionsSourceGenerationContext : JsonSerializerContext
+    {
+    }
+
     class GameOptions
     {
         public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.D3D12;

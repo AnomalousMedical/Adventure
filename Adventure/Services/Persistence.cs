@@ -1,12 +1,16 @@
 ﻿using Adventure.Exploration;
 using Adventure.Items;
+using DiligentEngine;
 using Engine;
 using RpgMath;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using static Adventure.Services.Persistence;
 
 namespace Adventure.Services
 {
+    [JsonConverter(typeof(JsonStringEnumConverter<PlotItems>))]
     enum PlotItems
     {
         PortalKey0,
@@ -15,6 +19,20 @@ namespace Adventure.Services
         Phase1Shop,
         Phase2Shop,
         Phase3Shop,
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(Persistence))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonSerializable(typeof(PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerPersistenceData")]
+    [JsonSerializable(typeof(PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerUniqueStolenTreasureData")]
+    [JsonSerializable(typeof(PersistenceEntry<TreasureTrigger.TreasureTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryTreasureTriggerPersistenceData")]
+    [JsonSerializable(typeof(PersistenceEntry<PartyMemberTrigger.PartyMemberTriggerPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryPartyMemberTriggerPersistenceData")]
+    [JsonSerializable(typeof(PersistenceEntry<Key.KeyPersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryKeyPersistenceData")]
+
+    //[JsonSerializable(typeof(Dictionary<PersistenceEntry<BattleTrigger.PersistenceData>), TypeInfoPropertyName = "GenericAdventureServicesPersistenceEntryBattleTriggerPersistenceData")]
+    internal partial class PersistenceWriterSourceGenerationContext : JsonSerializerContext
+    {
     }
 
     class Persistence
@@ -27,21 +45,21 @@ namespace Adventure.Services
 
         public class GameState
         {
-            public PersistenceEntry<BattleTrigger.PersistenceData> BattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+            public PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData> BattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData>();
 
             public bool IsBossDead(int zoneIndex) => BossBattleTriggers.GetData(zoneIndex, 0).Dead;
 
-            public PersistenceEntry<BattleTrigger.PersistenceData> BossBattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.PersistenceData>();
+            public PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData> BossBattleTriggers { get; init; } = new PersistenceEntry<BattleTrigger.BattleTriggerPersistenceData>();
 
             public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
 
             public PersistenceEntry<BattleTrigger.UniqueStolenTreasureData> UniqueBossStolenTreasure { get; init; } = new PersistenceEntry<BattleTrigger.UniqueStolenTreasureData>();
 
-            public PersistenceEntry<TreasureTrigger.PersistenceData> TreasureTriggers { get; init; } = new PersistenceEntry<TreasureTrigger.PersistenceData>();
+            public PersistenceEntry<TreasureTrigger.TreasureTriggerPersistenceData> TreasureTriggers { get; init; } = new PersistenceEntry<TreasureTrigger.TreasureTriggerPersistenceData>();
 
-            public PersistenceEntry<PartyMemberTrigger.PersistenceData> PartyMemberTriggers { get; init; } = new PersistenceEntry<PartyMemberTrigger.PersistenceData>();
+            public PersistenceEntry<PartyMemberTrigger.PartyMemberTriggerPersistenceData> PartyMemberTriggers { get; init; } = new PersistenceEntry<PartyMemberTrigger.PartyMemberTriggerPersistenceData>();
 
-            public PersistenceEntry<Key.PersistenceData> Keys { get; init; } = new PersistenceEntry<Key.PersistenceData>();
+            public PersistenceEntry<Key.KeyPersistenceData> Keys { get; init; } = new PersistenceEntry<Key.KeyPersistenceData>();
 
             public ZoneData Zone { get; init; } = new ZoneData();
 

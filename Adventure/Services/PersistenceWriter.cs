@@ -28,11 +28,6 @@ namespace Adventure.Services
         private readonly ISeedProvider seedProvider;
         private readonly GameOptions options;
         private HashSet<object> saveBlockers = new HashSet<object>();
-        private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-        {
-            Converters = { new JsonStringEnumConverter() },
-            WriteIndented = true,
-        };
 
         public PersistenceWriter(ILogger<PersistenceWriter> logger, Persistence persistence, IGenesysModule genesysModule, ISeedProvider seedProvider, GameOptions options)
         {
@@ -109,7 +104,7 @@ namespace Adventure.Services
             {
                 logger.LogInformation($"Loading save from '{outFile}'.");
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return JsonSerializer.Deserialize<Persistence.GameState>(stream, jsonSerializerOptions);
+                return JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
             }
         }
 
@@ -117,10 +112,10 @@ namespace Adventure.Services
         {
             var outFile = GetSaveFile();
             using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-            JsonSerializer.Serialize(stream, state, jsonSerializerOptions);
+            JsonSerializer.Serialize(stream, state, PersistenceWriterSourceGenerationContext.Default.GameState);
             logger.LogInformation($"Wrote save to '{outFile}'.");
         }
-
+        
         private String GetSaveFile()
         {
             var outDir = GetSaveDirectory();

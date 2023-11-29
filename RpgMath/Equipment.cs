@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace RpgMath
 {
+    [JsonConverter(typeof(JsonStringEnumConverter<EquipmentTier>))]
     public enum EquipmentTier
     {
         Tier1,

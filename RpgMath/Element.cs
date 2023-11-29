@@ -1,5 +1,8 @@
-﻿namespace RpgMath
+﻿using System.Text.Json.Serialization;
+
+namespace RpgMath
 {
+    [JsonConverter(typeof(JsonStringEnumConverter<Element>))]
     public enum Element
     {
         None = 0,
