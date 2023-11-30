@@ -262,7 +262,7 @@ namespace Adventure.WorldMap
                     new StaticDescription(
                         currentPosition.ToSystemNumerics(),
                         Quaternion.Identity.ToSystemNumerics(),
-                        new CollidableDescription(shapeIndex, 0.1f)));
+                        shapeIndex));
 
                 bepuScene.RegisterCollisionListener(new CollidableReference(staticHandle), collisionEvent: HandleCollision, endEvent: HandleCollisionEnd);
             }

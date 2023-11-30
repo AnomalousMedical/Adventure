@@ -655,7 +655,7 @@ namespace Adventure
                     new StaticDescription(
                         (boundary.Position + currentPosition).ToSystemNumerics(),
                         orientation.ToSystemNumerics(),
-                        new CollidableDescription(floorCubeShapeIndex, 0.1f)));
+                        floorCubeShapeIndex));
 
                 staticHandles.Add(staticHandle);
             }
@@ -666,7 +666,7 @@ namespace Adventure
                     new StaticDescription(
                         (boundary + currentPosition).ToSystemNumerics(),
                         boundaryOrientation,
-                        new CollidableDescription(boundaryCubeShapeIndex, 0.1f)));
+                        boundaryCubeShapeIndex));
 
                 staticHandles.Add(staticHandle);
             }
