@@ -66,7 +66,7 @@ namespace Adventure
 
             services.AddOSPlatform(pluginManager, o =>
             {
-                o.EventLayersType = typeof(EventLayers);
+                o.LayerKeys = Enum.GetValues<EventLayers>();
                 o.EventManagerCreated = em =>
                 {
                     em.InputModeSwitched += ems =>

@@ -7,31 +7,12 @@ namespace Engine
 {
     public class WrapperCollection<T> : IDisposable
     {
-        private static readonly String DISPOSABLE_INTERFACE_NAME = typeof(IDisposable).FullName;
-
         public delegate T CreateWrapper(IntPtr nativeObject, object[] args);
         public delegate void DestroyWrapper(T wrapper);
 
         private Dictionary<IntPtr, T> ptrDictionary = new Dictionary<IntPtr, T>();
         private CreateWrapper createCallback;
         private DestroyWrapper destroyCallback;
-
-        /// <summary>
-        /// This constructor can be used for objects that implement IDisposable.
-        /// </summary>
-        /// <param name="createCallback">The wrapper to call to create the object.</param>
-        public WrapperCollection(CreateWrapper createCallback)
-        {
-            if (typeof(T).GetInterface(DISPOSABLE_INTERFACE_NAME) != null)
-            {
-                this.createCallback = createCallback;
-                this.destroyCallback = disposableDelete;
-            }
-            else
-            {
-                throw new Exception("Tried to create a WrapperCollection for type {0} that is not IDisposable. Please explicitly defind a destroyCallback and use the other constructor for this type.");
-            }
-        }
 
         /// <summary>
         /// This constructor can be used for objects that need a custom destroy method.

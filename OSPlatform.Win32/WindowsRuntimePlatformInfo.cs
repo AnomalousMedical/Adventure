@@ -44,7 +44,7 @@ namespace Anomalous.OSPlatform.Win32
             try
             {
                 //Check bitness and determine path 
-                String executionPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                String executionPath = Path.GetDirectoryName(AppContext.BaseDirectory);
                 String nativeLibPath;
                 if (Environment.Is64BitProcess)
                 {
