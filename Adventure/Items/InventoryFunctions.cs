@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Items.Actions;
+using Adventure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using RpgMath;
 using System;
@@ -35,7 +36,60 @@ class InventoryFunctions : IInventoryFunctions
             return null;
         }
 
-        var type = Type.GetType($"Adventure.Items.Actions.{item.Action}");
+        Type type;
+
+        switch (item.Action)
+        {
+            case nameof(EquipMainHand):
+                type = typeof(EquipMainHand);
+                break;
+            case nameof(EquipOffHand):
+                type = typeof(EquipOffHand);
+                break;
+            case nameof(EquipAccessory):
+                type = typeof(EquipAccessory);
+                break;
+            case nameof(EquipBody):
+                type = typeof(EquipBody);
+                break;
+            case nameof(LevelBoost):
+                type = typeof(LevelBoost);
+                break;
+            case nameof(StrengthBoost):
+                type = typeof(StrengthBoost);
+                break;
+            case nameof(MagicBoost):
+                type = typeof(MagicBoost);
+                break;
+            case nameof(SpiritBoost):
+                type = typeof(SpiritBoost);
+                break;
+            case nameof(VitalityBoost):
+                type = typeof(VitalityBoost);
+                break;
+            case nameof(DexterityBoost):
+                type = typeof(DexterityBoost);
+                break;
+            case nameof(LuckBoost):
+                type = typeof(LuckBoost);
+                break;
+
+            case nameof(RestoreHp):
+                type = typeof(RestoreHp);
+                break;
+
+            case nameof(RestoreMp):
+                type = typeof(RestoreMp);
+                break;
+
+            case nameof(Revive):
+                type = typeof(Revive);
+                break;
+
+            default: 
+                throw new NotImplementedException(item.Action);
+        }
+
         var action = serviceProvider.GetRequiredService(type) as IInventoryAction;
 
         return action;
