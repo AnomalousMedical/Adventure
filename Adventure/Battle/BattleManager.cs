@@ -472,6 +472,7 @@ namespace Adventure.Battle
             {
                 placeable.RequestDestruction();
             }
+            bgItems.Clear();
 
             battleArena?.RequestDestruction();
 
