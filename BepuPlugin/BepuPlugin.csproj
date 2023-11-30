@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Dependencies\bepuphysics2\BepuPhysics\BepuPhysics.csproj" />
-    <ProjectReference Include="..\..\Dependencies\bepuphysics2\BepuUtilities\BepuUtilities.csproj" />
+	  <ProjectReference Include="..\BepuPhysics\BepuPhysics.csproj" />
+	  <ProjectReference Include="..\BepuUtilities\BepuUtilities.csproj" />
     <ProjectReference Include="..\Engine\Engine.csproj" />
   </ItemGroup>
 
