@@ -45,7 +45,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(TwistServoTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new TwistServoTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

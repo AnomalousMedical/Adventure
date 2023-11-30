@@ -250,7 +250,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact1OneBodyTypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact1OneBodyTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact1OneBodyTypeProcessor();
 
     }
 
@@ -422,7 +422,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact2OneBodyTypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact2OneBodyTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact2OneBodyTypeProcessor();
 
     }
 
@@ -607,7 +607,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact3OneBodyTypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact3OneBodyTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact3OneBodyTypeProcessor();
 
     }
 
@@ -806,7 +806,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact4OneBodyTypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact4OneBodyTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact4OneBodyTypeProcessor();
 
     }
 
@@ -1004,7 +1004,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact1TypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact1TypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact1TypeProcessor();
 
     }
 
@@ -1192,7 +1192,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact2TypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact2TypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact2TypeProcessor();
 
     }
 
@@ -1394,7 +1394,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact3TypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact3TypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact3TypeProcessor();
 
     }
 
@@ -1611,7 +1611,7 @@ namespace BepuPhysics.Constraints.Contact
             get => Contact4TypeProcessor.BatchTypeId;
         }
 
-        public Type TypeProcessorType => typeof(Contact4TypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new Contact4TypeProcessor();
 
     }
 

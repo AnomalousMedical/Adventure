@@ -62,7 +62,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(DistanceLimitTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new DistanceLimitTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

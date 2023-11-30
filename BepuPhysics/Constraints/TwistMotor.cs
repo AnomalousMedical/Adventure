@@ -39,7 +39,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(TwistMotorTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new TwistMotorTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

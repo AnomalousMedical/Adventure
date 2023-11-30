@@ -44,7 +44,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(SwingLimitTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new SwingLimitTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

@@ -35,7 +35,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(BallSocketTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new BallSocketTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

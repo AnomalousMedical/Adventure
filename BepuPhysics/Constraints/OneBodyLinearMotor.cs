@@ -35,7 +35,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(OneBodyLinearMotorTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new OneBodyLinearMotorTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

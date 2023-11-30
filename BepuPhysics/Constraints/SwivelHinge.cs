@@ -43,7 +43,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(SwivelHingeTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new SwivelHingeTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

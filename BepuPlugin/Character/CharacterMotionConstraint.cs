@@ -67,7 +67,7 @@ namespace BepuPlugin.Characters
         /// <summary>
         /// Gets the TypeProcessor type that is associated with this description.
         /// </summary>
-        public Type TypeProcessorType => typeof(StaticCharacterMotionTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new StaticCharacterMotionTypeProcessor();
 
         //Note that these mapping functions use a "GetOffsetInstance" function. Each CharacterMotionPrestep is a bundle of multiple constraints;
         //by grabbing an offset instance, we're selecting a specific slot in the bundle to modify. For simplicity and to guarantee consistency of field strides,
@@ -366,7 +366,7 @@ namespace BepuPlugin.Characters
         /// <summary>
         /// Gets the TypeProcessor type that is associated with this description.
         /// </summary>
-        public Type TypeProcessorType => typeof(DynamicCharacterMotionTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new DynamicCharacterMotionTypeProcessor();
 
         //Note that these mapping functions use a "GetOffsetInstance" function. Each CharacterMotionPrestep is a bundle of multiple constraints;
         //by grabbing an offset instance, we're selecting a specific slot in the bundle to modify. For simplicity and to guarantee consistency of field strides,

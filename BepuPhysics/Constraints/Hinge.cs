@@ -43,7 +43,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(HingeTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new HingeTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

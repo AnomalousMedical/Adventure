@@ -35,7 +35,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(AngularServoTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new AngularServoTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

@@ -39,7 +39,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(OneBodyLinearServoTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new OneBodyLinearServoTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

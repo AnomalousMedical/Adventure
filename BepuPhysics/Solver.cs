@@ -209,13 +209,14 @@ namespace BepuPhysics
                 //This also means we can just take the current type processors length as an accurate measure of type capacity for constraint batches.
                 Array.Resize(ref TypeProcessors, description.ConstraintTypeId + 1);
             }
+
+            var processor = description.CreateTypeProcessor();
             if (TypeProcessors[description.ConstraintTypeId] == null)
             {
-                var processor = (TypeProcessor)Activator.CreateInstance(description.TypeProcessorType);
                 TypeProcessors[description.ConstraintTypeId] = processor;
                 processor.Initialize(description.ConstraintTypeId);
             }
-            else if (TypeProcessors[description.ConstraintTypeId].GetType() != description.TypeProcessorType)
+            else if (TypeProcessors[description.ConstraintTypeId].GetType() != processor.GetType())
             {
                 throw new ArgumentException(
                     $"Type processor {TypeProcessors[description.ConstraintTypeId].GetType().Name} has already been registered for this description's type id " +
@@ -625,9 +626,9 @@ namespace BepuPhysics
         public ConstraintHandle Add<TDescription>(Span<BodyHandle> bodyHandles, ref TDescription description)
             where TDescription : unmanaged, IConstraintDescription<TDescription>
         {
-            Debug.Assert(description.ConstraintTypeId >= 0 && description.ConstraintTypeId < TypeProcessors.Length &&
-                TypeProcessors[description.ConstraintTypeId].GetType() == description.TypeProcessorType,
-                "The description's constraint type and type processor don't match what has been registered in the solver. Did you forget to register the constraint type?");
+            //Debug.Assert(description.ConstraintTypeId >= 0 && description.ConstraintTypeId < TypeProcessors.Length &&
+            //    TypeProcessors[description.ConstraintTypeId].GetType() == description.TypeProcessorType,
+            //    "The description's constraint type and type processor don't match what has been registered in the solver. Did you forget to register the constraint type?");
             Debug.Assert(bodyHandles.Length == TypeProcessors[description.ConstraintTypeId].BodiesPerConstraint,
                 "The number of bodies supplied to a constraint add must match the expected number of bodies involved in that constraint type. Did you use the wrong Solver.Add overload?");
             //Adding a constraint assumes that the involved bodies are active, so wake up anything that is sleeping.

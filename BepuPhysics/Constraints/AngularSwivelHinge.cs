@@ -35,7 +35,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(AngularSwivelHingeTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new AngularSwivelHingeTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {

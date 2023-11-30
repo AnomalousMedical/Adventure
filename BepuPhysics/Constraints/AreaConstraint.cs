@@ -46,7 +46,7 @@ namespace BepuPhysics.Constraints
             }
         }
 
-        public Type TypeProcessorType => typeof(AreaConstraintTypeProcessor);
+        public TypeProcessor CreateTypeProcessor() => new AreaConstraintTypeProcessor();
 
         public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
