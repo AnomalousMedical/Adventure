@@ -120,7 +120,7 @@ namespace SharpGui
             MyGUIFontLoader_DestoryFont(objPtr);
         }
 
-        public const String LibraryName = "MyGUIFontLoader.dll";
+        public const String LibraryName = "MyGUIFontLoader";
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr MyGUIFontLoader_LoadFont(ref MyGUITrueTypeFontDesc fontDesc, byte[] fontBuffer, UIntPtr fontBufferSize);
