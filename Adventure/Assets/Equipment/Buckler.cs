@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class Buckler : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Buckler();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Buckler.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

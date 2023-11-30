@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class IonicShreadEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new IonicShreadEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/ionicshread_429x429.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

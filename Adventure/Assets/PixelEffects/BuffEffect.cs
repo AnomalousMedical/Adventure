@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class BuffEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new BuffEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/buff_273x273.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

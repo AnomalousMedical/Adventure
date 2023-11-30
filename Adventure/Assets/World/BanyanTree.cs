@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class BanyanTree : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new BanyanTree();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/BanyanTree.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

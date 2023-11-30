@@ -11,6 +11,8 @@ namespace Adventure.Assets.Enemies
 {
     class WanderingMushroomNew : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new WanderingMushroomNew();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 21f;
         const float SpriteStepX = 32f / SpriteWidth;

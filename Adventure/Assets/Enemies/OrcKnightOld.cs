@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class OrcKnightOld : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new OrcKnightOld();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 32f / SpriteWidth;

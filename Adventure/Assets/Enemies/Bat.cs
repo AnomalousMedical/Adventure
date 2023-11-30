@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class Bat : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Bat();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 32f / SpriteWidth;

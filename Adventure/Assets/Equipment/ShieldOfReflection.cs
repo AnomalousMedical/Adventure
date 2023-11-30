@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class ShieldOfReflection : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new ShieldOfReflection();
+
         private const string colorMap = "Graphics/Sprites/Crawl/Shields/shield_of_reflection.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

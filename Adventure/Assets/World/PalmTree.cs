@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class PalmTree : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new PalmTree();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/PalmTree.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class Wolf : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Wolf();
+
         const float SpriteWidth = 102f;
         const float SpriteHeight = 54f;
         const float SpriteStepX = 51f / SpriteWidth;

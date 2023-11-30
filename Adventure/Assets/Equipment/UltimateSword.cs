@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class UltimateSword : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new UltimateSword();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/UltimateSword.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class SalamanderFirebrand : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new SalamanderFirebrand();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 32f / SpriteWidth;

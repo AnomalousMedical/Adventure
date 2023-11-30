@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class Skeleton : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Skeleton();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 32f / SpriteWidth;

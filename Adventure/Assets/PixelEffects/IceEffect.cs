@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class IceEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new IceEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/ice_257x253.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

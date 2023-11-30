@@ -6,6 +6,8 @@ namespace Adventure.Assets.World;
 
 class Signpost : ISpriteAsset
 {
+    public ISpriteAsset CreateAnotherInstance() => new Signpost();
+
     private const string colorMap = "Graphics/Sprites/Anomalous/World/Signpost.png";
     private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
     {

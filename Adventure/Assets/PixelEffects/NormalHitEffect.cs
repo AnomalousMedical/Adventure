@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class NormalHitEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new NormalHitEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/normalhit_504x459.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

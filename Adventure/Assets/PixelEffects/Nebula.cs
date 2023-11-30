@@ -7,6 +7,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class Nebula : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Nebula();
+
         private const string colorMap = "Graphics/Sprites/FreePixelEffectsPack/12_nebula_spritesheet.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
 

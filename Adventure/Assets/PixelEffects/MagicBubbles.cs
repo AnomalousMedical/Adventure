@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class MagicBubbles : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new MagicBubbles();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/heal_347x341.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

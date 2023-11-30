@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class ElectricEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new ElectricEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/electric_357x295.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

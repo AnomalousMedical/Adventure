@@ -10,6 +10,7 @@ namespace Adventure.Assets.World
 {
     class RoundKey : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new RoundKey();
         private const string colorMap = "Graphics/Sprites/OpenGameArt/BizmasterStudios/RoundKey.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

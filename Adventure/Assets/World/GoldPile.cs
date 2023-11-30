@@ -7,6 +7,8 @@ namespace Adventure.Assets.World
 {
     class GoldPile : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new GoldPile();
+
         private const string colorMap = "Graphics/Sprites/Crawl/World/gold_pile_16.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

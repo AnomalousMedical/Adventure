@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class BattleAxe6 : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new BattleAxe6();
+
         private const string colorMap = "Graphics/Sprites/Crawl/Weapons/battle_axe_6.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class DaggerNew : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new DaggerNew();
+
         private const string colorMap = "Graphics/Sprites/Crawl/Weapons/dagger_new.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

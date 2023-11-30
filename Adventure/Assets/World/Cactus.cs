@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class Cactus : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Cactus();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/Cactus.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

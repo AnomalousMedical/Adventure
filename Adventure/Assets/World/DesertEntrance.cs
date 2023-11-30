@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class DesertEntrance : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new DesertEntrance();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/DesertEntrance.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

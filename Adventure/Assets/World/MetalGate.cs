@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class MetalGate : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new MetalGate();
+
         private const string colorMap = "Graphics/Sprites/OpenGameArt/bee/MetalGate.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

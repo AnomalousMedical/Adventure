@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class ThornHunter : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new ThornHunter();
+
         const float SpriteWidth = 64f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 32f / SpriteWidth;

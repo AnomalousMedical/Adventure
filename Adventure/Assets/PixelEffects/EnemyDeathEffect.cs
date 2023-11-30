@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class EnemyDeathEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new EnemyDeathEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/enemydeath_85x135.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

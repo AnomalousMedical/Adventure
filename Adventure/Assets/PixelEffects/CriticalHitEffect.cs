@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class CriticalHitEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new CriticalHitEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/BigHit_64x59.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

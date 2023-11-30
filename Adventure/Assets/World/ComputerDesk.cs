@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class ComputerDesk : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new ComputerDesk();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/ComputerDesk.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

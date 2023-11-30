@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class MaceLarge2New : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new MaceLarge2New();
+
         public Quaternion GetOrientation()
         {
             return new Quaternion(0, MathFloat.PI / 4f, 0);

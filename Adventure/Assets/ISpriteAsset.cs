@@ -18,10 +18,6 @@ namespace Adventure.Assets
 
         void SetupSwap(float h, float s, float l) { }
 
-        public ISpriteAsset CreateAnotherInstance()
-        {
-            var t = GetType();
-            return (ISpriteAsset)t.GetConstructor(new Type[0]).Invoke(new object[0]);
-        }
+        ISpriteAsset CreateAnotherInstance();
     }
 }

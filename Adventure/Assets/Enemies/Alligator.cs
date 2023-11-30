@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class Alligator : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Alligator();
+
         const float SpriteWidth = 40f;
         const float SpriteHeight = 20f;
         const float SpriteStepX = 40f / SpriteWidth;

@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class FireEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new FireEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/magma_349x329.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

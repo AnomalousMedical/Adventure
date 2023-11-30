@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class Spear2Old : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Spear2Old();
+
         private const string colorMap = "Graphics/Sprites/Crawl/Weapons/spear_2_old.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

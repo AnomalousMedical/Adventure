@@ -8,6 +8,8 @@ namespace Adventure.Assets.Equipment
 {
     class UltimateDagger : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new UltimateDagger();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/UltimateDagger.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

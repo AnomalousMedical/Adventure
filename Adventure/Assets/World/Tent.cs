@@ -10,6 +10,7 @@ namespace Adventure.Assets.World
 {
     class Tent : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Tent();
         //Threax drew this one
         private const string colorMap = "Graphics/Sprites/Anomalous/Tent.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>

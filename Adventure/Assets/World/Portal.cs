@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class Portal : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Portal();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/Portal.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

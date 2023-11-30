@@ -7,6 +7,7 @@ namespace Adventure.Assets.World
 {
     class TreasureChest : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new TreasureChest();
         private const string colorMap = "Graphics/Sprites/OpenGameArt/Bonsaiheldin/treasure_chests_32x32.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {

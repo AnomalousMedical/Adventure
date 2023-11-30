@@ -10,6 +10,8 @@ namespace Adventure.Assets.World
 {
     class Gargoyle : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Gargoyle();
+
         private const uint WingDarkGray = 0xff606060;
         private const uint WingLightGray = 0xffc0c0c0;
         private const uint FaceArms = 0xffa0a0a0;

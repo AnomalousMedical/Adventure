@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class FireSpin : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new FireSpin();
+
         private const string colorMap = "Graphics/Sprites/FreePixelEffectsPack/7_firespin_spritesheet.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

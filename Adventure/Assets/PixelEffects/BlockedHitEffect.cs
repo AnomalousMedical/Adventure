@@ -11,6 +11,8 @@ namespace Adventure.Assets.PixelEffects
 {
     class BlockedHitEffect : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new BlockedHitEffect();
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/blockedhit_289x377.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

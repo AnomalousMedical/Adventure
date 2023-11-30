@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class Staff07 : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Staff07();
+
         public const uint Staff = 0xff9f7f66;//Staff (brown)
         public const uint Crystal = 0xff3722af;//Crystal (purple)
 

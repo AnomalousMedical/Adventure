@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class Greatsword01 : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new Greatsword01();
+
         public Quaternion GetOrientation()
         {
             return new Quaternion(0, MathFloat.PI / 4f, 0);

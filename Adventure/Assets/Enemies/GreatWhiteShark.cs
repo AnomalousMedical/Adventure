@@ -7,6 +7,8 @@ namespace Adventure.Assets.Enemies
 {
     class GreatWhiteShark : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new GreatWhiteShark();
+
         const float SpriteWidth = 63f;
         const float SpriteHeight = 32f;
         const float SpriteStepX = 63f / SpriteWidth;

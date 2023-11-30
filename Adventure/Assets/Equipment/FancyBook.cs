@@ -7,6 +7,8 @@ namespace Adventure.Assets.Equipment
 {
     class FancyBook : ISpriteAsset
     {
+        public ISpriteAsset CreateAnotherInstance() => new FancyBook();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/FancyBook.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
