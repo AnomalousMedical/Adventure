@@ -37,6 +37,7 @@ namespace BepuPlugin.Characters
         {
             pairMaterial = new PairMaterialProperties { FrictionCoefficient = 1, MaximumRecoveryVelocity = 2, SpringSettings = new SpringSettings(30, 1) };
             Characters.TryReportContacts(pair, ref manifold, workerIndex, ref pairMaterial);
+            events.HandleManifold(workerIndex, pair, ref manifold);
             return true;
         }
 
