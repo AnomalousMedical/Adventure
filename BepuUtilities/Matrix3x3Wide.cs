@@ -113,6 +113,17 @@ namespace BepuUtilities
             result.Y = v.X * m.X.Y + v.Y * m.Y.Y + v.Z * m.Z.Y;
             result.Z = v.X * m.X.Z + v.Y * m.Y.Z + v.Z * m.Z.Z;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3Wide operator *(Vector3Wide v, Matrix3x3Wide m)
+        {
+            Vector3Wide result;
+            result.X = v.X * m.X.X + v.Y * m.Y.X + v.Z * m.Z.X;
+            result.Y = v.X * m.X.Y + v.Y * m.Y.Y + v.Z * m.Z.Y;
+            result.Z = v.X * m.X.Z + v.Y * m.Y.Z + v.Z * m.Z.Z;
+            return result;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void TransformByTransposedWithoutOverlap(in Vector3Wide v, in Matrix3x3Wide m, out Vector3Wide result)
         {
@@ -167,6 +178,22 @@ namespace BepuUtilities
             skew.Z.X = -v.Y;
             skew.Z.Y = v.X;
             skew.Z.Z = Vector<float>.Zero;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Matrix3x3Wide CreateCrossProduct(in Vector3Wide v) //TODO: this has some weird codegen on .NET 6 preview 5.
+        {
+            Matrix3x3Wide skew;
+            skew.X.X = Vector<float>.Zero;
+            skew.X.Y = -v.Z;
+            skew.X.Z = v.Y;
+            skew.Y.X = v.Z;
+            skew.Y.Y = Vector<float>.Zero;
+            skew.Y.Z = -v.X;
+            skew.Z.X = -v.Y;
+            skew.Z.Y = v.X;
+            skew.Z.Z = Vector<float>.Zero;
+            return skew;
         }
 
         /// <summary>
@@ -235,6 +262,35 @@ namespace BepuUtilities
             result.Z.X = XZ + YW;
             result.Z.Y = YZ - XW;
             result.Z.Z = Vector<float>.One - XX - YY;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Subtract(in Matrix3x3Wide a, in Matrix3x3Wide b, out Matrix3x3Wide result)
+        {
+            result.X.X = a.X.X - b.X.X;
+            result.X.Y = a.X.Y - b.X.Y;
+            result.X.Z = a.X.Z - b.X.Z;
+            result.Y.X = a.Y.X - b.Y.X;
+            result.Y.Y = a.Y.Y - b.Y.Y;
+            result.Y.Z = a.Y.Z - b.Y.Z;
+            result.Z.X = a.Z.X - b.Z.X;
+            result.Z.Y = a.Z.Y - b.Z.Y;
+            result.Z.Z = a.Z.Z - b.Z.Z;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Matrix3x3Wide operator -(in Matrix3x3Wide a, in Matrix3x3Wide b)
+        {
+            Matrix3x3Wide result;
+            result.X.X = a.X.X - b.X.X;
+            result.X.Y = a.X.Y - b.X.Y;
+            result.X.Z = a.X.Z - b.X.Z;
+            result.Y.X = a.Y.X - b.Y.X;
+            result.Y.Y = a.Y.Y - b.Y.Y;
+            result.Y.Z = a.Y.Z - b.Y.Z;
+            result.Z.X = a.Z.X - b.Z.X;
+            result.Z.Y = a.Z.Y - b.Z.Y;
+            result.Z.Z = a.Z.Z - b.Z.Z;
+            return result;
         }
 
         /// <summary>

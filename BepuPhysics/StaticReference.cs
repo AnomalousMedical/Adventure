@@ -49,33 +49,38 @@ namespace BepuPhysics
         /// <summary>
         /// Gets a the static's index in the statics collection.
         /// </summary>
-        public int Index
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return Statics.HandleToIndex[Handle.Value]; }
-        }
+        public int Index => Statics.HandleToIndex[Handle.Value];
+
+        /// <summary>
+        /// Gets a reference to the entirety of the static's memory.
+        /// </summary>
+        public ref Static Static => ref Statics.GetDirectReference(Handle);
 
         /// <summary>
         /// Gets a reference to the static's pose.
         /// </summary>
-        public ref RigidPose Pose
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return ref Statics.Poses[Statics.HandleToIndex[Handle.Value]];
-            }
-        }
+        public ref RigidPose Pose => ref Statics.GetDirectReference(Handle).Pose;
 
         /// <summary>
-        /// Gets a reference to the static's collidable.
+        /// Gets a reference to the static's collision continuity settings.
         /// </summary>
-        public ref Collidable Collidable
+        public ref ContinuousDetection Continuity => ref Statics.GetDirectReference(Handle).Continuity;
+
+        /// <summary>
+        /// Gets the shape used by the static. To set the shape, use <see cref="SetShape(TypedIndex)"/> or <see cref="ApplyDescription(in StaticDescription)"/>.
+        /// </summary>
+        public TypedIndex Shape => Statics.GetDirectReference(Handle).Shape;
+
+        /// <summary>
+        /// <para>Gets a CollidableReference for this static. CollidableReferences uniquely identify a collidable object in a simulation by including both the dynamic/kinematic/static state of the object and its handle.</para>
+        /// <para>Despite an unfortunate naming collision, CollidableReferences are distinct from a direct reference to a static's collidable data, which you can get from the Collidable property.</para>
+        /// </summary>
+        public CollidableReference CollidableReference
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return ref Statics.Collidables[Statics.HandleToIndex[Handle.Value]];
+                return new CollidableReference(Handle);
             }
         }
 
@@ -129,7 +134,7 @@ namespace BepuPhysics
         public unsafe void GetBoundsReferencesFromBroadPhase(out Vector3* min, out Vector3* max)
         {
             var index = Index;
-            ref var collidable = ref Statics.Collidables[index];
+            ref var collidable = ref Statics[index];
             Debug.Assert(collidable.Shape.Exists, "Statics must have a shape. Something's not right here.");
             Statics.broadPhase.GetStaticBoundsPointers(collidable.BroadPhaseIndex, out min, out max);
         }

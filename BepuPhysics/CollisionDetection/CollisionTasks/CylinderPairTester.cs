@@ -152,7 +152,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             //Blindly trying a bunch of low probability feature pairs- especially those which would fall into the above- isn't very wise.
 
             //We now have a decent estimate for the local normal and an initial simplex to work from. Refine it to a local minimum.
-            ManifoldCandidateHelper.CreateInactiveMask(pairCount, out var inactiveLanes);
+            var inactiveLanes = BundleIndexing.CreateTrailingMaskForCountInBundle(pairCount);
 
             var depthThreshold = -speculativeMargin;
             var epsilonScale = Vector.Min(Vector.Max(a.HalfLength, a.Radius), Vector.Max(b.HalfLength, b.Radius));
@@ -184,7 +184,10 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             var capThreshold = new Vector<float>(0.70710678118f);
             var useCapA = Vector.GreaterThan(Vector.Abs(nDotAY), capThreshold);
             var useCapB = Vector.GreaterThan(Vector.Abs(localNormal.Y), capThreshold);
-            Vector3Wide contact0, contact1, contact2, contact3;
+            Unsafe.SkipInit(out Vector3Wide contact0);
+            Unsafe.SkipInit(out Vector3Wide contact1);
+            Unsafe.SkipInit(out Vector3Wide contact2);
+            Unsafe.SkipInit(out Vector3Wide contact3);
             manifold.Contact0Exists = default;
             manifold.Contact1Exists = default;
             manifold.Contact2Exists = default;

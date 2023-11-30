@@ -41,8 +41,8 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
         public unsafe override void ExecuteBatch<TCallbacks>(ref UntypedList batch, ref CollisionBatcher<TCallbacks> batcher)
         {
             var pairs = batch.Buffer.As<BoundsTestedPair>();
-            TOverlapFinder overlapFinder = default;
-            TContinuationHandler continuationHandler = default;
+            Unsafe.SkipInit(out TOverlapFinder overlapFinder);
+            Unsafe.SkipInit(out TContinuationHandler continuationHandler);
             //We perform all necessary bounding box computations and lookups up front. This helps avoid some instruction pipeline pressure at the cost of some extra data cache requirements.
             //Because of this, you need to be careful with the batch size on this collision task.
             overlapFinder.FindLocalOverlaps(ref pairs, batch.Count, batcher.Pool, batcher.Shapes, batcher.Dt, out var overlaps);

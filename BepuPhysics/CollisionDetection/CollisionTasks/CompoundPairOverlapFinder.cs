@@ -47,18 +47,18 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
                 }
             }
 
-            Vector3Wide offsetB = default;
-            QuaternionWide orientationA = default;
-            QuaternionWide orientationB = default;
-            Vector3Wide relativeLinearVelocityA = default;
-            Vector3Wide angularVelocityA = default;
-            Vector3Wide angularVelocityB = default;
-            Vector<float> maximumAllowedExpansion = default;
-            Vector<float> maximumRadius = default;
-            Vector<float> maximumAngularExpansion = default;
-            RigidPoses localPosesA;
-            Vector3Wide mins = default;
-            Vector3Wide maxes = default;
+            Unsafe.SkipInit(out Vector3Wide offsetB);
+            Unsafe.SkipInit(out QuaternionWide orientationA);
+            Unsafe.SkipInit(out QuaternionWide orientationB);
+            Unsafe.SkipInit(out Vector3Wide relativeLinearVelocityA);
+            Unsafe.SkipInit(out Vector3Wide angularVelocityA);
+            Unsafe.SkipInit(out Vector3Wide angularVelocityB);
+            Unsafe.SkipInit(out Vector<float> maximumAllowedExpansion);
+            Unsafe.SkipInit(out Vector<float> maximumRadius);
+            Unsafe.SkipInit(out Vector<float> maximumAngularExpansion);
+            Unsafe.SkipInit(out RigidPoseWide localPosesA);
+            Unsafe.SkipInit(out Vector3Wide mins);
+            Unsafe.SkipInit(out Vector3Wide maxes);
             for (int i = 0; i < totalCompoundChildCount; i += Vector<float>.Count)
             {
                 var count = totalCompoundChildCount - i;
@@ -79,7 +79,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
                     Vector3Wide.WriteFirst(subpair.Pair->AngularVelocityB, ref GatherScatter.GetOffsetInstance(ref angularVelocityB, j));
                     Unsafe.Add(ref Unsafe.As<Vector<float>, float>(ref maximumAllowedExpansion), j) = subpair.Pair->MaximumExpansion;
 
-                    RigidPoses.WriteFirst(subpair.Child->LocalPose, ref GatherScatter.GetOffsetInstance(ref localPosesA, j));
+                    RigidPoseWide.WriteFirst(subpair.Child->LocalPose, ref GatherScatter.GetOffsetInstance(ref localPosesA, j));
                 }
 
                 QuaternionWide.Conjugate(orientationB, out var toLocalB);
@@ -113,7 +113,6 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
                     Vector3Wide.ReadSlot(ref maxes, j, out pairToTest.Max);
                 }
             }
-
             //Doesn't matter what mesh/compound instance is used for the function; just using it as a source of the function.
             Debug.Assert(totalCompoundChildCount > 0);
             Unsafe.AsRef<TCompoundB>(pairsToTest[0].Container).FindLocalOverlaps<CompoundPairOverlaps, ChildOverlapsCollection>(ref pairsToTest, pool, shapes, ref overlaps);

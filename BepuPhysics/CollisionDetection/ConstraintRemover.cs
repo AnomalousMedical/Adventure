@@ -27,7 +27,7 @@ namespace BepuPhysics.CollisionDetection
 
         internal struct PerBodyRemovalTarget
         {
-            public int BodyIndex;
+            public int EncodedBodyIndex;
             public ConstraintHandle ConstraintHandle;
 
             public int BatchIndex;
@@ -145,18 +145,18 @@ namespace BepuPhysics.CollisionDetection
                 //Now extract and enqueue the body list constraint removal targets and the constraint batch body handle removal targets.
                 //We have to perform the enumeration here rather than in the later flush. Removals from type batches make enumerating connected body indices a race condition there.
                 ref var typeBatch = ref constraintBatch.TypeBatches[typeBatchIndex.TypeBatch];
-                var bodyIndices = stackalloc int[bodiesPerConstraint];
-                var enumerator = new ReferenceCollector(bodyIndices);
-                typeProcessor.EnumerateConnectedBodyIndices(ref typeBatch, constraint.IndexInTypeBatch, ref enumerator);
+                var encodedBodyIndices = stackalloc int[bodiesPerConstraint];
+                var enumerator = new PassthroughReferenceCollector(encodedBodyIndices);
+                solver.EnumerateConnectedRawBodyReferences(ref typeBatch, constraint.IndexInTypeBatch, ref enumerator);
 
                 for (int i = 0; i < bodiesPerConstraint; ++i)
                 {
                     ref var target = ref typeBatchRemovals.PerBodyRemovalTargets.AllocateUnsafely();
-                    target.BodyIndex = bodyIndices[i];
+                    target.EncodedBodyIndex = encodedBodyIndices[i];
                     target.ConstraintHandle = constraintHandle;
 
                     target.BatchIndex = typeBatchIndex.Batch;
-                    target.BodyHandle = bodies.ActiveSet.IndexToHandle[target.BodyIndex];
+                    target.BodyHandle = bodies.ActiveSet.IndexToHandle[target.EncodedBodyIndex & Bodies.BodyReferenceMask];
                 }
             }
 
@@ -210,9 +210,9 @@ namespace BepuPhysics.CollisionDetection
             //The island sleeper job order requires this allocation to be done in the Prepare instead of CreateFlushJobs.
             if (solver.ActiveSet.Batches.Count > solver.FallbackBatchThreshold)
             {
-                //Ensure that the fallback deallocation list is also large enough. The fallback batch may result in 3 returned buffers for the primary dictionary, plus another two for each potentially
-                //removed body constraint references subset.
-                allocationIdsToFree = new QuickList<int>(3 + solver.ActiveSet.Fallback.BodyCount * 2, pool);
+                //Ensure that the fallback deallocation list is also large enough. The fallback batch may result in 3 returned buffers for the primary dictionary.
+                //TODO: Since this is no longer a variable count, there's no reason to allocate a list like this.
+                allocationIdsToFree = new QuickList<int>(3, pool);
             }
         }
 
@@ -247,7 +247,7 @@ namespace BepuPhysics.CollisionDetection
         //in sequence at that point- sequential removes would cost around 5us in that case, so any kind of multithreaded overhead can overwhelm the work being done.
         //Doubling the cost of the best case, resulting in handfuls of wasted microseconds, isn't concerning (and we could special case it if we really wanted to).
         //Cutting the cost of the worst case when thousands of constraints get removed by a factor of ~ThreadCount is worth this complexity. Frame spikes are evil!
-        
+
         RemovalCache batches;
         /// <summary>
         /// Processes enqueued constraint removals and prepares removal jobs.
@@ -341,7 +341,12 @@ namespace BepuPhysics.CollisionDetection
                 for (int j = 0; j < removals.Count; ++j)
                 {
                     ref var target = ref removals[j];
-                    bodies.RemoveConstraintReference(target.BodyIndex, target.ConstraintHandle);
+                    if (bodies.RemoveConstraintReference(target.EncodedBodyIndex & Bodies.BodyReferenceMask, target.ConstraintHandle) && (target.EncodedBodyIndex & Bodies.KinematicMask) != 0)
+                    {
+                        //This is a kinematic, and it has no remaining constraint connections. Remove it from the solver constrained kinematic set.
+                        var removed = solver.ConstrainedKinematicHandles.FastRemove(target.BodyHandle.Value);
+                        Debug.Assert(removed, "The last constraint removed from a kinematic should see the body removed from the constrained kinematic set.");
+                    }
                 }
             }
         }
@@ -352,20 +357,22 @@ namespace BepuPhysics.CollisionDetection
             {
                 if (batches.TypeBatches[i].Batch == solver.FallbackBatchThreshold)
                 {
-                    //Batch referenced handles do not exist for the fallback batch.
+                    //Batch referenced handles for the fallback are handled in RemoveConstraintsFromFallbackBatch. 
                     continue;
                 }
                 ref var removals = ref batches.RemovalsForTypeBatches[i].PerBodyRemovalTargets;
                 for (int j = 0; j < removals.Count; ++j)
                 {
                     ref var target = ref removals[j];
-                    solver.batchReferencedHandles[target.BatchIndex].Remove(target.BodyHandle.Value);
+                    //Debug.Assert(solver.batchReferencedHandles[target.BatchIndex].Contains(target.BodyHandle.Value) || bodies.GetBodyReference(target.BodyHandle).Kinematic,
+                    //    "The batch referenced handles must include all constraint-involved dynamics, but will not include kinematics.");
+                    solver.batchReferencedHandles[target.BatchIndex].Unset(target.BodyHandle.Value);
                 }
             }
         }
 
         QuickList<int> allocationIdsToFree;
-        public void RemoveConstraintsFromFallbackBatch()
+        public void RemoveConstraintsFromFallbackBatchReferencedHandles()
         {
             Debug.Assert(solver.ActiveSet.Batches.Count > solver.FallbackBatchThreshold);
             for (int i = 0; i < batches.BatchCount; ++i)
@@ -376,18 +383,26 @@ namespace BepuPhysics.CollisionDetection
                     for (int j = 0; j < removals.Count; ++j)
                     {
                         ref var target = ref removals[j];
-                        solver.ActiveSet.Fallback.Remove(target.BodyIndex, target.ConstraintHandle, ref allocationIdsToFree);
+                        if (solver.ActiveSet.SequentialFallback.RemoveOneBodyReferenceFromDynamicsSet(target.EncodedBodyIndex & Bodies.BodyReferenceMask, ref allocationIdsToFree))
+                        {
+                            //No more constraints for this body in the fallback set; it should not exist in the fallback batch's referenced handles anymore.
+                            //Debug.Assert(solver.batchReferencedHandles[target.BatchIndex].Contains(target.BodyHandle.Value) || bodies.GetBodyReference(target.BodyHandle).Kinematic,
+                            //    "The batch referenced handles must include all constraint-involved dynamics, but will not include kinematics.");
+                            solver.batchReferencedHandles[target.BatchIndex].Unset(target.BodyHandle.Value);
+                        }
                     }
                 }
             }
         }
-        public void TryRemoveAllConstraintsForBodyFromFallbackBatch(int bodyIndex)
+        public void TryRemoveBodyFromConstrainedKinematicsAndRemoveAllConstraintsForBodyFromFallbackBatch(BodyHandle bodyHandle, int bodyIndex)
         {
-            solver.ActiveSet.Fallback.TryRemove(bodyIndex, ref allocationIdsToFree);
+            solver.TryRemoveDynamicBodyFromFallback(bodyHandle, bodyIndex, ref allocationIdsToFree);
+            //Note that we don't check kinematicity here. If it's dynamic, that's fine, this won't do anything.
+            solver.ConstrainedKinematicHandles.FastRemove(bodyHandle.Value);
         }
 
         QuickList<TypeBatchIndex> removedTypeBatches;
-        SpinLock removedTypeBatchLocker = new SpinLock();
+        object batchRemovalLocker = new object();
         public void RemoveConstraintsFromTypeBatch(int index)
         {
             var batch = batches.TypeBatches[index];
@@ -395,7 +410,6 @@ namespace BepuPhysics.CollisionDetection
             ref var typeBatch = ref constraintBatch.TypeBatches[batch.TypeBatch];
             var typeProcessor = solver.TypeProcessors[typeBatch.TypeId];
             ref var removals = ref batches.RemovalsForTypeBatches[index];
-            bool lockTaken = false;
             for (int i = 0; i < removals.ConstraintHandlesToRemove.Count; ++i)
             {
                 var handle = removals.ConstraintHandlesToRemove[i];
@@ -403,15 +417,17 @@ namespace BepuPhysics.CollisionDetection
                 //That's because removals can change the index, so caching indices would require sorting the indices for each type batch before removing.
                 //That's very much doable, but not doing it is simpler, and the performance difference is likely trivial.
                 //TODO: Likely worth testing.
-                typeProcessor.Remove(ref typeBatch, solver.HandleToConstraint[handle.Value].IndexInTypeBatch, ref solver.HandleToConstraint);
+                ref var location = ref solver.HandleToConstraint[handle.Value];
+                typeProcessor.Remove(ref typeBatch, location.IndexInTypeBatch, ref solver.HandleToConstraint, location.BatchIndex == solver.FallbackBatchThreshold);
                 if (typeBatch.ConstraintCount == 0)
                 {
                     //This batch-typebatch needs to be removed.
-                    //Note that we just use a spinlock here, nothing tricky- the number of typebatch/batch removals should tend to be extremely low (averaging 0),
+                    //Note that we just use a lock here, nothing tricky- the number of typebatch/batch removals should tend to be extremely low (averaging 0),
                     //so it's not worth doing a bunch of per worker accumulators and stuff.
-                    removedTypeBatchLocker.Enter(ref lockTaken);
-                    removedTypeBatches.AddUnsafely(batch);
-                    removedTypeBatchLocker.Exit();
+                    lock (batchRemovalLocker)
+                    {
+                        removedTypeBatches.AddUnsafely(batch);
+                    }
                 }
             }
         }

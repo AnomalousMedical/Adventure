@@ -28,7 +28,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             initialNormal.Z = Vector.ConditionalSelect(useInitialFallback, Vector<float>.Zero, initialNormal.Z);
             var hullSupportFinder = default(ConvexHullSupportFinder);
             var capsuleSupportFinder = default(CapsuleSupportFinder);
-            ManifoldCandidateHelper.CreateInactiveMask(pairCount, out var inactiveLanes);
+            var inactiveLanes = BundleIndexing.CreateTrailingMaskForCountInBundle(pairCount);
             b.EstimateEpsilonScale(inactiveLanes, out var hullEpsilonScale);
             var epsilonScale = Vector.Min(a.Radius, hullEpsilonScale);
             var depthThreshold = -speculativeMargin;
@@ -43,14 +43,16 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
                 manifold = default;
                 return;
             }
-            
+
             //To find the contact manifold, we'll clip the capsule axis against the face as usual, but we're dealing with potentially
             //distinct convex hulls. Rather than vectorizing over the different hulls, we vectorize within each hull.
             Helpers.FillVectorWithLaneIndices(out var slotOffsetIndices);
-            Vector3Wide faceNormalBundle;
+            Unsafe.SkipInit(out Vector3Wide faceNormalBundle);
             var boundingPlaneEpsilon = 1e-3f * epsilonScale;
-            Vector<float> latestEntryNumeratorBundle, latestEntryDenominatorBundle;
-            Vector<float> earliestExitNumeratorBundle, earliestExitDenominatorBundle;
+            Unsafe.SkipInit(out Vector<float> latestEntryNumeratorBundle);
+            Unsafe.SkipInit(out Vector<float> latestEntryDenominatorBundle);
+            Unsafe.SkipInit(out Vector<float> earliestExitNumeratorBundle);
+            Unsafe.SkipInit(out Vector<float> earliestExitDenominatorBundle);
             for (int slotIndex = 0; slotIndex < pairCount; ++slotIndex)
             {
                 if (inactiveLanes[slotIndex] < 0)

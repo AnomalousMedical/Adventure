@@ -102,7 +102,7 @@ namespace BepuPhysics.CollisionDetection
         /// atomic setting behavior for data types no larger than the native pointer size. Further, smaller sizes actually pay a higher price in terms of increased false sharing.
         /// Choice of data type is a balancing act between the memory bandwidth of the post analysis and the frequency of false sharing.
         /// </remarks>
-        internal RawBuffer PairFreshness;
+        internal Buffer<byte> PairFreshness;
         BufferPool pool;
         int minimumPendingSize;
         int minimumPerTypeCapacity;
@@ -251,13 +251,13 @@ namespace BepuPhysics.CollisionDetection
                 //Walk backwards on the off chance that a swap can be avoided.
                 for (int j = cache.PendingRemoves.Count - 1; j >= 0; --j)
                 {
-                    var removed = Mapping.FastRemoveRef(ref cache.PendingRemoves[j]);
+                    var removed = Mapping.FastRemove(ref cache.PendingRemoves[j]);
                     Debug.Assert(removed);
                 }
                 for (int j = 0; j < cache.PendingAdds.Count; ++j)
                 {
                     ref var pending = ref cache.PendingAdds[j];
-                    var added = Mapping.AddUnsafelyRef(ref pending.Pair, pending.Pointers);
+                    var added = Mapping.AddUnsafely(ref pending.Pair, pending.Pointers);
                     Debug.Assert(added);
                 }
             }
@@ -350,7 +350,7 @@ namespace BepuPhysics.CollisionDetection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int IndexOf(ref CollidablePair pair)
         {
-            return Mapping.IndexOfRef(ref pair);
+            return Mapping.IndexOf(ref pair);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -416,7 +416,7 @@ namespace BepuPhysics.CollisionDetection
             //Note that the update is being directed to the *next* worker caches. We have not yet performed the flush that swaps references.
             //Note that this assumes that the constraint handle is stored in the first 4 bytes of the constraint cache.
             *(ConstraintHandle*)NextWorkerCaches[constraintCacheIndex.Cache].GetConstraintCachePointer(constraintCacheIndex) = constraintHandle;
-            solver.GetConstraintReference(constraintHandle, out var reference);
+            var reference = solver.GetConstraintReference(constraintHandle);
             Debug.Assert(reference.IndexInTypeBatch >= 0 && reference.IndexInTypeBatch < reference.TypeBatch.ConstraintCount);
             narrowPhase.contactConstraintAccessors[reference.TypeBatch.TypeId].ScatterNewImpulses(ref reference, ref impulses);
             //This mapping entry had to be deferred until now because no constraint handle was known until now. Now that we have it,

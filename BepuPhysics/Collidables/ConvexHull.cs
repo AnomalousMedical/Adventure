@@ -40,7 +40,7 @@ namespace BepuPhysics.Collidables
         /// </summary>
         public Buffer<Vector3Wide> Points;
         /// <summary>
-        /// Bundled bounding planes of the convex hull. 
+        /// Bundled bounding planes associated with the convex hull's faces.
         /// </summary>
         public Buffer<HullBoundingPlanes> BoundingPlanes;
         /// <summary>
@@ -64,7 +64,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetVertexIndicesForFace(int faceIndex, out Buffer<HullVertexIndex> faceVertexIndices)
+        public readonly void GetVertexIndicesForFace(int faceIndex, out Buffer<HullVertexIndex> faceVertexIndices)
         {
             var start = FaceToVertexIndicesStart[faceIndex];
             var nextFaceIndex = faceIndex + 1;
@@ -74,13 +74,13 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetPoint(HullVertexIndex pointIndex, out Vector3 point)
+        public readonly void GetPoint(HullVertexIndex pointIndex, out Vector3 point)
         {
             Vector3Wide.ReadSlot(ref Points[pointIndex.BundleIndex], pointIndex.InnerIndex, out point);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetPoint(int pointIndex, out Vector3 point)
+        public readonly void GetPoint(int pointIndex, out Vector3 point)
         {
             BundleIndexing.GetBundleIndices(pointIndex, out var bundleIndex, out var innerIndex);
             Vector3Wide.ReadSlot(ref Points[bundleIndex], innerIndex, out point);
@@ -88,10 +88,10 @@ namespace BepuPhysics.Collidables
         }
 
         //TODO: With platform intrinsics, we could improve the 'horizontal' parts of these functions.
-        public void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
+        public readonly void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
         {
             Vector<float> maximumRadiusSquaredWide = default;
-            Vector<float> minimumRadiusSquaredWide = new Vector<float>(float.MaxValue);
+            Vector<float> minimumRadiusSquaredWide = new(float.MaxValue);
             for (int i = 0; i < Points.Length; ++i)
             {
                 Vector3Wide.LengthSquared(Points[i], out var candidate);
@@ -115,7 +115,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void ComputeBounds(in QuaternionWide orientationWide, out Vector3 min, out Vector3 max)
+        internal readonly void ComputeBounds(in QuaternionWide orientationWide, out Vector3 min, out Vector3 max)
         {
             Matrix3x3Wide.CreateFromQuaternion(orientationWide, out var orientationMatrix);
             Vector3Wide minWide = default, maxWide = default;
@@ -137,7 +137,7 @@ namespace BepuPhysics.Collidables
             }
         }
 
-        public void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
+        public readonly void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
         {
             QuaternionWide.Broadcast(orientation, out var orientationWide);
             ComputeBounds(orientationWide, out min, out max);
@@ -183,25 +183,22 @@ namespace BepuPhysics.Collidables
             }
         }
 
-        /// <summary>
-        /// Computes the inertia of the convex hull.
-        /// </summary>
-        /// <param name="mass">Mass to scale the inertia tensor with.</param>
-        /// <param name="inertia">Inertia of the convex hull.</param>
-        public void ComputeInertia(float mass, out BodyInertia inertia)
+        public readonly BodyInertia ComputeInertia(float mass)
         {
             var triangleSource = new ConvexHullTriangleSource(this);
             MeshInertiaHelper.ComputeClosedInertia(ref triangleSource, mass, out _, out var inertiaTensor);
+            BodyInertia inertia;
             inertia.InverseMass = 1f / mass;
             Symmetric3x3.Invert(inertiaTensor, out inertia.InverseInertiaTensor);
+            return inertia;
         }
 
-        public ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
+        public readonly ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
         {
             return new ConvexHullShapeBatch(pool, initialCapacity);
         }
 
-        public bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
+        public readonly bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
         {
             Matrix3x3.CreateFromQuaternion(pose.Orientation, out var orientation);
             var shapeToRay = origin - pose.Position;
@@ -213,11 +210,11 @@ namespace BepuPhysics.Collidables
             Helpers.FillVectorWithLaneIndices(out var indexOffsets);
             //The interval of intersection on the ray is the time after it enters all bounding planes, and before it exits any of them.
             //All face normals point outward.
-            var latestEntryNumeratorBundle = new Vector<float>(float.MaxValue);
-            var latestEntryDenominatorBundle = new Vector<float>(-1);
+            var latestEntryWide = new Vector<float>(-float.MaxValue);
+            var earliestExitWide = new Vector<float>(float.MaxValue);
             var latestEntryIndexBundle = new Vector<int>();
-            var earliestExitNumeratorBundle = new Vector<float>(float.MaxValue);
-            var earliestExitDenominatorBundle = new Vector<float>(1);
+            var epsilon = new Vector<float>(1e-14f);
+            var minValue = new Vector<float>(float.MinValue);
             for (int i = 0; i < BoundingPlanes.Length; ++i)
             {
                 ref var boundingPlane = ref BoundingPlanes[i];
@@ -227,45 +224,37 @@ namespace BepuPhysics.Collidables
                 Vector3Wide.Dot(localOriginBundle, boundingPlane.Normal, out var normalDotOrigin);
                 var numerator = boundingPlane.Offset - normalDotOrigin;
                 Vector3Wide.Dot(localDirectionBundle, boundingPlane.Normal, out var denominator);
-                //A bounding plane is being 'entered' if the ray direction opposes the face normal.
-                //Entry denominators are always negative, exit denominators are always positive. Don't have to worry about comparison sign flips.
-                //If the denominator is zero, just ignore the lane.
-                var useLatestEntryCandidate = Vector.BitwiseAnd(Vector.LessThan(denominator, Vector<float>.Zero), Vector.GreaterThan(numerator * latestEntryDenominatorBundle, latestEntryNumeratorBundle * denominator));
-                var useEarliestExitCandidate = Vector.BitwiseAnd(Vector.GreaterThan(denominator, Vector<float>.Zero), Vector.LessThan(numerator * earliestExitDenominatorBundle, earliestExitNumeratorBundle * denominator));
-                latestEntryNumeratorBundle = Vector.ConditionalSelect(useLatestEntryCandidate, numerator, latestEntryNumeratorBundle);
-                latestEntryDenominatorBundle = Vector.ConditionalSelect(useLatestEntryCandidate, denominator, latestEntryDenominatorBundle);
-                latestEntryIndexBundle = Vector.ConditionalSelect(useLatestEntryCandidate, candidateIndices, latestEntryIndexBundle);
-                earliestExitNumeratorBundle = Vector.ConditionalSelect(useEarliestExitCandidate, numerator, earliestExitNumeratorBundle);
-                earliestExitDenominatorBundle = Vector.ConditionalSelect(useEarliestExitCandidate, denominator, earliestExitDenominatorBundle);
+                //If the local direction has a near zero component, it is clamped to a nonzero but extremely small value. This is a hack, but it works reasonably well.
+                //The idea is that any interval computed using such an inverse would be enormous. Those values will not be exactly accurate, but they will never appear as a result
+                //because a parallel ray will never actually intersect the surface. The resulting intervals are practical approximations of the 'true' infinite intervals.
+                denominator = Vector.ConditionalSelect(Vector.LessThan(Vector.Abs(denominator), epsilon), Vector.ConditionalSelect(Vector.LessThan(denominator, Vector<float>.Zero), -epsilon, epsilon), denominator);
+                var planeT = numerator / denominator;
+                var exitCandidate = Vector.GreaterThan(denominator, Vector<float>.Zero);
+                var laneExists = Vector.GreaterThan(boundingPlane.Offset, minValue);
+                earliestExitWide = Vector.ConditionalSelect(Vector.BitwiseAnd(laneExists, exitCandidate), Vector.Min(planeT, earliestExitWide), earliestExitWide);
+                var entryCandidate = Vector.BitwiseAnd(Vector.GreaterThan(planeT, latestEntryWide), Vector.AndNot(laneExists, exitCandidate));
+                latestEntryWide = Vector.ConditionalSelect(entryCandidate, planeT, latestEntryWide);
+                latestEntryIndexBundle = Vector.ConditionalSelect(entryCandidate, candidateIndices, latestEntryIndexBundle);
             }
-            var latestEntryNumerator = latestEntryNumeratorBundle[0];
-            var latestEntryDenominator = latestEntryDenominatorBundle[0];
-            var latestEntryIndex = latestEntryIndexBundle[0];
-            var earliestExitNumerator = earliestExitNumeratorBundle[0];
-            var earliestExitDenominator = earliestExitDenominatorBundle[0];
+            //It's safe to access slot 0. The bundle wouldn't exist if there wasn't at least one element in it.
+            var latestEntryT = latestEntryWide[0];
+            var earliestExitT = earliestExitWide[0];
+            int latestEntryIndex = latestEntryIndexBundle[0];
             for (int i = 1; i < Vector<float>.Count; ++i)
             {
-                var latestEntryNumeratorCandidate = latestEntryNumeratorBundle[i];
-                var latestEntryDenominatorCandidate = latestEntryDenominatorBundle[i];
-                var earliestExitNumeratorCandidate = earliestExitNumeratorBundle[i];
-                var earliestExitDenominatorCandidate = earliestExitDenominatorBundle[i];
-                if (latestEntryNumeratorCandidate * latestEntryDenominator > latestEntryNumerator * latestEntryDenominatorCandidate)
+                var entryCandidate = latestEntryWide[i];
+                var exitCandidate = earliestExitWide[i];
+                if (entryCandidate > latestEntryT)
                 {
-                    latestEntryNumerator = latestEntryNumeratorCandidate;
-                    latestEntryDenominator = latestEntryDenominatorCandidate;
+                    latestEntryT = entryCandidate;
                     latestEntryIndex = latestEntryIndexBundle[i];
                 }
-                if (earliestExitNumeratorCandidate * earliestExitDenominator < earliestExitNumerator * earliestExitDenominatorCandidate)
-                {
-                    earliestExitNumerator = earliestExitNumeratorCandidate;
-                    earliestExitDenominator = earliestExitDenominatorCandidate;
-                }
+                if (exitCandidate < earliestExitT)
+                    earliestExitT = exitCandidate;
             }
             //If the earliest exit is behind the origin, there is no hit.
             //If the earliest exit comes before the latest entry, there is no hit.
-            //Entry denominators negative, exit denominators positive. Requires comparison sign flip.
-            if (earliestExitNumerator < 0 ||
-                latestEntryNumerator * earliestExitDenominator < earliestExitNumerator * latestEntryDenominator)
+            if (earliestExitT < 0 || latestEntryT > earliestExitT)
             {
                 t = default;
                 normal = default;
@@ -273,15 +262,12 @@ namespace BepuPhysics.Collidables
             }
             else
             {
-                t = latestEntryNumerator / latestEntryDenominator;
-                if (t < 0)
-                    t = 0;
+                t = latestEntryT < 0 ? 0 : latestEntryT;
                 BundleIndexing.GetBundleIndices(latestEntryIndex, out var bundleIndex, out var innerIndex);
                 Vector3Wide.ReadSlot(ref BoundingPlanes[bundleIndex].Normal, innerIndex, out normal);
                 Matrix3x3.Transform(normal, orientation, out normal);
                 return true;
             }
-
         }
         public void Dispose(BufferPool bufferPool)
         {
@@ -296,7 +282,7 @@ namespace BepuPhysics.Collidables
         /// Type id of convex hull shapes.
         /// </summary>
         public const int Id = 5;
-        public int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
+        public readonly int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
     }
 
     public struct ConvexHullWide : IShapeWide<ConvexHull>
@@ -310,7 +296,7 @@ namespace BepuPhysics.Collidables
         public bool AllowOffsetMemoryAccess => false;
         public int InternalAllocationSize => Vector<float>.Count * Unsafe.SizeOf<ConvexHull>();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Initialize(in RawBuffer memory)
+        public void Initialize(in Buffer<byte> memory)
         {
             Debug.Assert(memory.Length == InternalAllocationSize);
             Hulls = memory.As<ConvexHull>();
@@ -324,6 +310,9 @@ namespace BepuPhysics.Collidables
 
         public void GetBounds(ref QuaternionWide orientations, int countInBundle, out Vector<float> maximumRadius, out Vector<float> maximumAngularExpansion, out Vector3Wide min, out Vector3Wide max)
         {
+            Unsafe.SkipInit(out maximumRadius);
+            Unsafe.SkipInit(out min);
+            Unsafe.SkipInit(out max);
             for (int i = 0; i < countInBundle; ++i)
             {
                 Vector3Wide.Broadcast(new Vector3(float.MaxValue), out var minWide);
@@ -366,12 +355,15 @@ namespace BepuPhysics.Collidables
             maximumAngularExpansion = maximumRadius;
         }
 
-        public void RayTest(ref RigidPoses poses, ref RayWide rayWide, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
+        public void RayTest(ref RigidPoseWide poses, ref RayWide rayWide, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
         {
+            Unsafe.SkipInit(out intersected);
+            Unsafe.SkipInit(out t);
+            Unsafe.SkipInit(out normal);
             Debug.Assert(Hulls.Length > 0 && Hulls.Length <= Vector<float>.Count);
             for (int i = 0; i < Hulls.Length; ++i)
             {
-                RigidPoses.ReadFirst(GatherScatter.GetOffsetInstance(ref poses, i), out var pose);
+                RigidPoseWide.ReadFirst(GatherScatter.GetOffsetInstance(ref poses, i), out var pose);
                 ref var offsetRay = ref GatherScatter.GetOffsetInstance(ref rayWide, i);
                 Vector3Wide.ReadFirst(offsetRay.Origin, out var origin);
                 Vector3Wide.ReadFirst(offsetRay.Direction, out var direction);
@@ -391,7 +383,7 @@ namespace BepuPhysics.Collidables
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EstimateEpsilonScale(in Vector<int> terminatedLanes, out Vector<float> epsilonScale)
         {
-            Vector3Wide bundle;
+            Unsafe.SkipInit(out Vector3Wide bundle);
             for (int i = 0; i < Vector<float>.Count; ++i)
             {
                 if (terminatedLanes[i] < 0)
@@ -414,7 +406,7 @@ namespace BepuPhysics.Collidables
             Hulls[index] = source;
         }
     }
-       
+
     public struct ConvexHullSupportFinder : ISupportFinder<ConvexHull, ConvexHullWide>
     {
         public bool HasMargin => false;
@@ -422,6 +414,7 @@ namespace BepuPhysics.Collidables
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ComputeLocalSupport(in ConvexHullWide shape, in Vector3Wide direction, in Vector<int> terminatedLanes, out Vector3Wide support)
         {
+            Unsafe.SkipInit(out support);
             Helpers.FillVectorWithLaneIndices(out var indexOffsets);
             for (int slotIndex = 0; slotIndex < Vector<float>.Count; ++slotIndex)
             {

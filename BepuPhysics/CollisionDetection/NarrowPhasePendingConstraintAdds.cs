@@ -22,7 +22,7 @@ namespace BepuPhysics.CollisionDetection
         public struct PendingConstraintAddCache
         {
             BufferPool pool;
-            struct PendingConstraint<TBodyHandles, TDescription, TContactImpulses> where TDescription : unmanaged, IConstraintDescription<TDescription>
+            struct PendingConstraint<TBodyHandles, TDescription, TContactImpulses> where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 //Note the memory ordering. Collidable pair comes first; deterministic flushes rely the memory layout to sort pending constraints.
                 public CollidablePair Pair;
@@ -48,7 +48,7 @@ namespace BepuPhysics.CollisionDetection
 
             public unsafe void AddConstraint<TBodyHandles, TDescription, TContactImpulses>(int manifoldConstraintType,
                 ref CollidablePair pair, PairCacheIndex constraintCacheIndex, TBodyHandles bodyHandles, ref TDescription constraintDescription, ref TContactImpulses impulses)
-                where TDescription : unmanaged, IConstraintDescription<TDescription>
+                where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 ref var cache = ref pendingConstraintsByType[manifoldConstraintType];
                 var byteIndex = cache.Allocate<PendingConstraint<TBodyHandles, TDescription, TContactImpulses>>(minimumConstraintCountPerCache, pool);
@@ -62,7 +62,7 @@ namespace BepuPhysics.CollisionDetection
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe void SequentialAddToSimulation<TBodyHandles, TDescription, TContactImpulses>(ref UntypedList list, int narrowPhaseConstraintTypeId, Simulation simulation, PairCache pairCache)
-                where TDescription : unmanaged, IConstraintDescription<TDescription>
+                 where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 if (list.Buffer.Allocated)
                 {
@@ -73,7 +73,7 @@ namespace BepuPhysics.CollisionDetection
                     {
                         ref var add = ref Unsafe.Add(ref start, i);
                         //Unsafe.AsPointer is not a GC hole here; it's coming from unmanaged memory.
-                        var handle = simulation.Solver.Add(new Span<BodyHandle>(Unsafe.AsPointer(ref add.BodyHandles), typeof(TBodyHandles) == typeof(TwoBodyHandles) ? 2 : 1), ref add.ConstraintDescription);
+                        var handle = simulation.Solver.Add(new Span<BodyHandle>(Unsafe.AsPointer(ref add.BodyHandles), typeof(TBodyHandles) == typeof(TwoBodyHandles) ? 2 : 1), add.ConstraintDescription);
                         pairCache.CompleteConstraintAdd(simulation.NarrowPhase, simulation.Solver, ref add.Impulses, add.ConstraintCacheIndex, handle, ref add.Pair);
                     }
                 }
@@ -96,7 +96,7 @@ namespace BepuPhysics.CollisionDetection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static unsafe void AddToSimulationSpeculative<TBodyHandles, TDescription, TContactImpulses>(
                 ref PendingConstraint<TBodyHandles, TDescription, TContactImpulses> constraint, int batchIndex, Simulation simulation, PairCache pairCache)
-                where TDescription : unmanaged, IConstraintDescription<TDescription>
+                where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 //This function takes full responsibility for what a Simulation.Add would do, plus the need to complete the constraint add in the pair cache.
                 //1) Allocate in solver batch and type batch.
@@ -120,14 +120,17 @@ namespace BepuPhysics.CollisionDetection
                 ConstraintHandle constraintHandle;
                 ConstraintReference reference;
                 var handles = new Span<BodyHandle>(Unsafe.AsPointer(ref constraint.BodyHandles), typeof(TBodyHandles) == typeof(TwoBodyHandles) ? 2 : 1);
+                Span<BodyHandle> blockingBodyHandles = stackalloc BodyHandle[handles.Length];
+                Span<int> encodedBodyIndices = stackalloc int[handles.Length];
+                simulation.Solver.GetBlockingBodyHandles(handles, ref blockingBodyHandles, encodedBodyIndices);
                 while (!simulation.Solver.TryAllocateInBatch(
                     default(TDescription).ConstraintTypeId, batchIndex,
-                    handles, out constraintHandle, out reference))
+                    blockingBodyHandles, encodedBodyIndices, out constraintHandle, out reference))
                 {
                     //If a batch index failed, just try the next one. This is guaranteed to eventually work.
                     ++batchIndex;
                 }
-                simulation.Solver.ApplyDescriptionWithoutWaking(ref reference, ref constraint.ConstraintDescription);
+                simulation.Solver.ApplyDescriptionWithoutWaking(reference, constraint.ConstraintDescription);
                 ref var aLocation = ref simulation.Bodies.HandleToLocation[handles[0].Value];
                 Debug.Assert(aLocation.SetIndex == 0, "By the time we flush new constraints into the solver, all associated islands should be awake.");
                 simulation.Bodies.AddConstraint(aLocation.Index, constraintHandle, 0);
@@ -145,7 +148,7 @@ namespace BepuPhysics.CollisionDetection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe void SequentialAddToSimulationSpeculative<TBodyHandles, TDescription, TContactImpulses>(
                 ref UntypedList list, int narrowPhaseConstraintTypeId, ref Buffer<Buffer<ushort>> speculativeBatchIndices, Simulation simulation, PairCache pairCache)
-                where TDescription : unmanaged, IConstraintDescription<TDescription>
+                where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 if (list.Buffer.Allocated)
                 {
@@ -177,7 +180,7 @@ namespace BepuPhysics.CollisionDetection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe void DeterministicAdd<TBodyHandles, TDescription, TContactImpulses>(
                 int typeIndex, ref SortConstraintTarget target, OverlapWorker[] overlapWorkers, Simulation simulation, ref PairCache pairCache)
-                where TDescription : unmanaged, IConstraintDescription<TDescription>
+                where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
             {
                 ref var cache = ref overlapWorkers[target.WorkerIndex].PendingConstraints;
                 ref var constraint = ref Unsafe.As<byte, PendingConstraint<TBodyHandles, TDescription, TContactImpulses>>(
@@ -197,11 +200,10 @@ namespace BepuPhysics.CollisionDetection
                 Debug.Assert(list.Buffer.Allocated, "The target region should be allocated, or else the job scheduler is broken.");
                 Debug.Assert(list.Count > 0);
                 int byteIndex = start * list.ElementSizeInBytes;
-                int bodyCount = ExtractContactConstraintBodyCount(typeIndex);
                 ref var speculativeBatchIndicesForType = ref speculativeBatchIndices[typeIndex];
                 for (int i = start; i < end; ++i)
                 {
-                    speculativeBatchIndicesForType[i] = (ushort)solver.FindCandidateBatch(new Span<BodyHandle>(list.Buffer.Memory + byteIndex, bodyCount));
+                    speculativeBatchIndicesForType[i] = (ushort)solver.FindCandidateBatch(*(CollidablePair*)(list.Buffer.Memory + byteIndex));
                     byteIndex += list.ElementSizeInBytes;
                 }
             }
@@ -261,7 +263,7 @@ namespace BepuPhysics.CollisionDetection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AddConstraint<TBodyHandles, TDescription, TContactImpulses>(int workerIndex, int manifoldConstraintType, ref CollidablePair pair,
             PairCacheIndex constraintCacheIndex, ref TContactImpulses impulses, TBodyHandles bodyHandles, ref TDescription constraintDescription)
-            where TDescription : unmanaged, IConstraintDescription<TDescription>
+            where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
         {
             overlapWorkers[workerIndex].PendingConstraints.AddConstraint(manifoldConstraintType, ref pair, constraintCacheIndex, bodyHandles, ref constraintDescription, ref impulses);
         }

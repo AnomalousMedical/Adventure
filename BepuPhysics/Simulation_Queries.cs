@@ -121,14 +121,16 @@ namespace BepuPhysics
             if (reference.Mobility == CollidableMobility.Static)
             {
                 var index = Statics.HandleToIndex[reference.StaticHandle.Value];
-                pose = Statics.Poses.Memory + index;
-                shape = Statics.Collidables[index].Shape;
+                ref var collidable = ref Statics[index];
+                //Not a GC hole; the Statics holds everything in unmoving memory.
+                pose = (RigidPose*)Unsafe.AsPointer(ref collidable.Pose);
+                shape = collidable.Shape;
             }
             else
             {
                 ref var location = ref Bodies.HandleToLocation[reference.BodyHandle.Value];
                 ref var set = ref Bodies.Sets[location.SetIndex];
-                pose = set.Poses.Memory + location.Index;
+                pose = &(set.SolverStates.Memory + location.Index)->Motion.Pose;
                 shape = set.Collidables[location.Index].Shape;
             }
         }
@@ -265,7 +267,7 @@ namespace BepuPhysics
             //Build a bounding box.
             shape.ComputeAngularExpansionData(out var maximumRadius, out var maximumAngularExpansion);
             shape.ComputeBounds(pose.Orientation, out var min, out var max);
-            BoundingBoxHelpers.GetAngularBoundsExpansion(velocity.Angular, maximumT, maximumRadius, maximumAngularExpansion, out var angularExpansion);
+            var angularExpansion = new Vector3(BoundingBoxHelpers.GetAngularBoundsExpansion(velocity.Angular.Length(), maximumT, maximumRadius, maximumAngularExpansion));
             min = min - angularExpansion + pose.Position;
             max = max + angularExpansion + pose.Position;
             var direction = velocity.Linear;

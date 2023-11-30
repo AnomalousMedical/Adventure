@@ -159,7 +159,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             Matrix3x3Wide.TransformByTransposedWithoutOverlap(offsetB, worldRB, out var localOffsetB);
             Vector3Wide.Negate(localOffsetB, out var localOffsetA);
 
-            ManifoldCandidateHelper.CreateInactiveMask(pairCount, out var inactiveLanes);
+            var inactiveLanes = BundleIndexing.CreateTrailingMaskForCountInBundle(pairCount);
             GetClosestPointBetweenLineSegmentAndCylinder(localOffsetA, capsuleAxis, a.HalfLength, b, inactiveLanes, out var t, out var localNormal);
             Vector3Wide.LengthSquared(localNormal, out var distanceFromCylinderToLineSegmentSquared);
             var internalLineSegmentIntersected = Vector.LessThan(distanceFromCylinderToLineSegmentSquared, new Vector<float>(1e-12f));
@@ -167,7 +167,8 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             //Division by zero is protected by the depth selection- if distance is zero, the depth is set to infinity and this normal won't be selected.
             Vector3Wide.Scale(localNormal, Vector<float>.One / distanceFromCylinderToLineSegment, out localNormal);
             var depth = Vector.ConditionalSelect(internalLineSegmentIntersected, new Vector<float>(float.MaxValue), -distanceFromCylinderToLineSegment);
-
+            var negativeMargin = -speculativeMargin;
+            inactiveLanes = Vector.BitwiseOr(Vector.LessThan(depth + a.Radius, negativeMargin), inactiveLanes);
             if (Vector.LessThanAny(Vector.AndNot(internalLineSegmentIntersected, inactiveLanes), Vector<int>.Zero))
             {
                 //At least one lane is intersecting deeply, so we need to examine the other possible normals.
@@ -207,7 +208,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             }
             //All of the above excluded any consideration of the capsule's radius. Include it now.
             depth += a.Radius;
-            inactiveLanes = Vector.BitwiseOr(Vector.LessThan(depth, -speculativeMargin), inactiveLanes);
+            inactiveLanes = Vector.BitwiseOr(Vector.LessThan(depth, negativeMargin), inactiveLanes);
             if (Vector.LessThanAll(inactiveLanes, Vector<int>.Zero))
             {
                 //All lanes have a depth which cannot create any contacts due to the speculative margin. We can early out.
@@ -223,7 +224,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             //Segment-side case is handled in the same way as capsule-capsule- create an interval by projecting the segment onto the cylinder segment and then narrow the interval in response to noncoplanarity.
             //Segment-cap is easy too; project the segment down onto the cap plane. Clip it against the cap circle (solve a quadratic).
 
-            var useCapContacts = Vector.GreaterThan(Vector.Abs(localNormal.Y), new Vector<float>(0.70710678118f));
+            var useCapContacts = Vector.AndNot(Vector.GreaterThan(Vector.Abs(localNormal.Y), new Vector<float>(0.70710678118f)), inactiveLanes);
 
             //First, assume non-cap contacts.
             //Phrase the problem as a segment-segment test.
@@ -248,7 +249,7 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
 
             var contactCount = Vector.ConditionalSelect(Vector.LessThan(Vector.Abs(contactTMax - contactTMin), b.HalfLength * new Vector<float>(1e-5f)), Vector<int>.One, new Vector<int>(2));
 
-            if (Vector.LessThanAny(Vector.AndNot(useCapContacts, inactiveLanes), Vector<int>.Zero))
+            if (Vector.LessThanAny(useCapContacts, Vector<int>.Zero))
             {
                 //At least one lane requires a cap contact.
                 //An important note: for highest quality, all clipping takes place on the *normal plane*. So segment-cap doesn't merely set the y component to zero (projecting along B's Y axis).
@@ -266,8 +267,6 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
                 negative.X = localOffsetA.X - endpointOffset.X;
                 negative.Y = localOffsetA.Y - endpointOffset.Y - capHeight;
                 negative.Z = localOffsetA.Z - endpointOffset.Z;
-                var centerOffsetAlongY = localOffsetA.Y - capHeight;
-                var endpointOffsetAlongY = capsuleAxis.Y * a.HalfLength;
                 var tNegative = negative.Y * inverseNormalY;
                 var tPositive = positive.Y * inverseNormalY;
                 Vector2Wide projectedPositive, projectedNegative;
@@ -318,7 +317,6 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
             Vector3Wide.Dot(faceNormalA, localNormal, out var faceNormalADotLocalNormal);
             //Don't have to perform any calibration on the faceNormalA; it appears in both the numerator and denominator so the sign and magnitudes cancel.
             var inverseFaceNormalADotLocalNormal = Vector<float>.One / faceNormalADotLocalNormal;
-            Vector3Wide.Scale(faceNormalA, faceNormalADotLocalNormal, out var scaledFaceNormalA);
             Vector3Wide.Add(localOffsetB, contact0, out var offset0);
             Vector3Wide.Add(localOffsetB, contact1, out var offset1);
             Vector3Wide.Dot(offset0, faceNormalA, out var t0);
@@ -330,11 +328,10 @@ namespace BepuPhysics.CollisionDetection.CollisionTasks
 
             //If the capsule axis is parallel with the normal, then the contacts collapse to one point and we can use the initially computed depth.
             //In this case, both contact positions should be extremely close together anyway.
-            var collapse = Vector.LessThan(Vector.Abs(faceNormalADotLocalNormal), new Vector<float>(1e-14f));
+            var collapse = Vector.LessThan(Vector.Abs(faceNormalADotLocalNormal), new Vector<float>(1e-7f));
             manifold.Depth0 = Vector.ConditionalSelect(collapse, depth, manifold.Depth0);
-            var negativeMargin = -speculativeMargin;
-            manifold.Contact0Exists = Vector.GreaterThan(manifold.Depth0, negativeMargin);
-            manifold.Contact1Exists = Vector.BitwiseAnd(Vector.AndNot(Vector.Equals(contactCount, new Vector<int>(2)), collapse), Vector.GreaterThan(manifold.Depth1, negativeMargin));
+            manifold.Contact0Exists = Vector.AndNot(Vector.GreaterThanOrEqual(manifold.Depth0, negativeMargin), inactiveLanes);
+            manifold.Contact1Exists = Vector.AndNot(Vector.BitwiseAnd(Vector.AndNot(Vector.Equals(contactCount, new Vector<int>(2)), collapse), Vector.GreaterThanOrEqual(manifold.Depth1, negativeMargin)), inactiveLanes);
 
             //Push the contacts into world space.
             Matrix3x3Wide.TransformWithoutOverlap(localNormal, worldRB, out manifold.Normal);

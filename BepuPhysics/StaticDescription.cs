@@ -13,56 +13,66 @@ namespace BepuPhysics
         /// </summary>
         public RigidPose Pose;
         /// <summary>
-        /// Collidable properties of the static.
+        /// Shape of the static.
         /// </summary>
-        public CollidableDescription Collidable;
+        public TypedIndex Shape;
+        /// <summary>
+        /// Continuous collision detection settings for the static.
+        /// </summary>
+        public ContinuousDetection Continuity;
+
+        /// <summary>
+        /// Builds a new static description.
+        /// </summary>
+        /// <param name="pose">Pose of the static collidable.</param>
+        /// <param name="shape">Shape of the static.</param>
+        /// <param name="continuity">Continuous collision detection settings for the static.</param>
+        public StaticDescription(RigidPose pose, TypedIndex shape, ContinuousDetection continuity)
+        {
+            Pose = pose;
+            Shape = shape;
+            Continuity = continuity;
+        }
+
+        /// <summary>
+        /// Builds a new static description with <see cref="ContinuousDetectionMode.Discrete"/> continuity.
+        /// </summary>
+        /// <param name="pose">Pose of the static collidable.</param>
+        /// <param name="shape">Shape of the static.</param>
+        public StaticDescription(RigidPose pose, TypedIndex shape)
+        {
+            Pose = pose;
+            Shape = shape;
+            Continuity = ContinuousDetection.Discrete;
+        }
 
         /// <summary>
         /// Builds a new static description.
         /// </summary>
         /// <param name="position">Position of the static.</param>
         /// <param name="orientation">Orientation of the static.</param>
-        /// <param name="collidable">Collidable description for the static.</param>
-        public StaticDescription(in Vector3 position, in Quaternion orientation, in CollidableDescription collidable)
+        /// <param name="shape">Shape of the static.</param>
+        /// <param name="continuity">Continuous collision detection settings for the static.</param>
+        public StaticDescription(Vector3 position, Quaternion orientation, TypedIndex shape, ContinuousDetection continuity)
         {
             Pose.Position = position;
             Pose.Orientation = orientation;
-            Collidable = collidable;
+            Shape = shape;
+            Continuity = continuity;
         }
 
         /// <summary>
-        /// Builds a new static description.
-        /// </summary>
-        /// <param name="position">Position of the static.</param>
-        /// <param name="collidable">Collidable description for the static.</param>
-        public StaticDescription(in Vector3 position, in CollidableDescription collidable) : this(position, Quaternion.Identity, collidable)
-        {
-        }
-
-        /// <summary>
-        /// Builds a new static description with discrete continuity.
+        /// Builds a new static description with <see cref="ContinuousDetectionMode.Discrete"/> continuity.
         /// </summary>
         /// <param name="position">Position of the static.</param>
         /// <param name="orientation">Orientation of the static.</param>
-        /// <param name="shapeIndex">Index of the static's shape in the simulation shapes set.</param>
-        /// <param name="speculativeMargin">Distance beyond the surface of the static to allow speculative contacts to be generated.</param>
-        public StaticDescription(in Vector3 position, in Quaternion orientation, TypedIndex shapeIndex, float speculativeMargin)
+        /// <param name="shape">Shape of the static.</param>
+        public StaticDescription(Vector3 position, Quaternion orientation, TypedIndex shape)
         {
             Pose.Position = position;
             Pose.Orientation = orientation;
-            Collidable.Continuity = new ContinuousDetectionSettings();
-            Collidable.Shape = shapeIndex;
-            Collidable.SpeculativeMargin = speculativeMargin;
-        }
-
-        /// <summary>
-        /// Builds a new static description with discrete continuity.
-        /// </summary>
-        /// <param name="position">Position of the static.</param>
-        /// <param name="shapeIndex">Index of the static's shape in the simulation shapes set.</param>
-        /// <param name="speculativeMargin">Distance beyond the surface of the body to allow speculative contacts to be generated.</param>
-        public StaticDescription(in Vector3 position, TypedIndex shapeIndex, float speculativeMargin) : this(position, Quaternion.Identity, shapeIndex, speculativeMargin)
-        {
+            Shape = shape;
+            Continuity = ContinuousDetection.Discrete;
         }
     }
 

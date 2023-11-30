@@ -35,9 +35,10 @@ namespace BepuPhysics
         /// </summary>
         public Buffer<BodyHandle> IndexToHandle;
 
-        public Buffer<RigidPose> Poses;
-        public Buffer<BodyVelocity> Velocities;
-        public Buffer<BodyInertia> LocalInertias;
+        /// <summary>
+        /// Stores all data involved in solving constraints for a body, including pose, velocity, and inertia.
+        /// </summary>
+        public Buffer<SolverState> SolverStates;
 
         /// <summary>
         /// The collidables owned by each body in the set. Speculative margins, continuity settings, and shape indices can be changed directly.
@@ -89,9 +90,7 @@ namespace BepuPhysics
             {
                 movedBodyIndex = Count;
                 //Copy the memory state of the last element down.
-                Poses[bodyIndex] = Poses[movedBodyIndex];
-                Velocities[bodyIndex] = Velocities[movedBodyIndex];
-                LocalInertias[bodyIndex] = LocalInertias[movedBodyIndex];
+                SolverStates[bodyIndex] = SolverStates[movedBodyIndex];
                 Activity[bodyIndex] = Activity[movedBodyIndex];
                 Collidables[bodyIndex] = Collidables[movedBodyIndex];
                 //Note that the constraint list is NOT disposed before being overwritten.
@@ -126,15 +125,24 @@ namespace BepuPhysics
                 description.LocalInertia.InverseInertiaTensor.ZZ * description.LocalInertia.InverseInertiaTensor.ZZ), $"Invalid body inverse inertia tensor: {description.LocalInertia.InverseInertiaTensor}");
             Debug.Assert(!MathChecker.IsInvalid(description.LocalInertia.InverseMass) && description.LocalInertia.InverseMass >= 0, $"Invalid body inverse mass: {description.LocalInertia.InverseMass}");
 
-            Poses[index] = description.Pose;
-            Velocities[index] = description.Velocity;
-            LocalInertias[index] = description.LocalInertia;
+            ref var state = ref SolverStates[index];
+            state.Motion.Pose = description.Pose;
+            state.Motion.Velocity = description.Velocity;
+            state.Inertia.Local = description.LocalInertia;
+            //Note that the world inertia is only valid in the velocity integration->pose integration interval, so we don't need to initialize it here for dynamics.
+            //Kinematics, though, can have their inertia updates skipped at runtime since the world inverse inertia should always be a bunch of zeroes, so we pre-zero it.
+            state.Inertia.World = default;
             ref var collidable = ref Collidables[index];
-            collidable.Continuity = description.Collidable.Continuity;
-            collidable.SpeculativeMargin = description.Collidable.SpeculativeMargin;
             //Note that we change the shape here. If the collidable transitions from shapeless->shapeful or shapeful->shapeless, the broad phase has to be notified 
             //so that it can create/remove an entry. That's why this function isn't public.
             collidable.Shape = description.Collidable.Shape;
+            collidable.Continuity = description.Collidable.Continuity;
+            collidable.MinimumSpeculativeMargin = description.Collidable.MinimumSpeculativeMargin;
+            collidable.MaximumSpeculativeMargin = description.Collidable.MaximumSpeculativeMargin;
+            //To avoid leaking undefined data, initialize the speculative margin to zero.
+            //Under normal circumstances, it should not be possible for any relevant system to see an undefined speculative margin, since PredictBoundingBoxes sets the value.
+            //However, corner cases like a body being added asleep and woken by the narrow phase can mean prediction does not run.
+            collidable.SpeculativeMargin = 0;
             ref var activity = ref Activity[index];
             activity.SleepThreshold = description.Activity.SleepThreshold;
             activity.MinimumTimestepsUnderThreshold = description.Activity.MinimumTimestepCountUnderThreshold;
@@ -144,13 +152,15 @@ namespace BepuPhysics
 
         public void GetDescription(int index, out BodyDescription description)
         {
-            description.Pose = Poses[index];
-            description.Velocity = Velocities[index];
-            description.LocalInertia = LocalInertias[index];
+            ref var state = ref SolverStates[index];
+            description.Pose = state.Motion.Pose;
+            description.Velocity = state.Motion.Velocity;
+            description.LocalInertia = state.Inertia.Local;
             ref var collidable = ref Collidables[index];
-            description.Collidable.Continuity = collidable.Continuity;
             description.Collidable.Shape = collidable.Shape;
-            description.Collidable.SpeculativeMargin = collidable.SpeculativeMargin;
+            description.Collidable.Continuity = collidable.Continuity;
+            description.Collidable.MinimumSpeculativeMargin = collidable.MinimumSpeculativeMargin;
+            description.Collidable.MaximumSpeculativeMargin = collidable.MaximumSpeculativeMargin;
             ref var activity = ref Activity[index];
             description.Activity.SleepThreshold = activity.SleepThreshold;
             description.Activity.MinimumTimestepCountUnderThreshold = activity.MinimumTimestepsUnderThreshold;
@@ -169,8 +179,16 @@ namespace BepuPhysics
             constraints.AllocateUnsafely() = constraint;
         }
 
+        /// <summary>
+        /// Removes a constraint from a body's constraint list.
+        /// </summary>
+        /// <param name="bodyIndex">Index of the body to remove the constraint reference from.</param>
+        /// <param name="constraintHandle">Handle of the constraint to remove.</param>
+        /// <param name="minimumConstraintCapacityPerBody">Minimum constraint capacity to maintain the body's constraint list. The list will automatically downsize as constraints are removed, but its capacity will not go below this threshold.</param>
+        /// <param name="pool">Pool to use to resize the constraint list.</param>
+        /// <returns>True if the number of constraints remaining attached to the body is 0, false otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void RemoveConstraintReference(int bodyIndex, ConstraintHandle constraintHandle, int minimumConstraintCapacityPerBody, BufferPool pool)
+        internal bool RemoveConstraintReference(int bodyIndex, ConstraintHandle constraintHandle, int minimumConstraintCapacityPerBody, BufferPool pool)
         {
             //This uses a linear search. That's fine; bodies will rarely have more than a handful of constraints associated with them.
             //Attempting to use something like a hash set for fast removes would just introduce more constant overhead and slow it down on average.
@@ -195,6 +213,7 @@ namespace BepuPhysics
                 //The list can be trimmed down a bit while still holding all existing constraints and obeying the minimum capacity.
                 list.Resize(targetCapacity, pool);
             }
+            return list.Count == 0;
         }
 
         public bool BodyIsConstrainedBy(int bodyIndex, ConstraintHandle constraintHandle)
@@ -210,36 +229,14 @@ namespace BepuPhysics
             return false;
         }
 
-
-        /// <summary>
-        /// Swaps the memory of two bodies. Indexed by memory slot, not by handle index.
-        /// </summary>
-        /// <param name="slotA">Memory slot of the first body to swap.</param>
-        /// <param name="slotB">Memory slot of the second body to swap.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Swap(int slotA, int slotB, ref Buffer<BodyMemoryLocation> handleToIndex)
-        {
-            handleToIndex[IndexToHandle[slotA].Value].Index = slotB;
-            handleToIndex[IndexToHandle[slotB].Value].Index = slotA;
-            Helpers.Swap(ref IndexToHandle[slotA], ref IndexToHandle[slotB]);
-            Helpers.Swap(ref Collidables[slotA], ref Collidables[slotB]);
-            Helpers.Swap(ref Poses[slotA], ref Poses[slotB]);
-            Helpers.Swap(ref Velocities[slotA], ref Velocities[slotB]);
-            Helpers.Swap(ref LocalInertias[slotA], ref LocalInertias[slotB]);
-            Helpers.Swap(ref Activity[slotA], ref Activity[slotB]);
-            Helpers.Swap(ref Constraints[slotA], ref Constraints[slotB]);
-        }
-
         internal unsafe void InternalResize(int targetBodyCapacity, BufferPool pool)
         {
             Debug.Assert(targetBodyCapacity > 0, "Resize is not meant to be used as Dispose. If you want to return everything to the pool, use Dispose instead.");
             //Note that we base the bundle capacities on post-resize capacity of the IndexToHandle array. This simplifies the conditions on allocation, but increases memory use.
             //You may want to change this in the future if memory use is concerning.
             targetBodyCapacity = BufferPool.GetCapacityForCount<int>(targetBodyCapacity);
-            Debug.Assert(Poses.Length != BufferPool.GetCapacityForCount<RigidPoses>(targetBodyCapacity), "Should not try to use internal resize of the result won't change the size.");
-            pool.ResizeToAtLeast(ref Poses, targetBodyCapacity, Count);
-            pool.ResizeToAtLeast(ref Velocities, targetBodyCapacity, Count);
-            pool.ResizeToAtLeast(ref LocalInertias, targetBodyCapacity, Count);
+            Debug.Assert(SolverStates.Length != BufferPool.GetCapacityForCount<RigidPoseWide>(targetBodyCapacity), "Should not try to use internal resize of the result won't change the size.");
+            pool.ResizeToAtLeast(ref SolverStates, targetBodyCapacity, Count);
             pool.ResizeToAtLeast(ref IndexToHandle, targetBodyCapacity, Count);
             pool.ResizeToAtLeast(ref Collidables, targetBodyCapacity, Count);
             pool.ResizeToAtLeast(ref Activity, targetBodyCapacity, Count);
@@ -261,9 +258,7 @@ namespace BepuPhysics
         /// <param name="pool">Pool to return the set's top level buffers to.</param>
         public void DisposeBuffers(BufferPool pool)
         {
-            pool.Return(ref Poses);
-            pool.Return(ref Velocities);
-            pool.Return(ref LocalInertias);
+            pool.Return(ref SolverStates);
             pool.Return(ref IndexToHandle);
             pool.Return(ref Collidables);
             pool.Return(ref Activity);

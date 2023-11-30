@@ -1,6 +1,7 @@
 ﻿using BepuUtilities.Memory;
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace BepuUtilities.Collections
@@ -25,7 +26,7 @@ namespace BepuUtilities.Collections
         const int mask = 63;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int GetBundleCapacity(int count)
+        public static int GetBundleCapacity(int count)
         {
             return (count + mask) >> shift;
         }
@@ -79,14 +80,73 @@ namespace BepuUtilities.Collections
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void AddUnsafely(int index, int bundleIndex)
+        void SetUnsafely(int index, int bundleIndex)
         {
             ref var bundle = ref Flags[bundleIndex];
             var slot = 1ul << (index & mask);
-            Debug.Assert((bundle & slot) == 0, "Cannot add if it's already present!");
             //Not much point in branching to stop a single instruction that doesn't change the result.
             bundle |= slot;
         }
+
+        /// <summary>
+        /// Sets an index in the set to contained without checking capacity or whether it is already set.
+        /// </summary>
+        /// <param name="index">Index to add.</param>
+        /// <remarks>This is functionally identical to the AddUnsafely method, but it doesn't include the same debug assertions. Just a way to make intent clear so that the assert can catch errors.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetUnsafely(int index)
+        {
+            SetUnsafely(index, index >> shift);
+        }
+
+        /// <summary>
+        /// Sets an index in the set to contained without checking whether it is already set.
+        /// </summary>
+        /// <param name="index">Index to add.</param>
+        /// <param name="pool">Pool to reuse the set if necessary.</param>
+        /// <remarks>This is functionally identical to the Add method, but it doesn't include the same debug assertions. Just a way to make intent clear so that the assert can catch errors.</remarks>
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(int index, BufferPool pool)
+        {
+            var bundleIndex = index >> shift;
+            if (bundleIndex >= Flags.Length)
+            {
+                //Note that the bundle index may be larger than two times the current capacity, since indices are not guaranteed to be appended.
+                InternalResizeForBundleCount(pool, (int)BitOperations.RoundUpToPowerOf2((uint)(bundleIndex + 1)));
+            }
+            SetUnsafely(index, index >> shift);
+        }
+
+        /// <summary>
+        /// Marks an index in the set as uncontained without checking whether it is already set.
+        /// </summary>
+        /// <param name="index">Index to add.</param>
+        /// <remarks>This is functionally identical to the Remove method, but it doesn't include the same debug assertions. Just a way to make intent clear so that the assert can catch errors.</remarks>
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Unset(int index)
+        {
+            Flags[index >> shift] &= ~(1ul << (index & mask));
+        }
+
+
+        /// <summary>
+        /// Adds an index to the set without checking capacity.
+        /// </summary>
+        /// <param name="index">Index to add.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddUnsafely(int index)
+        {
+            Debug.Assert((Flags[index >> shift] & (1ul << (index & mask))) == 0, "Cannot add if it's already present!");
+            SetUnsafely(index, index >> shift);
+        }
+
+        /// <summary>
+        /// Adds an index to the set.
+        /// </summary>
+        /// <param name="index">Index to add.</param>
+        /// <param name="pool">Pool to use to resize the set if necessary.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(int index, BufferPool pool)
         {
@@ -94,22 +154,18 @@ namespace BepuUtilities.Collections
             if (bundleIndex >= Flags.Length)
             {
                 //Note that the bundle index may be larger than two times the current capacity, since indices are not guaranteed to be appended.
-                InternalResizeForBundleCount(pool, 1 << SpanHelper.GetContainingPowerOf2(bundleIndex + 1));
+                InternalResizeForBundleCount(pool, (int)BitOperations.RoundUpToPowerOf2((uint)(bundleIndex + 1)));
             }
-            AddUnsafely(index, bundleIndex);
+            Debug.Assert((Flags[index >> shift] & (1ul << (index & mask))) == 0, "Cannot add if it's already present!");
+            SetUnsafely(index, bundleIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddUnsafely(int index)
-        {
-            AddUnsafely(index, index >> shift);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(int index)
         {
             Debug.Assert((Flags[index >> shift] & (1ul << (index & mask))) > 0, "If you try to remove a index, it should be present.");
-            Flags[index >> shift] &= ~(1ul << (index & mask));
+            Unset(index);
         }
 
         public void Clear()

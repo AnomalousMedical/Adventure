@@ -93,7 +93,7 @@ namespace BepuPhysics.Trees
 
             ref var children = ref Nodes[0].A;
             float childChange = 0;
-            BoundingBox merged = new BoundingBox { Min = new Vector3(float.MaxValue), Max = new Vector3(float.MinValue) };
+            var merged = new BoundingBox { Min = new Vector3(float.MaxValue), Max = new Vector3(float.MinValue) };
             for (int i = 0; i < 2; ++i)
             {
                 //Note: these conditions mean the root will never be considered a wavefront node. That's acceptable;
@@ -150,7 +150,7 @@ namespace BepuPhysics.Trees
             }
         }
 
-        void GetRefitAndMarkTuning(out int maximumSubtrees, out int estimatedRefinementCandidateCount, out int refinementLeafCountThreshold)
+        readonly void GetRefitAndMarkTuning(out int maximumSubtrees, out int estimatedRefinementCandidateCount, out int refinementLeafCountThreshold)
         {
             maximumSubtrees = (int)(Math.Sqrt(leafCount) * 3);
             estimatedRefinementCandidateCount = (leafCount * 2) / maximumSubtrees;
@@ -158,7 +158,7 @@ namespace BepuPhysics.Trees
             refinementLeafCountThreshold = Math.Min(leafCount, maximumSubtrees);
         }
 
-        void GetRefineTuning(int frameIndex, int refinementCandidatesCount, float refineAggressivenessScale, float costChange,
+        readonly void GetRefineTuning(int frameIndex, int refinementCandidatesCount, float refineAggressivenessScale, float costChange,
             out int targetRefinementCount, out int refinementPeriod, out int refinementOffset)
         {
             if (float.IsNaN(costChange) || float.IsInfinity(costChange))
@@ -170,7 +170,7 @@ namespace BepuPhysics.Trees
             var refineAggressiveness = Math.Max(0, costChange * refineAggressivenessScale);
             float refinePortion = Math.Min(1, refineAggressiveness * 0.25f);
 
-            var targetRefinementScale = Math.Min(nodeCount, Math.Max(2, (float)Math.Ceiling(refinementCandidatesCount * 0.03f)) + refinementCandidatesCount * refinePortion);
+            var targetRefinementScale = Math.Min(nodeCount, Math.Max(2, (float)Math.Ceiling(refinementCandidatesCount * refineAggressivenessScale * 0.03f)) + refinementCandidatesCount * refinePortion);
             //Note that the refinementCandidatesCount is used as a maximum instead of refinementCandidates + 1 for simplicity, since there's a chance
             //that the root would already be a refinementCandidate. Doesn't really have a significant effect either way.
             refinementPeriod = Math.Max(1, (int)(refinementCandidatesCount / targetRefinementScale));
@@ -178,21 +178,7 @@ namespace BepuPhysics.Trees
             targetRefinementCount = Math.Min(refinementCandidatesCount, (int)targetRefinementScale);
         }
 
-        public int GetCacheOptimizeTuning(int maximumSubtrees, float costChange, float cacheOptimizeAggressivenessScale)
-        {
-            //TODO: Using cost change as the heuristic for cache optimization isn't a great idea. They don't always or even frequently correlate.
-            //The best heuristic would be directly measuring the degree of adjacency. We could do that in the refit. I'm not addressing this yet
-            //because there's a good chance the cache optimization approach will change significantly (for example, refit outputting into a new tree with heuristically perfect layout).
-            var cacheOptimizeAggressiveness = Math.Max(0, costChange * cacheOptimizeAggressivenessScale);
-            float cacheOptimizePortion = Math.Min(1, 0.03f + 85f * (maximumSubtrees / (float)leafCount) * cacheOptimizeAggressiveness);
-            //float cacheOptimizePortion = Math.Min(1, 0.03f + cacheOptimizeAggressiveness * 0.5f);
-            //Console.WriteLine($"cache optimization portion: {cacheOptimizePortion}");
-            return (int)Math.Ceiling(cacheOptimizePortion * nodeCount);
-        }
-
-
-
-        public unsafe void RefitAndRefine(BufferPool pool, int frameIndex, float refineAggressivenessScale = 1, float cacheOptimizeAggressivenessScale = 1)
+        public unsafe void RefitAndRefine(BufferPool pool, int frameIndex, float refineAggressivenessScale = 1)
         {
             //Don't proceed if the tree has no refitting or refinement required. This also guarantees that any nodes that do exist have two children.
             if (leafCount <= 2)
@@ -250,18 +236,6 @@ namespace BepuPhysics.Trees
             subtreeReferences.Dispose(pool);
             treeletInternalNodes.Dispose(pool);
             refinementTargets.Dispose(pool);
-
-            var cacheOptimizeCount = GetCacheOptimizeTuning(maximumSubtrees, costChange, cacheOptimizeAggressivenessScale);
-
-            var startIndex = (int)(((long)frameIndex * cacheOptimizeCount) % nodeCount);
-
-            //We could wrap around. But we could also not do that because it doesn't really matter!
-            var end = Math.Min(NodeCount, startIndex + cacheOptimizeCount);
-            for (int i = startIndex; i < end; ++i)
-            {
-                IncrementalCacheOptimize(i);
-            }
-
         }
 
 

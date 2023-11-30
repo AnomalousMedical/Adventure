@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Numerics;
 using BepuPhysics.Trees;
+using System.Threading;
+using BepuUtilities.Collections;
 
 namespace BepuPhysics.CollisionDetection
 {
@@ -20,6 +22,8 @@ namespace BepuPhysics.CollisionDetection
         //TODO: static trees do not need to do nearly as much work as the active; this will change in the future.
         Tree.RefitAndRefineMultithreadedContext staticRefineContext;
 
+        Action<int> executeRefitAndMarkAction, executeRefineAction;
+
         public BroadPhase(BufferPool pool, int initialActiveLeafCapacity = 4096, int initialStaticLeafCapacity = 8192)
         {
             Pool = pool;
@@ -30,6 +34,8 @@ namespace BepuPhysics.CollisionDetection
 
             activeRefineContext = new Tree.RefitAndRefineMultithreadedContext();
             staticRefineContext = new Tree.RefitAndRefineMultithreadedContext();
+            executeRefitAndMarkAction = ExecuteRefitAndMark;
+            executeRefineAction = ExecuteRefine;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,39 +86,27 @@ namespace BepuPhysics.CollisionDetection
             return RemoveAt(index, ref StaticTree, ref staticLeaves, out movedLeaf);
         }
 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetBoundsPointers(int broadPhaseIndex, ref Tree tree, out Vector3* minPointer, out Vector3* maxPointer)
-        {
-            var leaf = tree.Leaves[broadPhaseIndex];
-            var nodeChild = (&tree.Nodes.Memory[leaf.NodeIndex].A) + leaf.ChildIndex;
-            minPointer = &nodeChild->Min;
-            maxPointer = &nodeChild->Max;
-        }
+        /// <summary>
+        /// Gets pointers to the leaf's bounds stored in the broad phase's active tree.
+        /// </summary>
+        /// <param name="index">Index of the active collidable to examine.</param>
+        /// <param name="minPointer">Pointer to the minimum bounds in the tree.</param>
+        /// <param name="maxPointer">Pointer to the maximum bounds in the tree.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetActiveBoundsPointers(int index, out Vector3* minPointer, out Vector3* maxPointer)
         {
-            GetBoundsPointers(index, ref ActiveTree, out minPointer, out maxPointer);
+            ActiveTree.GetBoundsPointers(index, out minPointer, out maxPointer);
         }
+        /// <summary>
+        /// Gets pointers to the leaf's bounds stored in the broad phase's static tree.
+        /// </summary>
+        /// <param name="index">Index of the static to examine.</param>
+        /// <param name="minPointer">Pointer to the minimum bounds in the tree.</param>
+        /// <param name="maxPointer">Pointer to the maximum bounds in the tree.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetStaticBoundsPointers(int index, out Vector3* minPointer, out Vector3* maxPointer)
         {
-            GetBoundsPointers(index, ref StaticTree, out minPointer, out maxPointer);
-        }
-
-        /// <summary>
-        /// Applies updated bounds to the given leaf index in the given tree, refitting the tree to match.
-        /// </summary>
-        /// <param name="broadPhaseIndex">Index of the leaf in the tree to update.</param>
-        /// <param name="tree">Tree containing the leaf to update.</param>
-        /// <param name="min">New minimum bounds for the leaf.</param>
-        /// <param name="max">New maximum bounds for the leaf.</param>
-        public unsafe static void UpdateBounds(int broadPhaseIndex, ref Tree tree, in Vector3 min, in Vector3 max)
-        {
-            GetBoundsPointers(broadPhaseIndex, ref tree, out var minPointer, out var maxPointer);
-            *minPointer = min;
-            *maxPointer = max;
-            tree.RefitForNodeBoundsChange(tree.Leaves[broadPhaseIndex].NodeIndex);
+            StaticTree.GetBoundsPointers(index, out minPointer, out maxPointer);
         }
 
         /// <summary>
@@ -121,9 +115,10 @@ namespace BepuPhysics.CollisionDetection
         /// <param name="broadPhaseIndex">Index of the leaf to update.</param>
         /// <param name="min">New minimum bounds for the leaf.</param>
         /// <param name="max">New maximum bounds for the leaf.</param>
-        public void UpdateActiveBounds(int broadPhaseIndex, in Vector3 min, in Vector3 max)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UpdateActiveBounds(int broadPhaseIndex, Vector3 min, Vector3 max)
         {
-            UpdateBounds(broadPhaseIndex, ref ActiveTree, min, max);
+            ActiveTree.UpdateBounds(broadPhaseIndex, min, max);
         }
         /// <summary>
         /// Applies updated bounds to the given active leaf index, refitting the tree to match.
@@ -131,35 +126,91 @@ namespace BepuPhysics.CollisionDetection
         /// <param name="broadPhaseIndex">Index of the leaf to update.</param>
         /// <param name="min">New minimum bounds for the leaf.</param>
         /// <param name="max">New maximum bounds for the leaf.</param>
-        public void UpdateStaticBounds(int broadPhaseIndex, in Vector3 min, in Vector3 max)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UpdateStaticBounds(int broadPhaseIndex, Vector3 min, Vector3 max)
         {
-            UpdateBounds(broadPhaseIndex, ref StaticTree, min, max);
+            StaticTree.UpdateBounds(broadPhaseIndex, min, max);
         }
 
         int frameIndex;
+        int remainingJobCount;
+        IThreadDispatcher threadDispatcher;
+        void ExecuteRefitAndMark(int workerIndex)
+        {
+            var threadPool = threadDispatcher.GetThreadMemoryPool(workerIndex);
+            while (true)
+            {
+                var jobIndex = Interlocked.Decrement(ref remainingJobCount);
+                if (jobIndex < 0)
+                    break;
+                if (jobIndex < activeRefineContext.RefitNodes.Count)
+                {
+                    activeRefineContext.ExecuteRefitAndMarkJob(threadPool, workerIndex, jobIndex);
+                }
+                else
+                {
+                    jobIndex -= activeRefineContext.RefitNodes.Count;
+                    Debug.Assert(jobIndex >= 0 && jobIndex < staticRefineContext.RefitNodes.Count);
+                    staticRefineContext.ExecuteRefitAndMarkJob(threadPool, workerIndex, jobIndex);
+                }
+            }
+        }
+
+        void ExecuteRefine(int workerIndex)
+        {
+            var threadPool = threadDispatcher.GetThreadMemoryPool(workerIndex);
+            var maximumSubtrees = Math.Max(activeRefineContext.MaximumSubtrees, staticRefineContext.MaximumSubtrees);
+            var subtreeReferences = new QuickList<int>(maximumSubtrees, threadPool);
+            var treeletInternalNodes = new QuickList<int>(maximumSubtrees, threadPool);
+            Tree.CreateBinnedResources(threadPool, maximumSubtrees, out var buffer, out var resources);
+            while (true)
+            {
+                var jobIndex = Interlocked.Decrement(ref remainingJobCount);
+                if (jobIndex < 0)
+                    break;
+                if (jobIndex < activeRefineContext.RefinementTargets.Count)
+                {
+                    activeRefineContext.ExecuteRefineJob(ref subtreeReferences, ref treeletInternalNodes, ref resources, threadPool, jobIndex);
+                }
+                else
+                {
+                    jobIndex -= activeRefineContext.RefinementTargets.Count;
+                    Debug.Assert(jobIndex >= 0 && jobIndex < staticRefineContext.RefinementTargets.Count);
+                    staticRefineContext.ExecuteRefineJob(ref subtreeReferences, ref treeletInternalNodes, ref resources, threadPool, jobIndex);
+                }
+            }
+            subtreeReferences.Dispose(threadPool);
+            treeletInternalNodes.Dispose(threadPool);
+            threadPool.Return(ref buffer);
+        }
+
         public void Update(IThreadDispatcher threadDispatcher = null)
         {
             if (frameIndex == int.MaxValue)
                 frameIndex = 0;
             if (threadDispatcher != null)
             {
-                activeRefineContext.RefitAndRefine(ref ActiveTree, Pool, threadDispatcher, frameIndex);
+                this.threadDispatcher = threadDispatcher;
+                activeRefineContext.CreateRefitAndMarkJobs(ref ActiveTree, Pool, threadDispatcher);
+                staticRefineContext.CreateRefitAndMarkJobs(ref StaticTree, Pool, threadDispatcher);
+                remainingJobCount = activeRefineContext.RefitNodes.Count + staticRefineContext.RefitNodes.Count;
+                threadDispatcher.DispatchWorkers(executeRefitAndMarkAction, remainingJobCount);
+                activeRefineContext.CreateRefinementJobs(Pool, frameIndex, 1f);
+                //TODO: for now, the inactive/static tree is simply updated like another active tree. This is enormously inefficient compared to the ideal-
+                //by nature, static and inactive objects do not move every frame!
+                //However, the refinement system rarely generates enough work to fill modern beefy machine. Even a million objects might only be 16 refinement jobs.
+                //To really get the benefit of incremental updates, the tree needs to be reworked to output finer grained work.
+                //Since the jobs are large, reducing the refinement aggressiveness doesn't change much here.
+                staticRefineContext.CreateRefinementJobs(Pool, frameIndex, 1f);
+                remainingJobCount = activeRefineContext.RefinementTargets.Count + staticRefineContext.RefinementTargets.Count;
+                threadDispatcher.DispatchWorkers(executeRefineAction, remainingJobCount);
+                activeRefineContext.CleanUpForRefitAndRefine(Pool);
+                staticRefineContext.CleanUpForRefitAndRefine(Pool);
+                this.threadDispatcher = null;
             }
             else
             {
                 ActiveTree.RefitAndRefine(Pool, frameIndex);
-            }
-
-            //TODO: for now, the inactive/static tree is simply updated like another active tree. This is enormously inefficient compared to the ideal-
-            //by nature, static and inactive objects do not move every frame!
-            //This should be replaced by a dedicated inactive/static refinement approach. It should also run alongside the active tree to extract more parallelism;
-            //in other words, generate jobs from both trees and dispatch over all of them together. No internal dispatch.
-            if (threadDispatcher != null)
-            {
-                staticRefineContext.RefitAndRefine(ref StaticTree, Pool, threadDispatcher, frameIndex);
-            }
-            else
-            {
                 StaticTree.RefitAndRefine(Pool, frameIndex);
             }
             ++frameIndex;

@@ -38,7 +38,7 @@ namespace BepuPhysics.Constraints
         /// </summary>
         public SpringSettings SpringSettings;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -49,7 +49,7 @@ namespace BepuPhysics.Constraints
 
         public TypeProcessor CreateTypeProcessor() => new LinearAxisServoTypeProcessor();
 
-        public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
+        public readonly void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
             ConstraintChecker.AssertUnitLength(LocalPlaneNormal, nameof(LinearAxisServo), nameof(LocalPlaneNormal));
             ConstraintChecker.AssertValid(ServoSettings, SpringSettings, nameof(LinearAxisServo));
@@ -63,7 +63,7 @@ namespace BepuPhysics.Constraints
             SpringSettingsWide.WriteFirst(SpringSettings, ref target.SpringSettings);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out LinearAxisServo description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out LinearAxisServo description)
         {
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
             ref var source = ref GetOffsetInstance(ref Buffer<LinearAxisServoPrestepData>.Get(ref batch.PrestepData, bundleIndex), innerIndex);
@@ -86,21 +86,7 @@ namespace BepuPhysics.Constraints
         public SpringSettingsWide SpringSettings;
     }
 
-    public struct LinearAxisServoProjection
-    {
-        public Vector3Wide LinearVelocityToImpulseA;
-        public Vector3Wide AngularVelocityToImpulseA;
-        public Vector3Wide AngularVelocityToImpulseB;
-        public Vector<float> BiasImpulse;
-        public Vector<float> SoftnessImpulseScale;
-        public Vector<float> MaximumImpulse;
-        public Vector3Wide LinearImpulseToVelocityA;
-        public Vector3Wide NegatedLinearImpulseToVelocityB;
-        public Vector3Wide AngularImpulseToVelocityA;
-        public Vector3Wide AngularImpulseToVelocityB;
-    }
-
-    public struct LinearAxisServoFunctions : IConstraintFunctions<LinearAxisServoPrestepData, LinearAxisServoProjection, Vector<float>>
+    public struct LinearAxisServoFunctions : ITwoBodyConstraintFunctions<LinearAxisServoPrestepData, Vector<float>>
     {
         public interface IJacobianModifier
         {
@@ -116,9 +102,10 @@ namespace BepuPhysics.Constraints
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ComputeTransforms<TJacobianModifier>(ref TJacobianModifier jacobianModifier, Bodies bodies, ref TwoBodyReferences bodyReferences, int count,
+        public static void ComputeTransforms<TJacobianModifier>(ref TJacobianModifier jacobianModifier,
             in Vector3Wide localOffsetA, in Vector3Wide localOffsetB, in Vector3Wide localPlaneNormal,
-            in BodyInertias inertiaA, in BodyInertias inertiaB, in Vector<float> effectiveMassCFMScale,
+            in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide ab, in QuaternionWide orientationB, in BodyInertiaWide inertiaB,
+            in Vector<float> effectiveMassCFMScale,
             out Vector3Wide anchorA, out Vector3Wide anchorB, out Vector3Wide normal, out Vector<float> effectiveMass,
             out Vector3Wide linearVelocityToImpulseA, out Vector3Wide angularVelocityToImpulseA, out Vector3Wide angularVelocityToImpulseB,
             out Vector3Wide linearImpulseToVelocityA, out Vector3Wide angularImpulseToVelocityA, out Vector3Wide negatedLinearImpulseToVelocityB, out Vector3Wide angularImpulseToVelocityB)
@@ -132,7 +119,6 @@ namespace BepuPhysics.Constraints
             //dot(linearA + angularA x offsetA - linearB - angularB x offsetB), planeNormal) = 0
             //dot(linearA - linearB, planeNormal) + dot(angularA x offsetA, planeNormal) + dot(offsetB x angularB, planeNormal) = 0
             //dot(linearA - linearB, planeNormal) + dot(offsetA x planeNormal, angularA) + dot(planeNormal x offsetB, angularB) = 0
-            bodies.GatherPose(ref bodyReferences, count, out var ab, out var orientationA, out var orientationB);
             //We'll just use the offset from a to anchorB as the 'offsetA' above.
             //(Note that there's no mathy reason why TargetOffset exists over just the LocalOffsetA alone; it's a usability thing.)
             Matrix3x3Wide.CreateFromQuaternion(orientationA, out var orientationMatrixA);
@@ -160,28 +146,9 @@ namespace BepuPhysics.Constraints
             Vector3Wide.Scale(angularB, effectiveMass, out angularVelocityToImpulseB);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Prestep(Bodies bodies, ref TwoBodyReferences bodyReferences, int count, float dt, float inverseDt, ref BodyInertias inertiaA, ref BodyInertias inertiaB,
-            ref LinearAxisServoPrestepData prestep, out LinearAxisServoProjection projection)
-        {
-            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out projection.SoftnessImpulseScale);
-            var modifier = new NoChangeModifier();
-            ComputeTransforms(ref modifier, bodies, ref bodyReferences, count, prestep.LocalOffsetA, prestep.LocalOffsetB, prestep.LocalPlaneNormal, inertiaA, inertiaB, effectiveMassCFMScale,
-                out var anchorA, out var anchorB, out var normal, out var effectiveMass,
-                out projection.LinearVelocityToImpulseA, out projection.AngularVelocityToImpulseA, out projection.AngularVelocityToImpulseB,
-                out projection.LinearImpulseToVelocityA, out projection.AngularImpulseToVelocityA, out projection.NegatedLinearImpulseToVelocityB, out projection.AngularImpulseToVelocityB);
-
-            Vector3Wide.Subtract(anchorB, anchorA, out var anchorOffset);
-            Vector3Wide.Dot(anchorOffset, normal, out var planeNormalDot);
-
-            //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
-            ServoSettingsWide.ComputeClampedBiasVelocity(planeNormalDot - prestep.TargetOffset, positionErrorToVelocity, prestep.ServoSettings, dt, inverseDt, out projection.BiasImpulse, out projection.MaximumImpulse);
-            projection.BiasImpulse *= effectiveMass;
-        }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ApplyImpulse(ref BodyVelocities velocityA, ref BodyVelocities velocityB,
+        public static void ApplyImpulse(ref BodyVelocityWide velocityA, ref BodyVelocityWide velocityB,
             in Vector3Wide linearImpulseToVelocityA, in Vector3Wide angularImpulseToVelocityA, in Vector3Wide negatedLinearImpulseToVelocityB, in Vector3Wide angularImpulseToVelocityB, ref Vector<float> csi)
         {
             Vector3Wide.Scale(linearImpulseToVelocityA, csi, out var linearChangeA);
@@ -195,15 +162,7 @@ namespace BepuPhysics.Constraints
             Vector3Wide.Add(angularChangeB, velocityB.Angular, out velocityB.Angular);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WarmStart(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref LinearAxisServoProjection projection, ref Vector<float> accumulatedImpulse)
-        {
-            ApplyImpulse(ref velocityA, ref velocityB,
-                projection.LinearImpulseToVelocityA, projection.AngularImpulseToVelocityA, projection.NegatedLinearImpulseToVelocityB, projection.AngularImpulseToVelocityB,
-                ref accumulatedImpulse);
-        }
-
-        public static void ComputeCorrectiveImpulse(ref BodyVelocities velocityA, ref BodyVelocities velocityB,
+        public static void ComputeCorrectiveImpulse(ref BodyVelocityWide velocityA, ref BodyVelocityWide velocityB,
             in Vector3Wide linearVelocityToImpulseA, in Vector3Wide angularVelocityToImpulseA, in Vector3Wide angularVelocityToImpulseB,
             in Vector<float> biasImpulse, in Vector<float> softnessImpulseScale, in Vector<float> accumulatedImpulse, out Vector<float> csi)
         {
@@ -216,20 +175,79 @@ namespace BepuPhysics.Constraints
             csi = biasImpulse - accumulatedImpulse * softnessImpulseScale - (linearA + angularA - negatedLinearB + angularB);
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Solve(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref LinearAxisServoProjection projection, ref Vector<float> accumulatedImpulse)
+        public static void ApplyImpulse(in Vector3Wide linearJA, in Vector3Wide angularImpulseToVelocityA, in Vector3Wide angularImpulseToVelocityB, in BodyInertiaWide inertiaA, in BodyInertiaWide inertiaB,
+            in Vector<float> csi, ref BodyVelocityWide velocityA, ref BodyVelocityWide velocityB)
         {
-            ComputeCorrectiveImpulse(ref velocityA, ref velocityB, projection.LinearVelocityToImpulseA, projection.AngularVelocityToImpulseA, projection.AngularVelocityToImpulseB,
-                projection.BiasImpulse, projection.SoftnessImpulseScale, accumulatedImpulse, out var csi);
-            ServoSettingsWide.ClampImpulse(projection.MaximumImpulse, ref accumulatedImpulse, ref csi);
-            ApplyImpulse(ref velocityA, ref velocityB,
-                projection.LinearImpulseToVelocityA, projection.AngularImpulseToVelocityA, projection.NegatedLinearImpulseToVelocityB, projection.AngularImpulseToVelocityB,
-                ref csi);
+            velocityA.Linear += linearJA * (csi * inertiaA.InverseMass);
+            velocityB.Linear -= linearJA * (csi * inertiaB.InverseMass);
+            velocityA.Angular += angularImpulseToVelocityA * csi;
+            velocityB.Angular += angularImpulseToVelocityB * csi;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeJacobians(in Vector3Wide ab, in QuaternionWide orientationA, in QuaternionWide orientationB, in Vector3Wide localPlaneNormalA, in Vector3Wide localOffsetA, in Vector3Wide localOffsetB,
+            out Vector<float> planeNormalDot, out Vector3Wide normal, out Vector3Wide angularJA, out Vector3Wide angularJB)
+        {
+            //Linear jacobians are just normal and -normal. Angular jacobians are offsetA x normal and offsetB x normal.
+            Matrix3x3Wide.CreateFromQuaternion(orientationA, out var orientationMatrixA);
+            Matrix3x3Wide.TransformWithoutOverlap(localPlaneNormalA, orientationMatrixA, out normal);
+            Matrix3x3Wide.TransformWithoutOverlap(localOffsetA, orientationMatrixA, out var anchorA);
+            QuaternionWide.TransformWithoutOverlap(localOffsetB, orientationB, out var offsetB);
+            //Note that the angular jacobian for A uses the offset from A to the attachment point on B. 
+            var anchorB = ab + offsetB;
+            Vector3Wide.Dot(anchorB - anchorA, normal, out planeNormalDot);
+            var offsetFromAToClosetPointOnPlaneToB = anchorB - planeNormalDot * normal;
+            Vector3Wide.CrossWithoutOverlap(offsetFromAToClosetPointOnPlaneToB, normal, out angularJA);
+            Vector3Wide.CrossWithoutOverlap(normal, offsetB, out angularJB);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeEffectiveMass(in Vector3Wide angularJA, in Vector3Wide angularJB,
+            in BodyInertiaWide inertiaA, in BodyInertiaWide inertiaB,
+            in Vector<float> effectiveMassCFMScale, out Vector3Wide angularImpulseToVelocityA, out Vector3Wide angularImpulseToVelocityB, out Vector<float> effectiveMass)
+        {
+            Symmetric3x3Wide.TransformWithoutOverlap(angularJA, inertiaA.InverseInertiaTensor, out angularImpulseToVelocityA);
+            Symmetric3x3Wide.TransformWithoutOverlap(angularJB, inertiaB.InverseInertiaTensor, out angularImpulseToVelocityB);
+            Vector3Wide.Dot(angularJA, angularImpulseToVelocityA, out var angularContributionA);
+            Vector3Wide.Dot(angularJB, angularImpulseToVelocityB, out var angularContributionB);
+            effectiveMass = effectiveMassCFMScale / (inertiaA.InverseMass + inertiaB.InverseMass + angularContributionA + angularContributionB);
+        }
+
+        public void WarmStart(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, ref LinearAxisServoPrestepData prestep, ref Vector<float> accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            ComputeJacobians(positionB - positionA, orientationA, orientationB, prestep.LocalPlaneNormal, prestep.LocalOffsetA, prestep.LocalOffsetB, out _, out var normal, out var angularJA, out var angularJB);
+            Symmetric3x3Wide.TransformWithoutOverlap(angularJA, inertiaA.InverseInertiaTensor, out var angularImpulseToVelocityA);
+            Symmetric3x3Wide.TransformWithoutOverlap(angularJB, inertiaB.InverseInertiaTensor, out var angularImpulseToVelocityB);
+            ApplyImpulse(normal, angularImpulseToVelocityA, angularImpulseToVelocityB, inertiaA, inertiaB, accumulatedImpulses, ref wsvA, ref wsvB);
+        }
+
+        public void Solve(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, float dt, float inverseDt, ref LinearAxisServoPrestepData prestep, ref Vector<float> accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            ComputeJacobians(positionB - positionA, orientationA, orientationB, prestep.LocalPlaneNormal, prestep.LocalOffsetA, prestep.LocalOffsetB, out var planeNormalDot, out var normal, out var angularJA, out var angularJB);
+            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out var softnessImpulseScale);
+            ComputeEffectiveMass(angularJA, angularJB, inertiaA, inertiaB, effectiveMassCFMScale, out var angularImpulseToVelocityA, out var angularImpulseToVelocityB, out var effectiveMass);
+
+
+            //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
+            ServoSettingsWide.ComputeClampedBiasVelocity(planeNormalDot - prestep.TargetOffset, positionErrorToVelocity, prestep.ServoSettings, dt, inverseDt, out var biasVelocity, out var maximumImpulse);
+
+            //csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - (csiaLinear + csiaAngular + csibLinear + csibAngular);
+            var csv = Vector3Wide.Dot(wsvA.Linear - wsvB.Linear, normal) + Vector3Wide.Dot(wsvA.Angular, angularJA) + Vector3Wide.Dot(wsvB.Angular, angularJB);
+
+            var csi = effectiveMass * (biasVelocity - csv) - accumulatedImpulses * softnessImpulseScale;
+
+            ServoSettingsWide.ClampImpulse(maximumImpulse, ref accumulatedImpulses, ref csi);
+            ApplyImpulse(normal, angularImpulseToVelocityA, angularImpulseToVelocityB, inertiaA, inertiaB, csi, ref wsvA, ref wsvB);
+        }
+
+        public bool RequiresIncrementalSubstepUpdates => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void IncrementallyUpdateForSubstep(in Vector<float> dt, in BodyVelocityWide wsvA, in BodyVelocityWide wsvB, ref LinearAxisServoPrestepData prestepData) { }
     }
 
-    public class LinearAxisServoTypeProcessor : TwoBodyTypeProcessor<LinearAxisServoPrestepData, LinearAxisServoProjection, Vector<float>, LinearAxisServoFunctions>
+    public class LinearAxisServoTypeProcessor : TwoBodyTypeProcessor<LinearAxisServoPrestepData, Vector<float>, LinearAxisServoFunctions, AccessAll, AccessAll, AccessAll, AccessAll>
     {
         public const int BatchTypeId = 38;
     }

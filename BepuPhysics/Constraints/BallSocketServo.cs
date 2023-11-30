@@ -15,11 +15,11 @@ namespace BepuPhysics.Constraints
     public struct BallSocketServo : ITwoBodyConstraintDescription<BallSocketServo>
     {
         /// <summary>
-        /// Local offset from the center of body A to its attachment point.
+        /// Offset from the center of body A to its attachment in A's local space.
         /// </summary>
         public Vector3 LocalOffsetA;
         /// <summary>
-        /// Local offset from the center of body B to its attachment point.
+        /// Offset from the center of body B to its attachment in B's local space.
         /// </summary>
         public Vector3 LocalOffsetB;
         /// <summary>
@@ -31,7 +31,7 @@ namespace BepuPhysics.Constraints
         /// </summary>
         public ServoSettings ServoSettings;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -42,7 +42,7 @@ namespace BepuPhysics.Constraints
 
         public TypeProcessor CreateTypeProcessor() => new BallSocketServoTypeProcessor();
 
-        public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
+        public readonly void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
             ConstraintChecker.AssertValid(ServoSettings, SpringSettings, nameof(BallSocketServo));
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
@@ -53,7 +53,7 @@ namespace BepuPhysics.Constraints
             ServoSettingsWide.WriteFirst(ServoSettings, ref target.ServoSettings);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out BallSocketServo description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out BallSocketServo description)
         {
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
             ref var source = ref GetOffsetInstance(ref Buffer<BallSocketServoPrestepData>.Get(ref batch.PrestepData, bundleIndex), innerIndex);
@@ -72,59 +72,41 @@ namespace BepuPhysics.Constraints
         public ServoSettingsWide ServoSettings;
     }
 
-    public struct BallSocketServoProjection
+    public struct BallSocketServoFunctions : ITwoBodyConstraintFunctions<BallSocketServoPrestepData, Vector3Wide>
     {
-        public Vector3Wide OffsetA;
-        public Vector3Wide OffsetB;
-        public Vector3Wide BiasVelocity;
-        public Symmetric3x3Wide EffectiveMass;
-        public Vector<float> SoftnessImpulseScale;
-        public Vector<float> MaximumImpulse;
-        public BodyInertias InertiaA;
-        public BodyInertias InertiaB;
-    }
-
-    public struct BallSocketServoFunctions : IConstraintFunctions<BallSocketServoPrestepData, BallSocketServoProjection, Vector3Wide>
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Prestep(Bodies bodies, ref TwoBodyReferences bodyReferences, int count, float dt, float inverseDt, ref BodyInertias inertiaA, ref BodyInertias inertiaB,
-            ref BallSocketServoPrestepData prestep, out BallSocketServoProjection projection)
+        public void WarmStart(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, ref BallSocketServoPrestepData prestep, ref Vector3Wide accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
         {
-            bodies.GatherPose(ref bodyReferences, count, out var offsetFromACenterToBCenter, out var orientationA, out var orientationB);
-            projection.InertiaA = inertiaA;
-            projection.InertiaB = inertiaB;
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetA, orientationA, out var offsetA);
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetB, orientationB, out var offsetB);
+            BallSocketShared.ApplyImpulse(ref wsvA, ref wsvB, offsetA, offsetB, inertiaA, inertiaB, accumulatedImpulses);
+        }
 
-            //Note that we must reconstruct the world offsets from the body orientations since we do not store world offsets.
-            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetA, orientationA, out projection.OffsetA);
-            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetB, orientationB, out projection.OffsetB);
-            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out projection.SoftnessImpulseScale);
-            BallSocketShared.ComputeEffectiveMass(ref inertiaA, ref inertiaB, ref projection.OffsetA, ref projection.OffsetB, ref effectiveMassCFMScale, out projection.EffectiveMass);
+        public void Solve(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, float dt, float inverseDt, ref BallSocketServoPrestepData prestep, ref Vector3Wide accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetA, orientationA, out var offsetA);
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffsetB, orientationB, out var offsetB);
+            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out var softnessImpulseScale);
+            BallSocketShared.ComputeEffectiveMass(inertiaA, inertiaB, offsetA, offsetB, effectiveMassCFMScale, out var effectiveMass);
 
             //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
-            Vector3Wide.Add(offsetFromACenterToBCenter, projection.OffsetB, out var anchorB);
-            Vector3Wide.Subtract(anchorB, projection.OffsetA, out var error);
-            ServoSettingsWide.ComputeClampedBiasVelocity(error, positionErrorToVelocity, prestep.ServoSettings, dt, inverseDt, out projection.BiasVelocity, out projection.MaximumImpulse);
+            var ab = positionB - positionA;
+            Vector3Wide.Add(ab, offsetB, out var anchorB);
+            Vector3Wide.Subtract(anchorB, offsetA, out var error);
+            ServoSettingsWide.ComputeClampedBiasVelocity(error, positionErrorToVelocity, prestep.ServoSettings, dt, inverseDt, out var biasVelocity, out var maximumImpulse);
+
+            BallSocketShared.Solve(ref wsvA, ref wsvB, offsetA, offsetB, biasVelocity, effectiveMass, softnessImpulseScale, maximumImpulse, ref accumulatedImpulses, inertiaA, inertiaB);
         }
 
-
+        public bool RequiresIncrementalSubstepUpdates => false;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WarmStart(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref BallSocketServoProjection projection, ref Vector3Wide accumulatedImpulse)
-        {
-            BallSocketShared.ApplyImpulse(ref velocityA, ref velocityB, ref projection.OffsetA, ref projection.OffsetB, ref projection.InertiaA, ref projection.InertiaB, ref accumulatedImpulse);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Solve(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref BallSocketServoProjection projection, ref Vector3Wide accumulatedImpulse)
-        {
-            BallSocketShared.Solve(ref velocityA, ref velocityB, ref projection.OffsetA, ref projection.OffsetB, ref projection.BiasVelocity, ref projection.EffectiveMass, ref projection.SoftnessImpulseScale, ref projection.MaximumImpulse, ref accumulatedImpulse, ref projection.InertiaA, ref projection.InertiaB);
-        }
+        public void IncrementallyUpdateForSubstep(in Vector<float> dt, in BodyVelocityWide wsvA, in BodyVelocityWide wsvB, ref BallSocketServoPrestepData prestepData) { }
     }
 
 
     /// <summary>
     /// Handles the solve iterations of a bunch of ball socket servo constraints.
     /// </summary>
-    public class BallSocketServoTypeProcessor : TwoBodyTypeProcessor<BallSocketServoPrestepData, BallSocketServoProjection, Vector3Wide, BallSocketServoFunctions>
+    public class BallSocketServoTypeProcessor : TwoBodyTypeProcessor<BallSocketServoPrestepData, Vector3Wide, BallSocketServoFunctions, AccessNoPosition, AccessNoPosition, AccessAll, AccessAll>
     {
         public const int BatchTypeId = 53;
     }

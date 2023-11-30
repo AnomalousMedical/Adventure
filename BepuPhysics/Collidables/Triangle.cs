@@ -39,7 +39,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
+        public readonly void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
         {
             Matrix3x3.CreateFromQuaternion(orientation, out var basis);
             Matrix3x3.Transform(A, basis, out var worldA);
@@ -50,7 +50,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
+        public readonly void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
         {
             maximumRadius = (float)Math.Sqrt(MathHelper.Max(A.LengthSquared(), MathHelper.Max(B.LengthSquared(), C.LengthSquared())));
             maximumAngularExpansion = maximumRadius;
@@ -95,7 +95,7 @@ namespace BepuPhysics.Collidables
             return true;
         }
 
-        public bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
+        public readonly bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
         {
             var offset = origin - pose.Position;
             Matrix3x3.CreateFromQuaternion(pose.Orientation, out var orientation);
@@ -109,14 +109,16 @@ namespace BepuPhysics.Collidables
             return false;
         }
 
-        public void ComputeInertia(float mass, out BodyInertia inertia)
+        public readonly BodyInertia ComputeInertia(float mass)
         {
             MeshInertiaHelper.ComputeTriangleContribution(A, B, C, mass, out var inertiaTensor);
+            BodyInertia inertia;
             Symmetric3x3.Invert(inertiaTensor, out inertia.InverseInertiaTensor);
             inertia.InverseMass = 1f / mass;
+            return inertia;
         }
 
-        public ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
+        public readonly ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
         {
             return new ConvexShapeBatch<Triangle, TriangleWide>(pool, initialCapacity);
         }
@@ -125,7 +127,7 @@ namespace BepuPhysics.Collidables
         /// Type id of triangle shapes.
         /// </summary>
         public const int Id = 3;
-        public int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
+        public readonly int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
     }
 
 
@@ -153,30 +155,49 @@ namespace BepuPhysics.Collidables
 
         public bool AllowOffsetMemoryAccess => true;
         public int InternalAllocationSize => 0;
-        public void Initialize(in RawBuffer memory) { }
-
-        /// <summary>
-        /// Provides an estimate of the scale of a shape. 
-        /// </summary>
-        /// <param name="epsilonScale">Approximate scale of the shape for use in epsilons.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EstimateEpsilonScale(out Vector<float> epsilonScale)
-        {
-            var minX = Vector.Min(A.X, Vector.Min(B.X, C.X));
-            var maxX = Vector.Max(A.X, Vector.Max(B.X, C.X));
-            var minY = Vector.Min(A.Y, Vector.Min(B.Y, C.Y));
-            var maxY = Vector.Max(A.Y, Vector.Max(B.Y, C.Y));
-            var minZ = Vector.Min(A.Z, Vector.Min(B.Z, C.Z));
-            var maxZ = Vector.Max(A.Z, Vector.Max(B.Z, C.Z));
-            epsilonScale = Vector.Max(maxX - minX, Vector.Max(maxY - minY, maxZ - minZ));
-        }
-
+        public void Initialize(in Buffer<byte> memory) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSlot(int index, in Triangle source)
         {
             GatherScatter.GetOffsetInstance(ref this, index).WriteFirst(source);
         }
+
+
+        /// <summary>
+        /// Minimum dot product between the detected local normal and the face normal of a triangle necessary to create contacts.
+        /// </summary>
+        public const float BackfaceNormalDotRejectionThreshold = -1e-2f;
+        /// <summary>
+        /// Epsilon to apply to testing triangles for degeneracy (which will be scaled by a pair-determined epsilon scale). Degenerate triangles do not have well defined normals and should not contribute 
+        /// </summary>
+        public const float DegenerateTriangleEpsilon = 1e-6f;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeTriangleEpsilonScale(in Vector<float> abLengthSquared, in Vector<float> caLengthSquared, out Vector<float> epsilonScale)
+        {
+            epsilonScale = Vector.SquareRoot(Vector.Max(abLengthSquared, caLengthSquared));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeDegenerateTriangleEpsilon(in Vector<float> abLengthSquared, in Vector<float> caLengthSquared, out Vector<float> epsilonScale, out Vector<float> epsilon)
+        {
+            ComputeTriangleEpsilonScale(abLengthSquared, caLengthSquared, out epsilonScale);
+            epsilon = new Vector<float>(DegenerateTriangleEpsilon) * epsilonScale;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeNondegenerateTriangleMask(in Vector3Wide ab, in Vector3Wide ca, in Vector<float> triangleNormalLength, out Vector<float> epsilonScale, out Vector<int> nondegenerateMask)
+        {
+            Vector3Wide.LengthSquared(ab, out var abLengthSquared);
+            Vector3Wide.LengthSquared(ca, out var caLengthSquared);
+            ComputeDegenerateTriangleEpsilon(abLengthSquared, caLengthSquared, out epsilonScale, out var epsilon);
+            nondegenerateMask = Vector.GreaterThan(triangleNormalLength, epsilon);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ComputeNondegenerateTriangleMask(in Vector<float> abLengthSquared, in Vector<float> caLengthSquared, in Vector<float> triangleNormalLength, out Vector<float> epsilonScale, out Vector<int> nondegenerateMask)
+        {
+            ComputeDegenerateTriangleEpsilon(abLengthSquared, caLengthSquared, out epsilonScale, out var epsilon);
+            nondegenerateMask = Vector.GreaterThan(triangleNormalLength, epsilon);
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetBounds(ref QuaternionWide orientations, int countInBundle, out Vector<float> maximumRadius, out Vector<float> maximumAngularExpansion, out Vector3Wide min, out Vector3Wide max)
@@ -234,7 +255,7 @@ namespace BepuPhysics.Collidables
                         Vector.GreaterThanOrEqual(w, Vector<float>.Zero)),
                     Vector.LessThanOrEqual(v + w, dn)));
         }
-        public void RayTest(ref RigidPoses pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
+        public void RayTest(ref RigidPoseWide pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
         {
             Vector3Wide.Subtract(ray.Origin, pose.Position, out var offset);
             Matrix3x3Wide.CreateFromQuaternion(pose.Orientation, out var orientation);

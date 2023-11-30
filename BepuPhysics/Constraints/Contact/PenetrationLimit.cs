@@ -6,25 +6,82 @@ using System.Runtime.InteropServices;
 
 namespace BepuPhysics.Constraints.Contact
 {
-    public struct PenetrationLimitProjection
-    {
-        //Note that these are just the raw jacobians, no precomputation with the JT*EffectiveMass.
-        public Vector3Wide AngularA;
-        public Vector3Wide AngularB;
-        public Vector<float> EffectiveMass;
-        public Vector<float> BiasVelocity;
-    }
-
     public static class PenetrationLimit
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Prestep(in BodyInertias inertiaA, in BodyInertias inertiaB,
-            in Vector3Wide contactOffsetA, in Vector3Wide contactOffsetB, in Vector3Wide normal, in Vector<float> depth,
-            in Vector<float> positionErrorToVelocity, in Vector<float> effectiveMassCFMScale, in Vector<float> maximumRecoveryVelocity,
-            float inverseDt, out PenetrationLimitProjection projection)
+        public static void ComputeCorrectiveImpulse(in BodyVelocityWide wsvA, in BodyVelocityWide wsvB,
+            in Vector3Wide normal, in Vector3Wide angularA, in Vector3Wide angularB, in Vector<float> biasVelocity, in Vector<float> softnessImpulseScale, in Vector<float> effectiveMass,
+            ref Vector<float> accumulatedImpulse, out Vector<float> correctiveCSI)
         {
-            //We directly take the prestep data here since the jacobians and error don't undergo any processing.
+            //Note that we do NOT use pretransformed jacobians here; the linear jacobian sharing (normal) meant that we had the effective mass anyway.
+            Vector3Wide.Dot(wsvA.Linear, normal, out var csvaLinear);
+            Vector3Wide.Dot(wsvA.Angular, angularA, out var csvaAngular);
+            Vector3Wide.Dot(wsvB.Linear, normal, out var negatedCSVBLinear);
+            Vector3Wide.Dot(wsvB.Angular, angularB, out var csvbAngular);
+            //Compute negated version to avoid the need for an explicit negate.
+            var negatedCSI = accumulatedImpulse * softnessImpulseScale + (csvaLinear - negatedCSVBLinear + csvaAngular + csvbAngular - biasVelocity) * effectiveMass;
 
+            var previousAccumulated = accumulatedImpulse;
+            accumulatedImpulse = Vector.Max(Vector<float>.Zero, accumulatedImpulse - negatedCSI);
+
+            correctiveCSI = accumulatedImpulse - previousAccumulated;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void UpdatePenetrationDepth(in Vector<float> dt, in Vector3Wide contactOffsetA, in Vector3Wide offsetB, in Vector3Wide normal, in BodyVelocityWide velocityA, in BodyVelocityWide velocityB, ref Vector<float> penetrationDepth)
+        {
+            //The normal is calibrated to point from B to A. Any movement of A along N results in a decrease in depth. Any movement of B along N results in an increase in depth. 
+            //estimatedPenetrationDepthChange = dot(normal, velocityDtA.Linear + velocityDtA.Angular x contactOffsetA) - dot(normal, velocityDtB.Linear + velocityDtB.Angular x contactOffsetB)
+            Vector3Wide.CrossWithoutOverlap(velocityA.Angular, contactOffsetA, out var wxra);
+            Vector3Wide.Add(wxra, velocityA.Linear, out var contactVelocityA);
+
+            Vector3Wide.Subtract(contactOffsetA, offsetB, out var contactOffsetB);
+            Vector3Wide.CrossWithoutOverlap(velocityB.Angular, contactOffsetB, out var wxrb);
+            Vector3Wide.Add(wxrb, velocityB.Linear, out var contactVelocityB);
+
+            Vector3Wide.Subtract(contactVelocityA, contactVelocityB, out var contactVelocityDifference);
+            Vector3Wide.Dot(normal, contactVelocityDifference, out var estimatedDepthChangeVelocity);
+            penetrationDepth -= estimatedDepthChangeVelocity * dt;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ApplyImpulse(in BodyInertiaWide inertiaA, in BodyInertiaWide inertiaB, in Vector3Wide normal, in Vector3Wide angularA, in Vector3Wide angularB,
+            in Vector<float> correctiveImpulse,
+            ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            var linearVelocityChangeA = correctiveImpulse * inertiaA.InverseMass;
+            Vector3Wide.Scale(normal, linearVelocityChangeA, out var correctiveVelocityALinearVelocity);
+            Vector3Wide.Scale(angularA, correctiveImpulse, out var correctiveAngularImpulseA);
+            Symmetric3x3Wide.TransformWithoutOverlap(correctiveAngularImpulseA, inertiaA.InverseInertiaTensor, out var correctiveVelocityAAngularVelocity);
+
+            var linearVelocityChangeB = correctiveImpulse * inertiaB.InverseMass;
+            Vector3Wide.Scale(normal, linearVelocityChangeB, out var correctiveVelocityBLinearVelocity);
+            Vector3Wide.Scale(angularB, correctiveImpulse, out var correctiveAngularImpulseB);
+            Symmetric3x3Wide.TransformWithoutOverlap(correctiveAngularImpulseB, inertiaB.InverseInertiaTensor, out var correctiveVelocityBAngularVelocity);
+
+            Vector3Wide.Add(wsvA.Linear, correctiveVelocityALinearVelocity, out wsvA.Linear);
+            Vector3Wide.Add(wsvA.Angular, correctiveVelocityAAngularVelocity, out wsvA.Angular);
+            Vector3Wide.Subtract(wsvB.Linear, correctiveVelocityBLinearVelocity, out wsvB.Linear); //Note subtract; normal = -jacobianLinearB
+            Vector3Wide.Add(wsvB.Angular, correctiveVelocityBAngularVelocity, out wsvB.Angular);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WarmStart(
+            in BodyInertiaWide inertiaA, in BodyInertiaWide inertiaB, in Vector3Wide normal, in Vector3Wide contactOffsetA, in Vector3Wide contactOffsetB,
+            in Vector<float> accumulatedImpulse, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            Vector3Wide.CrossWithoutOverlap(contactOffsetA, normal, out var angularA);
+            Vector3Wide.CrossWithoutOverlap(normal, contactOffsetB, out var angularB);
+            ApplyImpulse(inertiaA, inertiaB, normal, angularA, angularB, accumulatedImpulse, ref wsvA, ref wsvB);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Solve(
+            in BodyInertiaWide inertiaA, in BodyInertiaWide inertiaB, in Vector3Wide normal, in Vector3Wide contactOffsetA, in Vector3Wide contactOffsetB,
+            in Vector<float> depth, in Vector<float> positionErrorToVelocity, in Vector<float> effectiveMassCFMScale, in Vector<float> maximumRecoveryVelocity, in Vector<float> inverseDt, in Vector<float> softnessImpulseScale,
+            ref Vector<float> accumulatedImpulse, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
             //The contact penetration constraint takes the form:
             //dot(positionA + offsetA, N) >= dot(positionB + offsetB, N)
             //Or:
@@ -52,103 +109,27 @@ namespace BepuPhysics.Constraints.Contact
             //linearB: -N
             //angularB: N x offsetB
             //Note that we leave the penetration depth as is, even when it's negative. Speculative contacts!
-            Vector3Wide.CrossWithoutOverlap(contactOffsetA, normal, out projection.AngularA);
-            Vector3Wide.CrossWithoutOverlap(normal, contactOffsetB, out projection.AngularB);
+            Vector3Wide.CrossWithoutOverlap(contactOffsetA, normal, out var angularA);
+            Vector3Wide.CrossWithoutOverlap(normal, contactOffsetB, out var angularB);
 
             //effective mass
-            Symmetric3x3Wide.VectorSandwich(projection.AngularA, inertiaA.InverseInertiaTensor, out var angularA0);
-            Symmetric3x3Wide.VectorSandwich(projection.AngularB, inertiaB.InverseInertiaTensor, out var angularB0);
+            Symmetric3x3Wide.VectorSandwich(angularA, inertiaA.InverseInertiaTensor, out var angularA0);
+            Symmetric3x3Wide.VectorSandwich(angularB, inertiaB.InverseInertiaTensor, out var angularB0);
 
             //Linear effective mass contribution notes:
             //1) The J * M^-1 * JT can be reordered to J * JT * M^-1 for the linear components, since M^-1 is a scalar and dot(n * scalar, n) = dot(n, n) * scalar.
             //2) dot(normal, normal) == 1, so the contribution from each body is just its inverse mass.
             var linear = inertiaA.InverseMass + inertiaB.InverseMass;
             //Note that we don't precompute the JT * effectiveMass term. Since the jacobians are shared, we have to do that multiply anyway.
-            projection.EffectiveMass = effectiveMassCFMScale / (linear + angularA0 + angularB0);
+            var effectiveMass = effectiveMassCFMScale / (linear + angularA0 + angularB0);
 
             //If depth is negative, the bias velocity will permit motion up until the depth hits zero. This works because positionErrorToVelocity * dt will always be <=1.
-            projection.BiasVelocity = Vector.Min(
-                depth * new Vector<float>(inverseDt),
+            var biasVelocity = Vector.Min(
+                depth * inverseDt,
                 Vector.Min(depth * positionErrorToVelocity, maximumRecoveryVelocity));
-        }
 
-
-        /// <summary>
-        /// Transforms an impulse from constraint space to world space, uses it to modify the cached world space velocities of the bodies.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ApplyImpulse(in PenetrationLimitProjection projection, in BodyInertias inertiaA, in BodyInertias inertiaB, in Vector3Wide normal,
-            in Vector<float> correctiveImpulse,
-            ref BodyVelocities wsvA, ref BodyVelocities wsvB)
-        {
-            var linearVelocityChangeA = correctiveImpulse * inertiaA.InverseMass;
-            Vector3Wide.Scale(normal, linearVelocityChangeA, out var correctiveVelocityALinearVelocity);
-            Vector3Wide.Scale(projection.AngularA, correctiveImpulse, out var correctiveAngularImpulseA);
-            Symmetric3x3Wide.TransformWithoutOverlap(correctiveAngularImpulseA, inertiaA.InverseInertiaTensor, out var correctiveVelocityAAngularVelocity);
-
-            var linearVelocityChangeB = correctiveImpulse * inertiaB.InverseMass;
-            Vector3Wide.Scale(normal, linearVelocityChangeB, out var correctiveVelocityBLinearVelocity);
-            Vector3Wide.Scale(projection.AngularB, correctiveImpulse, out var correctiveAngularImpulseB);
-            Symmetric3x3Wide.TransformWithoutOverlap(correctiveAngularImpulseB, inertiaB.InverseInertiaTensor, out var correctiveVelocityBAngularVelocity);
-
-            Vector3Wide.Add(wsvA.Linear, correctiveVelocityALinearVelocity, out wsvA.Linear);
-            Vector3Wide.Add(wsvA.Angular, correctiveVelocityAAngularVelocity, out wsvA.Angular);
-            Vector3Wide.Subtract(wsvB.Linear, correctiveVelocityBLinearVelocity, out wsvB.Linear); //Note subtract; normal = -jacobianLinearB
-            Vector3Wide.Add(wsvB.Angular, correctiveVelocityBAngularVelocity, out wsvB.Angular);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WarmStart(
-            in PenetrationLimitProjection projection, in BodyInertias inertiaA, in BodyInertias inertiaB, in Vector3Wide normal,
-            in Vector<float> accumulatedImpulse, ref BodyVelocities wsvA, ref BodyVelocities wsvB)
-        {
-            ApplyImpulse(projection, inertiaA, inertiaB, normal, accumulatedImpulse, ref wsvA, ref wsvB);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ComputeCorrectiveImpulse(in BodyVelocities wsvA, in BodyVelocities wsvB,
-            in PenetrationLimitProjection projection,
-            in Vector3Wide normal, in Vector<float> softnessImpulseScale,
-            ref Vector<float> accumulatedImpulse, out Vector<float> correctiveCSI)
-        {
-            //Note that we do NOT use pretransformed jacobians here; the linear jacobian sharing (normal) meant that we had the effective mass anyway.
-            Vector3Wide.Dot(wsvA.Linear, normal, out var csvaLinear);
-            Vector3Wide.Dot(wsvA.Angular, projection.AngularA, out var csvaAngular);
-            Vector3Wide.Dot(wsvB.Linear, normal, out var negatedCSVBLinear);
-            Vector3Wide.Dot(wsvB.Angular, projection.AngularB, out var csvbAngular);
-            //Compute negated version to avoid the need for an explicit negate.
-            var negatedCSI = accumulatedImpulse * softnessImpulseScale + (csvaLinear - negatedCSVBLinear + csvaAngular + csvbAngular - projection.BiasVelocity) * projection.EffectiveMass;
-
-            var previousAccumulated = accumulatedImpulse;
-            accumulatedImpulse = Vector.Max(Vector<float>.Zero, accumulatedImpulse - negatedCSI);
-
-            correctiveCSI = accumulatedImpulse - previousAccumulated;
-
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Solve(in PenetrationLimitProjection projection, in BodyInertias inertiaA, in BodyInertias inertiaB, in Vector3Wide normal,
-            in Vector<float> softnessImpulseScale, ref Vector<float> accumulatedImpulse, ref BodyVelocities wsvA, ref BodyVelocities wsvB)
-        {
-            ComputeCorrectiveImpulse(wsvA, wsvB, projection, normal, softnessImpulseScale, ref accumulatedImpulse, out var correctiveCSI);
-            ApplyImpulse(projection, inertiaA, inertiaB, normal, correctiveCSI, ref wsvA, ref wsvB);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void UpdatePenetrationDepth(in Vector<float> dt, in Vector3Wide contactOffsetA, in Vector3Wide offsetB, in Vector3Wide normal, in BodyVelocities velocityA, in BodyVelocities velocityB, ref Vector<float> penetrationDepth)
-        {
-            //The normal is calibrated to point from B to A. Any movement of A along N results in a decrease in depth. Any movement of B along N results in an increase in depth. 
-            //estimatedPenetrationDepthChange = dot(normal, velocityDtA.Linear + velocityDtA.Angular x contactOffsetA) - dot(normal, velocityDtB.Linear + velocityDtB.Angular x contactOffsetB)
-            Vector3Wide.CrossWithoutOverlap(velocityA.Angular, contactOffsetA, out var wxra);
-            Vector3Wide.Add(wxra, velocityA.Linear, out var contactVelocityA);
-
-            Vector3Wide.Subtract(contactOffsetA, offsetB, out var contactOffsetB);
-            Vector3Wide.CrossWithoutOverlap(velocityB.Angular, contactOffsetB, out var wxrb);
-            Vector3Wide.Add(wxrb, velocityB.Linear, out var contactVelocityB);
-
-            Vector3Wide.Subtract(contactVelocityA, contactVelocityB, out var contactVelocityDifference);
-            Vector3Wide.Dot(normal, contactVelocityDifference, out var estimatedDepthChangeVelocity);
-            penetrationDepth -= estimatedDepthChangeVelocity * dt;
+            ComputeCorrectiveImpulse(wsvA, wsvB, normal, angularA, angularB, biasVelocity, softnessImpulseScale, effectiveMass, ref accumulatedImpulse, out var correctiveCSI);
+            ApplyImpulse(inertiaA, inertiaB, normal, angularA, angularB, correctiveCSI, ref wsvA, ref wsvB);
         }
     }
 }

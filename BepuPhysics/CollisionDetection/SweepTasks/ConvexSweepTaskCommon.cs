@@ -129,7 +129,7 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void AdjustHitLocation(in Quaternion initialOrientationA, in BodyVelocity velocityA, float t0, ref Vector3 hitLocation)
             {
-                hitLocation = hitLocation + t0 * velocityA.Linear;
+                hitLocation += t0 * velocityA.Linear;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -204,11 +204,11 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
                 //Note that the initial orientations are properties of the owning body, not of the child.
                 //The orientation of the child itself is the product of localOrientation * bodyOrientation.
                 var halfSamples = samples * 0.5f;
-                RigidPoses.Broadcast(LocalPoseA, out var localPosesA);
+                RigidPoseWide.Broadcast(LocalPoseA, out var localPosesA);
                 PoseIntegration.Integrate(initialOrientationA, angularA, halfSamples, out var integratedOrientationA);
                 Compound.GetRotatedChildPose(localPosesA, integratedOrientationA, out var childPositionA, out sampleOrientationA);
 
-                RigidPoses.Broadcast(LocalPoseB, out var localPosesB);
+                RigidPoseWide.Broadcast(LocalPoseB, out var localPosesB);
                 PoseIntegration.Integrate(initialOrientationB, angularB, halfSamples, out var integratedOrientationB);
                 Compound.GetRotatedChildPose(localPosesB, integratedOrientationB, out var childPositionB, out sampleOrientationB);
 
@@ -285,12 +285,12 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
             if (wideA.InternalAllocationSize > 0)
             {
                 var memory = stackalloc byte[wideA.InternalAllocationSize];
-                wideA.Initialize(new RawBuffer(memory, wideA.InternalAllocationSize));
+                wideA.Initialize(new Buffer<byte>(memory, wideA.InternalAllocationSize));
             }
             if (wideB.InternalAllocationSize > 0)
             {
                 var memory = stackalloc byte[wideB.InternalAllocationSize];
-                wideB.Initialize(new RawBuffer(memory, wideB.InternalAllocationSize));
+                wideB.Initialize(new Buffer<byte>(memory, wideB.InternalAllocationSize));
             }
             wideA.Broadcast(shapeA);
             wideB.Broadcast(shapeB);
@@ -358,14 +358,10 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
             Vector3Wide.Broadcast(velocityB.Angular, out var wideAngularVelocityB);
 
             //The initial samples are distributed evenly over [t0, t1].
-            Vector<float> samples;
-            Vector3Wide sampleOffsetB;
-            QuaternionWide sampleOrientationA;
-            QuaternionWide sampleOrientationB;
-            Vector3Wide normals;
-            Vector3Wide closestA;
-            Vector<float> distances;
-            Vector<int> intersections;
+            Unsafe.SkipInit(out Vector<float> samples);
+            Unsafe.SkipInit(out Vector3Wide sampleOffsetB);
+            Unsafe.SkipInit(out QuaternionWide sampleOrientationA);
+            Unsafe.SkipInit(out QuaternionWide sampleOrientationB);
             var minimumProgressionWide = new Vector<float>(minimumProgression);
 
             float next0 = t0;
@@ -380,7 +376,7 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
             while (true)
             {
                 pairTester.Test(wideA, wideB, sampleOffsetB, sampleOrientationA, sampleOrientationB, Vector<int>.Zero,
-                    out intersections, out distances, out closestA, out normals);
+                    out var intersections, out var distances, out var closestA, out var normals);
 
                 Vector3Wide.Dot(normals, wideLinearVelocityB, out var linearVelocityAlongNormal);
                 sweepModifier.GetNonlinearVelocityContribution(ref normals,
@@ -488,7 +484,7 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
                 var previousIntervalSpan = t1 - t0;
                 //In pure linear cast cases, advancing all the way to the conservative bound can result in collision. That won't make the detected t value wrong,
                 //but it will mean that we can't get a more accurate normal and closest point. By only advancing within an epsilon, another iteration is forced.
-                t0 = t0 + (next0 - t0) * 0.9999f;
+                t0 += (next0 - t0) * 0.9999f;
                 t1 = next1;
 
                 var intervalSpan = t1 - t0;
@@ -522,7 +518,7 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
                 {
                     //We've reached the point where individual samples are crowded below the minimum progression.
                     //Try to make room by pushing sample 0 back toward the conservative bound.
-                    sample0 = sample0 - (minimumSpan - sampleSpan);
+                    sample0 -= (minimumSpan - sampleSpan);
                     if (sample0 < t0)
                         sample0 = t0;
                     sampleSpan = sample1 - sample0;
@@ -530,7 +526,7 @@ namespace BepuPhysics.CollisionDetection.SweepTasks
                     //Note that we nver push sample1 all the way to t1. t1 is often in intersection, so taking another sample there has no value.
                     //Instead, we only move up to halfway there.
                     if (sampleSpan < minimumSpan)
-                        sample1 = sample1 + Math.Min(minimumSpan - sampleSpan, (t1 - sample1) * 0.5f);
+                        sample1 += Math.Min(minimumSpan - sampleSpan, (t1 - sample1) * 0.5f);
                 }
 
                 //The sample bounds are now constrained to be an aggressive subset of the conservative bounds.

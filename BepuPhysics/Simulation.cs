@@ -9,6 +9,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using BepuPhysics.Trees;
 
+#if !DEBUG
+[module: SkipLocalsInit]
+#endif
+
 namespace BepuPhysics
 {
     /// <summary>
@@ -21,8 +25,6 @@ namespace BepuPhysics
         public Bodies Bodies { get; private set; }
         public Statics Statics { get; private set; }
         public Shapes Shapes { get; private set; }
-        public BodyLayoutOptimizer BodyLayoutOptimizer { get; private set; }
-        public ConstraintLayoutOptimizer ConstraintLayoutOptimizer { get; private set; }
         public BatchCompressor SolverBatchCompressor { get; private set; }
         public Solver Solver { get; private set; }
         public IPoseIntegrator PoseIntegrator { get; private set; }
@@ -30,7 +32,7 @@ namespace BepuPhysics
         public CollidableOverlapFinder BroadPhaseOverlapFinder { get; private set; }
         public NarrowPhase NarrowPhase { get; private set; }
 
-        SimulationProfiler profiler = new SimulationProfiler(13);
+        SimulationProfiler profiler = new(13);
         /// <summary>
         /// Gets the simulation profiler. Note that the SimulationProfiler implementation only exists when the library is compiled with the PROFILE compilation symbol; if not defined, returned times are undefined.
         /// </summary>
@@ -55,48 +57,18 @@ namespace BepuPhysics
         /// </summary>
         public bool Deterministic { get; set; }
 
-        protected Simulation(BufferPool bufferPool, SimulationAllocationSizes initialAllocationSizes, int solverIterationCount, int solverFallbackBatchThreshold, ITimestepper timestepper)
-        {
-            BufferPool = bufferPool;
-            Shapes = new Shapes(bufferPool, initialAllocationSizes.ShapesPerType);
-            BroadPhase = new BroadPhase(bufferPool, initialAllocationSizes.Bodies, initialAllocationSizes.Bodies + initialAllocationSizes.Statics);
-            Bodies = new Bodies(bufferPool, Shapes, BroadPhase,
-                initialAllocationSizes.Bodies,
-                initialAllocationSizes.Islands,
-                initialAllocationSizes.ConstraintCountPerBodyEstimate);
-            Statics = new Statics(bufferPool, Shapes, Bodies, BroadPhase, initialAllocationSizes.Statics);
-
-            Solver = new Solver(Bodies, BufferPool, solverIterationCount, solverFallbackBatchThreshold,
-                initialCapacity: initialAllocationSizes.Constraints,
-                initialIslandCapacity: initialAllocationSizes.Islands,
-                minimumCapacityPerTypeBatch: initialAllocationSizes.ConstraintsPerTypeBatch);
-            constraintRemover = new ConstraintRemover(BufferPool, Bodies, Solver);
-            Sleeper = new IslandSleeper(Bodies, Solver, BroadPhase, constraintRemover, BufferPool);
-            Awakener = new IslandAwakener(Bodies, Statics, Solver, BroadPhase, Sleeper, bufferPool);
-            Statics.awakener = Awakener;
-            Solver.awakener = Awakener;
-            Bodies.Initialize(Solver, Awakener, Sleeper);
-            SolverBatchCompressor = new BatchCompressor(Solver, Bodies);
-            BodyLayoutOptimizer = new BodyLayoutOptimizer(Bodies, BroadPhase, Solver, bufferPool);
-            ConstraintLayoutOptimizer = new ConstraintLayoutOptimizer(Bodies, Solver);
-            Timestepper = timestepper;
-
-        }
-
         /// <summary>
         /// Constructs a simulation supporting dynamic movement and constraints with the specified narrow phase callbacks.
         /// </summary>
         /// <param name="bufferPool">Buffer pool used to fill persistent structures and main thread ephemeral resources across the engine.</param>
         /// <param name="narrowPhaseCallbacks">Callbacks to use in the narrow phase.</param>
         /// <param name="poseIntegratorCallbacks">Callbacks to use in the pose integrator.</param>
-        /// <param name="timestepper">Timestepper that defines how the simulation state should be updated.</param>
-        /// <param name="solverIterationCount">Number of iterations the solver should use.</param>
-        /// <param name="solverFallbackBatchThreshold">Number of synchronized batches the solver should maintain before falling back to a lower quality jacobi hybrid solver.</param>
+        /// <param name="timestepper">Timestepper that defines how the simulation state should be updated. If null, <see cref="DefaultTimestepper"/> is used.</param>
+        /// <param name="solveDescription">Describes how the solver should execute, including the number of substeps and the number of velocity iterations per substep.</param>
         /// <param name="initialAllocationSizes">Allocation sizes to initialize the simulation with. If left null, default values are chosen.</param>
         /// <returns>New simulation.</returns>
         public static Simulation Create<TNarrowPhaseCallbacks, TPoseIntegratorCallbacks>(
-            BufferPool bufferPool, TNarrowPhaseCallbacks narrowPhaseCallbacks, TPoseIntegratorCallbacks poseIntegratorCallbacks, ITimestepper timestepper,
-            int solverIterationCount = 8, int solverFallbackBatchThreshold = 64, SimulationAllocationSizes? initialAllocationSizes = null)
+            BufferPool bufferPool, TNarrowPhaseCallbacks narrowPhaseCallbacks, TPoseIntegratorCallbacks poseIntegratorCallbacks, SolveDescription solveDescription, ITimestepper timestepper = null, SimulationAllocationSizes? initialAllocationSizes = null)
             where TNarrowPhaseCallbacks : struct, INarrowPhaseCallbacks
             where TPoseIntegratorCallbacks : struct, IPoseIntegratorCallbacks
         {
@@ -113,9 +85,33 @@ namespace BepuPhysics
                 };
             }
 
-            var simulation = new Simulation(bufferPool, initialAllocationSizes.Value, solverIterationCount, solverFallbackBatchThreshold, timestepper);
+            //var simulation = new Simulation(bufferPool, initialAllocationSizes.Value, solverIterationCount, solverFallbackBatchThreshold, timestepper);
+            var simulation = new Simulation();
+            simulation.BufferPool = bufferPool;
+            simulation.Shapes = new Shapes(bufferPool, initialAllocationSizes.Value.ShapesPerType);
+            simulation.BroadPhase = new BroadPhase(bufferPool, initialAllocationSizes.Value.Bodies, initialAllocationSizes.Value.Bodies + initialAllocationSizes.Value.Statics);
+            simulation.Bodies = new Bodies(bufferPool, simulation.Shapes, simulation.BroadPhase,
+                initialAllocationSizes.Value.Bodies,
+                initialAllocationSizes.Value.Islands,
+                initialAllocationSizes.Value.ConstraintCountPerBodyEstimate);
+            simulation.Statics = new Statics(bufferPool, simulation.Shapes, simulation.Bodies, simulation.BroadPhase, initialAllocationSizes.Value.Statics);
+
             var poseIntegrator = new PoseIntegrator<TPoseIntegratorCallbacks>(simulation.Bodies, simulation.Shapes, simulation.BroadPhase, poseIntegratorCallbacks);
             simulation.PoseIntegrator = poseIntegrator;
+
+            simulation.Solver = new Solver<TPoseIntegratorCallbacks>(simulation.Bodies, simulation.BufferPool, solveDescription,
+                initialCapacity: initialAllocationSizes.Value.Constraints,
+                initialIslandCapacity: initialAllocationSizes.Value.Islands,
+                minimumCapacityPerTypeBatch: initialAllocationSizes.Value.ConstraintsPerTypeBatch, poseIntegrator);
+            simulation.constraintRemover = new ConstraintRemover(simulation.BufferPool, simulation.Bodies, simulation.Solver);
+            simulation.Sleeper = new IslandSleeper(simulation.Bodies, simulation.Solver, simulation.BroadPhase, simulation.constraintRemover, simulation.BufferPool);
+            simulation.Awakener = new IslandAwakener(simulation.Bodies, simulation.Statics, simulation.Solver, simulation.BroadPhase, simulation.Sleeper, bufferPool);
+            simulation.Statics.awakener = simulation.Awakener;
+            simulation.Solver.awakener = simulation.Awakener;
+            simulation.Bodies.Initialize(simulation.Solver, simulation.Awakener, simulation.Sleeper);
+            simulation.SolverBatchCompressor = new BatchCompressor(simulation.Solver, simulation.Bodies);
+            simulation.Timestepper = timestepper ?? new DefaultTimestepper();
+
             var narrowPhase = new NarrowPhase<TNarrowPhaseCallbacks>(simulation,
                 DefaultTypes.CreateDefaultCollisionTaskRegistry(), DefaultTypes.CreateDefaultSweepTaskRegistry(),
                 narrowPhaseCallbacks, initialAllocationSizes.Value.Islands + 1);
@@ -135,7 +131,7 @@ namespace BepuPhysics
 
 
 
-        private int ValidateAndCountShapefulBodies(ref BodySet bodySet, ref Tree tree, ref Buffer<CollidableReference> leaves)
+        private static int ValidateAndCountShapefulBodies(ref BodySet bodySet, ref Tree tree, ref Buffer<CollidableReference> leaves)
         {
             int shapefulBodyCount = 0;
             for (int i = 0; i < bodySet.Count; ++i)
@@ -152,7 +148,6 @@ namespace BepuPhysics
             }
             return shapefulBodyCount;
         }
-
 
         [Conditional("DEBUG")]
         internal void ValidateCollidables()
@@ -173,7 +168,7 @@ namespace BepuPhysics
             Debug.Assert(inactiveShapefulBodyCount + Statics.Count == BroadPhase.StaticTree.LeafCount);
             for (int i = 0; i < Statics.Count; ++i)
             {
-                ref var collidable = ref Statics.Collidables[i];
+                ref var collidable = ref Statics[i];
                 Debug.Assert(collidable.Shape.Exists, "All static collidables must have shapes. That's their only purpose.");
 
                 Debug.Assert(collidable.BroadPhaseIndex >= 0 && collidable.BroadPhaseIndex < BroadPhase.StaticTree.LeafCount);
@@ -207,18 +202,6 @@ namespace BepuPhysics
         }
 
         /// <summary>
-        /// Updates the position, velocity, world inertia, deactivation candidacy and bounding boxes of active bodies.
-        /// </summary>
-        /// <param name="dt">Duration of the time step.</param>
-        /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
-        public void IntegrateBodiesAndUpdateBoundingBoxes(float dt, IThreadDispatcher threadDispatcher = null)
-        {
-            profiler.Start(PoseIntegrator);
-            PoseIntegrator.IntegrateBodiesAndUpdateBoundingBoxes(dt, BufferPool, threadDispatcher);
-            profiler.End(PoseIntegrator);
-        }
-
-        /// <summary>
         /// Predicts the bounding boxes of active bodies by speculatively integrating velocity. Does not actually modify body velocities. Updates deactivation candidacy.
         /// </summary>
         /// <param name="dt">Duration of the time step.</param>
@@ -227,42 +210,6 @@ namespace BepuPhysics
         {
             profiler.Start(PoseIntegrator);
             PoseIntegrator.PredictBoundingBoxes(dt, BufferPool, threadDispatcher);
-            profiler.End(PoseIntegrator);
-        }
-
-        /// <summary>
-        /// Updates the velocities, world space inertias, bounding boxes, and deactivation candidacy of active bodies.
-        /// </summary>
-        /// <param name="dt">Duration of the time step.</param>
-        /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
-        public void IntegrateVelocitiesBoundsAndInertias(float dt, IThreadDispatcher threadDispatcher = null)
-        {
-            profiler.Start(PoseIntegrator);
-            PoseIntegrator.IntegrateVelocitiesBoundsAndInertias(dt, BufferPool, threadDispatcher);
-            profiler.End(PoseIntegrator);
-        }
-
-        /// <summary>
-        /// Updates the velocities and world space inertias of active bodies.
-        /// </summary>
-        /// <param name="dt">Duration of the time step.</param>
-        /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
-        public void IntegrateVelocitiesAndUpdateInertias(float dt, IThreadDispatcher threadDispatcher = null)
-        {
-            profiler.Start(PoseIntegrator);
-            PoseIntegrator.IntegrateVelocitiesAndUpdateInertias(dt, BufferPool, threadDispatcher);
-            profiler.End(PoseIntegrator);
-        }
-
-        /// <summary>
-        /// Updates the poses of active bodies.
-        /// </summary>
-        /// <param name="dt">Duration of the time step.</param>
-        /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
-        public void IntegratePoses(float dt, IThreadDispatcher threadDispatcher = null)
-        {
-            profiler.Start(PoseIntegrator);
-            PoseIntegrator.IntegratePoses(dt, BufferPool, threadDispatcher);
             profiler.End(PoseIntegrator);
         }
 
@@ -287,27 +234,22 @@ namespace BepuPhysics
         }
 
         /// <summary>
-        /// Uses the current body velocities to incrementally update all active contact constraint penetration depths.
-        /// </summary>
-        /// <param name="dt">Duration of the time step.</param>
-        /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
-        public void IncrementallyUpdateContactConstraints(float dt, IThreadDispatcher threadDispatcher = null)
-        {
-            profiler.Start(Solver);
-            Solver.IncrementallyUpdateContactConstraints(dt, threadDispatcher);
-            profiler.End(Solver);
-        }
-
-        /// <summary>
-        /// Solves all active constraints in the simulation.
+        /// Updates the broad phase structure for the current body bounding boxes, finds potentially colliding pairs, and then executes the narrow phase for all such pairs. Generates contact constraints for the solver.
         /// </summary>
         /// <param name="dt">Duration of the time step.</param>
         /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
         public void Solve(float dt, IThreadDispatcher threadDispatcher = null)
         {
-            profiler.Start(Solver);
+            Profiler.Start(Solver);
+            var constrainedBodySet = Solver.PrepareConstraintIntegrationResponsibilities(threadDispatcher);
             Solver.Solve(dt, threadDispatcher);
-            profiler.End(Solver);
+            Profiler.End(Solver);
+
+            Profiler.Start(PoseIntegrator);
+            PoseIntegrator.IntegrateAfterSubstepping(constrainedBodySet, dt, Solver.SubstepCount, threadDispatcher);
+            Profiler.End(PoseIntegrator);
+
+            Solver.DisposeConstraintIntegrationResponsibilities();
         }
 
         /// <summary>
@@ -316,17 +258,10 @@ namespace BepuPhysics
         /// <param name="threadDispatcher">Thread dispatcher to use for execution, if any.</param>
         public void IncrementallyOptimizeDataStructures(IThreadDispatcher threadDispatcher = null)
         {
-            //Note that constraint optimization should be performed after body optimization, since body optimization moves the bodies - and so affects the optimal constraint position.
-            //TODO: The order of these optimizer stages is performance relevant, even though they don't have any effect on correctness.
-            //You may want to try them in different locations to see how they impact cache residency.
-            profiler.Start(BodyLayoutOptimizer);
-            BodyLayoutOptimizer.IncrementalOptimize();
-            profiler.End(BodyLayoutOptimizer);
-
-            profiler.Start(ConstraintLayoutOptimizer);
-            ConstraintLayoutOptimizer.Update(BufferPool, threadDispatcher);
-            profiler.End(ConstraintLayoutOptimizer);
-
+            //Previously, this handled body and constraint memory layout optimization. 2.4 significantly changed how memory accesses work in the solver
+            //and the optimizers were no longer net wins, so all that's left is the batch compressor.
+            //It pulls constraints currently living in high constraint batch indices to lower constraint batches if possible.
+            //Over time, that'll tend to reduce sync points in the solver and improve performance.
             profiler.Start(SolverBatchCompressor);
             SolverBatchCompressor.Compress(BufferPool, threadDispatcher, threadDispatcher != null && Deterministic);
             profiler.End(SolverBatchCompressor);
@@ -344,7 +279,7 @@ namespace BepuPhysics
         public void Timestep(float dt, IThreadDispatcher threadDispatcher = null)
         {
             if (dt <= 0)
-                throw new ArgumentException("Timestep duration must be positive.", "dt");
+                throw new ArgumentException("Timestep duration must be positive.", nameof(dt));
             profiler.Clear();
             profiler.Start(this);
 

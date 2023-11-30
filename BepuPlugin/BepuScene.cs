@@ -2,6 +2,7 @@
 using BepuPhysics.Collidables;
 using BepuPlugin.Characters;
 using BepuPlugin.Demo;
+using BepuUtilities;
 using BepuUtilities.Collections;
 using BepuUtilities.Memory;
 using Engine;
@@ -21,7 +22,7 @@ namespace BepuPlugin
             public float TimestepSeconds { get; set; } = 1f / 60f;
         }
         Simulation simulation;
-        SimpleThreadDispatcher threadDispatcher;
+        ThreadDispatcher threadDispatcher;
         BufferPool bufferPool;
         CharacterControllers characterControllers;
         ContactEvents<CollisionEventHandler> events;
@@ -44,7 +45,7 @@ namespace BepuPlugin
 
             //Taking off 1 thread could help stability https://github.com/bepu/bepuphysics2/blob/master/Documentation/PerformanceTips.md#general
             var numThreads = Math.Max(Environment.ProcessorCount - 1, 1);
-            threadDispatcher = new SimpleThreadDispatcher(numThreads);
+            threadDispatcher = new ThreadDispatcher(numThreads);
 
             //The buffer pool is a source of raw memory blobs for the engine to use.
             bufferPool = new BufferPool();
@@ -57,8 +58,8 @@ namespace BepuPlugin
             //Note that the timestepper also has callbacks that you can use for executing logic between processing stages, like BeforeCollisionDetection.
             simulation = Simulation.Create(bufferPool, 
                 new CharacterNarrowphaseCallbacks<CollisionEventHandler>(characterControllers, events), 
-                new DemoPoseIntegratorCallbacks(new Vector3(0, -10, 0)), 
-                new PositionFirstTimestepper());
+                new DemoPoseIntegratorCallbacks(new Vector3(0, -10, 0)),
+                new SolveDescription(8, 1));
 
             events.EventHandler.Simulation = simulation;
         }

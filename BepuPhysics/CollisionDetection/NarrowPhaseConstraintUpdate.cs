@@ -7,6 +7,7 @@ using System.Numerics;
 using BepuPhysics.Collidables;
 using System;
 using BepuPhysics.Constraints.Contact;
+using BepuUtilities;
 
 namespace BepuPhysics.CollisionDetection
 {
@@ -146,7 +147,7 @@ namespace BepuPhysics.CollisionDetection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         unsafe void RequestAddConstraint<TDescription, TBodyHandles, TContactImpulses>(int workerIndex, int manifoldConstraintType,
             ref CollidablePair pair, PairCacheIndex constraintCacheIndex, ref TContactImpulses newImpulses,
-            ref TDescription description, TBodyHandles bodyHandles) where TDescription : unmanaged, IConstraintDescription<TDescription>
+            ref TDescription description, TBodyHandles bodyHandles) where TBodyHandles : unmanaged where TDescription : unmanaged, IConstraintDescription<TDescription>
         {
             //Note that this branch is (was?) JIT constant.
             if (typeof(TBodyHandles) != typeof(TwoBodyHandles) && typeof(TBodyHandles) != typeof(int))
@@ -159,6 +160,7 @@ namespace BepuPhysics.CollisionDetection
         public unsafe void UpdateConstraint<TBodyHandles, TDescription, TContactImpulses, TCollisionCache, TConstraintCache>(int workerIndex, ref CollidablePair pair,
             int manifoldTypeAsConstraintType, ref TConstraintCache newConstraintCache, ref TCollisionCache collisionCache,
             ref TDescription description, TBodyHandles bodyHandles)
+            where TBodyHandles : unmanaged
             where TConstraintCache : unmanaged, IPairCacheEntry
             where TCollisionCache : unmanaged, IPairCacheEntry
             where TDescription : unmanaged, IConstraintDescription<TDescription>
@@ -174,7 +176,7 @@ namespace BepuPhysics.CollisionDetection
                 var constraintCacheIndex = pointers.ConstraintCache;
                 var oldConstraintCachePointer = PairCache.GetOldConstraintCachePointer(index);
                 var constraintHandle = *(ConstraintHandle*)oldConstraintCachePointer;
-                Solver.GetConstraintReference(constraintHandle, out var constraintReference);
+                var constraintReference = Solver.GetConstraintReference(constraintHandle);
                 Debug.Assert(
                     constraintReference.typeBatchPointer != null &&
                     constraintReference.IndexInTypeBatch >= 0 &&
@@ -204,7 +206,7 @@ namespace BepuPhysics.CollisionDetection
                     Unsafe.As<TConstraintCache, ConstraintHandle>(ref newConstraintCache) = constraintHandle;
                     PairCache.Update(workerIndex, index, ref pointers, ref collisionCache, ref newConstraintCache);
                     //There exists a constraint and it has the same type as the manifold. Directly apply the new description and impulses.
-                    Solver.ApplyDescriptionWithoutWaking(ref constraintReference, ref description);
+                    Solver.ApplyDescriptionWithoutWaking(constraintReference, description);
                     accessor.ScatterNewImpulses(ref constraintReference, ref newImpulses);
                 }
                 else

@@ -112,7 +112,7 @@ namespace BepuPhysics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool PushBody<TTraversalPredicate>(int bodyIndex, ref IndexSet consideredBodies, ref QuickList<int> bodyIndices, ref QuickList<int> visitationStack,
+        static bool PushBody<TTraversalPredicate>(int bodyIndex, ref IndexSet consideredBodies, ref QuickList<int> bodyIndices, ref QuickList<int> visitationStack,
             BufferPool pool, ref TTraversalPredicate predicate) where TTraversalPredicate : IPredicate<int>
         {
             if (!consideredBodies.Contains(bodyIndex))
@@ -150,7 +150,7 @@ namespace BepuPhysics
                     constraintHandles.Add(entry.ConnectingConstraintHandle, pool);
                     consideredConstraints.AddUnsafely(entry.ConnectingConstraintHandle.Value);
                     bodyEnumerator.ConstraintBodyIndices.Count = 0;
-                    solver.EnumerateConnectedBodies(entry.ConnectingConstraintHandle, ref bodyEnumerator);
+                    solver.EnumerateConnectedBodyReferences(entry.ConnectingConstraintHandle, ref bodyEnumerator);
                     for (int j = 0; j < bodyEnumerator.ConstraintBodyIndices.Count; ++j)
                     {
                         var connectedBodyIndex = bodyEnumerator.ConstraintBodyIndices[j];
@@ -359,9 +359,7 @@ namespace BepuPhysics
                         //Note that we are just copying the constraint list reference; we don't have to reallocate it.
                         //Keep this in mind when removing the object from the active set. We don't want to dispose the list since we're still using it.
                         targetSet.Constraints[targetIndex] = sourceSet.Constraints[sourceIndex];
-                        targetSet.LocalInertias[targetIndex] = sourceSet.LocalInertias[sourceIndex];
-                        targetSet.Poses[targetIndex] = sourceSet.Poses[sourceIndex];
-                        targetSet.Velocities[targetIndex] = sourceSet.Velocities[sourceIndex];
+                        targetSet.SolverStates[targetIndex] = sourceSet.SolverStates[sourceIndex];
 
                         if (sourceCollidable.Shape.Exists)
                         {
@@ -448,15 +446,16 @@ namespace BepuPhysics
                             var setIndex = newInactiveSets[setReferenceIndex].Index;
                             ref var inactiveBodySet = ref bodies.Sets[setIndex];
                             ref var inactiveConstraintSet = ref solver.Sets[setIndex];
-                            for (int bodyIndex = 0; bodyIndex < inactiveBodySet.Count; ++bodyIndex)
+                            for (int bodyIndexInInactiveSet = 0; bodyIndexInInactiveSet < inactiveBodySet.Count; ++bodyIndexInInactiveSet)
                             {
-                                ref var location = ref bodies.HandleToLocation[inactiveBodySet.IndexToHandle[bodyIndex].Value];
+                                var bodyHandle = inactiveBodySet.IndexToHandle[bodyIndexInInactiveSet];
+                                ref var location = ref bodies.HandleToLocation[bodyHandle.Value];
                                 Debug.Assert(location.SetIndex == 0, "At this point, the sleep hasn't gone through so the set should still be 0.");
-                                constraintRemover.TryRemoveAllConstraintsForBodyFromFallbackBatch(location.Index);
+                                constraintRemover.TryRemoveBodyFromConstrainedKinematicsAndRemoveAllConstraintsForBodyFromFallbackBatch(bodyHandle, location.Index);
                                 bodies.RemoveFromActiveSet(location.Index);
                                 //And now we can actually update the handle->body mapping.
                                 location.SetIndex = setIndex;
-                                location.Index = bodyIndex;
+                                location.Index = bodyIndexInInactiveSet;
                             }
                         }
                     }
@@ -550,7 +549,8 @@ namespace BepuPhysics
                 }
             }
             Console.Write($"{constraintCount} constraint handles: ");
-            ReferenceCollector bodyIndexEnumerator;
+            PassthroughReferenceCollector bodyIndexEnumerator;
+            var rawBodyIndices = stackalloc int[4];
             var constraintReferencedBodyHandles = new QuickSet<int, PrimitiveComparer<int>>(8, pool);
             for (int batchIndex = 0; batchIndex < island.Protobatches.Count; ++batchIndex)
             {
@@ -559,21 +559,23 @@ namespace BepuPhysics
                 {
                     ref var typeBatch = ref batch.TypeBatches[typeBatchIndex];
                     var typeProcessor = solver.TypeProcessors[typeBatch.TypeId];
-                    var references = stackalloc int[typeProcessor.BodiesPerConstraint];
-                    bodyIndexEnumerator.References = references;
+                    bodyIndexEnumerator.References = rawBodyIndices;
                     for (int indexInTypeBatch = 0; indexInTypeBatch < typeBatch.Handles.Count; ++indexInTypeBatch)
                     {
+                        Debug.Assert(typeProcessor.BodiesPerConstraint <= 4,
+                            "We assumed a maximum of 4 bodies per constraint when allocating the body indices buffer earlier. " +
+                            "This validation must be updated if that assumption is no longer valid.");
                         var handle = typeBatch.Handles[indexInTypeBatch];
                         ref var location = ref solver.HandleToConstraint[handle];
                         Debug.Assert(location.SetIndex == 0);
                         Debug.Assert(location.TypeId == typeBatch.TypeId);
                         ref var solverBatch = ref solver.Sets[0].Batches[location.BatchIndex];
                         bodyIndexEnumerator.Index = 0;
-                        typeProcessor.EnumerateConnectedBodyIndices(
+                        solver.EnumerateConnectedRawBodyReferences(
                             ref solverBatch.TypeBatches[solverBatch.TypeIndexToTypeBatchIndex[location.TypeId]], location.IndexInTypeBatch, ref bodyIndexEnumerator);
                         for (int i = 0; i < typeProcessor.BodiesPerConstraint; ++i)
                         {
-                            constraintReferencedBodyHandles.AddRef(ref bodies.ActiveSet.IndexToHandle[references[i]].Value, pool);
+                            constraintReferencedBodyHandles.Add(ref bodies.ActiveSet.IndexToHandle[rawBodyIndices[i] & Bodies.BodyReferenceMask].Value, pool);
                         }
                         Console.Write($"{handle}, ");
                     }
@@ -780,7 +782,7 @@ namespace BepuPhysics
                             //Pull the fallback batch data into the new fallback batch. Note that this isn't just a shallow copy; we're pushing all the allocations into the main pool.
                             //They were previously on a thread-specific pool. (This isn't technically required right now, but it's cheap and convenient if we change the per thread pools
                             //to make use of the usually-ephemeral nature of their allocations.)
-                            FallbackBatch.CreateFrom(ref island.FallbackBatch, pool, out constraintSet.Fallback);
+                            SequentialFallbackBatch.CreateFrom(ref island.FallbackBatch, pool, out constraintSet.SequentialFallback);
                         }
                     }
                 }
@@ -791,7 +793,7 @@ namespace BepuPhysics
             jobIndex = -1;
             if (threadCount > 1)
             {
-                threadDispatcher.DispatchWorkers(gatherDelegate);
+                threadDispatcher.DispatchWorkers(gatherDelegate, gatheringJobs.Count);
             }
             else
             {
@@ -819,7 +821,7 @@ namespace BepuPhysics
             jobIndex = -1;
             if (threadCount > 1)
             {
-                threadDispatcher.DispatchWorkers(executeRemovalWorkDelegate);
+                threadDispatcher.DispatchWorkers(executeRemovalWorkDelegate, removalJobs.Count);
             }
             else
             {
@@ -842,7 +844,8 @@ namespace BepuPhysics
             jobIndex = -1;
             if (threadCount > 1)
             {
-                threadDispatcher.DispatchWorkers(typeBatchConstraintRemovalDelegate);
+                threadDispatcher.DispatchWorkers(typeBatchConstraintRemovalDelegate, typeBatchConstraintRemovalJobCount);
+                //typeBatchConstraintRemovalDelegate(0);
             }
             else
             {
@@ -951,31 +954,10 @@ namespace BepuPhysics
             }
             ++scheduleOffset;
 
+            //If the simulation is too small to generate parallel work, don't bother using threading. (Passing a null thread dispatcher forces a single threaded codepath.)
+            if (bodies.ActiveSet.Count < 2 / TestedFractionPerFrame)
+                threadDispatcher = null;
 
-            if (deterministic)
-            {
-                //The order in which sleeps occur affects the result of the simulation. To ensure determinism, we need to pin the sleep order to something
-                //which is deterministic. We will use the handle associated with each active body as the order provider.
-                pool.Take<int>(bodies.ActiveSet.Count, out var sortedIndices);
-                for (int i = 0; i < bodies.ActiveSet.Count; ++i)
-                {
-                    sortedIndices[i] = i;
-                }
-                //Handles are guaranteed to be unique; no need for three way partitioning.
-                HandleComparer comparer;
-                comparer.Handles = bodies.ActiveSet.IndexToHandle;
-                //TODO: This sort might end up being fairly expensive. On a very large simulation, it might even amount to 5% of the simulation time.
-                //It would be nice to come up with a better solution here. Some options include other sources of determinism, hiding the sort, and possibly enumerating directly over handles.
-                QuickSort.Sort(ref sortedIndices[0], 0, bodies.ActiveSet.Count - 1, ref comparer);
-
-                //Now that we have a sorted set of indices, we have eliminated nondeterminism related to memory layout. The initial target body indices can be remapped onto the sorted list.
-                for (int i = 0; i < traversalStartBodyIndices.Count; ++i)
-                {
-                    traversalStartBodyIndices[i] = sortedIndices[traversalStartBodyIndices[i]];
-                    Debug.Assert(traversalStartBodyIndices[i] >= 0 && traversalStartBodyIndices[i] < bodies.ActiveSet.Count);
-                }
-                pool.Return(ref sortedIndices);
-            }
             Sleep(ref traversalStartBodyIndices, threadDispatcher, deterministic, (int)Math.Ceiling(bodies.ActiveSet.Count * TargetSleptFraction), (int)Math.Ceiling(bodies.ActiveSet.Count * TargetTraversedFraction), false);
 
             traversalStartBodyIndices.Dispose(pool);

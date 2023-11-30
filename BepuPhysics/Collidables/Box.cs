@@ -52,7 +52,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
+        public readonly void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
         {
             Matrix3x3.CreateFromQuaternion(orientation, out var basis);
             var x = HalfWidth * basis.X;
@@ -63,13 +63,13 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
+        public readonly void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
         {
             maximumRadius = (float)Math.Sqrt(HalfWidth * HalfWidth + HalfHeight * HalfHeight + HalfLength * HalfLength);
             maximumAngularExpansion = maximumRadius - Vector4.Min(new Vector4(HalfLength), Vector4.Min(new Vector4(HalfHeight), new Vector4(HalfLength))).X;
         }
 
-        public bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
+        public readonly bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
         {
             var offset = origin - pose.Position;
             Matrix3x3.CreateFromQuaternion(pose.Orientation, out var orientation);
@@ -146,8 +146,9 @@ namespace BepuPhysics.Collidables
             return true;
         }
 
-        public void ComputeInertia(float mass, out BodyInertia inertia)
+        public readonly BodyInertia ComputeInertia(float mass)
         {
+            BodyInertia inertia;
             inertia.InverseMass = 1f / mass;
             var x2 = HalfWidth * HalfWidth;
             var y2 = HalfHeight * HalfHeight;
@@ -158,9 +159,10 @@ namespace BepuPhysics.Collidables
             inertia.InverseInertiaTensor.ZX = 0;
             inertia.InverseInertiaTensor.ZY = 0;
             inertia.InverseInertiaTensor.ZZ = inertia.InverseMass * 3 / (x2 + y2);
+            return inertia;
         }
 
-        public ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
+        public readonly ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
         {
             return new ConvexShapeBatch<Box, BoxWide>(pool, initialCapacity);
         }
@@ -169,7 +171,7 @@ namespace BepuPhysics.Collidables
         /// Type id of box shapes.
         /// </summary>
         public const int Id = 2;
-        public int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
+        public readonly int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
     }
 
 
@@ -197,7 +199,7 @@ namespace BepuPhysics.Collidables
 
         public bool AllowOffsetMemoryAccess => true;
         public int InternalAllocationSize => 0;
-        public void Initialize(in RawBuffer memory) { }
+        public void Initialize(in Buffer<byte> memory) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSlot(int index, in Box source)
@@ -228,7 +230,7 @@ namespace BepuPhysics.Collidables
             }
         }
 
-        public void RayTest(ref RigidPoses pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
+        public void RayTest(ref RigidPoseWide pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
         {
             Vector3Wide.Subtract(ray.Origin, pose.Position, out var offset);
             Matrix3x3Wide.CreateFromQuaternion(pose.Orientation, out var orientation);

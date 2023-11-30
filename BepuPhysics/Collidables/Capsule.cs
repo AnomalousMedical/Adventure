@@ -39,7 +39,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
+        public readonly void ComputeAngularExpansionData(out float maximumRadius, out float maximumAngularExpansion)
         {
             maximumRadius = HalfLength + Radius;
             //The minimum radius is capsules.Radius, so the maximum offset is simply the half length.
@@ -47,7 +47,7 @@ namespace BepuPhysics.Collidables
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
+        public readonly void ComputeBounds(in Quaternion orientation, out Vector3 min, out Vector3 max)
         {
             QuaternionEx.TransformUnitY(orientation, out var segmentOffset);
             max = Vector3.Abs(HalfLength * segmentOffset) + new Vector3(Radius);
@@ -55,7 +55,7 @@ namespace BepuPhysics.Collidables
         }
 
 
-        public bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
+        public readonly bool RayTest(in RigidPose pose, in Vector3 origin, in Vector3 direction, out float t, out Vector3 normal)
         {
             //It's convenient to work in local space, so pull the ray into the capsule's local space.
             Matrix3x3.CreateFromQuaternion(pose.Orientation, out var orientation);
@@ -154,8 +154,9 @@ namespace BepuPhysics.Collidables
 
         }
 
-        public void ComputeInertia(float mass, out BodyInertia inertia)
+        public readonly BodyInertia ComputeInertia(float mass)
         {
+            BodyInertia inertia;
             inertia.InverseMass = 1f / mass;
             var r2 = Radius * Radius;
             var h2 = HalfLength * HalfLength;
@@ -173,9 +174,10 @@ namespace BepuPhysics.Collidables
             inertia.InverseInertiaTensor.ZX = 0;
             inertia.InverseInertiaTensor.ZY = 0;
             inertia.InverseInertiaTensor.ZZ = inertia.InverseInertiaTensor.XX;
+            return inertia;
         }
 
-        public ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
+        public readonly ShapeBatch CreateShapeBatch(BufferPool pool, int initialCapacity, Shapes shapeBatches)
         {
             return new ConvexShapeBatch<Capsule, CapsuleWide>(pool, initialCapacity);
         }
@@ -186,7 +188,7 @@ namespace BepuPhysics.Collidables
         /// Type id of capsule shapes.
         /// </summary>
         public const int Id = 1;
-        public int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
+        public readonly int TypeId { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Id; } }
     }
 
     public struct CapsuleWide : IShapeWide<Capsule>
@@ -210,7 +212,7 @@ namespace BepuPhysics.Collidables
 
         public bool AllowOffsetMemoryAccess => true;
         public int InternalAllocationSize => 0;
-        public void Initialize(in RawBuffer memory) { }
+        public void Initialize(in Buffer<byte> memory) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSlot(int index, in Capsule source)
@@ -221,7 +223,7 @@ namespace BepuPhysics.Collidables
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetBounds(ref QuaternionWide orientations, int countInBundle, out Vector<float> maximumRadius, out Vector<float> maximumAngularExpansion, out Vector3Wide min, out Vector3Wide max)
         {
-            QuaternionWide.TransformUnitY(orientations, out var segmentOffset);
+            var segmentOffset = QuaternionWide.TransformUnitY(orientations);
             Vector3Wide.Scale(segmentOffset, HalfLength, out segmentOffset);
             Vector3Wide.Abs(segmentOffset, out segmentOffset);
 
@@ -243,7 +245,7 @@ namespace BepuPhysics.Collidables
             }
         }
 
-        public void RayTest(ref RigidPoses pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
+        public void RayTest(ref RigidPoseWide pose, ref RayWide ray, out Vector<int> intersected, out Vector<float> t, out Vector3Wide normal)
         {
             //It's convenient to work in local space, so pull the ray into the capsule's local space.
             Matrix3x3Wide.CreateFromQuaternion(pose.Orientation, out var orientation);

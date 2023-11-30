@@ -5,7 +5,9 @@ using BepuUtilities.Memory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -99,7 +101,7 @@ namespace BepuPhysics
             {
                 this.jobIndex = -1;
                 this.jobCount = phaseOneJobCount;
-                threadDispatcher.DispatchWorkers(phaseOneWorkerDelegate);
+                threadDispatcher.DispatchWorkers(phaseOneWorkerDelegate, phaseOneJobCount);
             }
             else
             {
@@ -113,7 +115,7 @@ namespace BepuPhysics
             {
                 this.jobIndex = -1;
                 this.jobCount = phaseTwoJobCount;
-                threadDispatcher.DispatchWorkers(phaseTwoWorkerDelegate);
+                threadDispatcher.DispatchWorkers(phaseTwoWorkerDelegate, phaseTwoJobCount);
             }
             else
             {
@@ -178,10 +180,10 @@ namespace BepuPhysics
         {
             BroadPhase,
             CopyConstraintRegion,
+            AddFallbackTypeBatchConstraints
         }
-        struct PhaseTwoJob
+        struct CopyConstraintRegionJob
         {
-            public PhaseTwoJobType Type;
             public int SourceStart;
             public int TargetStart;
             public int Count;
@@ -190,6 +192,29 @@ namespace BepuPhysics
             public int Batch;
             public int SourceTypeBatch;
             public int TargetTypeBatch;
+        }
+
+        struct FallbackAddSource
+        {
+            public int SourceSet;
+            public int SourceTypeBatchIndex;
+        }
+        struct AddFallbackTypeBatchConstraintsJob
+        {
+            public Buffer<FallbackAddSource> Sources;
+            public int TypeId;
+            public int TargetTypeBatch;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        struct PhaseTwoJob
+        {
+            [FieldOffset(0)]
+            public PhaseTwoJobType Type;
+            [FieldOffset(4)]
+            public CopyConstraintRegionJob CopyConstraintRegion;
+            [FieldOffset(8)]
+            public AddFallbackTypeBatchConstraintsJob AddFallbackTypeBatchConstraints;
         }
 
         bool resetActivityStates;
@@ -223,7 +248,6 @@ namespace BepuPhysics
                         //But the speculative process is *speculative*; it is fine for it to be wrong, so long as it isn't wrong in a way that makes it choose a higher batch index.
 
                         //Note that this is parallel over different batches, regardless of which source set they're from.
-                        Debug.Assert(job.BatchIndex < solver.FallbackBatchThreshold, "The fallback batch doesn't have any referenced handles to update!");
                         ref var targetBatchReferencedHandles = ref solver.batchReferencedHandles[job.BatchIndex];
                         for (int i = 0; i < uniqueSetIndices.Count; ++i)
                         {
@@ -246,21 +270,19 @@ namespace BepuPhysics
                         for (int i = 0; i < uniqueSetIndices.Count; ++i)
                         {
                             Debug.Assert(uniqueSetIndices[i] > 0);
-                            ref var source = ref solver.Sets[uniqueSetIndices[i]].Fallback;
-                            ref var target = ref solver.ActiveSet.Fallback;
-                            if (source.bodyConstraintReferences.Count > 0)
+                            ref var source = ref solver.Sets[uniqueSetIndices[i]].SequentialFallback;
+                            ref var target = ref solver.ActiveSet.SequentialFallback;
+                            if (source.dynamicBodyConstraintCounts.Count > 0)
                             {
-                                for (int j = 0; j < source.bodyConstraintReferences.Count; ++j)
+                                for (int j = 0; j < source.dynamicBodyConstraintCounts.Count; ++j)
                                 {
                                     //Inactive sets refer to body handles. Active set refers to body indices. Make the transition.
                                     //The HandleToLocation was updated during job setup, so we can use it.
-                                    ref var bodyLocation = ref bodies.HandleToLocation[source.bodyConstraintReferences.Keys[j]];
+                                    ref var bodyLocation = ref bodies.HandleToLocation[source.dynamicBodyConstraintCounts.Keys[j]];
                                     Debug.Assert(bodyLocation.SetIndex == 0, "Any batch moved into the active set should be dealing with bodies which have already been moved into the active set.");
-                                    var added = target.bodyConstraintReferences.AddUnsafelyRef(ref bodyLocation.Index, source.bodyConstraintReferences.Values[j]);
+                                    var added = target.dynamicBodyConstraintCounts.AddUnsafely(bodyLocation.Index, source.dynamicBodyConstraintCounts.Values[j]);
                                     Debug.Assert(added, "Any body moving from an inactive set to the active set should not already be present in the active set's fallback batch.");
                                 }
-                                //We've reused the lists. Set the count to zero so they don't get disposed later.
-                                source.bodyConstraintReferences.Count = 0;
                             }
                         }
                     }
@@ -273,25 +295,19 @@ namespace BepuPhysics
                         ref var targetSet = ref bodies.ActiveSet;
                         sourceSet.Collidables.CopyTo(job.SourceStart, targetSet.Collidables, job.TargetStart, job.Count);
                         sourceSet.Constraints.CopyTo(job.SourceStart, targetSet.Constraints, job.TargetStart, job.Count);
-                        //The world inertias must be updated as well. They are stored outside the sets.
-                        //Note that we use a manual loop copy for the local inertias and poses since we're accessing them during the world inertia calculation anyway.
-                        //This can worsen the copy codegen a little, but it means we only have to scan the memory once.
-                        //(Realistically, either option is fast- these regions won't tend to fill L1.) 
+                        sourceSet.SolverStates.CopyTo(job.SourceStart, targetSet.SolverStates, job.TargetStart, job.Count);
+                        //This rescans the memory, but it should be still floating in cache ready to access.
                         for (int i = 0; i < job.Count; ++i)
                         {
-                            var sourceIndex = job.SourceStart + i;
-                            var targetIndex = job.TargetStart + i;
-                            ref var targetWorldInertia = ref bodies.Inertias[targetIndex];
-                            ref var sourceLocalInertia = ref sourceSet.LocalInertias[sourceIndex];
-                            ref var targetLocalInertia = ref targetSet.LocalInertias[targetIndex];
-                            ref var sourcePose = ref sourceSet.Poses[sourceIndex];
-                            ref var targetPose = ref targetSet.Poses[targetIndex];
-                            targetPose = sourcePose;
-                            targetLocalInertia = sourceLocalInertia;
-                            PoseIntegration.RotateInverseInertia(sourceLocalInertia.InverseInertiaTensor, sourcePose.Orientation, out targetWorldInertia.InverseInertiaTensor);
-                            targetWorldInertia.InverseMass = sourceLocalInertia.InverseMass;
+                            var sourceBodyIndex = i + job.SourceStart;
+                            if (Bodies.IsKinematicUnsafeGCHole(ref sourceSet.SolverStates[sourceBodyIndex].Inertia.Local) && sourceSet.Constraints[sourceBodyIndex].Count > 0)
+                            {
+                                bool taken = false;
+                                solver.constrainedKinematicLock.Enter(ref taken);
+                                solver.ConstrainedKinematicHandles.AddUnsafely(sourceSet.IndexToHandle[sourceBodyIndex].Value);
+                                solver.constrainedKinematicLock.Exit();
+                            }
                         }
-                        sourceSet.Velocities.CopyTo(job.SourceStart, targetSet.Velocities, job.TargetStart, job.Count);
                         sourceSet.Activity.CopyTo(job.SourceStart, targetSet.Activity, job.TargetStart, job.Count);
                         if (resetActivityStates)
                         {
@@ -311,8 +327,8 @@ namespace BepuPhysics
 
         internal unsafe void ExecutePhaseTwoJob(int index)
         {
-            ref var job = ref phaseTwoJobs[index];
-            switch (job.Type)
+            ref var phaseTwoJob = ref phaseTwoJobs[index];
+            switch (phaseTwoJob.Type)
             {
                 case PhaseTwoJobType.BroadPhase:
                     {
@@ -345,7 +361,7 @@ namespace BepuPhysics
                                     {
                                         if (movedLeaf.Mobility == Collidables.CollidableMobility.Static)
                                         {
-                                            statics.Collidables[statics.HandleToIndex[movedLeaf.StaticHandle.Value]].BroadPhaseIndex = staticBroadPhaseIndexToRemove;
+                                            statics.GetDirectReference(movedLeaf.StaticHandle).BroadPhaseIndex = staticBroadPhaseIndexToRemove;
                                         }
                                         else
                                         {
@@ -368,12 +384,23 @@ namespace BepuPhysics
                         //2) Sleeping constraints store their body references as body *handles* rather than body indices.
                         //Pulling the type batches back into the active set requires translating those body handles to body indices.  
                         //3) The translation from body handle to body index requires that the bodies already have an active set identity, which is why the constraints wait until the second phase.
-                        ref var sourceTypeBatch = ref solver.Sets[job.SourceSet].Batches[job.Batch].TypeBatches[job.SourceTypeBatch];
-                        ref var targetTypeBatch = ref solver.ActiveSet.Batches[job.Batch].TypeBatches[job.TargetTypeBatch];
-                        Debug.Assert(targetTypeBatch.TypeId == sourceTypeBatch.TypeId);
+                        ref var job = ref phaseTwoJob.CopyConstraintRegion;
+                        Debug.Assert(solver.ActiveSet.Batches[job.Batch].TypeBatches[job.TargetTypeBatch].TypeId == solver.Sets[job.SourceSet].Batches[job.Batch].TypeBatches[job.SourceTypeBatch].TypeId);
+                        Debug.Assert(job.Batch != solver.FallbackBatchThreshold, "Fallback batches must only be handled by the fallback-specific job.");
                         solver.TypeProcessors[job.TypeId].CopySleepingToActive(
-                            job.SourceSet, job.Batch, job.SourceTypeBatch, job.Batch, job.TargetTypeBatch,
+                            job.SourceSet, job.Batch, job.SourceTypeBatch, job.TargetTypeBatch,
                             job.SourceStart, job.TargetStart, job.Count, bodies, solver);
+                        //solver.ValidateConstraintMaps(0, job.Batch, job.TargetTypeBatch, job.TargetStart, job.Count);
+                    }
+                    break;
+                case PhaseTwoJobType.AddFallbackTypeBatchConstraints:
+                    {
+                        ref var job = ref phaseTwoJob.AddFallbackTypeBatchConstraints;
+                        for (int i = 0; i < job.Sources.Length; ++i)
+                        {
+                            var source = job.Sources[i];
+                            solver.TypeProcessors[job.TypeId].AddSleepingToActiveForFallback(source.SourceSet, source.SourceTypeBatchIndex, job.TargetTypeBatch, bodies, solver);
+                        }
                     }
                     break;
             }
@@ -390,6 +417,13 @@ namespace BepuPhysics
                     uniqueSet.AddUnsafely(candidateSetIndex);
                     uniqueSetIndices.AllocateUnsafely() = candidateSetIndex;
                 }
+            }
+            if (uniqueSetIndices.Count > 0)
+            {
+                //The number of unique set indices being awakened is typically very small (<4), so sorting even when the simulation is running nondeterministically really isn't a concern.
+                //Determinism requires source sets are awakened in order when the fallback batch may be involved, since constraint order and typebatch order within the sequential fallback matter.
+                var comparer = new PrimitiveComparer<int>();
+                QuickSort.Sort(ref uniqueSetIndices[0], 0, uniqueSetIndices.Count - 1, ref comparer);
             }
         }
         [Conditional("DEBUG")]
@@ -497,7 +531,7 @@ namespace BepuPhysics
                 if (highestNewBatchCount < setBatchCount)
                     highestNewBatchCount = setBatchCount;
                 ref var constraintSet = ref solver.Sets[setIndex];
-                additionalRequiredFallbackCapacity += constraintSet.Fallback.BodyCount;
+                additionalRequiredFallbackCapacity += constraintSet.SequentialFallback.BodyCount;
                 for (int batchIndex = 0; batchIndex < constraintSet.Batches.Count; ++batchIndex)
                 {
                     ref var batch = ref constraintSet.Batches[batchIndex];
@@ -557,35 +591,34 @@ namespace BepuPhysics
             //Ensure capacities on all systems:
             //bodies,
             bodies.EnsureCapacity(bodies.ActiveSet.Count + newBodyCount);
+            solver.ConstrainedKinematicHandles.EnsureCapacity(solver.ConstrainedKinematicHandles.Count + newBodyCount, pool); //TODO: This could be FAR more conservative. Few bodies are typically kinematic.
             //broad phase, (technically overestimating, not every body has a collidable, but vast majority do and shrug)
             broadPhase.EnsureCapacity(broadPhase.ActiveTree.LeafCount + newBodyCount, broadPhase.StaticTree.LeafCount);
             //constraints,
             solver.ActiveSet.Batches.EnsureCapacity(highestNewBatchCount, pool);
             if (additionalRequiredFallbackCapacity > 0)
-                solver.ActiveSet.Fallback.EnsureCapacity(solver.ActiveSet.Fallback.BodyCount + additionalRequiredFallbackCapacity, pool);
-            solver.batchReferencedHandles.EnsureCapacity(Math.Min(solver.FallbackBatchThreshold, highestNewBatchCount), pool);
+                solver.ActiveSet.SequentialFallback.EnsureCapacity(solver.ActiveSet.SequentialFallback.BodyCount + additionalRequiredFallbackCapacity, pool);
+            Debug.Assert(highestNewBatchCount <= solver.FallbackBatchThreshold + 1, "Shouldn't have any batches beyond the fallback batch.");
+            solver.batchReferencedHandles.EnsureCapacity(highestNewBatchCount, pool);
             for (int batchIndex = solver.ActiveSet.Batches.Count; batchIndex < highestNewBatchCount; ++batchIndex)
             {
                 solver.ActiveSet.Batches.AllocateUnsafely() = new ConstraintBatch(pool);
-                //The fallback batch has no batch referenced handles.
-                if (batchIndex < solver.FallbackBatchThreshold)
-                {
-                    solver.batchReferencedHandles.AllocateUnsafely() = new IndexSet(pool, bodies.HandlePool.HighestPossiblyClaimedId + 1);
-                }
+                solver.batchReferencedHandles.AllocateUnsafely() = new IndexSet(pool, bodies.HandlePool.HighestPossiblyClaimedId + 1);
             }
             for (int batchIndex = 0; batchIndex < highestNewBatchCount; ++batchIndex)
             {
                 ref var constraintCountPerType = ref constraintCountPerTypePerBatch[batchIndex];
                 ref var batch = ref solver.ActiveSet.Batches[batchIndex];
                 batch.EnsureTypeMapSize(pool, constraintCountPerType.HighestOccupiedTypeIndex);
-                //The fallback batch has no batch referenced handles.
-                if (batchIndex < solver.FallbackBatchThreshold)
-                {
-                    solver.batchReferencedHandles[batchIndex].EnsureCapacity(bodies.HandlePool.HighestPossiblyClaimedId + 1, pool);
-                }
+                solver.batchReferencedHandles[batchIndex].EnsureCapacity(bodies.HandlePool.HighestPossiblyClaimedId + 1, pool);
                 for (int typeId = 0; typeId <= constraintCountPerType.HighestOccupiedTypeIndex; ++typeId)
                 {
                     var countForType = constraintCountPerType.TypeCounts[typeId].Count;
+                    //The fallback batch must allocate a worst case scenario assuming that every new constraint needs its own bundle.
+                    //It's difficult to be more conservative ahead of time; we don't know which existing partial bundles will be able to accept the new constraints.
+                    //Fallback batches should tend to be rarely used and relatively small, and the extra memory won't be touched, so this isn't a major concern.
+                    if (batchIndex == solver.FallbackBatchThreshold)
+                        countForType *= Vector<float>.Count;
                     if (countForType > 0)
                     {
                         var typeProcessor = solver.TypeProcessors[typeId];
@@ -624,12 +657,9 @@ namespace BepuPhysics
             phaseTwoJobs = new QuickList<PhaseTwoJob>(32, pool);
             //Finally, create actual jobs. Note that this involves actually allocating space in the bodies set and in type batches for the workers to fill in.
             //(Pair caches are currently handled in a locally sequential way and do not require preallocation.)
-
             phaseOneJobs.AllocateUnsafely() = new PhaseOneJob { Type = PhaseOneJobType.PairCache };
             phaseOneJobs.AllocateUnsafely() = new PhaseOneJob { Type = PhaseOneJobType.MoveFallbackBatchBodies };
-            //Don't create batch referenced handles update jobs for the fallback batch; it has no referenced handles!
-            var highestSynchronizedBatchCount = Math.Min(solver.FallbackBatchThreshold, highestNewBatchCount);
-            for (int batchIndex = 0; batchIndex < highestSynchronizedBatchCount; ++batchIndex)
+            for (int batchIndex = 0; batchIndex < highestNewBatchCount; ++batchIndex)
             {
                 phaseOneJobs.AllocateUnsafely() = new PhaseOneJob { Type = PhaseOneJobType.UpdateBatchReferencedHandles, BatchIndex = batchIndex };
             }
@@ -638,6 +668,9 @@ namespace BepuPhysics
             ref var activeBodySet = ref bodies.ActiveSet;
             ref var activeSolverSet = ref solver.ActiveSet;
             //TODO: The job sizes are a little goofy for single threaded execution. Easy enough to resolve with special case or dynamic size.
+
+            //Multiple source sets can contribute to the same target type batch. Track those as we enumerate sets so we can create a single job for each target after the loop.
+            QuickDictionary<int, QuickList<FallbackAddSource>, PrimitiveComparer<int>> targetFallbackTypeBatchesToSources = highestNewBatchCount > solver.FallbackBatchThreshold ? targetFallbackTypeBatchesToSources = new(8, pool) : default;
             for (int i = 0; i < uniqueSetIndices.Count; ++i)
             {
                 var sourceSetIndex = uniqueSetIndices[i];
@@ -678,7 +711,10 @@ namespace BepuPhysics
                 {
                     const int constraintJobSize = 32;
                     ref var sourceSet = ref solver.Sets[sourceSetIndex];
-                    for (int batchIndex = 0; batchIndex < sourceSet.Batches.Count; ++batchIndex)
+                    var fallbackIndex = solver.FallbackBatchThreshold;
+
+                    int synchronizedBatchCountInSource = sourceSet.Batches.Count > solver.FallbackBatchThreshold ? solver.FallbackBatchThreshold : sourceSet.Batches.Count;
+                    for (int batchIndex = 0; batchIndex < synchronizedBatchCountInSource; ++batchIndex)
                     {
                         ref var sourceBatch = ref sourceSet.Batches[batchIndex];
                         ref var targetBatch = ref activeSolverSet.Batches[batchIndex];
@@ -692,28 +728,73 @@ namespace BepuPhysics
                             var baseConstraintsPerJob = sourceTypeBatch.ConstraintCount / jobCount;
                             var remainder = sourceTypeBatch.ConstraintCount - baseConstraintsPerJob * jobCount;
                             phaseTwoJobs.EnsureCapacity(phaseTwoJobs.Count + jobCount, pool);
-
                             var previousSourceEnd = 0;
                             for (int jobIndex = 0; jobIndex < jobCount; ++jobIndex)
                             {
                                 ref var job = ref phaseTwoJobs.AllocateUnsafely();
                                 job.Type = PhaseTwoJobType.CopyConstraintRegion;
-                                job.TypeId = sourceTypeBatch.TypeId;
-                                job.Batch = batchIndex;
-                                job.SourceSet = sourceSetIndex;
-                                job.SourceTypeBatch = sourceTypeBatchIndex;
-                                job.TargetTypeBatch = targetTypeBatchIndex;
-                                job.Count = jobIndex >= remainder ? baseConstraintsPerJob : baseConstraintsPerJob + 1;
-                                job.SourceStart = previousSourceEnd;
-                                job.TargetStart = targetTypeBatch.ConstraintCount;
-                                previousSourceEnd += job.Count;
-                                targetTypeBatch.ConstraintCount += job.Count;
+                                job.CopyConstraintRegion = new CopyConstraintRegionJob
+                                {
+                                    TypeId = sourceTypeBatch.TypeId,
+                                    Batch = batchIndex,
+                                    SourceSet = sourceSetIndex,
+                                    SourceTypeBatch = sourceTypeBatchIndex,
+                                    TargetTypeBatch = targetTypeBatchIndex,
+                                    Count = jobIndex >= remainder ? baseConstraintsPerJob : baseConstraintsPerJob + 1,
+                                    SourceStart = previousSourceEnd,
+                                    TargetStart = targetTypeBatch.ConstraintCount
+                                };
+                                previousSourceEnd += job.CopyConstraintRegion.Count;
+                                var oldBundleCount = targetTypeBatch.BundleCount;
+                                targetTypeBatch.ConstraintCount += job.CopyConstraintRegion.Count;
+                                if (targetTypeBatch.BundleCount != oldBundleCount)
+                                {
+                                    //A new bundle was created; guarantee any trailing slots are set to -1.
+                                    //Since it's a whole new bundle that has not yet had any data set to it, we can safely just initialize the whole bundle's body references to -1.
+                                    var vectorCount = solver.TypeProcessors[job.CopyConstraintRegion.TypeId].BodiesPerConstraint;
+                                    var bundleStart = (Vector<int>*)(targetTypeBatch.BodyReferences.Memory + (targetTypeBatch.BundleCount - 1) * vectorCount * Unsafe.SizeOf<Vector<int>>());
+                                    var negativeOne = new Vector<int>(-1);
+                                    for (int vectorIndex = 0; vectorIndex < vectorCount; ++vectorIndex)
+                                    {
+                                        bundleStart[vectorIndex] = negativeOne;
+                                    }
+                                }
                             }
                             Debug.Assert(previousSourceEnd == sourceTypeBatch.ConstraintCount);
                             Debug.Assert(targetTypeBatch.ConstraintCount <= targetTypeBatch.IndexToHandle.Length);
                         }
                     }
+                    if (sourceSet.Batches.Count > fallbackIndex)
+                    {
+                        ref var sourceBatch = ref sourceSet.Batches[fallbackIndex];
+                        ref var targetBatch = ref activeSolverSet.Batches[fallbackIndex];
+                        for (int sourceTypeBatchIndex = 0; sourceTypeBatchIndex < sourceBatch.TypeBatches.Count; ++sourceTypeBatchIndex)
+                        {
+                            ref var sourceTypeBatch = ref sourceBatch.TypeBatches[sourceTypeBatchIndex];
+                            var targetTypeBatchIndex = targetBatch.TypeIndexToTypeBatchIndex[sourceTypeBatch.TypeId];
+                            if (!targetFallbackTypeBatchesToSources.FindOrAllocateSlot(targetTypeBatchIndex, pool, out var slotIndex))
+                            {
+                                targetFallbackTypeBatchesToSources.Values[slotIndex] = new QuickList<FallbackAddSource>(8, pool);
+                            }
+                            targetFallbackTypeBatchesToSources.Values[slotIndex].Allocate(pool) = new FallbackAddSource { SourceSet = sourceSetIndex, SourceTypeBatchIndex = sourceTypeBatchIndex };
+                        }
+                    }
                 }
+            }
+            if (targetFallbackTypeBatchesToSources.Keys.Allocated)
+            {
+                phaseTwoJobs.EnsureCapacity(phaseTwoJobs.Count + targetFallbackTypeBatchesToSources.Count, pool);
+                for (int i = 0; i < targetFallbackTypeBatchesToSources.Count; ++i)
+                {
+                    ref var job = ref phaseTwoJobs.AllocateUnsafely();
+                    job.Type = PhaseTwoJobType.AddFallbackTypeBatchConstraints;
+                    ref var list = ref targetFallbackTypeBatchesToSources.Values[i];
+                    job.AddFallbackTypeBatchConstraints.Sources = list.Span.Slice(list.Count);
+                    job.AddFallbackTypeBatchConstraints.TargetTypeBatch = targetFallbackTypeBatchesToSources.Keys[i];
+                    job.AddFallbackTypeBatchConstraints.TypeId = solver.ActiveSet.Batches[solver.FallbackBatchThreshold].TypeBatches[job.AddFallbackTypeBatchConstraints.TargetTypeBatch].TypeId;
+                }
+                //Note that the per target lists will be disposed in the DisposeForCompletedAwakenings, since the spans created for the per-target lists are used in the PhaseTwoJobs.
+                targetFallbackTypeBatchesToSources.Dispose(pool);
             }
             return (phaseOneJobs.Count, phaseTwoJobs.Count);
         }
@@ -721,6 +802,7 @@ namespace BepuPhysics
 
         internal void DisposeForCompletedAwakenings(ref QuickList<int> setIndices)
         {
+            Debug.Assert(setIndices.Count > 0 == phaseOneJobs.Span.Allocated && setIndices.Count > 0 == phaseTwoJobs.Span.Allocated);
             for (int i = 0; i < setIndices.Count; ++i)
             {
                 var setIndex = setIndices[i];
@@ -740,8 +822,19 @@ namespace BepuPhysics
                 sleeper.ReturnSetId(setIndex);
 
             }
-            phaseOneJobs.Dispose(pool);
-            phaseTwoJobs.Dispose(pool);
+            if (phaseOneJobs.Span.Allocated)
+            {
+                phaseOneJobs.Dispose(pool);
+                for (int i = 0; i < phaseTwoJobs.Count; ++i)
+                {
+                    ref var job = ref phaseTwoJobs[i];
+                    if (job.Type == PhaseTwoJobType.AddFallbackTypeBatchConstraints)
+                    {
+                        pool.Return(ref job.AddFallbackTypeBatchConstraints.Sources);
+                    }
+                }
+                phaseTwoJobs.Dispose(pool);
+            }
         }
     }
 }

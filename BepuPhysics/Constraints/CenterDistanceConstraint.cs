@@ -30,7 +30,7 @@ namespace BepuPhysics.Constraints
             SpringSettings = springSettings;
         }
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -41,7 +41,7 @@ namespace BepuPhysics.Constraints
 
         public TypeProcessor CreateTypeProcessor() => new CenterDistanceTypeProcessor();
 
-        public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
+        public readonly void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
             Debug.Assert(TargetDistance >= 0, "CenterDistanceConstraint.TargetDistance must be nonnegative.");
             ConstraintChecker.AssertValid(SpringSettings, nameof(CenterDistanceConstraint));
@@ -51,7 +51,7 @@ namespace BepuPhysics.Constraints
             SpringSettingsWide.WriteFirst(SpringSettings, ref target.SpringSettings);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out CenterDistanceConstraint description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out CenterDistanceConstraint description)
         {
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
             ref var source = ref GetOffsetInstance(ref Buffer<CenterDistancePrestepData>.Get(ref batch.PrestepData, bundleIndex), innerIndex);
@@ -66,68 +66,65 @@ namespace BepuPhysics.Constraints
         public SpringSettingsWide SpringSettings;
     }
 
-    public struct CenterDistanceProjection
-    {
-        public Vector3Wide JacobianA;
-        public Vector<float> BiasVelocity;
-        public Vector<float> SoftnessImpulseScale;
-        public Vector<float> EffectiveMass;
-        public Vector<float> InverseMassA;
-        public Vector<float> InverseMassB;
-    }
-
-    public struct CenterDistanceConstraintFunctions : IConstraintFunctions<CenterDistancePrestepData, CenterDistanceProjection, Vector<float>>
+    public struct CenterDistanceConstraintFunctions : ITwoBodyConstraintFunctions<CenterDistancePrestepData, Vector<float>>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Prestep(Bodies bodies, ref TwoBodyReferences bodyReferences, int count, float dt, float inverseDt, ref BodyInertias inertiaA, ref BodyInertias inertiaB,
-            ref CenterDistancePrestepData prestep, out CenterDistanceProjection projection)
+        public static void ApplyImpulse(in Vector3Wide jacobianA, in Vector<float> inverseMassA, in Vector<float> inverseMassB, in Vector<float> impulse, ref BodyVelocityWide a, ref BodyVelocityWide b)
         {
-            bodies.GatherOffsets(ref bodyReferences, count, out var ab);
-
-            Vector3Wide.Length(ab, out var distance);
-            Vector3Wide.Scale(ab, Vector<float>.One / distance, out projection.JacobianA);
-
-            var useFallback = Vector.LessThan(distance, new Vector<float>(1e-10f));
-            projection.JacobianA.X = Vector.ConditionalSelect(useFallback, Vector<float>.One, projection.JacobianA.X);
-            projection.JacobianA.Y = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, projection.JacobianA.Y);
-            projection.JacobianA.Z = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, projection.JacobianA.Z);
-
-            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out projection.SoftnessImpulseScale);
-            //Jacobian is just the unit length direction, so the effective mass is simple:
-            projection.EffectiveMass = effectiveMassCFMScale / (inertiaA.InverseMass + inertiaB.InverseMass);
-            projection.InverseMassA = inertiaA.InverseMass;
-            projection.InverseMassB = inertiaB.InverseMass;
-
-            //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
-            projection.BiasVelocity = (distance - prestep.TargetDistance) * positionErrorToVelocity;
-
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void ApplyImpulse(ref BodyVelocities a, ref BodyVelocities b, ref CenterDistanceProjection projection, ref Vector<float> impulse)
-        {
-            Vector3Wide.Scale(projection.JacobianA, impulse * projection.InverseMassA, out var changeA);
-            Vector3Wide.Scale(projection.JacobianA, impulse * projection.InverseMassB, out var negatedChangeB);
+            Vector3Wide.Scale(jacobianA, impulse * inverseMassA, out var changeA);
+            Vector3Wide.Scale(jacobianA, impulse * inverseMassB, out var negatedChangeB);
             Vector3Wide.Add(a.Linear, changeA, out a.Linear);
             Vector3Wide.Subtract(b.Linear, negatedChangeB, out b.Linear);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WarmStart(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref CenterDistanceProjection projection, ref Vector<float> accumulatedImpulse)
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WarmStart(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB,
+            ref CenterDistancePrestepData prestep, ref Vector<float> accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
         {
-            ApplyImpulse(ref velocityA, ref velocityB, ref projection, ref accumulatedImpulse);
+            var ab = positionB - positionA;
+            var lengthSquared = ab.LengthSquared();
+            var inverseDistance = MathHelper.FastReciprocalSquareRoot(lengthSquared);
+            var useFallback = Vector.LessThan(lengthSquared, new Vector<float>(1e-10f));
+            Vector3Wide.Scale(ab, inverseDistance, out var jacobianA);
+            jacobianA.X = Vector.ConditionalSelect(useFallback, Vector<float>.One, jacobianA.X);
+            jacobianA.Y = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, jacobianA.Y);
+            jacobianA.Z = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, jacobianA.Z);
+
+            ApplyImpulse(jacobianA, inertiaA.InverseMass, inertiaB.InverseMass, accumulatedImpulses, ref wsvA, ref wsvB);
+        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Solve(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, float dt, float inverseDt,
+            ref CenterDistancePrestepData prestep, ref Vector<float> accumulatedImpulse, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB)
+        {
+            //Note that we need the actual length for error calculation.
+            var ab = positionB - positionA;
+            var distance = ab.Length();
+            var inverseDistance = MathHelper.FastReciprocal(distance);
+            var useFallback = Vector.LessThan(distance, new Vector<float>(1e-5f));
+            Vector3Wide.Scale(ab, inverseDistance, out var jacobianA);
+            jacobianA.X = Vector.ConditionalSelect(useFallback, Vector<float>.One, jacobianA.X);
+            jacobianA.Y = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, jacobianA.Y);
+            jacobianA.Z = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, jacobianA.Z);
+
+            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out var softnessImpulseScale);
+            //Jacobian is just the unit length direction, so the effective mass is simple:
+            var effectiveMass = effectiveMassCFMScale / (inertiaA.InverseMass + inertiaB.InverseMass);
+
+            //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
+            var biasVelocity = (distance - prestep.TargetDistance) * positionErrorToVelocity;
+
+            //csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - (csiaLinear + csiaAngular + csibLinear + csibAngular);
+            Vector3Wide.Dot(wsvA.Linear, jacobianA, out var linearCSVA);
+            Vector3Wide.Dot(wsvB.Linear, jacobianA, out var negatedCSVB);
+            var csi = (biasVelocity - (linearCSVA - negatedCSVB)) * effectiveMass - accumulatedImpulse * softnessImpulseScale;
+            accumulatedImpulse += csi;
+            ApplyImpulse(jacobianA, inertiaA.InverseMass, inertiaB.InverseMass, csi, ref wsvA, ref wsvB);
         }
 
+        public bool RequiresIncrementalSubstepUpdates => false;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Solve(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref CenterDistanceProjection projection, ref Vector<float> accumulatedImpulse)
-        {
-            //csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - (csiaLinear + csiaAngular + csibLinear + csibAngular);
-            Vector3Wide.Dot(velocityA.Linear, projection.JacobianA, out var linearCSVA);
-            Vector3Wide.Dot(velocityB.Linear, projection.JacobianA, out var negatedCSVB);
-            var csi = (projection.BiasVelocity - (linearCSVA - negatedCSVB)) * projection.EffectiveMass - accumulatedImpulse * projection.SoftnessImpulseScale;
-            accumulatedImpulse += csi;
-            ApplyImpulse(ref velocityA, ref velocityB, ref projection, ref csi);
-        }
+        public void IncrementallyUpdateForSubstep(in Vector<float> dt, in BodyVelocityWide wsvA, in BodyVelocityWide wsvB, ref CenterDistancePrestepData prestepData) { }
 
     }
 
@@ -135,7 +132,7 @@ namespace BepuPhysics.Constraints
     /// <summary>
     /// Handles the solve iterations of a bunch of distance servos.
     /// </summary>
-    public class CenterDistanceTypeProcessor : TwoBodyTypeProcessor<CenterDistancePrestepData, CenterDistanceProjection, Vector<float>, CenterDistanceConstraintFunctions>
+    public class CenterDistanceTypeProcessor : TwoBodyTypeProcessor<CenterDistancePrestepData, Vector<float>, CenterDistanceConstraintFunctions, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear>
     {
         public const int BatchTypeId = 35;
     }

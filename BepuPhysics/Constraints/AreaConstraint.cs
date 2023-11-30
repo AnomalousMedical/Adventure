@@ -37,7 +37,7 @@ namespace BepuPhysics.Constraints
             SpringSettings = springSettings;
         }
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -48,7 +48,7 @@ namespace BepuPhysics.Constraints
 
         public TypeProcessor CreateTypeProcessor() => new AreaConstraintTypeProcessor();
 
-        public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
+        public readonly void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
             Debug.Assert(TargetScaledArea >= 0, "AreaConstraint.TargetScaledArea must be nonnegative.");
             ConstraintChecker.AssertValid(SpringSettings, nameof(AreaConstraint));
@@ -58,7 +58,7 @@ namespace BepuPhysics.Constraints
             SpringSettingsWide.WriteFirst(SpringSettings, ref target.SpringSettings);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out AreaConstraint description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out AreaConstraint description)
         {
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
             ref var source = ref GetOffsetInstance(ref Buffer<AreaConstraintPrestepData>.Get(ref batch.PrestepData, bundleIndex), innerIndex);
@@ -73,27 +73,24 @@ namespace BepuPhysics.Constraints
         public SpringSettingsWide SpringSettings;
     }
 
-    public struct AreaConstraintProjection
-    {
-        public Vector3Wide JacobianB;
-        public Vector3Wide JacobianC;
-        public Vector<float> EffectiveMass;
-        public Vector<float> BiasImpulse;
-        public Vector<float> SoftnessImpulseScale;
-        public Vector<float> InverseMassA;
-        public Vector<float> InverseMassB;
-        public Vector<float> InverseMassC;
-    }
-
-    public struct AreaConstraintFunctions : IThreeBodyConstraintFunctions<AreaConstraintPrestepData, AreaConstraintProjection, Vector<float>>
+    public struct AreaConstraintFunctions : IThreeBodyConstraintFunctions<AreaConstraintPrestepData, Vector<float>>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Prestep(Bodies bodies, ref ThreeBodyReferences bodyReferences, int count, float dt, float inverseDt,
-            ref BodyInertias inertiaA, ref BodyInertias inertiaB, ref BodyInertias inertiaC,
-            ref AreaConstraintPrestepData prestep, out AreaConstraintProjection projection)
+        private static void ApplyImpulse(in Vector<float> inverseMassA, in Vector<float> inverseMassB, in Vector<float> inverseMassC,
+            in Vector3Wide negatedJacobianA, in Vector3Wide jacobianB, in Vector3Wide jacobianC, in Vector<float> impulse,
+            ref BodyVelocityWide velocityA, ref BodyVelocityWide velocityB, ref BodyVelocityWide velocityC)
         {
-            bodies.GatherOffsets(ref bodyReferences, count, out var ab, out var ac);
+            Vector3Wide.Scale(negatedJacobianA, inverseMassA * impulse, out var negativeVelocityChangeA);
+            Vector3Wide.Scale(jacobianB, inverseMassB * impulse, out var velocityChangeB);
+            Vector3Wide.Scale(jacobianC, inverseMassC * impulse, out var velocityChangeC);
+            Vector3Wide.Subtract(velocityA.Linear, negativeVelocityChangeA, out velocityA.Linear);
+            Vector3Wide.Add(velocityB.Linear, velocityChangeB, out velocityB.Linear);
+            Vector3Wide.Add(velocityC.Linear, velocityChangeC, out velocityC.Linear);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void ComputeJacobian(in Vector3Wide positionA, in Vector3Wide positionB, in Vector3Wide positionC, out Vector<float> normalLength, out Vector3Wide negatedJacobianA, out Vector3Wide jacobianB, out Vector3Wide jacobianC)
+        {
             //Area of a triangle with vertices a, b, and c is:
             //||ab x ac|| * 0.5
             //So the constraint is:
@@ -110,25 +107,36 @@ namespace BepuPhysics.Constraints
             //0 = (dot(d/dt(ab) x ac, ab x ac) + dot(ab x d/dt(ac), ab x ac)) / ||ab x ac||
             //0 = (dot(ac x (ab x ac), d/dt(ab)) + dot((ab x ac) x ab, d/dt(ac))) / ||ab x ac||
             //0 = dot(ac x ((ab x ac) / ||ab x ac||), d/dt(ab)) + dot(((ab x ac) / ||ab x ac||) x ab, d/dt(ac))
+            var ab = positionB - positionA;
+            var ac = positionC - positionA;
             Vector3Wide.CrossWithoutOverlap(ab, ac, out var abxac);
-            Vector3Wide.Length(abxac, out var normalLength);
+            Vector3Wide.Length(abxac, out normalLength);
             //The triangle normal length can be zero if the edges are parallel or antiparallel. Protect against the potential division by zero.
             Vector3Wide.Scale(abxac, Vector.ConditionalSelect(Vector.GreaterThan(normalLength, new Vector<float>(1e-10f)), Vector<float>.One / normalLength, Vector<float>.Zero), out var normal);
 
-            Vector3Wide.CrossWithoutOverlap(ac, normal, out projection.JacobianB);
-            Vector3Wide.CrossWithoutOverlap(normal, ab, out projection.JacobianC);
+            Vector3Wide.CrossWithoutOverlap(ac, normal, out jacobianB);
+            Vector3Wide.CrossWithoutOverlap(normal, ab, out jacobianC);
             //Similar to the volume constraint, we could create a similar expression for jacobianA, but it's cheap to just do a couple of adds.
-            Vector3Wide.Add(projection.JacobianB, projection.JacobianC, out var negatedJacobianA);
+            Vector3Wide.Add(jacobianB, jacobianC, out negatedJacobianA);
+        }
 
-            //We can store:
-            //Jacobians (2 * 3)
-            //Effective mass (1)
-            //Inverse inertia (1 * 3 since we don't need angular inertia)
-            //Since we don't need the inertia tensor, this is better than the premultiplied variant.
+        public void WarmStart(
+            in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA,
+            in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, 
+            in Vector3Wide positionC, in QuaternionWide orientationC, in BodyInertiaWide inertiaC, 
+            ref AreaConstraintPrestepData prestep, ref Vector<float> accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB, ref BodyVelocityWide wsvC)
+        {
+            ComputeJacobian(positionA, positionB, positionC, out _, out var negatedJacobianA, out var jacobianB, out var jacobianC);
+            ApplyImpulse(inertiaA.InverseMass, inertiaB.InverseMass, inertiaC.InverseMass, negatedJacobianA, jacobianB, jacobianC, accumulatedImpulses, ref wsvA, ref wsvB, ref wsvC);
+        }
+
+        public void Solve(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, in Vector3Wide positionB, in QuaternionWide orientationB, in BodyInertiaWide inertiaB, in Vector3Wide positionC, in QuaternionWide orientationC, in BodyInertiaWide inertiaC, float dt, float inverseDt, ref AreaConstraintPrestepData prestep, ref Vector<float> accumulatedImpulses, ref BodyVelocityWide wsvA, ref BodyVelocityWide wsvB, ref BodyVelocityWide wsvC)
+        {
+            ComputeJacobian(positionA, positionB, positionC, out var normalLength, out var negatedJacobianA, out var jacobianB, out var jacobianC);
 
             Vector3Wide.Dot(negatedJacobianA, negatedJacobianA, out var contributionA);
-            Vector3Wide.Dot(projection.JacobianB, projection.JacobianB, out var contributionB);
-            Vector3Wide.Dot(projection.JacobianC, projection.JacobianC, out var contributionC);
+            Vector3Wide.Dot(jacobianB, jacobianB, out var contributionB);
+            Vector3Wide.Dot(jacobianC, jacobianC, out var contributionC);
 
             //Protect against singularity by padding the jacobian contributions. This is very much a hack, but it's a pretty simple hack.
             //Less sensitive to tuning than attempting to guard the inverseEffectiveMass itself, since that is sensitive to both scale AND mass.
@@ -140,57 +148,34 @@ namespace BepuPhysics.Constraints
             contributionB = Vector.Max(epsilon, contributionB);
             contributionC = Vector.Max(epsilon, contributionC);
             var inverseEffectiveMass = contributionA * inertiaA.InverseMass + contributionB * inertiaB.InverseMass + contributionC * inertiaC.InverseMass;
-            projection.InverseMassA = inertiaA.InverseMass;
-            projection.InverseMassB = inertiaB.InverseMass;
-            projection.InverseMassC = inertiaC.InverseMass;
 
-            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out projection.SoftnessImpulseScale);
+            SpringSettingsWide.ComputeSpringiness(prestep.SpringSettings, dt, out var positionErrorToVelocity, out var effectiveMassCFMScale, out var softnessImpulseScale);
 
-            projection.EffectiveMass = effectiveMassCFMScale / inverseEffectiveMass;
+            var effectiveMass = effectiveMassCFMScale / inverseEffectiveMass;
             //Compute the position error and bias velocities. Note the order of subtraction when calculating error- we want the bias velocity to counteract the separation.
-            projection.BiasImpulse = (prestep.TargetScaledArea - normalLength) * (1f / 2f) * positionErrorToVelocity * projection.EffectiveMass;
-        }
+            var biasVelocity = (prestep.TargetScaledArea - normalLength) * positionErrorToVelocity;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ApplyImpulse(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref BodyVelocities velocityC,
-            ref AreaConstraintProjection projection, ref Vector3Wide negatedJacobianA, ref Vector<float> impulse)
-        {
-            Vector3Wide.Scale(negatedJacobianA, projection.InverseMassA * impulse, out var negativeVelocityChangeA);
-            Vector3Wide.Scale(projection.JacobianB, projection.InverseMassB * impulse, out var velocityChangeB);
-            Vector3Wide.Scale(projection.JacobianC, projection.InverseMassC * impulse, out var velocityChangeC);
-            Vector3Wide.Subtract(velocityA.Linear, negativeVelocityChangeA, out velocityA.Linear);
-            Vector3Wide.Add(velocityB.Linear, velocityChangeB, out velocityB.Linear);
-            Vector3Wide.Add(velocityC.Linear, velocityChangeC, out velocityC.Linear);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WarmStart(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref BodyVelocities velocityC, ref AreaConstraintProjection projection, ref Vector<float> accumulatedImpulse)
-        {
-            Vector3Wide.Add(projection.JacobianB, projection.JacobianC, out var negatedJacobianA);
-            ApplyImpulse(ref velocityA, ref velocityB, ref velocityC, ref projection, ref negatedJacobianA, ref accumulatedImpulse);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Solve(ref BodyVelocities velocityA, ref BodyVelocities velocityB, ref BodyVelocities velocityC, ref AreaConstraintProjection projection, ref Vector<float> accumulatedImpulse)
-        {
             //csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - (csiaLinear + csiaAngular + csibLinear + csibAngular);
-            Vector3Wide.Add(projection.JacobianB, projection.JacobianC, out var negatedJacobianA);
-            Vector3Wide.Dot(negatedJacobianA, velocityA.Linear, out var negatedContributionA);
-            Vector3Wide.Dot(projection.JacobianB, velocityB.Linear, out var contributionB);
-            Vector3Wide.Dot(projection.JacobianC, velocityC.Linear, out var contributionC);
-            var csv = contributionB + contributionC - negatedContributionA;
-            var csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - csv * projection.EffectiveMass;
-            accumulatedImpulse += csi;
+            Vector3Wide.Dot(negatedJacobianA, wsvA.Linear, out var negatedVelocityContributionA);
+            Vector3Wide.Dot(jacobianB, wsvB.Linear, out var velocityContributionB);
+            Vector3Wide.Dot(jacobianC, wsvC.Linear, out var velocityContributionC);
+            var csv = velocityContributionB + velocityContributionC - negatedVelocityContributionA;
+            var csi = (biasVelocity - csv) * effectiveMass - accumulatedImpulses * softnessImpulseScale;
+            accumulatedImpulses += csi;
 
-            ApplyImpulse(ref velocityA, ref velocityB, ref velocityC, ref projection, ref negatedJacobianA, ref csi);
+            ApplyImpulse(inertiaA.InverseMass, inertiaB.InverseMass, inertiaC.InverseMass, negatedJacobianA, jacobianB, jacobianC, csi, ref wsvA, ref wsvB, ref wsvC);
         }
+
+        public bool RequiresIncrementalSubstepUpdates => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void IncrementallyUpdateForSubstep(in Vector<float> dt, in BodyVelocityWide wsvA, in BodyVelocityWide wsvB, in BodyVelocityWide wsvC, ref AreaConstraintPrestepData prestepData) { }
     }
 
 
     /// <summary>
-    /// Handles the solve iterations of a bunch of ball socket constraints.
+    /// Handles the solve iterations of a bunch of area constraints.
     /// </summary>
-    public class AreaConstraintTypeProcessor : ThreeBodyTypeProcessor<AreaConstraintPrestepData, AreaConstraintProjection, Vector<float>, AreaConstraintFunctions>
+    public class AreaConstraintTypeProcessor : ThreeBodyTypeProcessor<AreaConstraintPrestepData, Vector<float>, AreaConstraintFunctions, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear, AccessOnlyLinear>
     {
         public const int BatchTypeId = 36;
     }

@@ -21,7 +21,7 @@ namespace BepuPlugin.Characters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b)
+        public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
         {
             return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
         }
@@ -33,11 +33,10 @@ namespace BepuPlugin.Characters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : struct, IContactManifold<TManifold>
+        public unsafe bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : unmanaged, IContactManifold<TManifold>
         {
             pairMaterial = new PairMaterialProperties { FrictionCoefficient = 1, MaximumRecoveryVelocity = 2, SpringSettings = new SpringSettings(30, 1) };
             Characters.TryReportContacts(pair, ref manifold, workerIndex, ref pairMaterial);
-            events.HandleManifold(workerIndex, pair, ref manifold);
             return true;
         }
 

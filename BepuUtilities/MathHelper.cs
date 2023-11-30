@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
 
 namespace BepuUtilities
 {
@@ -192,147 +195,171 @@ namespace BepuUtilities
         //Note that these cos/sin implementations are not here for performance, but rather to:
         //1) Provide a SIMD accelerated version for wide processing, and
         //2) Provide a scalar implementation that is consistent with the SIMD version for systems which need to match its behavior.
-        //The main motivating use case is the pose integrator (which is scalar) and the sweep tests (which are widely vectorized).
 
         /// <summary>
-        /// Computes an approximation of cosine. Maximum error a little above 3e-6.
+        /// Computes an approximation of cosine. Maximum error a little below 8e-7 for the interval -2 * Pi to 2 * Pi. Values further from the interval near zero have gracefully degrading error.
         /// </summary>
         /// <param name="x">Value to take the cosine of.</param>
         /// <returns>Approximate cosine of the input value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cos(float x)
         {
-            //This exists primarily for consistency between the PoseIntegrator and sweeps, not necessarily for raw performance relative to Math.Cos.
-            if (x < 0)
-                x = -x;
-            var intervalIndex = x * (1f / TwoPi);
-            x -= (int)intervalIndex * TwoPi;
+            //Rational approximation over [0, pi/2], use symmetry for the rest.
+            var periodCount = x * (float)(0.5 / Math.PI);
+            var periodFraction = periodCount - MathF.Floor(periodCount); //This is a source of error as you get away from 0.
+            var periodX = periodFraction * TwoPi;
 
             //[0, pi/2] = f(x)
             //(pi/2, pi] = -f(Pi - x)
             //(pi, 3 * pi / 2] = -f(x - Pi)
             //(3*pi/2, 2*pi] = f(2 * Pi - x)
-            //This could be done more cleverly.
-            bool negate;
-            if (x < Pi)
-            {
-                if (x < PiOver2)
-                {
-                    negate = false;
-                }
-                else
-                {
-                    x = Pi - x;
-                    negate = true;
-                }
-            }
-            else
-            {
-                if (x < 3 * PiOver2)
-                {
-                    x = x - Pi;
-                    negate = true;
-                }
-                else
-                {
-                    x = TwoPi - x;
-                    negate = false;
-                }
-            }
+            float y = periodX > 3 * PiOver2 ? TwoPi - periodX : periodX > Pi ? periodX - Pi : periodX > PiOver2 ? Pi - periodX : periodX;
 
-            //The expression is a rational interpolation from 0 to Pi/2. Maximum error is a little more than 3e-6.
-            var x2 = x * x;
-            var x3 = x2 * x;
-            //TODO: This could be reorganized into two streams of FMAs if that was available.
-            var numerator = 1 - 0.24f * x - 0.4266f * x2 + 0.110838f * x3;
-            var denominator = 1 - 0.240082f * x + 0.0741637f * x2 - 0.0118786f * x3;
+            //Using a fifth degree numerator and denominator.
+            //This will be precise beyond a single's useful representation most of the time, but we're not *that* worried about performance here.
+            //TODO: FMA could help here, primarily in terms of precision.
+            var numerator = ((((-0.003436308368583229f * y + 0.021317031205957775f) * y + 0.06955843390178032f) * y - 0.4578088075324152f) * y - 0.15082367674208508f) * y + 1f;
+            var denominator = ((((-0.00007650398834677185f * y + 0.0007451378206294365f) * y - 0.00585321045829395f) * y + 0.04219116713777847f) * y - 0.15082367538305258f) * y + 1f;
             var result = numerator / denominator;
-            return negate ? -result : result;
+            return periodX > PiOver2 && periodX < 3 * PiOver2 ? -result : result;
 
         }
         /// <summary>
-        /// Computes an approximation of sine. Maximum error a little above 3e-6.
+        /// Computes an approximation of sine. Maximum error a little below 5e-7 for the interval -2 * Pi to 2 * Pi. Values further from the interval near zero have gracefully degrading error.
         /// </summary>
         /// <param name="x">Value to take the sine of.</param>
         /// <returns>Approximate sine of the input value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sin(float x)
         {
-            return Cos(x - PiOver2);
+            //Similar to cos, use a rational approximation for the region of sin from [0, pi/2]. Use symmetry to cover the rest.
+            //This has its own implementation rather than just calling into Cos because we want maximum fidelity near 0.
+            var periodCount = x * (float)(0.5 / Math.PI);
+            var periodFraction = periodCount - MathF.Floor(periodCount); //This is a source of error as you get away from 0.
+            var periodX = periodFraction * TwoPi;
+
+            //[0, pi/2] = f(x)
+            //(pi/2, pi] = f(pi - x)
+            //(pi, 3/2 * pi] = -f(x - pi)
+            //(3/2 * pi, 2*pi] = -f(2 * pi - x)
+            float y = periodX > 3 * PiOver2 ? TwoPi - periodX : periodX > Pi ? periodX - Pi : periodX > PiOver2 ? Pi - periodX : periodX;
+
+            //Using a fifth degree numerator and denominator.
+            //This will be precise beyond a single's useful representation most of the time, but we're not *that* worried about performance here.
+            //TODO: FMA could help here, primarily in terms of precision.
+            var numerator = ((((0.0040507708755727605f * y - 0.006685815219853882f) * y - 0.13993701695343166f) * y + 0.06174562337697123f) * y + 1.00000000151466040f) * y;
+            var denominator = ((((0.00009018370615921334f * y + 0.0001700784176413186f) * y + 0.003606014457152456f) * y + 0.02672943625500751f) * y + 0.061745651499203795f) * y + 1f;
+            var result = numerator / denominator;
+            return periodX > Pi ? -result : result;
         }
 
         /// <summary>
-        /// Computes an approximation of cosine. Maximum error a little above 3e-6.
+        /// Computes an approximation of arccos. Inputs outside of [-1, 1] are clamped. Maximum error less than 5.17e-07.
+        /// </summary>
+        /// <param name="x">Input value to the arccos function.</param>
+        /// <returns>Result of the arccos function.</returns>
+        public static float Acos(float x)
+        {
+            var negativeInput = x < 0;
+            x = MathF.Min(1f, MathF.Abs(x));
+            //Rational approximation (scaling sqrt(1-x)) over [0, 1], use symmetry for the rest. TODO: FMA would help with precision.
+            var numerator = MathF.Sqrt(1f - x) * (62.95741097600742f + x * (69.6550664543659f + x * (17.54512349463405f + x * 0.6022076120669532f)));
+            var denominator = 40.07993264439811f + x * (49.81949855726789f + x * (15.703851745284796f + x));
+            var result = numerator / denominator;
+            return negativeInput ? Pi - result : result;
+        }
+
+        /// <summary>
+        /// Computes an approximation of cosine. Maximum error a little below 8e-7 for the interval -2 * Pi to 2 * Pi. Values further from the interval near zero have gracefully degrading error.
         /// </summary>
         /// <param name="x">Values to take the cosine of.</param>
         /// <returns>Approximate cosine of the input values.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Cos(in Vector<float> x, out Vector<float> result)
+        public static Vector<float> Cos(Vector<float> x)
         {
-            //This exists primarily for consistency between the PoseIntegrator and sweeps, not necessarily for raw performance relative to Math.Cos.
-            var periodX = Vector.Abs(x);
-            //TODO: No floor or truncate available... may want to revisit later.
-            periodX = periodX - TwoPi * Vector.ConvertToSingle(Vector.ConvertToInt32(periodX * (1f / TwoPi)));
+            //Rational approximation over [0, pi/2], use symmetry for the rest.
+            var periodCount = x * (float)(0.5 / Math.PI);
+            var periodFraction = periodCount - Vector.Floor(periodCount); //This is a source of error as you get away from 0.
+            var twoPi = new Vector<float>(TwoPi);
+            var periodX = periodFraction * twoPi;
 
             //[0, pi/2] = f(x)
             //(pi/2, pi] = -f(Pi - x)
             //(pi, 3 * pi / 2] = -f(x - Pi)
             //(3*pi/2, 2*pi] = f(2 * Pi - x)
-            //This could be done more cleverly.
             Vector<float> y;
-            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, new Vector<float>(PiOver2)), new Vector<float>(Pi) - periodX, periodX);
-            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, new Vector<float>(Pi)), new Vector<float>(-Pi) + periodX, y);
-            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, new Vector<float>(3 * PiOver2)), new Vector<float>(TwoPi) - periodX, y);
+            var piOver2 = new Vector<float>(PiOver2);
+            var pi = new Vector<float>(Pi);
+            var pi3Over2 = new Vector<float>(3 * PiOver2);
+            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, piOver2), pi - periodX, periodX);
+            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, pi), periodX - pi, y);
+            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, pi3Over2), new Vector<float>(TwoPi) - periodX, y);
 
-            //The expression is a rational interpolation from 0 to Pi/2. Maximum error is a little more than 3e-6.
-            var y2 = y * y;
-            var y3 = y2 * y;
-            //TODO: This could be reorganized into two streams of FMAs if that was available.
-            var numerator = Vector<float>.One - 0.24f * y - 0.4266f * y2 + 0.110838f * y3;
-            var denominator = Vector<float>.One - 0.240082f * y + 0.0741637f * y2 - 0.0118786f * y3;
-            result = numerator / denominator;
-            result = Vector.ConditionalSelect(
-                Vector.BitwiseAnd(
-                    Vector.GreaterThan(periodX, new Vector<float>(PiOver2)),
-                    Vector.LessThan(periodX, new Vector<float>(3 * PiOver2))), -result, result);
+            //Using a fifth degree numerator and denominator.
+            //This will be precise beyond a single's useful representation most of the time, but we're not *that* worried about performance here.
+            //TODO: FMA could help here, primarily in terms of precision.
+            //var y2 = y * y;
+            //var y3 = y2 * y;
+            //var y4 = y2 * y2;
+            //var y5 = y3 * y2;
+            //var numerator = Vector<float>.One - 0.15082367674208508f * y - 0.4578088075324152f * y2 + 0.06955843390178032f * y3 + 0.021317031205957775f * y4 - 0.003436308368583229f * y5;
+            //var denominator = Vector<float>.One - 0.15082367538305258f * y + 0.04219116713777847f * y2 - 0.00585321045829395f * y3 + 0.0007451378206294365f * y4 - 0.00007650398834677185f * y5;
+            var numerator = ((((new Vector<float>(-0.003436308368583229f) * y + new Vector<float>(0.021317031205957775f)) * y + new Vector<float>(0.06955843390178032f)) * y - new Vector<float>(0.4578088075324152f)) * y - new Vector<float>(0.15082367674208508f)) * y + Vector<float>.One;
+            var denominator = ((((new Vector<float>(-0.00007650398834677185f) * y + new Vector<float>(0.0007451378206294365f)) * y - new Vector<float>(0.00585321045829395f)) * y + new Vector<float>(0.04219116713777847f)) * y - new Vector<float>(0.15082367538305258f)) * y + Vector<float>.One;
+            var result = numerator / denominator;
+            return Vector.ConditionalSelect(Vector.BitwiseAnd(Vector.GreaterThan(periodX, piOver2), Vector.LessThan(periodX, pi3Over2)), -result, result);
         }
         /// <summary>
-        /// Computes an approximation of sine. Maximum error a little above 3e-6.
+        /// Computes an approximation of sine. Maximum error a little below 5e-7 for the interval -2 * Pi to 2 * Pi. Values further from the interval near zero have gracefully degrading error.
         /// </summary>
         /// <param name="x">Value to take the sine of.</param>
         /// <returns>Approximate sine of the input value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Sin(in Vector<float> x, out Vector<float> result)
+        public static Vector<float> Sin(Vector<float> x)
         {
-            Cos(x - new Vector<float>(PiOver2), out result);
-        }
+            //Similar to cos, use a rational approximation for the region of sin from [0, pi/2]. Use symmetry to cover the rest.
+            //This has its own implementation rather than just calling into Cos because we want maximum fidelity near 0.
+            var periodCount = x * (float)(0.5 / Math.PI);
+            var periodFraction = periodCount - Vector.Floor(periodCount); //This is a source of error as you get away from 0.
+            var twoPi = new Vector<float>(TwoPi);
+            var periodX = periodFraction * twoPi;
+            //[0, pi/2] = f(x)
+            //(pi/2, pi] = f(pi - x)
+            //(pi, 3/2 * pi] = -f(x - pi)
+            //(3/2 * pi, 2*pi] = -f(2 * pi - x)
+            Vector<float> y;
+            var pi = new Vector<float>(Pi);
+            var piOver2 = new Vector<float>(PiOver2);
+            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, piOver2), pi - periodX, periodX);
+            var inSecondHalf = Vector.GreaterThan(periodX, pi);
+            y = Vector.ConditionalSelect(inSecondHalf, periodX - pi, y);
+            y = Vector.ConditionalSelect(Vector.GreaterThan(periodX, new Vector<float>(3 * PiOver2)), twoPi - periodX, y);
 
+            //Using a fifth degree numerator and denominator.
+            //This will be precise beyond a single's useful representation most of the time, but we're not *that* worried about performance here.
+            //TODO: FMA could help here, primarily in terms of precision.
+            //var y2 = y * y;
+            //var y3 = y2 * y;
+            //var y4 = y2 * y2;
+            //var y5 = y3 * y2;
+            //var numerator = 1.0000000015146604f * y + 0.06174562337697123f * y2 - 0.13993701695343166f * y3 - 0.006685815219853882f * y4 + 0.0040507708755727605f * y5;
+            //var denominator = Vector<float>.One + 0.061745651499203795f * y + 0.02672943625500751f * y2 + 0.003606014457152456f * y3 + 0.0001700784176413186f * y4 + 0.00009018370615921334f * y5;
+            var numerator = ((((0.0040507708755727605f * y - new Vector<float>(0.006685815219853882f)) * y - new Vector<float>(0.13993701695343166f)) * y + new Vector<float>(0.06174562337697123f)) * y + new Vector<float>(1.00000000151466040f)) * y;
+            var denominator = ((((new Vector<float>(0.00009018370615921334f) * y + new Vector<float>(0.0001700784176413186f)) * y + new Vector<float>(0.003606014457152456f)) * y + new Vector<float>(0.02672943625500751f)) * y + new Vector<float>(0.061745651499203795f)) * y + Vector<float>.One;
+            var result = numerator / denominator;
+            return Vector.ConditionalSelect(inSecondHalf, -result, result);
+        }
 
         /// <summary>
-        /// Computes an approximation of arccos. Maximum error less than 6.8e-5.
+        /// Computes an approximation of arccos. Inputs outside of [-1, 1] are clamped. Maximum error less than 5.17e-07.
         /// </summary>
         /// <param name="x">Input value to the arccos function.</param>
-        /// <param name="acos">Result of the arccos function.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ApproximateAcos(Vector<float> x, out Vector<float> acos)
+        /// <returns>Result of the arccos function.</returns>
+        public static Vector<float> Acos(Vector<float> x)
         {
-            //Adapted from Handbook of Mathematical Functions by Milton Abramowitz and Irene A. Stegun.
-            var negate = Vector.ConditionalSelect(Vector.LessThan(x, Vector<float>.Zero), Vector<float>.One, Vector<float>.Zero);
-            x = Vector.Abs(x);
-            acos = new Vector<float>(-0.0187293f) * x + new Vector<float>(0.0742610f);
-            acos = (acos * x - new Vector<float>(0.2121144f)) * x + new Vector<float>(1.5707288f);
-            acos *= Vector.SquareRoot(Vector.Max(Vector<float>.Zero, Vector<float>.One - x));
-            acos -= new Vector<float>(2) * negate * acos;
-            acos = negate * new Vector<float>(3.14159265358979f) + acos;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Floor(in Vector<float> x, out Vector<float> result)
-        {
-            //This is far from ideal. You could probably do better- especially with platform intrinsics.
-            var intX = Vector.ConvertToInt32(x);
-            result = Vector.ConvertToSingle(Vector.ConditionalSelect(Vector.LessThan(x, Vector<float>.Zero), intX - Vector<int>.One, intX));
+            var negativeInput = Vector.LessThan(x, Vector<float>.Zero);
+            x = Vector.Min(Vector<float>.One, Vector.Abs(x));
+            //Rational approximation (scaling sqrt(1-x)) over [0, 1], use symmetry for the rest. TODO: FMA would help with precision.
+            var numerator = Vector.SquareRoot(Vector<float>.One - x) * (new Vector<float>(62.95741097600742f) + x * (new Vector<float>(69.6550664543659f) + x * (new Vector<float>(17.54512349463405f) + x * 0.6022076120669532f)));
+            var denominator = new Vector<float>(40.07993264439811f) + x * (new Vector<float>(49.81949855726789f) + x * (new Vector<float>(15.703851745284796f) + x));
+            var result = numerator / denominator;
+            return Vector.ConditionalSelect(negativeInput, new Vector<float>(Pi) - result, result);
         }
 
         /// <summary>
@@ -344,11 +371,45 @@ namespace BepuUtilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void GetSignedAngleDifference(in Vector<float> a, in Vector<float> b, out Vector<float> difference)
         {
-            var pi = new Vector<float>(Pi);
             var half = new Vector<float>(0.5f);
             var x = (b - a) * new Vector<float>(1f / TwoPi) + half;
-            Floor(x, out var flooredX);
-            difference = (x - flooredX - half) * TwoPi;
+            difference = (x - Vector.Floor(x) - half) * new Vector<float>(TwoPi);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> FastReciprocal(Vector<float> v)
+        {
+            if (Avx.IsSupported && Vector<float>.Count == 8)
+            {
+                return Avx.Reciprocal(v.AsVector256()).AsVector();
+            }
+            else if (Sse.IsSupported && Vector<float>.Count == 4)
+            {
+                return Sse.Reciprocal(v.AsVector128()).AsVector();
+            }
+            else
+            {
+                return Vector<float>.One / v;
+            }
+            //TODO: Arm!
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> FastReciprocalSquareRoot(Vector<float> v)
+        {
+            if (Avx.IsSupported && Vector<float>.Count == 8)
+            {
+                return Avx.ReciprocalSqrt(v.AsVector256()).AsVector();
+            }
+            else if (Sse.IsSupported && Vector<float>.Count == 4)
+            {
+                return Sse.ReciprocalSqrt(v.AsVector128()).AsVector();
+            }
+            else
+            {
+                return Vector<float>.One / Vector.SquareRoot(v);
+            }
+            //TODO: Arm!
         }
     }
 }

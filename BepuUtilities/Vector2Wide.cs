@@ -4,16 +4,73 @@ using System.Runtime.CompilerServices;
 
 namespace BepuUtilities
 {
+    /// <summary>
+    /// Two dimensional vector with <see cref="Vector{T}.Count"/> (with generic type argument of <see cref="float"/>) SIMD lanes.
+    /// </summary>
     public struct Vector2Wide
     {
+        /// <summary>
+        /// First component of the vector.
+        /// </summary>
         public Vector<float> X;
+        /// <summary>
+        /// Second component of the vector.
+        /// </summary>
         public Vector<float> Y;
 
+        /// <summary>
+        /// Performs a componentwise add between two vectors.
+        /// </summary>
+        /// <param name="a">First vector to add.</param>
+        /// <param name="b">Second vector to add.</param>
+        /// <param name="result">Sum of a and b.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Add(in Vector2Wide a, in Vector2Wide b, out Vector2Wide result)
         {
             result.X = a.X + b.X;
             result.Y = a.Y + b.Y;
+        }
+        /// <summary>
+        /// Performs a componentwise add between two vectors.
+        /// </summary>
+        /// <param name="a">First vector to add.</param>
+        /// <param name="b">Second vector to add.</param>
+        /// <returns>Sum of a and b.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2Wide operator +(Vector2Wide a, Vector2Wide b)
+        {
+            Vector2Wide result;
+            result.X = a.X + b.X;
+            result.Y = a.Y + b.Y;
+            return result;
+        }
+        /// <summary>
+        /// Finds the result of adding a scalar to every component of a vector.
+        /// </summary>
+        /// <param name="v">Vector to add to.</param>
+        /// <param name="s">Scalar to add to every component of the vector.</param>
+        /// <returns>Vector with components equal to the input vector added to the input scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2Wide operator +(Vector2Wide v, Vector<float> s)
+        {
+            Vector2Wide result;
+            result.X = v.X + s;
+            result.Y = v.Y + s;
+            return result;
+        }
+        /// <summary>
+        /// Finds the result of adding a scalar to every component of a vector.
+        /// </summary>
+        /// <param name="v">Vector to add to.</param>
+        /// <param name="s">Scalar to add to every component of the vector.</param>
+        /// <returns>Vector with components equal to the input vector added to the input scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2Wide operator +(Vector<float> s, Vector2Wide v)
+        {
+            Vector2Wide result;
+            result.X = v.X + s;
+            result.Y = v.Y + s;
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,7 +78,7 @@ namespace BepuUtilities
         {
             result.X = a.X - b.X;
             result.Y = a.Y - b.Y;
-        }                  
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Dot(in Vector2Wide a, in Vector2Wide b, out Vector<float> result)
@@ -34,6 +91,23 @@ namespace BepuUtilities
         {
             result.X = vector.X * scalar;
             result.Y = vector.Y * scalar;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2Wide operator *(Vector2Wide vector, Vector<float> scalar)
+        {
+            Vector2Wide result;
+            result.X = vector.X * scalar;
+            result.Y = vector.Y * scalar;
+            return result;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2Wide operator *(Vector<float> scalar, Vector2Wide vector)
+        {
+            Vector2Wide result;
+            result.X = vector.X * scalar;
+            result.Y = vector.Y * scalar;
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -142,6 +216,6 @@ namespace BepuUtilities
         {
             return $"<{X}, {Y}>";
         }
-  
+
     }
 }

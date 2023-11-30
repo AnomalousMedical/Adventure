@@ -16,7 +16,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyTwoBodyDescription<Contact2Nonconvex, Contact2NonconvexPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact2Nonconvex description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact2Nonconvex description)
         {
             NonconvexConstraintHelpers.BuildTwoBodyDescription<Contact2Nonconvex, Contact2NonconvexPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -42,9 +42,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 2;
+        public readonly int ContactCount => 2;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact2NonconvexTypeProcessor.BatchTypeId;
@@ -80,15 +80,15 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
         
-        public int ContactCount => 2;
-        public int BodyCount => 2;
+        public readonly int ContactCount => 2;
+        public readonly int BodyCount => 2;
     }
 
     public struct Contact2NonconvexAccumulatedImpulses : INonconvexContactAccumulatedImpulses<Contact2NonconvexAccumulatedImpulses>
     {
         public NonconvexAccumulatedImpulses Contact0;
         public NonconvexAccumulatedImpulses Contact1;
-        public int ContactCount => 2;
+        public readonly int ContactCount => 2;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref NonconvexAccumulatedImpulses GetImpulsesForContact(ref Contact2NonconvexAccumulatedImpulses impulses, int index)
@@ -96,34 +96,13 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref impulses.Contact0, index);
         }
     }
-
-    public unsafe struct Contact2NonconvexProjection : INonconvexTwoBodyProjection<Contact2NonconvexProjection>
-    {
-        public NonconvexTwoBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexTwoBodyProjection Contact0;
-        public ContactNonconvexTwoBodyProjection Contact1;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexTwoBodyProjection GetFirstContact(ref Contact2NonconvexProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexTwoBodyProjectionCommon GetCommonProperties(ref Contact2NonconvexProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 2;
-    }
-    
+        
     /// <summary>
     /// Handles the solve iterations of a bunch of 2-contact nonconvex two body manifold constraints.
     /// </summary>
     public class Contact2NonconvexTypeProcessor :
-        TwoBodyContactTypeProcessor<Contact2NonconvexPrestepData, Contact2NonconvexProjection, Contact2NonconvexAccumulatedImpulses,
-            ContactNonconvexTwoBodyFunctions<Contact2NonconvexPrestepData, Contact2NonconvexProjection, Contact2NonconvexAccumulatedImpulses>>
+        TwoBodyContactTypeProcessor<Contact2NonconvexPrestepData, Contact2NonconvexAccumulatedImpulses,
+            ContactNonconvexTwoBodyFunctions<Contact2NonconvexPrestepData, Contact2NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 15;
@@ -140,7 +119,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyOneBodyDescription<Contact2NonconvexOneBody, Contact2NonconvexOneBodyPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact2NonconvexOneBody description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact2NonconvexOneBody description)
         {
             NonconvexConstraintHelpers.BuildOneBodyDescription<Contact2NonconvexOneBody, Contact2NonconvexOneBodyPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -165,9 +144,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 2;
+        public readonly int ContactCount => 2;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact2NonconvexOneBodyTypeProcessor.BatchTypeId;
@@ -196,37 +175,16 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
                 
-        public int ContactCount => 2;
-        public int BodyCount => 1;
-    }
-
-    public unsafe struct Contact2NonconvexOneBodyProjection : INonconvexOneBodyProjection<Contact2NonconvexOneBodyProjection>
-    {
-        public NonconvexOneBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexOneBodyProjection Contact0;
-        public ContactNonconvexOneBodyProjection Contact1;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexOneBodyProjection GetFirstContact(ref Contact2NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexOneBodyProjectionCommon GetCommonProperties(ref Contact2NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 2;
-    }
+        public readonly int ContactCount => 2;
+        public readonly int BodyCount => 1;
+    }    
 
     /// <summary>
     /// Handles the solve iterations of a bunch of 2-contact nonconvex one body manifold constraints.
     /// </summary>
     public class Contact2NonconvexOneBodyTypeProcessor :
-        OneBodyContactTypeProcessor<Contact2NonconvexOneBodyPrestepData, Contact2NonconvexOneBodyProjection, Contact2NonconvexAccumulatedImpulses,
-            ContactNonconvexOneBodyFunctions<Contact2NonconvexOneBodyPrestepData, Contact2NonconvexOneBodyProjection, Contact2NonconvexAccumulatedImpulses>>
+        OneBodyContactTypeProcessor<Contact2NonconvexOneBodyPrestepData, Contact2NonconvexAccumulatedImpulses,
+            ContactNonconvexOneBodyFunctions<Contact2NonconvexOneBodyPrestepData, Contact2NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 8;
@@ -245,7 +203,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyTwoBodyDescription<Contact3Nonconvex, Contact3NonconvexPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact3Nonconvex description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact3Nonconvex description)
         {
             NonconvexConstraintHelpers.BuildTwoBodyDescription<Contact3Nonconvex, Contact3NonconvexPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -271,9 +229,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 3;
+        public readonly int ContactCount => 3;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact3NonconvexTypeProcessor.BatchTypeId;
@@ -310,8 +268,8 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
         
-        public int ContactCount => 3;
-        public int BodyCount => 2;
+        public readonly int ContactCount => 3;
+        public readonly int BodyCount => 2;
     }
 
     public struct Contact3NonconvexAccumulatedImpulses : INonconvexContactAccumulatedImpulses<Contact3NonconvexAccumulatedImpulses>
@@ -319,7 +277,7 @@ namespace BepuPhysics.Constraints.Contact
         public NonconvexAccumulatedImpulses Contact0;
         public NonconvexAccumulatedImpulses Contact1;
         public NonconvexAccumulatedImpulses Contact2;
-        public int ContactCount => 3;
+        public readonly int ContactCount => 3;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref NonconvexAccumulatedImpulses GetImpulsesForContact(ref Contact3NonconvexAccumulatedImpulses impulses, int index)
@@ -327,35 +285,13 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref impulses.Contact0, index);
         }
     }
-
-    public unsafe struct Contact3NonconvexProjection : INonconvexTwoBodyProjection<Contact3NonconvexProjection>
-    {
-        public NonconvexTwoBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexTwoBodyProjection Contact0;
-        public ContactNonconvexTwoBodyProjection Contact1;
-        public ContactNonconvexTwoBodyProjection Contact2;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexTwoBodyProjection GetFirstContact(ref Contact3NonconvexProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexTwoBodyProjectionCommon GetCommonProperties(ref Contact3NonconvexProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 3;
-    }
-    
+        
     /// <summary>
     /// Handles the solve iterations of a bunch of 3-contact nonconvex two body manifold constraints.
     /// </summary>
     public class Contact3NonconvexTypeProcessor :
-        TwoBodyContactTypeProcessor<Contact3NonconvexPrestepData, Contact3NonconvexProjection, Contact3NonconvexAccumulatedImpulses,
-            ContactNonconvexTwoBodyFunctions<Contact3NonconvexPrestepData, Contact3NonconvexProjection, Contact3NonconvexAccumulatedImpulses>>
+        TwoBodyContactTypeProcessor<Contact3NonconvexPrestepData, Contact3NonconvexAccumulatedImpulses,
+            ContactNonconvexTwoBodyFunctions<Contact3NonconvexPrestepData, Contact3NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 16;
@@ -373,7 +309,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyOneBodyDescription<Contact3NonconvexOneBody, Contact3NonconvexOneBodyPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact3NonconvexOneBody description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact3NonconvexOneBody description)
         {
             NonconvexConstraintHelpers.BuildOneBodyDescription<Contact3NonconvexOneBody, Contact3NonconvexOneBodyPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -398,9 +334,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 3;
+        public readonly int ContactCount => 3;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact3NonconvexOneBodyTypeProcessor.BatchTypeId;
@@ -430,38 +366,16 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
                 
-        public int ContactCount => 3;
-        public int BodyCount => 1;
-    }
-
-    public unsafe struct Contact3NonconvexOneBodyProjection : INonconvexOneBodyProjection<Contact3NonconvexOneBodyProjection>
-    {
-        public NonconvexOneBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexOneBodyProjection Contact0;
-        public ContactNonconvexOneBodyProjection Contact1;
-        public ContactNonconvexOneBodyProjection Contact2;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexOneBodyProjection GetFirstContact(ref Contact3NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexOneBodyProjectionCommon GetCommonProperties(ref Contact3NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 3;
-    }
+        public readonly int ContactCount => 3;
+        public readonly int BodyCount => 1;
+    }    
 
     /// <summary>
     /// Handles the solve iterations of a bunch of 3-contact nonconvex one body manifold constraints.
     /// </summary>
     public class Contact3NonconvexOneBodyTypeProcessor :
-        OneBodyContactTypeProcessor<Contact3NonconvexOneBodyPrestepData, Contact3NonconvexOneBodyProjection, Contact3NonconvexAccumulatedImpulses,
-            ContactNonconvexOneBodyFunctions<Contact3NonconvexOneBodyPrestepData, Contact3NonconvexOneBodyProjection, Contact3NonconvexAccumulatedImpulses>>
+        OneBodyContactTypeProcessor<Contact3NonconvexOneBodyPrestepData, Contact3NonconvexAccumulatedImpulses,
+            ContactNonconvexOneBodyFunctions<Contact3NonconvexOneBodyPrestepData, Contact3NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 9;
@@ -481,7 +395,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyTwoBodyDescription<Contact4Nonconvex, Contact4NonconvexPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact4Nonconvex description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact4Nonconvex description)
         {
             NonconvexConstraintHelpers.BuildTwoBodyDescription<Contact4Nonconvex, Contact4NonconvexPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -507,9 +421,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 4;
+        public readonly int ContactCount => 4;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact4NonconvexTypeProcessor.BatchTypeId;
@@ -547,8 +461,8 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
         
-        public int ContactCount => 4;
-        public int BodyCount => 2;
+        public readonly int ContactCount => 4;
+        public readonly int BodyCount => 2;
     }
 
     public struct Contact4NonconvexAccumulatedImpulses : INonconvexContactAccumulatedImpulses<Contact4NonconvexAccumulatedImpulses>
@@ -557,7 +471,7 @@ namespace BepuPhysics.Constraints.Contact
         public NonconvexAccumulatedImpulses Contact1;
         public NonconvexAccumulatedImpulses Contact2;
         public NonconvexAccumulatedImpulses Contact3;
-        public int ContactCount => 4;
+        public readonly int ContactCount => 4;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref NonconvexAccumulatedImpulses GetImpulsesForContact(ref Contact4NonconvexAccumulatedImpulses impulses, int index)
@@ -565,36 +479,13 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref impulses.Contact0, index);
         }
     }
-
-    public unsafe struct Contact4NonconvexProjection : INonconvexTwoBodyProjection<Contact4NonconvexProjection>
-    {
-        public NonconvexTwoBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexTwoBodyProjection Contact0;
-        public ContactNonconvexTwoBodyProjection Contact1;
-        public ContactNonconvexTwoBodyProjection Contact2;
-        public ContactNonconvexTwoBodyProjection Contact3;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexTwoBodyProjection GetFirstContact(ref Contact4NonconvexProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexTwoBodyProjectionCommon GetCommonProperties(ref Contact4NonconvexProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 4;
-    }
-    
+        
     /// <summary>
     /// Handles the solve iterations of a bunch of 4-contact nonconvex two body manifold constraints.
     /// </summary>
     public class Contact4NonconvexTypeProcessor :
-        TwoBodyContactTypeProcessor<Contact4NonconvexPrestepData, Contact4NonconvexProjection, Contact4NonconvexAccumulatedImpulses,
-            ContactNonconvexTwoBodyFunctions<Contact4NonconvexPrestepData, Contact4NonconvexProjection, Contact4NonconvexAccumulatedImpulses>>
+        TwoBodyContactTypeProcessor<Contact4NonconvexPrestepData, Contact4NonconvexAccumulatedImpulses,
+            ContactNonconvexTwoBodyFunctions<Contact4NonconvexPrestepData, Contact4NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 17;
@@ -613,7 +504,7 @@ namespace BepuPhysics.Constraints.Contact
             NonconvexConstraintHelpers.ApplyOneBodyDescription<Contact4NonconvexOneBody, Contact4NonconvexOneBodyPrestepData>(ref this, ref batch, bundleIndex, innerIndex);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact4NonconvexOneBody description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out Contact4NonconvexOneBody description)
         {
             NonconvexConstraintHelpers.BuildOneBodyDescription<Contact4NonconvexOneBody, Contact4NonconvexOneBodyPrestepData>(ref batch, bundleIndex, innerIndex, out description);
         }
@@ -638,9 +529,9 @@ namespace BepuPhysics.Constraints.Contact
             return ref description.Contact0;
         }
 
-        public int ContactCount => 4;
+        public readonly int ContactCount => 4;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Contact4NonconvexOneBodyTypeProcessor.BatchTypeId;
@@ -671,39 +562,16 @@ namespace BepuPhysics.Constraints.Contact
             return ref Unsafe.Add(ref prestep.Contact0, index);
         }
                 
-        public int ContactCount => 4;
-        public int BodyCount => 1;
-    }
-
-    public unsafe struct Contact4NonconvexOneBodyProjection : INonconvexOneBodyProjection<Contact4NonconvexOneBodyProjection>
-    {
-        public NonconvexOneBodyProjectionCommon Common;
-        //Nonprimitive fixed would be pretty convenient.
-        public ContactNonconvexOneBodyProjection Contact0;
-        public ContactNonconvexOneBodyProjection Contact1;
-        public ContactNonconvexOneBodyProjection Contact2;
-        public ContactNonconvexOneBodyProjection Contact3;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref ContactNonconvexOneBodyProjection GetFirstContact(ref Contact4NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Contact0;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref NonconvexOneBodyProjectionCommon GetCommonProperties(ref Contact4NonconvexOneBodyProjection projection)
-        {
-            return ref projection.Common;
-        }
-
-        public int ContactCount => 4;
-    }
+        public readonly int ContactCount => 4;
+        public readonly int BodyCount => 1;
+    }    
 
     /// <summary>
     /// Handles the solve iterations of a bunch of 4-contact nonconvex one body manifold constraints.
     /// </summary>
     public class Contact4NonconvexOneBodyTypeProcessor :
-        OneBodyContactTypeProcessor<Contact4NonconvexOneBodyPrestepData, Contact4NonconvexOneBodyProjection, Contact4NonconvexAccumulatedImpulses,
-            ContactNonconvexOneBodyFunctions<Contact4NonconvexOneBodyPrestepData, Contact4NonconvexOneBodyProjection, Contact4NonconvexAccumulatedImpulses>>
+        OneBodyContactTypeProcessor<Contact4NonconvexOneBodyPrestepData, Contact4NonconvexAccumulatedImpulses,
+            ContactNonconvexOneBodyFunctions<Contact4NonconvexOneBodyPrestepData, Contact4NonconvexAccumulatedImpulses>>
     {
         //Matches UpdateConstraintForManifold's manifoldTypeAsConstraintType computation.
         public const int BatchTypeId = 10;

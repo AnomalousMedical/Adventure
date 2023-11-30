@@ -26,7 +26,7 @@ namespace BepuPhysics.Constraints
         /// </summary>
         public MotorSettings Settings;
 
-        public int ConstraintTypeId
+        public readonly int ConstraintTypeId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -37,7 +37,7 @@ namespace BepuPhysics.Constraints
 
         public TypeProcessor CreateTypeProcessor() => new OneBodyLinearMotorTypeProcessor();
 
-        public void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
+        public readonly void ApplyDescription(ref TypeBatch batch, int bundleIndex, int innerIndex)
         {
             ConstraintChecker.AssertValid(Settings, nameof(OneBodyLinearMotor));
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
@@ -47,7 +47,7 @@ namespace BepuPhysics.Constraints
             MotorSettingsWide.WriteFirst(Settings, ref target.Settings);
         }
 
-        public void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out OneBodyLinearMotor description)
+        public readonly void BuildDescription(ref TypeBatch batch, int bundleIndex, int innerIndex, out OneBodyLinearMotor description)
         {
             Debug.Assert(ConstraintTypeId == batch.TypeId, "The type batch passed to the description must match the description's expected type.");
             ref var source = ref GetOffsetInstance(ref Buffer<OneBodyLinearMotorPrestepData>.Get(ref batch.PrestepData, bundleIndex), innerIndex);
@@ -64,38 +64,42 @@ namespace BepuPhysics.Constraints
         public MotorSettingsWide Settings;
     }
 
-    public struct OneBodyLinearMotorFunctions : IOneBodyConstraintFunctions<OneBodyLinearMotorPrestepData, OneBodyLinearServoProjection, Vector3Wide>
+    public struct OneBodyLinearMotorFunctions : IOneBodyConstraintFunctions<OneBodyLinearMotorPrestepData, Vector3Wide>
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Prestep(Bodies bodies, ref Vector<int> bodyReferences, int count, float dt, float inverseDt, ref BodyInertias inertia, ref OneBodyLinearMotorPrestepData prestep,
-            out OneBodyLinearServoProjection projection)
+        public void WarmStart(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, ref OneBodyLinearMotorPrestepData prestep, ref Vector3Wide accumulatedImpulses, ref BodyVelocityWide wsvA)
         {
-            //TODO: Note that this grabs a world position. That poses a problem for different position representations.
-            bodies.GatherPose(ref bodyReferences, count, out var position, out var orientation);
-            projection.Inertia = inertia;
-
-            MotorSettingsWide.ComputeSoftness(prestep.Settings, dt, out var effectiveMassCFMScale, out projection.SoftnessImpulseScale, out projection.MaximumImpulse);
-
-            OneBodyLinearServoFunctions.ComputeTransforms(prestep.LocalOffset, orientation, effectiveMassCFMScale, inertia, out projection.Offset, out projection.EffectiveMass);
-            projection.BiasVelocity = prestep.TargetVelocity;
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffset, orientationA, out var offset);
+            OneBodyLinearServoFunctions.ApplyImpulse(offset, inertiaA, ref wsvA, accumulatedImpulses);
         }
 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WarmStart(ref BodyVelocities velocityA, ref OneBodyLinearServoProjection projection, ref Vector3Wide accumulatedImpulse)
+        public void Solve(in Vector3Wide positionA, in QuaternionWide orientationA, in BodyInertiaWide inertiaA, float dt, float inverseDt, ref OneBodyLinearMotorPrestepData prestep, ref Vector3Wide accumulatedImpulses, ref BodyVelocityWide wsvA)
         {
-            OneBodyLinearServoFunctions.ApplyImpulse(ref velocityA, projection, ref accumulatedImpulse);
-        }
+            QuaternionWide.TransformWithoutOverlap(prestep.LocalOffset, orientationA, out var offset);
+            MotorSettingsWide.ComputeSoftness(prestep.Settings, dt, out var effectiveMassCFMScale, out var softnessImpulseScale, out var maximumImpulse);
 
+            //csi = projection.BiasImpulse - accumulatedImpulse * projection.SoftnessImpulseScale - (csiaLinear + csiaAngular);
+            var csv = prestep.TargetVelocity - Vector3Wide.Cross(wsvA.Angular, offset) - wsvA.Linear;
+
+            //The grabber is roughly equivalent to a ball socket joint with a nonzero goal (and only one body).
+            Symmetric3x3Wide.SkewSandwichWithoutOverlap(offset, inertiaA.InverseInertiaTensor, out var inverseEffectiveMass);
+
+            //Linear contributions are simply I * inverseMass * I, which is just boosting the diagonal.
+            inverseEffectiveMass.XX += inertiaA.InverseMass;
+            inverseEffectiveMass.YY += inertiaA.InverseMass;
+            inverseEffectiveMass.ZZ += inertiaA.InverseMass;
+            Symmetric3x3Wide.Invert(inverseEffectiveMass, out var effectiveMass);
+            Symmetric3x3Wide.TransformWithoutOverlap(csv, effectiveMass, out var csi);
+            csi = csi * effectiveMassCFMScale - accumulatedImpulses * softnessImpulseScale;
+
+            ServoSettingsWide.ClampImpulse(maximumImpulse, ref accumulatedImpulses, ref csi);
+            OneBodyLinearServoFunctions.ApplyImpulse(offset, inertiaA, ref wsvA, csi);
+        }
+        
+        public bool RequiresIncrementalSubstepUpdates => false;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Solve(ref BodyVelocities velocityA, ref OneBodyLinearServoProjection projection, ref Vector3Wide accumulatedImpulse)
-        {
-            OneBodyLinearServoFunctions.SharedSolve(ref velocityA, projection, ref accumulatedImpulse);
-        }
-
+        public void IncrementallyUpdateForSubstep(in Vector<float> dt, in BodyVelocityWide wsvA, ref OneBodyLinearMotorPrestepData prestepData) { }
     }
-
-    public class OneBodyLinearMotorTypeProcessor : OneBodyTypeProcessor<OneBodyLinearMotorPrestepData, OneBodyLinearServoProjection, Vector3Wide, OneBodyLinearMotorFunctions>
+    public class OneBodyLinearMotorTypeProcessor : OneBodyTypeProcessor<OneBodyLinearMotorPrestepData, Vector3Wide, OneBodyLinearMotorFunctions, AccessNoPosition, AccessNoPosition>
     {
         public const int BatchTypeId = 45;
     }

@@ -100,11 +100,11 @@ namespace RTBepuDemo
 
             //Drop boxes on a big static box.
             boxShape = new Box(1, 1, 1);
-            boxShape.ComputeInertia(1, out boxInertia);
+            boxInertia = boxShape.ComputeInertia(1);
 
-            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, 0, 0), new CollidableDescription(simulation.Shapes.Add(new Box(1, 1, 1)), 0.1f)));
+            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, 0, 0), simulation.Shapes.Add(new Box(1, 1, 1))));
 
-            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -6, 0), new CollidableDescription(simulation.Shapes.Add(new Box(100, 10, 100)), 0.1f)));
+            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -6, 0), simulation.Shapes.Add(new Box(100, 10, 100))));
         }
 
         private void CreateBox(Box box, BodyInertia boxInertia, System.Numerics.Vector3 position)

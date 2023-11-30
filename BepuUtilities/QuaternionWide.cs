@@ -28,7 +28,7 @@ namespace BepuUtilities
         /// <param name="broadcasted">Target quaternion to be filled with the selected data.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Rebroadcast(in QuaternionWide source, int slotIndex, out QuaternionWide broadcasted)
-        { 
+        {
             broadcasted.X = new Vector<float>(source.X[slotIndex]);
             broadcasted.Y = new Vector<float>(source.Y[slotIndex]);
             broadcasted.Z = new Vector<float>(source.Z[slotIndex]);
@@ -110,23 +110,28 @@ namespace BepuUtilities
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetLengthSquared(in QuaternionWide q, out Vector<float> lengthSquared)
+        public Vector<float> LengthSquared()
         {
-            lengthSquared = q.X * q.X + q.Y * q.Y + q.Z * q.Z + q.W * q.W;
+            return X * X + Y * Y + Z * Z + W * W;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetLength(in QuaternionWide q, out Vector<float> length)
+        public Vector<float> Length()
         {
-            length = Vector.SquareRoot(q.X * q.X + q.Y * q.Y + q.Z * q.Z + q.W * q.W);
+            return Vector.SquareRoot(X * X + Y * Y + Z * Z + W * W);
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Normalize(in QuaternionWide q, out QuaternionWide normalized)
+        public static QuaternionWide Normalize(QuaternionWide q)
         {
+            //TODO: fast path is possible with intrinsics.
             var inverseNorm = Vector<float>.One / Vector.SquareRoot(q.X * q.X + q.Y * q.Y + q.Z * q.Z + q.W * q.W);
+            QuaternionWide normalized;
             normalized.X = q.X * inverseNorm;
             normalized.Y = q.Y * inverseNorm;
             normalized.Z = q.Z * inverseNorm;
             normalized.W = q.W * inverseNorm;
+            return normalized;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,6 +141,17 @@ namespace BepuUtilities
             negated.Y = -q.Y;
             negated.Z = -q.Z;
             negated.W = -q.W;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionWide operator -(QuaternionWide q)
+        {
+            QuaternionWide negated;
+            negated.X = -q.X;
+            negated.Y = -q.Y;
+            negated.Z = -q.Z;
+            negated.W = -q.W;
+            return negated;
         }
 
         /// <summary>
@@ -167,17 +183,49 @@ namespace BepuUtilities
             q.Z = Vector.ConditionalSelect(useNormalCase, cross.Z, Vector.ConditionalSelect(xIsSmallest, v1.Y, Vector.ConditionalSelect(yIsSmaller, v1.X, Vector<float>.Zero)));
             q.W = Vector.ConditionalSelect(useNormalCase, dot + Vector<float>.One, Vector<float>.Zero);
 
-            Normalize(q, out q);
+            q = Normalize(q);
         }
 
         /// <summary>
-        /// Gets an axis and angle representation of the rotation stored in a quaternion. Angle is approximated.
+        /// Computes the quaternion rotation between two normalized vectors.
+        /// </summary>
+        /// <param name="v1">First unit-length vector.</param>
+        /// <param name="v2">Second unit-length vector.</param>
+        /// <returns>Quaternion representing the rotation from v1 to v2.</returns>
+        public static QuaternionWide GetQuaternionBetweenNormalizedVectors(Vector3Wide v1, Vector3Wide v2)
+        {
+            Vector3Wide.Dot(v1, v2, out var dot);
+            //For non-normal vectors, the multiplying the axes length squared would be necessary:
+            //float w = dot + Sqrt(v1.LengthSquared() * v2.LengthSquared());
+
+
+            //There exists an ambiguity at dot == -1. If the directions point away from each other, there are an infinite number of shortest paths.
+            //One must be chosen arbitrarily. Here, we choose one by projecting onto the plane whose normal is associated with the smallest magnitude.
+            //Since this is a SIMD operation, the special case is always executed and its result is conditionally selected.
+
+            var cross = Vector3Wide.Cross(v1, v2);
+            var useNormalCase = Vector.GreaterThan(dot, new Vector<float>(-0.999999f));
+            var absX = Vector.Abs(v1.X);
+            var absY = Vector.Abs(v1.Y);
+            var absZ = Vector.Abs(v1.Z);
+            var xIsSmallest = Vector.BitwiseAnd(Vector.LessThan(absX, absY), Vector.LessThan(absX, absZ));
+            var yIsSmaller = Vector.LessThan(absY, absZ);
+            QuaternionWide q;
+            q.X = Vector.ConditionalSelect(useNormalCase, cross.X, Vector.ConditionalSelect(xIsSmallest, Vector<float>.Zero, Vector.ConditionalSelect(yIsSmaller, -v1.Z, -v1.Y)));
+            q.Y = Vector.ConditionalSelect(useNormalCase, cross.Y, Vector.ConditionalSelect(xIsSmallest, -v1.Z, Vector.ConditionalSelect(yIsSmaller, Vector<float>.Zero, v1.X)));
+            q.Z = Vector.ConditionalSelect(useNormalCase, cross.Z, Vector.ConditionalSelect(xIsSmallest, v1.Y, Vector.ConditionalSelect(yIsSmaller, v1.X, Vector<float>.Zero)));
+            q.W = Vector.ConditionalSelect(useNormalCase, dot + Vector<float>.One, Vector<float>.Zero);
+            return Normalize(q);
+        }
+
+        /// <summary>
+        /// Gets an axis and angle representation of the rotation stored in a quaternion.
         /// </summary>
         /// <param name="q">Quaternion to extract an axis-angle representation from.</param>
         /// <param name="axis">Axis of rotation extracted from the quaternion.</param>
-        /// <param name="angle">Approximated angle of rotation extracted from the quaternion.</param>
+        /// <param name="angle">Angle of rotation extracted from the quaternion.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetApproximateAxisAngleFromQuaternion(in QuaternionWide q, out Vector3Wide axis, out Vector<float> angle)
+        public static void GetAxisAngleFromQuaternion(in QuaternionWide q, out Vector3Wide axis, out Vector<float> angle)
         {
             var shouldNegate = Vector.LessThan(q.W, Vector<float>.Zero);
             axis.X = Vector.ConditionalSelect(shouldNegate, -q.X, q.X);
@@ -191,8 +239,8 @@ namespace BepuUtilities
             axis.X = Vector.ConditionalSelect(useFallback, Vector<float>.One, axis.X);
             axis.Y = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, axis.Y);
             axis.Z = Vector.ConditionalSelect(useFallback, Vector<float>.Zero, axis.Z);
-            MathHelper.ApproximateAcos(qw, out var halfAngle);
-            angle = 2 * halfAngle;
+            var halfAngle = MathHelper.Acos(qw);
+            angle = new Vector<float>(2) * halfAngle;
         }
 
         /// <summary>
@@ -240,12 +288,83 @@ namespace BepuUtilities
         }
 
         /// <summary>
+        /// Transforms the vector using a quaternion.
+        /// </summary>
+        /// <param name="v">Vector to transform.</param>
+        /// <param name="rotation">Rotation to apply to the vector.</param>
+        /// <returns>Transformed vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3Wide Transform(Vector3Wide v, QuaternionWide rotation)
+        {
+            //This operation is an optimized-down version of v' = q * v * q^-1.
+            //The expanded form would be to treat v as an 'axis only' quaternion
+            //and perform standard quaternion multiplication.  Assuming q is normalized,
+            //q^-1 can be replaced by a conjugation.
+            var x2 = rotation.X + rotation.X;
+            var y2 = rotation.Y + rotation.Y;
+            var z2 = rotation.Z + rotation.Z;
+            var xx2 = rotation.X * x2;
+            var xy2 = rotation.X * y2;
+            var xz2 = rotation.X * z2;
+            var yy2 = rotation.Y * y2;
+            var yz2 = rotation.Y * z2;
+            var zz2 = rotation.Z * z2;
+            var wx2 = rotation.W * x2;
+            var wy2 = rotation.W * y2;
+            var wz2 = rotation.W * z2;
+            Vector3Wide result;
+            result.X = v.X * (Vector<float>.One - yy2 - zz2) + v.Y * (xy2 - wz2) + v.Z * (xz2 + wy2);
+            result.Y = v.X * (xy2 + wz2) + v.Y * (Vector<float>.One - xx2 - zz2) + v.Z * (yz2 - wx2);
+            result.Z = v.X * (xz2 - wy2) + v.Y * (yz2 + wx2) + v.Z * (Vector<float>.One - xx2 - yy2);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms the vector using a quaternion.
+        /// </summary>
+        /// <param name="v">Vector to transform.</param>
+        /// <param name="rotation">Rotation to apply to the vector.</param>
+        /// <returns>Transformed vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3Wide TransformByConjugate(Vector3Wide v, QuaternionWide rotation)
+        {
+            //This operation is an optimized-down version of v' = q * v * q^-1.
+            //The expanded form would be to treat v as an 'axis only' quaternion
+            //and perform standard quaternion multiplication.  Assuming q is normalized,
+            //q^-1 can be replaced by a conjugation.
+            var x2 = rotation.X + rotation.X;
+            var y2 = rotation.Y + rotation.Y;
+            var z2 = rotation.Z + rotation.Z;
+            var xx2 = rotation.X * x2;
+            var xy2 = rotation.X * y2;
+            var xz2 = rotation.X * z2;
+            var yy2 = rotation.Y * y2;
+            var yz2 = rotation.Y * z2;
+            var zz2 = rotation.Z * z2;
+            var nW = -rotation.W;
+            var wx2 = nW * x2;
+            var wy2 = nW * y2;
+            var wz2 = nW * z2;
+            Vector3Wide result;
+            result.X = v.X * (Vector<float>.One - yy2 - zz2) + v.Y * (xy2 - wz2) + v.Z * (xz2 + wy2);
+            result.Y = v.X * (xy2 + wz2) + v.Y * (Vector<float>.One - xx2 - zz2) + v.Z * (yz2 - wx2);
+            result.Z = v.X * (xz2 - wy2) + v.Y * (yz2 + wx2) + v.Z * (Vector<float>.One - xx2 - yy2);
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3Wide operator *(Vector3Wide v, QuaternionWide rotation)
+        {
+            return Transform(v, rotation);
+        }
+
+        /// <summary>
         /// Transforms the unit X direction using a quaternion.
         /// </summary>
         /// <param name="rotation">Rotation to apply to the vector.</param>
-        /// <param name="result">Transformed vector.</param>
+        /// <returns>Transformed vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void TransformUnitX(in QuaternionWide rotation, out Vector3Wide result)
+        public static Vector3Wide TransformUnitX(QuaternionWide rotation)
         {
             var y2 = rotation.Y + rotation.Y;
             var z2 = rotation.Z + rotation.Z;
@@ -255,18 +374,20 @@ namespace BepuUtilities
             var zz2 = rotation.Z * z2;
             var wy2 = rotation.W * y2;
             var wz2 = rotation.W * z2;
+            Vector3Wide result;
             result.X = Vector<float>.One - yy2 - zz2;
             result.Y = xy2 + wz2;
             result.Z = xz2 - wy2;
+            return result;
         }
 
         /// <summary>
         /// Transforms the unit Y vector using a quaternion.
         /// </summary>
         /// <param name="rotation">Rotation to apply to the vector.</param>
-        /// <param name="result">Transformed vector.</param>
+        /// <returns>Transformed vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void TransformUnitY(in QuaternionWide rotation, out Vector3Wide result)
+        public static Vector3Wide TransformUnitY(QuaternionWide rotation)
         {
             var x2 = rotation.X + rotation.X;
             var y2 = rotation.Y + rotation.Y;
@@ -277,18 +398,20 @@ namespace BepuUtilities
             var zz2 = rotation.Z * z2;
             var wx2 = rotation.W * x2;
             var wz2 = rotation.W * z2;
+            Vector3Wide result;
             result.X = xy2 - wz2;
             result.Y = Vector<float>.One - xx2 - zz2;
             result.Z = yz2 + wx2;
+            return result;
         }
 
         /// <summary>
         /// Transforms the unit Z vector using a quaternion.
         /// </summary>
         /// <param name="rotation">Rotation to apply to the vector.</param>
-        /// <param name="result">Transformed vector.</param>
+        /// <returns>Transformed vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void TransformUnitZ(in QuaternionWide rotation, out Vector3Wide result)
+        public static Vector3Wide TransformUnitZ(QuaternionWide rotation)
         {
             var x2 = rotation.X + rotation.X;
             var y2 = rotation.Y + rotation.Y;
@@ -299,9 +422,11 @@ namespace BepuUtilities
             var yz2 = rotation.Y * z2;
             var wx2 = rotation.W * x2;
             var wy2 = rotation.W * y2;
+            Vector3Wide result;
             result.X = xz2 + wy2;
             result.Y = yz2 - wx2;
             result.Z = Vector<float>.One - xx2 - yy2;
+            return result;
         }
 
         /// <summary>
@@ -396,6 +521,24 @@ namespace BepuUtilities
         }
 
         /// <summary>
+        /// Concatenates the transforms of two quaternions together such that the resulting quaternion, applied as an orientation to a vector v, is equivalent to
+        /// transformed = (v * a) * b.
+        /// </summary>
+        /// <param name="a">First quaternion to concatenate.</param>
+        /// <param name="b">Second quaternion to concatenate.</param>
+        /// <returns>Product of the concatenation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionWide operator *(QuaternionWide a, QuaternionWide b)
+        {
+            QuaternionWide result;
+            result.X = a.W * b.X + a.X * b.W + a.Z * b.Y - a.Y * b.Z;
+            result.Y = a.W * b.Y + a.Y * b.W + a.X * b.Z - a.Z * b.X;
+            result.Z = a.W * b.Z + a.Z * b.W + a.Y * b.X - a.X * b.Y;
+            result.W = a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z;
+            return result;
+        }
+
+        /// <summary>
         /// Computes the conjugate of the quaternion.
         /// </summary>
         /// <param name="quaternion">Quaternion to conjugate.</param>
@@ -407,6 +550,42 @@ namespace BepuUtilities
             result.Y = quaternion.Y;
             result.Z = quaternion.Z;
             result.W = -quaternion.W;
+        }
+
+        /// <summary>
+        /// Computes the conjugate of the quaternion.
+        /// </summary>
+        /// <param name="quaternion">Quaternion to conjugate.</param>
+        /// <returns>Conjugated quaternion.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionWide Conjugate(in QuaternionWide quaternion)
+        {
+            QuaternionWide result;
+            result.X = quaternion.X;
+            result.Y = quaternion.Y;
+            result.Z = quaternion.Z;
+            result.W = -quaternion.W;
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ConditionalSelect(in Vector<int> condition, in QuaternionWide left, in QuaternionWide right, out QuaternionWide result)
+        {
+            result.X = Vector.ConditionalSelect(condition, left.X, right.X);
+            result.Y = Vector.ConditionalSelect(condition, left.Y, right.Y);
+            result.Z = Vector.ConditionalSelect(condition, left.Z, right.Z);
+            result.W = Vector.ConditionalSelect(condition, left.W, right.W);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionWide ConditionalSelect(Vector<int> condition, QuaternionWide left, QuaternionWide right)
+        {
+            QuaternionWide result;
+            result.X = Vector.ConditionalSelect(condition, left.X, right.X);
+            result.Y = Vector.ConditionalSelect(condition, left.Y, right.Y);
+            result.Z = Vector.ConditionalSelect(condition, left.Z, right.Z);
+            result.W = Vector.ConditionalSelect(condition, left.W, right.W);
+            return result;
         }
 
         /// <summary>
@@ -436,6 +615,31 @@ namespace BepuUtilities
             GatherScatter.GetFirst(ref targetSlot.Y) = source.Y;
             GatherScatter.GetFirst(ref targetSlot.Z) = source.Z;
             GatherScatter.GetFirst(ref targetSlot.W) = source.W;
+        }       
+
+        /// <summary>
+        /// Writes a value into a slot of the target bundle.
+        /// </summary>
+        /// <param name="source">Source of the value to write.</param>
+        /// <param name="slotIndex">Index of the slot to write into.</param>
+        /// <param name="target">Bundle to write the value into.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteSlot(in Quaternion source, int slotIndex, ref QuaternionWide target)
+        {
+            WriteFirst(source, ref GatherScatter.GetOffsetInstance(ref target, slotIndex));
+        }
+
+        /// <summary>
+        /// Pulls one lane out of the wide representation.
+        /// </summary>
+        /// <param name="wide">Source of the lane.</param>
+        /// <param name="slotIndex">Index of the lane within the wide representation to read.</param>
+        /// <param name="narrow">Non-SIMD type to store the lane in.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ReadSlot(ref QuaternionWide wide, int slotIndex, out Quaternion narrow)
+        {
+            ref var offset = ref GatherScatter.GetOffsetInstance(ref wide, slotIndex);
+            ReadFirst(offset, out narrow);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace BepuPhysics
         /// </summary>
         /// <param name="handle">Handle of the body to refer to.</param>
         /// <param name="bodies">Collection containing the body.</param>
+        /// <remarks>This is equivalent to <see cref="Bodies.GetBodyReference"/> and <see cref="Bodies.this[BodyHandle]"/>.</remarks>
         public BodyReference(BodyHandle handle, Bodies bodies)
         {
             Handle = handle;
@@ -98,7 +99,7 @@ namespace BepuPhysics
             get
             {
                 ref var location = ref MemoryLocation;
-                return ref Bodies.Sets[location.SetIndex].Velocities[location.Index];
+                return ref Bodies.Sets[location.SetIndex].SolverStates[location.Index].Motion.Velocity;
             }
         }
 
@@ -111,7 +112,33 @@ namespace BepuPhysics
             get
             {
                 ref var location = ref MemoryLocation;
-                return ref Bodies.Sets[location.SetIndex].Poses[location.Index];
+                return ref Bodies.Sets[location.SetIndex].SolverStates[location.Index].Motion.Pose;
+            }
+        }
+
+        /// <summary>
+        /// Gets a reference to the body's motion state, including both pose and velocity.
+        /// </summary>
+        public ref MotionState MotionState
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            get
+            {
+                ref var location = ref MemoryLocation;
+                return ref Bodies.Sets[location.SetIndex].SolverStates[location.Index].Motion;
+            }
+        }
+
+        /// <summary>
+        /// Gets a reference to the body's solver-relevant state, including both pose, velocity, and inertia.
+        /// </summary>
+        public ref SolverState SolverState
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            get
+            {
+                ref var location = ref MemoryLocation;
+                return ref Bodies.Sets[location.SetIndex].SolverStates[location.Index];
             }
         }
 
@@ -137,7 +164,7 @@ namespace BepuPhysics
             get
             {
                 ref var location = ref MemoryLocation;
-                return ref Bodies.Sets[location.SetIndex].LocalInertias[location.Index];
+                return ref Bodies.Sets[location.SetIndex].SolverStates[location.Index].Inertia.Local;
             }
         }
 
@@ -168,14 +195,26 @@ namespace BepuPhysics
         }
 
         /// <summary>
+        /// <para>Gets a CollidableReference for this body. CollidableReferences uniquely identify a collidable object in a simulation by including both the dynamic/kinematic/static state of the object and its handle.</para>
+        /// <para>Despite an unfortunate naming collision, CollidableReferences are distinct from a direct reference to a body's collidable data, which you can get from the Collidable property.</para>
+        /// </summary>
+        public CollidableReference CollidableReference
+        {
+            get
+            {
+                return new CollidableReference(Kinematic ? CollidableMobility.Kinematic : CollidableMobility.Dynamic, Handle);
+            }
+        }
+
+        /// <summary>
         /// Gets whether the body is kinematic, meaning its inverse inertia and mass are all zero.
         /// </summary>
-        public bool Kinematic { get { return Bodies.IsKinematic(LocalInertia); } }
+        public unsafe bool Kinematic { get { return Bodies.IsKinematicUnsafeGCHole(ref LocalInertia); } }
 
         /// <summary>
         /// Gets whether the body has locked inertia, meaning its inverse inertia tensor is zero.
         /// </summary>
-        public bool HasLockedInertia { get { return Bodies.HasLockedInertia(LocalInertia.InverseInertiaTensor); } }
+        public unsafe bool HasLockedInertia { get { return Bodies.HasLockedInertia((Symmetric3x3*)Unsafe.AsPointer(ref LocalInertia.InverseInertiaTensor)); } }
 
         /// <summary>
         /// If the body is dynamic, turns the body kinematic by setting all inverse inertia and mass values to zero and activates it.
@@ -207,9 +246,10 @@ namespace BepuPhysics
         {
             ref var location = ref MemoryLocation;
             ref var set = ref Bodies.Sets[MemoryLocation.SetIndex];
-            ref var localInertia = ref set.LocalInertias[location.Index];
-            ref var pose = ref set.Poses[location.Index];
-            PoseIntegration.RotateInverseInertia(localInertia.InverseInertiaTensor, pose.Orientation, out inverseInertia);
+            //Note that inertia.World is ephemeral data packed into the same cache line for the benefit of the solver.
+            //It should not be assumed to contain up to date information outside of the velocity integration to pose integration interval, so this computes world inertia from scratch.
+            ref var state = ref set.SolverStates[location.Index];
+            PoseIntegration.RotateInverseInertia(state.Inertia.Local.InverseInertiaTensor, state.Motion.Pose.Orientation, out inverseInertia);
         }
 
         /// <summary>
@@ -329,10 +369,8 @@ namespace BepuPhysics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ApplyImpulse(in BodySet set, int index, in Vector3 impulse, in Vector3 impulseOffset)
         {
-            ref var localInertia = ref set.LocalInertias[index];
-            ref var pose = ref set.Poses[index];
-            ref var velocity = ref set.Velocities[index];
-            ApplyImpulse(impulse, impulseOffset, ref localInertia, ref pose, ref velocity);
+            ref var state = ref set.SolverStates[index];
+            ApplyImpulse(impulse, impulseOffset, ref state.Inertia.Local, ref state.Motion.Pose, ref state.Motion.Velocity);
         }
 
         /// <summary>
@@ -382,7 +420,8 @@ namespace BepuPhysics
         {
             ref var location = ref MemoryLocation;
             ref var set = ref Bodies.Sets[location.SetIndex];
-            ApplyLinearImpulse(impulse, set.LocalInertias[location.Index].InverseMass, ref set.Velocities[location.Index].Linear);
+            ref var state = ref set.SolverStates[location.Index];
+            ApplyLinearImpulse(impulse, state.Inertia.Local.InverseMass, ref state.Motion.Velocity.Linear);
         }
 
         /// <summary>
@@ -405,10 +444,20 @@ namespace BepuPhysics
         {
             ref var location = ref MemoryLocation;
             ref var set = ref Bodies.Sets[location.SetIndex];
-            ref var localInertia = ref set.LocalInertias[location.Index];
-            ref var pose = ref set.Poses[location.Index];
-            PoseIntegration.RotateInverseInertia(localInertia.InverseInertiaTensor, pose.Orientation, out var inverseInertia);
-            ApplyAngularImpulse(angularImpulse, inverseInertia, ref set.Velocities[location.Index].Angular);
+            ref var state = ref set.SolverStates[location.Index];
+            //Note that inertia.World is ephemeral data packed into the same cache line for the benefit of the solver.
+            //It should not be assumed to contain up to date information outside of the velocity integration to pose integration interval, so this computes world inertia from scratch.
+            PoseIntegration.RotateInverseInertia(state.Inertia.Local.InverseInertiaTensor, state.Motion.Pose.Orientation, out var inverseInertia);
+            ApplyAngularImpulse(angularImpulse, inverseInertia, ref state.Motion.Velocity.Angular);
+        }
+
+        /// <summary>
+        /// Implicitly converts a <see cref="BodyReference"/> to the <see cref="BodyHandle"/> that the body reference was created from.
+        /// </summary>
+        /// <param name="reference">Body reference to extract the handle from.</param>
+        public static implicit operator BodyHandle(BodyReference reference)
+        {
+            return reference.Handle;
         }
     }
 }

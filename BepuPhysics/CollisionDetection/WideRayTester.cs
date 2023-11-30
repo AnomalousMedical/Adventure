@@ -1,6 +1,7 @@
 ﻿using BepuPhysics.Collidables;
 using BepuPhysics.Trees;
 using BepuUtilities;
+using BepuUtilities.Memory;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -18,11 +19,15 @@ namespace BepuPhysics.CollisionDetection
             where TRaySource : IRaySource
             where TRayHitHandler : struct, IShapeRayHitHandler
         {
-            RayWide rayWide;
-            TShapeWide wide;
-            //TODO: Pointer initialization skip hack. Replace with Unsafe.SkipInit?
-            (*&wide).Broadcast(shape);
-            RigidPoses poses;
+            Unsafe.SkipInit(out RayWide rayWide);
+            Unsafe.SkipInit(out TShapeWide wide);
+            if (wide.InternalAllocationSize > 0)
+            {
+                var memory = stackalloc byte[wide.InternalAllocationSize];
+                wide.Initialize(new Buffer<byte>(memory, wide.InternalAllocationSize));
+            }
+            wide.Broadcast(shape);
+            RigidPoseWide poses;
             Vector3Wide.Broadcast(pose.Position, out poses.Position);
             QuaternionWide.Broadcast(pose.Orientation, out poses.Orientation);
             for (int i = 0; i < raySource.RayCount; i += Vector<float>.Count)
@@ -45,18 +50,14 @@ namespace BepuPhysics.CollisionDetection
                         count = Vector<float>.Count;
                     for (int j = 0; j < count; ++j)
                     {
-                        //TODO: Pointer initialization skip hack. Replace with Unsafe.SkipInit?
-                        GatherScatter.GetOffsetInstance(ref *&rayWide, j).Gather(raySource.GetRay(i + j));
+                        GatherScatter.GetOffsetInstance(ref rayWide, j).Gather(raySource.GetRay(i + j));
                     }
 
                     wide.RayTest(ref poses, ref rayWide, out var intersected, out var t, out var normal);
 
                     for (int j = 0; j < count; ++j)
                     {
-                        Vector3 scalarNormal;
-                        scalarNormal.X = normal.X[j];
-                        scalarNormal.Y = normal.Y[j];
-                        scalarNormal.Z = normal.Z[j];
+                        var scalarNormal = new Vector3(normal.X[j], normal.Y[j], normal.Z[j]);
                         if (intersected[j] < 0)
                         {
                             raySource.GetRay(i + j, out var ray, out var maximumT);
