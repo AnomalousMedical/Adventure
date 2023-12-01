@@ -611,6 +611,7 @@ namespace Adventure.WorldMap
             {
                 follower.RequestDestruction();
             }
+            followers.Clear();
 
             foreach (var follower in newFollowers)
             {

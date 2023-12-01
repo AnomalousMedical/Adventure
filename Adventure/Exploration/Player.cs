@@ -636,6 +636,7 @@ namespace Adventure
             {
                 follower.RequestDestruction();
             }
+            followers.Clear();
 
             foreach (var follower in newFollowers)
             {
