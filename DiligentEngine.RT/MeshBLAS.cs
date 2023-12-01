@@ -23,7 +23,7 @@ namespace DiligentEngine.RT
         private uint indexBlock = 0;
         private uint currentIndex = 0;
 
-        private readonly BLASDesc blasDesc = new BLASDesc(RTId.CreateId("MeshBLAS"));
+        private BLASDesc blasDesc = new BLASDesc(RTId.CreateId("MeshBLAS"));
         private readonly BLASBuilder blasBuilder;
 
         public MeshBLAS(BLASBuilder blasBuilder)
@@ -38,6 +38,11 @@ namespace DiligentEngine.RT
 
         public void Begin(uint numQuads)
         {
+            if(blasDesc == null)
+            {
+                throw new InvalidOperationException("Cannot call begin after calling end on a MeshBLAS.");
+            }
+
             var NumVertices = numQuads * 4;
             numIndices = numQuads * 6;
 
@@ -112,6 +117,7 @@ namespace DiligentEngine.RT
         public async Task End(String debugName)
         {
             instance = await blasBuilder.CreateBLAS(blasDesc);
+            blasDesc = null;
         }
     }
 }
