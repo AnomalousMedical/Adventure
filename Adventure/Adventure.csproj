@@ -1,45 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-	<ApplicationIcon>Adventure.ico</ApplicationIcon>
-    <Configurations>Debug;Release;RelMDeb</Configurations>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<PublishAot>true</PublishAot>
-	<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ApplicationIcon>Adventure.ico</ApplicationIcon>
+		<Configurations>Debug;Release;RelMDeb</Configurations>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PublishAot>true</PublishAot>
+		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+		<OptimizationPreference>Speed</OptimizationPreference>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <PublishSingleFile>false</PublishSingleFile>
-    <PublishReadyToRun>true</PublishReadyToRun>
-	<OutputType>WinExe</OutputType>
-	<SelfContained>true</SelfContained>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
+	<!-- This linking works, but the libraries have to be in the same folder as the executable not in x64. -->
+	<ItemGroup>
+		<DirectPInvoke Include="DiligentEngineWrapper" />
+		<NativeLibrary Include="..\DiligentEngineWrapper\bin\Release\x64\DiligentEngineWrapper.lib" />
+		<DirectPInvoke Include="MyGUIFontLoader" />
+		<NativeLibrary Include="..\MyGUIFontLoader\bin\Release\x64\MyGUIFontLoader.lib" />
+		<DirectPInvoke Include="OSHelper" />
+		<NativeLibrary Include="..\OSHelper\bin\Release\x64\OSHelper.lib" />
+		<DirectPInvoke Include="SoundWrapper" />
+		<NativeLibrary Include="..\SoundWrapper\bin\Release\x64\SoundWrapper.lib" />
+		<DirectPInvoke Include="Zip" />
+		<NativeLibrary Include="..\Zip\bin\Release\x64\Zip.lib" />
+		<!-- Missing Freeimage -->
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='RelMDeb'">
-    <Optimize>false</Optimize>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<PublishSingleFile>false</PublishSingleFile>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<OutputType>WinExe</OutputType>
+		<SelfContained>true</SelfContained>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='RelMDeb'">
+		<Optimize>false</Optimize>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Dependencies\FreeImage.NET\Library\FreeImageDotNet.csproj" />
-    <ProjectReference Include="..\BepuPlugin\BepuPlugin.csproj" />
-    <ProjectReference Include="..\DiligentEngine.RT\DiligentEngine.RT.csproj" />
-    <ProjectReference Include="..\DiligentEngine\DiligentEngine.csproj" />
-    <ProjectReference Include="..\DungeonGenerator\DungeonGenerator.csproj" />
-    <ProjectReference Include="..\Engine\Engine.csproj" />
-    <ProjectReference Include="..\NativeLibs64\NativeLibs64.csproj" />
-    <ProjectReference Include="..\OSPlatform.Win32\OSPlatform.Win32.csproj" />
-    <ProjectReference Include="..\OSPlatform\OSPlatform.csproj" />
-    <ProjectReference Include="..\RpgMath\RpgMath.csproj" />
-    <ProjectReference Include="..\SharpGui\SharpGui.csproj" />
-    <ProjectReference Include="..\SoundPlugin\SoundPlugin.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Dependencies\FreeImage.NET\Library\FreeImageDotNet.csproj" />
+		<ProjectReference Include="..\BepuPlugin\BepuPlugin.csproj" />
+		<ProjectReference Include="..\DiligentEngine.RT\DiligentEngine.RT.csproj" />
+		<ProjectReference Include="..\DiligentEngine\DiligentEngine.csproj" />
+		<ProjectReference Include="..\DungeonGenerator\DungeonGenerator.csproj" />
+		<ProjectReference Include="..\Engine\Engine.csproj" />
+		<ProjectReference Include="..\NativeLibs64\NativeLibs64.csproj" />
+		<ProjectReference Include="..\OSPlatform.Win32\OSPlatform.Win32.csproj" />
+		<ProjectReference Include="..\OSPlatform\OSPlatform.csproj" />
+		<ProjectReference Include="..\RpgMath\RpgMath.csproj" />
+		<ProjectReference Include="..\SharpGui\SharpGui.csproj" />
+		<ProjectReference Include="..\SoundPlugin\SoundPlugin.csproj" />
+	</ItemGroup>
 
 </Project>
