@@ -43,6 +43,7 @@ namespace Adventure
         private readonly IWorldDatabase worldDatabase;
         private readonly ILevelCalculator levelCalculator;
         private readonly BuffManager buffManager;
+        private readonly IGcService gcService;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -64,7 +65,8 @@ namespace Adventure
             Persistence persistence,
             IWorldDatabase worldDatabase,
             ILevelCalculator levelCalculator,
-            BuffManager buffManager
+            BuffManager buffManager,
+            IGcService gcService
         )
         {
             this.bepuScene = bepuScene;
@@ -79,6 +81,7 @@ namespace Adventure
             this.worldDatabase = worldDatabase;
             this.levelCalculator = levelCalculator;
             this.buffManager = buffManager;
+            this.gcService = gcService;
         }
 
         public void Dispose()
@@ -103,6 +106,7 @@ namespace Adventure
             zoneManager.StopPlayer();
             if (active)
             {
+                gcService.Collect();
                 eventManager[EventLayers.Exploration].makeFocusLayer();
                 zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
                 timeClock.DayStarted += TimeClock_DayStarted;

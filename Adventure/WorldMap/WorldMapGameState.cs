@@ -35,6 +35,7 @@ namespace Adventure.WorldMap
         private readonly IExplorationMenu explorationMenu;
         private readonly EventManager eventManager;
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
+        private readonly IGcService gcService;
         private IExplorationGameState explorationState;
         private IGameState startExplorationGameState;
         private IGameState nextState;
@@ -54,7 +55,8 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             IExplorationMenu explorationMenu,
             EventManager eventManager,
-            IBackgroundMusicPlayer backgroundMusicPlayer
+            IBackgroundMusicPlayer backgroundMusicPlayer,
+            IGcService gcService
         )
         {
             this.rtInstances = rtInstances;
@@ -69,6 +71,7 @@ namespace Adventure.WorldMap
             this.explorationMenu = explorationMenu;
             this.eventManager = eventManager;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
+            this.gcService = gcService;
         }
 
         public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
@@ -82,6 +85,7 @@ namespace Adventure.WorldMap
             persistence.Current.Player.InWorld = active;
             if (active)
             {
+                gcService.Collect();
                 eventManager[EventLayers.WorldMap].makeFocusLayer();
                 nextState = this;
                 persistence.Current.BattleTriggers.ClearData();

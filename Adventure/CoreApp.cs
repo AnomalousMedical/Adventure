@@ -114,6 +114,7 @@ namespace Adventure
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
             services.AddSingleton<IStartExplorationGameState, StartExplorationGameState>();
             services.AddSingleton<PartyMemberManager>();
+            services.AddSingleton<IGcService, GcService>();
             services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<FollowerManager>();
             services.AddScoped(typeof(Follower<>));
