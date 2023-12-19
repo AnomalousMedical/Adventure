@@ -6,7 +6,7 @@
 		<ApplicationIcon>Adventure.ico</ApplicationIcon>
 		<Configurations>Debug;Release;RelMDeb</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<PublishAot>true</PublishAot>
+		<PublishAot>false</PublishAot>
 		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
 		<OptimizationPreference>Speed</OptimizationPreference>
 	</PropertyGroup>
