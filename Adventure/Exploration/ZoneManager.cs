@@ -198,6 +198,11 @@ namespace Adventure
 
         public void ManagePlayers()
         {
+            if(currentZone == null)
+            {
+                return;
+            }
+
             for(int i = 0; i < players.Length; i++)
             {
                 var currentPlayerCharacters = party.ActiveCharacters.Where(c => c.Player == i);
