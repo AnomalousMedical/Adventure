@@ -264,6 +264,7 @@ namespace Adventure.Services
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Common", EquipmentTier.Tier1)));
+                GiveAndEquip(hero, new Treasure(ElementalStaffCreator.CreateNormal(phase0TreasureLevel, "Cracked", nameof(WeakFire), nameof(WeakIce), nameof(WeakLightning))));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -354,27 +355,8 @@ namespace Adventure.Services
                 
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
                 var bossResistance = firstBoss.Resistances.Where(i => i.Value == Resistance.Weak && i.Key > Element.MagicStart && i.Key < Element.MagicEnd);
-                var startingElementStaff = bossResistance.Any() ? bossResistance.Select(i => i.Key).First() : Element.Fire;
-                string[] spells;
-                string staffName = $"Cracked ";
-                switch (startingElementStaff)
-                {
-                    case Element.Ice:
-                        spells = new[] { nameof(WeakIce) };
-                        staffName += "Ice";
-                        break;
-                    case Element.Fire:
-                        spells = new[] { nameof(WeakFire) };
-                        staffName += "Fire";
-                        break;
-                    default:
-                        spells = new[] { nameof(WeakLightning) };
-                        staffName += "Electrical";
-                        break;
-                }
                 var phase0UniqueTreasures = new List<Treasure>
                 {
-                    new Treasure(ElementalStaffCreator.CreateNormal(phase0TreasureLevel, staffName, spells)),
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)),
                     new Treasure(PotionCreator.CreateHealthPotion(phase0TreasureLevel)),
