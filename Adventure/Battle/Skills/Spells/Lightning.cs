@@ -25,6 +25,7 @@ namespace Adventure.Battle.Skills
             MpCost = 8;
             TriggeredMpCost = 11;
             Power = 4;
+            HitGroupOnTrigger = true;
         }
     }
 
@@ -38,6 +39,7 @@ namespace Adventure.Battle.Skills
             TriggeredMpCost = 21;
             Power = 8;
             HitGroupOnTrigger = true;
+            BuffAlliesWithElement = true;
         }
     }
 
