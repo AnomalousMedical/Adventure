@@ -130,7 +130,7 @@ namespace Adventure.Battle.Skills
 
         public string Name { get; init; } = "Cure";
 
-        public long MpCost { get; init; } = 9;
+        public long MpCost { get; init; } = 17;
 
         public long Amount { get; init; } = 4;
 
@@ -145,10 +145,9 @@ namespace Adventure.Battle.Skills
     {
         public MegaCure()
         {
-            MpCost = 24;
+            MpCost = 36;
             Amount = 35;
             Name = "Mega Cure";
-            TriggerHitMultiple = true;
         }
     }
 
@@ -156,7 +155,7 @@ namespace Adventure.Battle.Skills
     {
         public UltraCure()
         {
-            MpCost = 42;
+            MpCost = 62;
             Amount = 65;
             Name = "Ultra Cure";
             TriggerHitMultiple = true;
