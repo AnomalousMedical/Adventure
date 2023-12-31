@@ -10,8 +10,8 @@ namespace Adventure.Battle.Skills
             : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Weak Lightning";
-            MpCost = 4;
-            TriggeredMpCost = 6;
+            MpCost = 8;
+            TriggeredMpCost = 12;
             Power = 2;
         }
     }
@@ -22,8 +22,8 @@ namespace Adventure.Battle.Skills
             : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Lightning";
-            MpCost = 8;
-            TriggeredMpCost = 11;
+            MpCost = 16;
+            TriggeredMpCost = 22;
             Power = 4;
             HitGroupOnTrigger = true;
         }
@@ -35,8 +35,8 @@ namespace Adventure.Battle.Skills
             : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Strong Lightning";
-            MpCost = 17;
-            TriggeredMpCost = 21;
+            MpCost = 34;
+            TriggeredMpCost = 42;
             Power = 8;
             HitGroupOnTrigger = true;
             BuffAlliesWithElement = true;
@@ -49,8 +49,8 @@ namespace Adventure.Battle.Skills
             : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
         {
             Name = "Arch Lightning";
-            MpCost = 32;
-            TriggeredMpCost = 41;
+            MpCost = 64;
+            TriggeredMpCost = 82;
             Power = 16;
             HitGroupOnTrigger = true;
             BuffAlliesWithElement = true;

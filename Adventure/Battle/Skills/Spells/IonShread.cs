@@ -17,15 +17,15 @@ namespace Adventure.Battle.Skills
         {
             if (triggered)
             {
-                return 35;
+                return 70;
             }
 
             if (triggerSpammed)
             {
-                return 150;
+                return 250;
             }
 
-            return 85;
+            return 150;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
