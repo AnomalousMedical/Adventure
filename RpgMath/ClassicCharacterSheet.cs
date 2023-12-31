@@ -129,6 +129,8 @@ namespace RpgMath
 
         public bool CanSeeEnemyInfo { get; set; }
 
+        public bool CanDoublecast { get; set; }
+
         public float BlockDamageReduction { get; set; }
 
         public void LevelUp(ILevelCalculator levelCalculator)

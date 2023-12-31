@@ -69,6 +69,8 @@ namespace RpgMath
 
         public float BlockDamageReduction { get; set; }
 
+        public bool Doublecast { get; set; }
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

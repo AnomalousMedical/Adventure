@@ -33,7 +33,42 @@ namespace Adventure.Battle.Skills
             target = battleManager.ValidateTarget(attacker, target);
 
             var applyEffects = new List<Attachment<BattleScene>>();
+            ApplyDamage(battleManager, objectResolver, attacker, target, triggerSpammed, applyEffects);
 
+            var effect = new SkillEffect();
+            IEnumerator<YieldAction> run()
+            {
+                yield return coroutine.WaitSeconds(0.5);
+                CleanupAndHandleDeath(battleManager, target, applyEffects);
+                if (attacker.Stats.CanDoublecast)
+                {
+                    target = battleManager.ValidateTarget(attacker, target);
+                    if (target != null)
+                    {
+                        applyEffects.Clear();
+                        ApplyDamage(battleManager, objectResolver, attacker, target, triggerSpammed, applyEffects);
+                        yield return coroutine.WaitSeconds(0.5);
+                        CleanupAndHandleDeath(battleManager, target, applyEffects);
+                    }
+                }
+                effect.Finished = true;
+            }
+            coroutine.Run(run());
+
+            return effect;
+        }
+
+        private static void CleanupAndHandleDeath(IBattleManager battleManager, IBattleTarget target, List<Attachment<BattleScene>> applyEffects)
+        {
+            battleManager.HandleDeath(target);
+            foreach (var effect in applyEffects)
+            {
+                effect.RequestDestruction();
+            }
+        }
+
+        private void ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
+        {
             var resistance = Resistance.Normal;
 
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
@@ -71,21 +106,6 @@ namespace Adventure.Battle.Skills
             {
                 battleManager.AddDamageNumber(target, "Miss", Color.White);
             }
-
-            var effect = new SkillEffect();
-            IEnumerator<YieldAction> run()
-            {
-                yield return coroutine.WaitSeconds(0.5);
-                battleManager.HandleDeath(target);
-                foreach (var effect in applyEffects)
-                {
-                    effect.RequestDestruction();
-                }
-                effect.Finished = true;
-            }
-            coroutine.Run(run());
-
-            return effect;
         }
 
         public string Name => "Ion Shread";

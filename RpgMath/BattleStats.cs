@@ -66,6 +66,8 @@ namespace RpgMath
 
         public float BlockDamageReduction { get; set; }
 
+        public bool CanDoublecast { get; set; }
+
         public Resistance GetResistance(Element element)
         {
             if (Resistances != null && Resistances.TryGetValue(element, out var resistance))

@@ -526,7 +526,14 @@ namespace Adventure.Battle
                 case BattleTargetType.Enemy:
                     if (!enemies.Contains(target))
                     {
-                        target = enemies[targetRandom.Next(enemies.Count)];
+                        if (enemies.Count > 0)
+                        {
+                            target = enemies[targetRandom.Next(enemies.Count)];
+                        }
+                        else
+                        {
+                            target = null;
+                        }
                     }
                     break;
                 case BattleTargetType.Player:

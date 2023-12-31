@@ -33,6 +33,7 @@ namespace RpgMath
         Dictionary<Element, Resistance> Resistances { get; }
         bool CanSeeEnemyInfo { get; }
         float BlockDamageReduction { get; }
+        bool CanDoublecast { get; }
 
         Resistance GetResistance(Element element);
     }
