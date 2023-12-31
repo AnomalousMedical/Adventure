@@ -46,6 +46,17 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(accessory);
         }
 
+        public InventoryItem CreateDoublecast()
+        {
+            var accessory = new Equipment
+            {
+                Name = "Elemental Amplifier",
+                Doublecast = true,
+            };
+
+            return CreateInventoryItem(accessory);
+        }
+
         public InventoryItem CreateItemUsage(String adjective, float itemUsageBonus)
         {
             var accessory = new Equipment

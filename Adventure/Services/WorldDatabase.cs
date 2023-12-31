@@ -581,6 +581,7 @@ namespace Adventure.Services
                 {
                     new Treasure(AccessoryCreator.CreateItemUsage(phase3Adjective, 0.5f)),
                     new Treasure(AccessoryCreator.CreateHealing(phase3Adjective, 0.3f)),
+                    new Treasure(AccessoryCreator.CreateDoublecast()),
                 };
 
                 var phase3Potions = new List<Treasure>
