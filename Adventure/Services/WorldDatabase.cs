@@ -581,7 +581,6 @@ namespace Adventure.Services
                 {
                     new Treasure(AccessoryCreator.CreateItemUsage(phase3Adjective, 0.5f)),
                     new Treasure(AccessoryCreator.CreateHealing(phase3Adjective, 0.3f)),
-                    new Treasure(AccessoryCreator.CreateDoublecast()),
                 };
 
                 var phase3Potions = new List<Treasure>
@@ -602,6 +601,7 @@ namespace Adventure.Services
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(DaggerCreator.CreateNormal(nameof(UltimateDagger), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste))),
+                    new Treasure(AccessoryCreator.CreateDoublecast()),
                     new Treasure(PotionCreator.CreateStrengthBoost(3)),
                     new Treasure(PotionCreator.CreateStrengthBoost(2)),
                     new Treasure(PotionCreator.CreateStrengthBoost(1)),
