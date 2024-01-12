@@ -149,7 +149,19 @@ namespace Adventure.Battle.Skills
                 if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, currentTarget.Stats, resistance, attacker.Stats.MagicAttackPercent))
                 {
                     var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, Power);
+                    var originalDamage = damage;
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+                    var effectScale = Vector3.ScaleIdentity;
+                    if(damage < originalDamage)
+                    {
+                        effectScale *= 0.75f;
+                    }
+                    else if(damage > originalDamage)
+                    {
+                        effectScale *= 1.25f;
+                    }
+                    //Intentionally unaltered if the same
+
                     damage = battleManager.DamageCalculator.RandomVariation(damage);
 
                     if (triggered)
@@ -178,7 +190,7 @@ namespace Adventure.Battle.Skills
                         };
                         o.LightOffset = new Vector3(0, 0, -0.1f);
                     });
-                    applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                    applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, effectScale);
                     applyEffects.Add(applyEffect);
                 }
                 else
