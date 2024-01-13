@@ -32,17 +32,27 @@ namespace Adventure.Services
         public MonsterMaker()
         {
             monsterAssets.Add(new MonsterAssetInfo(new Bat(), BiomeType.Countryside, BatSoundEffect.Instance));
+
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy, OgreNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy, WolfSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy, OrcKnightOldSoundEffect.Instance));
+
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert, SalamanderFirebrandSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance));
+
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest, ThornHunterSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest, WanderingMushroomNewSoundEffect.Instance));
+
             monsterAssets.Add(new MonsterAssetInfo(new GreatWhiteShark(), BiomeType.Beach, GreatWhiteSharkSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Beach, SkeletonSoundEffect.Instance));
+
+            monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Swamp, OgreNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp, AlligatorSoundEffect.Instance));
+
+            monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Mountain, OrcKnightOldSoundEffect.Instance));
+
+            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
         }
 
         /// <summary>
