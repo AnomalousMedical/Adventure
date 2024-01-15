@@ -35,7 +35,6 @@ namespace Adventure.Services
 
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy, OgreNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy, WolfSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Snowy, OrcKnightOldSoundEffect.Instance));
 
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert, SalamanderFirebrandSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance));
