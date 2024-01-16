@@ -28,6 +28,7 @@ namespace Adventure
         void Update();
         void CenterCamera();
         void DestroyPlayers();
+        Task<BattleTrigger> FindTrigger(int index, bool isBoss);
     }
 
     class ZoneManager : IDisposable, IZoneManager
@@ -262,6 +263,11 @@ namespace Adventure
         private void PartyMemberManager_PartyChanged()
         {
             ManagePlayers();
+        }
+
+        public Task<BattleTrigger> FindTrigger(int index, bool isBoss)
+        {
+            return currentZone.FindTrigger(index, isBoss);
         }
     }
 }

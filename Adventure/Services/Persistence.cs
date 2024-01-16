@@ -137,6 +137,12 @@ namespace Adventure.Services
             public bool InAirship { get; set; }
 
             public bool Started { get; set; }
+
+            public bool InBattle { get; set; }
+
+            public bool LastBattleIsBoss { get; set; }
+
+            public int LastBattleIndex { get; set; }
         }
 
         public class TimeData

@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Battle;
+using Adventure.Services;
 using Adventure.WorldMap;
 using DiligentEngine.RT;
 using Engine;
@@ -11,7 +12,7 @@ namespace Adventure
 {
     interface ISetupGameState : IGameState
     {
-        void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState);
+        void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState);
     }
 
     class SetupGameState : ISetupGameState
@@ -38,6 +39,7 @@ namespace Adventure
         private SharpText loading = new SharpText("Loading") { Color = Color.White };
         private IExplorationGameState explorationGameState;
         private IWorldMapGameState worldMapGameState;
+        private IBattleGameState battleGameState;
 
         public SetupGameState
         (
@@ -73,10 +75,11 @@ namespace Adventure
             this.partyMemberManager = partyMemberManager;
         }
 
-        public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState)
+        public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState)
         {
             this.explorationGameState = explorationGameState;
             this.worldMapGameState = worldMapGameState;
+            this.battleGameState = battleGameState;
         }
 
         public void SetActive(bool active)
@@ -105,6 +108,7 @@ namespace Adventure
                         this.nextState = worldMapGameState;
                         await mapLoadTask;
                         rtInstances = worldInstances;
+                        //No world battles
                     }
                     else
                     {
@@ -112,6 +116,12 @@ namespace Adventure
                         await zoneManager.Restart(lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
                         rtInstances = zoneInstances;
+                        if (persistence.Current.Player.InBattle)
+                        {
+                            var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
+                            battleGameState.SetBattleTrigger(battleTrigger);
+                            this.nextState = battleGameState;
+                        }
                     }
 
                     await rayTracingRenderer.WaitForPipelineRebuild();

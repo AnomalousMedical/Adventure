@@ -69,6 +69,7 @@ namespace Adventure
         public bool IsBoss { get; init; }
 
         public BiomeEnemy TriggerEnemy { get; set; }
+        public int Index => description.Index;
 
         public BattleTrigger(
             RTInstances<ZoneScene> rtInstances,

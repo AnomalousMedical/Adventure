@@ -214,8 +214,10 @@ namespace Adventure
         private PlotItems? plotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
+        private List<BattleTrigger> battleTriggers;
 
         private Task zoneGenerationTask;
+        private TaskCompletionSource zoneFullyLoadedTask = new TaskCompletionSource();
         private Vector3 mapUnits;
 
         private Vector3 endPointLocal;
@@ -475,7 +477,7 @@ namespace Adventure
                 var enemyRandom = new FIRandom(enemySeed);
                 var usedCorridors = new HashSet<int>();
 
-                var battleTriggers = new List<BattleTrigger>();
+                battleTriggers = new List<BattleTrigger>();
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
@@ -497,6 +499,8 @@ namespace Adventure
                         placeable.CreatePhysics();
                     }
                 }
+
+                zoneFullyLoadedTask.SetResult();
             });
         }
 
@@ -1288,6 +1292,12 @@ namespace Adventure
             {
                 floorShader.BindSbt(floorInstanceData.InstanceName, sbt, tlas, new IntPtr(ptr), (uint)sizeof(BlasInstanceData));
             }
+        }
+
+        internal async Task<BattleTrigger> FindTrigger(int index, bool isBoss)
+        {
+            await zoneFullyLoadedTask.Task;
+            return battleTriggers.Where(i => i.Index == index && i.IsBoss == isBoss).First();
         }
     }
 }

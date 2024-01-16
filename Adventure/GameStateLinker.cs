@@ -22,7 +22,7 @@ namespace Adventure
             IStartExplorationGameState startExplorationGameState
         )
         {
-            setup.Link(exploration, worldMap);
+            setup.Link(exploration, worldMap, battle);
             exploration.Link(battle, worldMap);
             battle.Link(exploration, gameOver);
             gameOver.Link(setupRespawnGameState);

@@ -28,6 +28,7 @@ namespace Adventure.Battle
         private readonly PotionCreator potionCreator;
         private readonly EventManager eventManager;
         private readonly IPersistenceWriter persistenceWriter;
+        private readonly Persistence persistence;
         private readonly object saveBlock = new object();
         private IGameState gameOverState;
         private IGameState returnState;
@@ -42,7 +43,8 @@ namespace Adventure.Battle
             Party party,
             PotionCreator potionCreator,
             EventManager eventManager,
-            IPersistenceWriter persistenceWriter
+            IPersistenceWriter persistenceWriter,
+            Persistence persistence
         )
         {
             this.battleManager = battleManager;
@@ -51,6 +53,7 @@ namespace Adventure.Battle
             this.potionCreator = potionCreator;
             this.eventManager = eventManager;
             this.persistenceWriter = persistenceWriter;
+            this.persistence = persistence;
         }
 
         public RTInstances Instances => rtInstances;
@@ -64,12 +67,18 @@ namespace Adventure.Battle
         public void SetBattleTrigger(BattleTrigger battleTrigger)
         {
             this.battleTrigger = battleTrigger;
+            if (battleTrigger != null)
+            {
+                persistence.Current.Player.LastBattleIndex = battleTrigger.Index;
+                persistence.Current.Player.LastBattleIsBoss = battleTrigger.IsBoss;
+            }
         }
 
         public void SetActive(bool active)
         {
             if (active)
             {
+                persistence.Current.Player.InBattle = true;
                 persistenceWriter.Save();
                 persistenceWriter.AddSaveBlock(saveBlock);
                 eventManager[EventLayers.Battle].makeFocusLayer();
@@ -136,6 +145,7 @@ namespace Adventure.Battle
                 case IBattleManager.Result.ReturnToExploration:
                     nextState = returnState;
                     battleTrigger?.BattleWon();
+                    persistence.Current.Player.InBattle = false;
                     saveOnExit = true;
                     break;
             }
