@@ -214,7 +214,6 @@ namespace Adventure
         private PlotItems? plotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
-        private List<BattleTrigger> battleTriggers;
 
         private Task zoneGenerationTask;
         private TaskCompletionSource zoneFullyLoadedTask = new TaskCompletionSource();
@@ -477,7 +476,7 @@ namespace Adventure
                 var enemyRandom = new FIRandom(enemySeed);
                 var usedCorridors = new HashSet<int>();
 
-                battleTriggers = new List<BattleTrigger>();
+                var battleTriggers = new List<BattleTrigger>();
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
                 PlaceKeySafety(enemyRandom, usedCorridors);
@@ -1297,7 +1296,10 @@ namespace Adventure
         internal async Task<BattleTrigger> FindTrigger(int index, bool isBoss)
         {
             await zoneFullyLoadedTask.Task;
-            return battleTriggers.Where(i => i.Index == index && i.IsBoss == isBoss).First();
+            return placeables
+                .Select(i => i as BattleTrigger)
+                .Where(i => i != null)
+                .Where(i => i.Index == index && i.IsBoss == isBoss).First();
         }
     }
 }
