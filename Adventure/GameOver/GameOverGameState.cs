@@ -32,6 +32,7 @@ namespace Adventure.GameOver
         private SharpButton restart = new SharpButton() { Text = "Restart Zone" };
         private SharpText gameOver = new SharpText("Game Over");
         private ILayoutItem layout;
+        private readonly object saveBlock = new object();
 
         public RTInstances Instances => rtInstances;
 
@@ -72,6 +73,15 @@ namespace Adventure.GameOver
                     persistenceWriter.SaveDefeated();
                     persistence.Current.Party.Undefeated = false;
                 }
+                persistence.Current.Party.GameOver = true;
+                persistenceWriter.SaveGameOver(persistence.Current.Party.GameOver);
+                persistenceWriter.AddSaveBlock(saveBlock);
+            }
+            else
+            {
+                persistenceWriter.RemoveSaveBlock(saveBlock);
+                persistence.Current.Party.GameOver = false;
+                persistenceWriter.SaveGameOver(persistence.Current.Party.GameOver);
             }
         }
 

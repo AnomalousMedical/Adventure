@@ -196,6 +196,8 @@ namespace Adventure.Services
             public bool Undefeated { get; set; } = true;
 
             public bool OldSchool { get; set; } = true;
+
+            public bool GameOver { get; set; }
         }
     }
 }

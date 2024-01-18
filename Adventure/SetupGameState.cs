@@ -1,4 +1,6 @@
 ﻿using Adventure.Battle;
+using Adventure.GameOver;
+using Adventure.Menu;
 using Adventure.Services;
 using Adventure.WorldMap;
 using DiligentEngine.RT;
@@ -12,7 +14,7 @@ namespace Adventure
 {
     interface ISetupGameState : IGameState
     {
-        void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState);
+        void Link(IExplorationMenu explorationMenu, IRootMenu rootMenu, IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState, IGameOverGameState gameOverGameState);
     }
 
     class SetupGameState : ISetupGameState
@@ -40,6 +42,9 @@ namespace Adventure
         private IExplorationGameState explorationGameState;
         private IWorldMapGameState worldMapGameState;
         private IBattleGameState battleGameState;
+        private IGameOverGameState gameOverGameState;
+        private IExplorationMenu explorationMenu;
+        private IRootMenu rootMenu;
 
         public SetupGameState
         (
@@ -75,11 +80,14 @@ namespace Adventure
             this.partyMemberManager = partyMemberManager;
         }
 
-        public void Link(IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState)
+        public void Link(IExplorationMenu explorationMenu, IRootMenu rootMenu, IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState, IGameOverGameState gameOverGameState)
         {
+            this.rootMenu = rootMenu;
+            this.explorationMenu = explorationMenu;
             this.explorationGameState = explorationGameState;
             this.worldMapGameState = worldMapGameState;
             this.battleGameState = battleGameState;
+            this.gameOverGameState = gameOverGameState;
         }
 
         public void SetActive(bool active)
@@ -118,9 +126,17 @@ namespace Adventure
                         rtInstances = zoneInstances;
                         if (persistence.Current.Player.InBattle)
                         {
-                            var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
-                            battleGameState.SetBattleTrigger(battleTrigger);
-                            this.nextState = battleGameState;
+                            if (persistence.Current.Party.GameOver)
+                            {
+                                nextState = gameOverGameState;
+                            }
+                            else
+                            {
+                                explorationMenu.RequestSubMenu(rootMenu, GamepadId.Pad1);
+                                var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
+                                battleGameState.SetBattleTrigger(battleTrigger);
+                                this.nextState = battleGameState;
+                            }
                         }
                     }
 
@@ -134,15 +150,22 @@ namespace Adventure
         {
             IGameState next = this;
 
-            var size = loading.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetCenterRect(size);
-            loading.SetRect(rect);
-
-            sharpGui.Text(loading);
-
-            if (finished)
+            if (explorationMenu.Update(explorationGameState))
             {
-                next = this.nextState;
+                //Menu updated
+            }
+            else
+            {
+                var size = loading.GetDesiredSize(sharpGui);
+                var rect = screenPositioner.GetCenterRect(size);
+                loading.SetRect(rect);
+
+                sharpGui.Text(loading);
+
+                if (finished)
+                {
+                    next = this.nextState;
+                }
             }
             return next;
         }

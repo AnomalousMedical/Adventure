@@ -17,6 +17,7 @@ namespace Adventure.Services
         void RemoveSaveBlock(object blocker);
         void Save();
         void SaveDefeated();
+        void SaveGameOver(bool isGameOver);
         void SaveNewSchool();
     }
 
@@ -64,6 +65,13 @@ namespace Adventure.Services
                 savedState.Party.Undefeated = false;
                 SaveData(savedState);
             }
+        }
+
+        public void SaveGameOver(bool isGameOver)
+        {
+            var savedState = LoadData();
+            savedState.Party.GameOver = isGameOver;
+            SaveData(savedState);
         }
 
         public void SaveNewSchool()
