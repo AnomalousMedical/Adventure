@@ -33,8 +33,10 @@ namespace Adventure
         private readonly IWorldDatabase worldDatabase;
         private readonly ITimeClock timeClock;
         private readonly PartyMemberManager partyMemberManager;
+        private readonly IShopManager shopManager;
         private IGameState nextState;
         private bool finished = false;
+        private readonly object shopBlock = new object();
 
         public RTInstances Instances => rtInstances;
 
@@ -61,7 +63,8 @@ namespace Adventure
             IPersistenceWriter persistenceWriter,
             IWorldDatabase worldDatabase,
             ITimeClock timeClock,
-            PartyMemberManager partyMemberManager
+            PartyMemberManager partyMemberManager,
+            IShopManager shopManager
         )
         {
             this.zoneManager = zoneManager;
@@ -78,6 +81,7 @@ namespace Adventure
             this.worldDatabase = worldDatabase;
             this.timeClock = timeClock;
             this.partyMemberManager = partyMemberManager;
+            this.shopManager = shopManager;
         }
 
         public void Link(IExplorationMenu explorationMenu, IRootMenu rootMenu, IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState, IGameOverGameState gameOverGameState)
@@ -94,6 +98,7 @@ namespace Adventure
         {
             if (active)
             {
+                shopManager.AddShopBlock(shopBlock);
                 finished = false;
 
                 var lastSeed = persistence.Current?.World.Seed;
@@ -143,6 +148,10 @@ namespace Adventure
                     await rayTracingRenderer.WaitForPipelineRebuild();
                     finished = true;
                 });
+            }
+            else
+            {
+                shopManager.RemoveShopBlock(shopBlock);
             }
         }
 

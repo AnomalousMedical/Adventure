@@ -44,11 +44,13 @@ namespace Adventure
         private readonly ILevelCalculator levelCalculator;
         private readonly BuffManager buffManager;
         private readonly IGcService gcService;
+        private readonly IShopManager shopManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
         private Func<Clock, bool> explorationEvent;
         private ResumeMusicToken resumeMusicToken;
+        private readonly object shopBlock = new object();
 
         public RTInstances Instances => rtInstances;
 
@@ -66,7 +68,8 @@ namespace Adventure
             IWorldDatabase worldDatabase,
             ILevelCalculator levelCalculator,
             BuffManager buffManager,
-            IGcService gcService
+            IGcService gcService,
+            IShopManager shopManager
         )
         {
             this.bepuScene = bepuScene;
@@ -82,6 +85,7 @@ namespace Adventure
             this.levelCalculator = levelCalculator;
             this.buffManager = buffManager;
             this.gcService = gcService;
+            this.shopManager = shopManager;
         }
 
         public void Dispose()
@@ -113,9 +117,11 @@ namespace Adventure
                 timeClock.NightStarted += TimeClock_NightStarted;
                 ZoneManager_ZoneChanged(null);
                 zoneManager.CenterCamera();
+                shopManager.AddShopBlock(shopBlock);
             }
             else
             {
+                shopManager.RemoveShopBlock(shopBlock);
                 zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
                 timeClock.DayStarted -= TimeClock_DayStarted;
                 timeClock.NightStarted -= TimeClock_NightStarted;

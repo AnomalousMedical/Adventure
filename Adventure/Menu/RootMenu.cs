@@ -26,6 +26,7 @@ namespace Adventure.Menu
         private readonly OptionsMenu optionsMenu;
         private readonly Persistence persistence;
         private readonly IPersistenceWriter persistenceWriter;
+        private readonly IShopManager shopManager;
         private readonly BuyMenu buyMenu;
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
@@ -47,6 +48,7 @@ namespace Adventure.Menu
             OptionsMenu optionsMenu,
             Persistence persistence,
             IPersistenceWriter persistenceWriter,
+            IShopManager shopManager,
             BuyMenu buyMenu)
         {
             this.sharpGui = sharpGui;
@@ -58,6 +60,7 @@ namespace Adventure.Menu
             this.optionsMenu = optionsMenu;
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
+            this.shopManager = shopManager;
             this.buyMenu = buyMenu;
         }
 
@@ -86,7 +89,7 @@ namespace Adventure.Menu
             var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
             infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
-            var hasShop = !explorationGameState.Active && persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop);
+            var hasShop = persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop) && shopManager.AllowShop;
 
             sharpGui.Text(timePlayed);
             if (persistence.Current.Party.Undefeated)
