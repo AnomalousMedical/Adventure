@@ -372,7 +372,8 @@ namespace Adventure
             var location = persistence.Current.Player.Position;
             if (location == null)
             {
-                if (persistence.Current.Player.Started)
+                //Game has started and first zone is complete
+                if (persistence.Current.Player.Started && persistence.Current.World.CompletedAreaLevels.ContainsKey(0))
                 {
                     SetLocation(startEnd ? endSafetyPosition : startSafetyPosition);
                 }
