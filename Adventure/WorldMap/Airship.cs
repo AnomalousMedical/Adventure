@@ -6,8 +6,6 @@ using BepuPhysics.Collidables;
 using BepuPlugin;
 using DiligentEngine;
 using DiligentEngine.RT;
-using DiligentEngine.RT.HLSL;
-using DiligentEngine.RT.Resources;
 using DiligentEngine.RT.ShaderSets;
 using DiligentEngine.RT.Sprites;
 using Engine;
@@ -195,7 +193,7 @@ namespace Adventure.WorldMap
             {
                 graphicsActive = true;
 
-                this.instanceData = new TLASInstanceData[map.Transforms.Length];
+                this.instanceData = new TLASInstanceData[1];
                 for (var i = 0; i < instanceData.Length; i++)
                 {
                     this.instanceData[i] = new TLASInstanceData()
@@ -230,7 +228,7 @@ namespace Adventure.WorldMap
 
         private void SyncGraphics()
         {
-            var numTransforms = map.Transforms.Length;
+            var numTransforms = instanceData.Length;
             for(var i = 0; i < numTransforms; ++i)
             {
                 instanceData[i].Transform = new InstanceMatrix(currentPosition + map.Transforms[i], currentOrientation, currentScale);
