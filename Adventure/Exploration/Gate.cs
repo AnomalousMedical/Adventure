@@ -117,11 +117,11 @@ namespace Adventure
             state = persistence.Current.Keys.GetData(description.Zone, description.InstanceId);
             if (state.GateOpened)
             {
-                AddGraphics();
+                RemoveGraphics();
             }
             else
             {
-                RemoveGraphics();
+                AddGraphics();
             }
         }
 
