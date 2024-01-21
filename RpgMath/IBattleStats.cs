@@ -34,6 +34,7 @@ namespace RpgMath
         bool CanSeeEnemyInfo { get; }
         float BlockDamageReduction { get; }
         bool CanDoublecast { get; }
+        bool CanCureAll { get; }
 
         Resistance GetResistance(Element element);
     }

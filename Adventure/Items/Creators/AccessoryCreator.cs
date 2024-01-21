@@ -35,12 +35,13 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(accessory);
         }
 
-        public InventoryItem CreateHealing(String adjective, float healingBonus)
+        public InventoryItem CreateHealing(String adjective, float healingBonus, bool cureAll)
         {
             var accessory = new Equipment
             {
                 Name = $"{adjective} Bangle of Restoration",
-                HealingBonus = healingBonus
+                HealingBonus = healingBonus,
+                CureAll = cureAll
             };
 
             return CreateInventoryItem(accessory);

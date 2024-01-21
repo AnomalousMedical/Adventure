@@ -417,6 +417,9 @@ namespace RpgMath
         public bool CanDoublecast => EquippedItems().Any(i => i.Doublecast);
 
         [JsonIgnore]
+        public bool CanCureAll => EquippedItems().Any(i => i.CureAll);
+
+        [JsonIgnore]
         public float BlockDamageReduction => BaseBlockDamageReduction + EquippedItems().Sum(i => i.BlockDamageReduction);
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>();

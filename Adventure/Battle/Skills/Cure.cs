@@ -54,7 +54,7 @@ namespace Adventure.Battle.Skills
 
             target = battleManager.ValidateTarget(attacker, target);
             IEnumerable<IBattleTarget> targets;
-            if (TriggerHitMultiple && triggered)
+            if (attacker.Stats.CanCureAll && triggered)
             {
                 targets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
             }
@@ -134,8 +134,6 @@ namespace Adventure.Battle.Skills
 
         public long Amount { get; init; } = 4;
 
-        public bool TriggerHitMultiple { get; set; }
-
         public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
 
         public Color CastColor => Color.FromARGB(0xff63c74c);
@@ -158,7 +156,6 @@ namespace Adventure.Battle.Skills
             MpCost = 62;
             Amount = 65;
             Name = "Ultra Cure";
-            TriggerHitMultiple = true;
         }
     }
 }

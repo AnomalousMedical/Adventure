@@ -71,6 +71,8 @@ namespace RpgMath
 
         public bool Doublecast { get; set; }
 
+        public bool CureAll { get; set; }
+
         public IEnumerable<String> Skills { get; set; }
 
         public IEnumerable<Element> AttackElements { get; set; }

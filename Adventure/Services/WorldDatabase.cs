@@ -458,7 +458,7 @@ namespace Adventure.Services
                 var phase2Accessories = new List<Treasure>()
                 {
                     new Treasure(AccessoryCreator.CreateCounterAttack()),
-                    new Treasure(AccessoryCreator.CreateHealing(phase2Adjective, 0.2f)),
+                    new Treasure(AccessoryCreator.CreateHealing(phase2Adjective, 0.25f, true)),
                 };
 
                 var phase2Potions = new List<Treasure>()
@@ -580,7 +580,6 @@ namespace Adventure.Services
                 var phase3Accessories = new List<Treasure>
                 {
                     new Treasure(AccessoryCreator.CreateItemUsage(phase3Adjective, 0.5f)),
-                    new Treasure(AccessoryCreator.CreateHealing(phase3Adjective, 0.3f)),
                 };
 
                 var phase3Potions = new List<Treasure>

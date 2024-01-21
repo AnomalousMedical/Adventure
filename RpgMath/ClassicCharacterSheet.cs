@@ -131,6 +131,8 @@ namespace RpgMath
 
         public bool CanDoublecast { get; set; }
 
+        public bool CanCureAll { get; set; }
+
         public float BlockDamageReduction { get; set; }
 
         public void LevelUp(ILevelCalculator levelCalculator)
