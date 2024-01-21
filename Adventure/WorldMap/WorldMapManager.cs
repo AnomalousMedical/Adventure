@@ -15,7 +15,6 @@ namespace Adventure.WorldMap
         bool PhysicsActive { get; }
         void MovePlayerToArea(int area);
         Task SetupWorldMap();
-        Vector3 GetPortal(int portalIndex);
         void Update(Clock clock);
         void MovePlayer(in Vector3 loc);
         void SetPlayerVisible(bool visible);
@@ -115,9 +114,7 @@ namespace Adventure.WorldMap
             {
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
                 o.Areas = worldDatabase.AreaBuilders;
-                o.PortalLocations = worldDatabase.PortalLocations;
                 o.AirshipSquare = worldDatabase.AirshipStartSquare;
-                o.AirshipPortalSquare = worldDatabase.AirshipPortalSquare;
             });
 
             await worldMapInstance.WaitForLoad();
@@ -128,11 +125,6 @@ namespace Adventure.WorldMap
         private void CreateFollowers()
         {
             player.CreateFollowers(party.ActiveCharacters.Skip(1));
-        }
-
-        public Vector3 GetPortal(int portalIndex)
-        {
-            return worldMapInstance?.GetPortalLocation(portalIndex) ?? Vector3.Zero;
         }
 
         public Vector3 GetCellCenterpoint(in IntVector2 cell) 

@@ -25,11 +25,7 @@ namespace Adventure.WorldMap
 
             public List<IAreaBuilder> Areas { get; set; }
 
-            public List<IntVector2> PortalLocations { get; set; }
-
             public IntVector2 AirshipSquare { get; set; }
-
-            public IntVector2 AirshipPortalSquare { get; set; }
 
             public float MapScale { get; set; } = 1.0f;
         }
@@ -57,7 +53,6 @@ namespace Adventure.WorldMap
         private Vector3 currentPosition = Vector3.Zero;
         private List<IWorldMapPlaceable> placeables = new List<IWorldMapPlaceable>();
         private IntVector2[] areaLocations;
-        private List<IntVector2> portalLocations = new List<IntVector2>();
         private float mapScale;
         private Vector2 mapSize;
         private Vector3[] transforms;
@@ -225,7 +220,7 @@ namespace Adventure.WorldMap
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
-                    SetupAreas(description.Areas, description.AirshipSquare, description.AirshipPortalSquare, description.PortalLocations);
+                    SetupAreas(description.Areas, description.AirshipSquare);
 
                     loadingTask.SetResult();
                 }
@@ -234,19 +229,6 @@ namespace Adventure.WorldMap
                     loadingTask.SetException(ex);
                 }
             });
-        }
-
-        /// <summary>
-        /// Get the location of the portal indicated by index. The portal will be normalized, so even if you request something outside the range you will
-        /// get that portal within the range of available portals.
-        /// </summary>
-        /// <param name="portalIndex"></param>
-        public Vector3 GetPortalLocation(int portalIndex)
-        {
-            portalIndex %= portalLocations.Count;
-            var square = portalLocations[portalIndex];
-
-            return mapMesh.PointToVector(square.x, square.y);
         }
 
         public void RequestDestruction()
@@ -420,7 +402,7 @@ namespace Adventure.WorldMap
             Console.WriteLine("--------------------------------------------------");
         }
 
-        private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare, in IntVector2 airshipPortalSquare, List<IntVector2> portalLocations)
+        private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare)
         {
             areaLocations = new IntVector2[areaBuilders.Count];
 
@@ -447,29 +429,6 @@ namespace Adventure.WorldMap
             }
 
             this.airshipStartPoint = mapMesh.PointToVector(airshipSquare.x, airshipSquare.y);
-
-            int portalIndex = 0;
-            this.portalLocations = portalLocations;
-            foreach(var square in portalLocations)
-            {
-                var loc = mapMesh.PointToVector(square.x, square.y);
-
-                var portal = objectResolver.Resolve<IslandPortal, IslandPortal.Description>(o =>
-                {
-                    o.PortalIndex = portalIndex;
-                    o.MapOffset = loc;
-                    o.Transforms = transforms;
-                    o.Translation = currentPosition + o.MapOffset;
-                    var entrance = new Assets.World.Portal();
-                    o.Sprite = entrance.CreateSprite();
-                    o.SpriteMaterial = entrance.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
-                });
-
-                placeables.Add(portal);
-
-                ++portalIndex;
-            }
 
             foreach (var area in areaBuilders)
             {
@@ -517,7 +476,7 @@ namespace Adventure.WorldMap
 
         public bool CanLand(in IntVector2 cell)
         {
-            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell) && !portalLocations.Contains(cell);
+            return map.Map[cell.x, cell.y] != csIslandMaze.EmptyCell && !areaLocations.Contains(cell);
         }
     }
 }

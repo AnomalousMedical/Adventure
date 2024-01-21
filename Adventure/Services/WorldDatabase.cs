@@ -32,10 +32,8 @@ namespace Adventure.Services
         IMonsterMaker MonsterMaker { get; }
         WorldMapData WorldMap { get; }
         List<IAreaBuilder> AreaBuilders { get; }
-        List<IntVector2> PortalLocations { get; }
         int CurrentSeed { get; }
         IntVector2 AirshipStartSquare { get; }
-        IntVector2 AirshipPortalSquare { get; }
         BookCreator BookCreator { get; }
         List<IntVector2> StorePhilipLocations { get; }
     }
@@ -50,9 +48,7 @@ namespace Adventure.Services
         private FIRandom zoneRandom;
         private readonly Persistence persistence;
         private readonly IInventoryFunctions inventoryFunctions;
-        private List<IntVector2> portalLocations;
         private IntVector2 airshipStartSquare;
-        private IntVector2 airshipPortalSquare;
 
         public IBiomeManager BiomeManager { get; }
         public SwordCreator SwordCreator { get; }
@@ -66,9 +62,7 @@ namespace Adventure.Services
         public DaggerCreator DaggerCreator { get; }
         public BookCreator BookCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
-        public List<IntVector2> PortalLocations => portalLocations;
         public IntVector2 AirshipStartSquare => airshipStartSquare;
-        public IntVector2 AirshipPortalSquare => airshipPortalSquare;
         public List<IntVector2> StorePhilipLocations { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
@@ -191,11 +185,9 @@ namespace Adventure.Services
             //Setup map
             worldMap = new WorldMapData(newSeed);
             var numIslands = 1  //Phase 0, 1
-                            + 2  //Phase 2
-                            + 3  //Phase 3
+                            + 3  //Phase 2
                             + 1  //End zone
-                            + 1  //Endless corridor
-                            + 1; //Airship
+                            ;
             worldMap.Map.RemoveExtraIslands(numIslands);
             var map = worldMap.Map;
             //TODO: need to check maps
@@ -205,27 +197,17 @@ namespace Adventure.Services
             //Setup areas
             var usedSquares = new bool[map.MapX, map.MapY];
             var usedIslands = new bool[map.NumIslands];
-            portalLocations = new List<IntVector2>(5);
 
             //Reserve the 3 largest islands
             usedIslands[map.IslandSizeOrder[0]] = true;
-            usedIslands[map.IslandSizeOrder[1]] = true;
-            usedIslands[map.IslandSizeOrder[2]] = true;
 
-            SetupAirshipIsland(placementRandom, out airshipStartSquare, out airshipPortalSquare, usedSquares, usedIslands, map);
-            areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, portalLocations, usedSquares, usedIslands, map).ToList();
-        }
-
-        private static void SetupAirshipIsland(FIRandom placementRandom, out IntVector2 airshipSquare, out IntVector2 airshipPortalSquare, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
-        {
-            //Airship Island
-            var islandIndex = map.IslandSizeOrder[map.NumIslands - 1];
+            var islandIndex = map.IslandSizeOrder[0];
             var island = map.IslandInfo[islandIndex];
             usedIslands[islandIndex] = true;
-            airshipSquare = GetUnusedSquare(usedSquares, island, placementRandom, island.Eastmost);
-            usedSquares[airshipSquare.x, airshipSquare.y] = true;
-            airshipPortalSquare = GetUnusedSquare(usedSquares, island, placementRandom, island.Westmost);
-            usedSquares[airshipPortalSquare.x, airshipPortalSquare.y] = true;
+            airshipStartSquare = GetUnusedSquare(usedSquares, island, placementRandom);
+            usedSquares[airshipStartSquare.x, airshipStartSquare.y] = true;
+
+            areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, usedSquares, usedIslands, map).ToList();
         }
 
         const int phase0TreasureLevel = 1;
@@ -317,7 +299,7 @@ namespace Adventure.Services
             treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions);
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, List<IntVector2> portalLocations, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
             var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
@@ -337,18 +319,18 @@ namespace Adventure.Services
             var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
 
             //Setup islands                      
-            var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
-            var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
-            var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
-            portalLocations.Add(firstIslandSquares[0][0]);
-            portalLocations.Add(airshipPortalSquare);
+            //var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
+            //var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
+            //var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
+            //portalLocations.Add(firstIslandSquares[0][0]);
+            //portalLocations.Add(airshipPortalSquare);
 
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
             IslandInfo thirdStorePhilipIsland;
-
             var phase1Adjective = "Common";
 
+            var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
             {
                 var startingBiome = BiomeType.Countryside;
@@ -371,7 +353,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.Biome = startingBiome;
                 areaBuilder.BossMonster = firstBoss;
-                areaBuilder.Location = firstIslandSquares[1][0];
+                areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
                 areaBuilder.Treasure = phase0UniqueTreasures;
                 areaBuilder.StartEnd = true;
                 areaBuilder.MaxMainCorridorBattles = 1;
@@ -416,7 +398,7 @@ namespace Adventure.Services
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
-                areaBuilder.Location = firstIslandSquares[1][1];
+                areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
                 areaBuilder.Treasure = RemoveRandomItems(phase1UniqueTreasures, treasureRandom, uniqueTreasure)
                     .Concat(new[]
                     {
@@ -433,7 +415,6 @@ namespace Adventure.Services
                 yield return areaBuilder;
             }
 
-            //Phase 2
             {
                 var phase2TreasureLevel = 35;
                 var phase2Adjective = "Quality";
@@ -489,7 +470,6 @@ namespace Adventure.Services
                 var stolenTreasure = phase2UniqueStolenTreasures.Count / zoneCount;
 
                 //Area 3
-                portalLocations.Add(secondIslandSquares[0][0]);
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -501,7 +481,7 @@ namespace Adventure.Services
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
-                areaBuilder.Location = secondIslandSquares[0][1];
+                areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
                 areaBuilder.Treasure =
                     new[]
                     {
@@ -521,7 +501,6 @@ namespace Adventure.Services
                 yield return areaBuilder;
 
                 //Area 4
-                portalLocations.Add(thirdIslandSquares[0][0]);
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -533,7 +512,7 @@ namespace Adventure.Services
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
                 areaBuilder.Monsters = elementalMonsters[GetElementForBiome(areaBuilder.Biome)]
                     .Where(i => i.NativeBiome == areaBuilder.Biome).ToList();
-                areaBuilder.Location = thirdIslandSquares[0][1];
+                areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
                 areaBuilder.Treasure =
                     new[]
                     {
@@ -553,7 +532,7 @@ namespace Adventure.Services
                 yield return areaBuilder;
             }
 
-            //Phase 3
+            //Phase 2
             {
                 IslandInfo island;
 

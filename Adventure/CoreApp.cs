@@ -151,8 +151,6 @@ namespace Adventure
             services.AddScoped<StorePhilip.Description>();
             services.AddScoped<WorldWater>();
             services.AddScoped<WorldWater.Description>();
-            services.AddScoped<IslandPortal>();
-            services.AddScoped<IslandPortal.Description>();
             services.AddScoped<WorldMapInstance>();
             services.AddScoped<WorldMapInstance.Description>();
             services.AddScoped<ZoneEntrance>();
