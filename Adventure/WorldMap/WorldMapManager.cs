@@ -124,7 +124,7 @@ namespace Adventure.WorldMap
 
         private void CreateFollowers()
         {
-            player.CreateFollowers(party.ActiveCharacters.Skip(1));
+            player?.CreateFollowers(party.ActiveCharacters.Skip(1));
         }
 
         public Vector3 GetCellCenterpoint(in IntVector2 cell) 

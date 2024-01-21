@@ -880,7 +880,7 @@ namespace Adventure
             var partyMemberIndex = 0;
             foreach (var partyMember in partyMembers)
             {
-                var partyMemberRoom = GetRoom();
+                var partyMemberRoom = startRoomIndex;
                 var room = mapMesh.MapBuilder.Rooms[partyMemberRoom];
                 Point point;
                 switch (partyMemberIndex) //This will only really work with 4 characters

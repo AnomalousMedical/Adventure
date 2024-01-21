@@ -68,7 +68,7 @@ namespace Adventure.Services
         public int GetLevelDelta(int currentLevel)
         {
             var delta = 5;
-            var levelBreaks = new int[] { 17, 29, 36, 44, 51, 56, 61 };
+            var levelBreaks = new int[] { 29, 36, 44, 51, 56, 61 };
 
             foreach (var levelBreak in levelBreaks)
             {
@@ -328,7 +328,7 @@ namespace Adventure.Services
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo secondStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[2]];
             IslandInfo thirdStorePhilipIsland;
-            var phase1Adjective = "Common";
+            //var phase1Adjective = "Common";
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -336,7 +336,6 @@ namespace Adventure.Services
                 var startingBiome = BiomeType.Countryside;
                 
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
-                var bossResistance = firstBoss.Resistances.Where(i => i.Value == Resistance.Weak && i.Key > Element.MagicStart && i.Key < Element.MagicEnd);
                 var phase0UniqueTreasures = new List<Treasure>
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
@@ -363,61 +362,61 @@ namespace Adventure.Services
             }
 
             //Phase 1
-            {
-                var phase1UniqueTreasures = new List<Treasure>
-                {
-                    new Treasure(SwordCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(SpearCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(MaceCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
-                    new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))),
-                    new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 0.25f, nameof(ShieldOfReflection))),
-                    new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Lightning))),
-                    new Treasure(AccessoryCreator.CreateTargetScope())
-                };
+            //{
+            //    var phase1UniqueTreasures = new List<Treasure>
+            //    {
+            //        new Treasure(SwordCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
+            //        new Treasure(SpearCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
+            //        new Treasure(MaceCreator.CreateNormal(phase1TreasureLevel, phase1Adjective)),
+            //        new Treasure(BookCreator.CreateRestoration(phase1TreasureLevel, phase1Adjective, nameof(Cure))),
+            //        new Treasure(ShieldCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, 0.25f, nameof(ShieldOfReflection))),
+            //        new Treasure(ElementalStaffCreator.CreateNormal(phase1TreasureLevel, "Scholar's", nameof(Fire), nameof(Ice), nameof(Lightning))),
+            //        new Treasure(AccessoryCreator.CreateTargetScope())
+            //    };
 
-                var phase1UniqueStolenTreasures = new List<Treasure>
-                {
-                    new Treasure(PotionCreator.CreateFerrymansBribe()),
-                    new Treasure(DaggerCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, nameof(Steal))),
-                    new Treasure(PotionCreator.CreateStrengthBoost(2)),
-                    new Treasure(PotionCreator.CreateMagicBoost(2)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
-                    new Treasure(PotionCreator.CreateLuckBoost(1))
-                };
+            //    var phase1UniqueStolenTreasures = new List<Treasure>
+            //    {
+            //        new Treasure(PotionCreator.CreateFerrymansBribe()),
+            //        new Treasure(DaggerCreator.CreateNormal(phase1TreasureLevel, phase1Adjective, nameof(Steal))),
+            //        new Treasure(PotionCreator.CreateStrengthBoost(2)),
+            //        new Treasure(PotionCreator.CreateMagicBoost(2)),
+            //        new Treasure(PotionCreator.CreateSpiritBoost(2)),
+            //        new Treasure(PotionCreator.CreateVitalityBoost(2)),
+            //        new Treasure(PotionCreator.CreateLuckBoost(1))
+            //    };
 
-                var uniqueTreasure = phase1UniqueTreasures.Count;
-                var stolenTreasure = phase1UniqueStolenTreasures.Count;
+            //    var uniqueTreasure = phase1UniqueTreasures.Count;
+            //    var stolenTreasure = phase1UniqueStolenTreasures.Count;
 
-                //Area 2
-                areaBuilder = new AreaBuilder(this, monsterInfo, area++);
-                areaBuilder.StartZone = zoneCounter.GetZoneStart();
-                areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
-                areaBuilder.Phase = 1;
-                areaBuilder.IndexInPhase = 0;
-                areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
-                areaBuilder.MaxMainCorridorBattles = 2;
-                areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
-                areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-                areaBuilder.Treasure = RemoveRandomItems(phase1UniqueTreasures, treasureRandom, uniqueTreasure)
-                    .Concat(new[]
-                    {
-                        new Treasure(PotionCreator.CreateHealthPotion(phase1TreasureLevel))
-                    });
-                areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase1UniqueStolenTreasures, treasureRandom, stolenTreasure);
-                areaBuilder.StealTreasure = new[]
-                {
-                    new Treasure(PotionCreator.CreateManaPotion(phase1TreasureLevel)),
-                    new Treasure(PotionCreator.CreateManaPotion(phase1TreasureLevel))
-                };
-                areaBuilder.PlotItem = PlotItems.PortalKey0;
-                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
-                yield return areaBuilder;
-            }
+            //    //Area 2
+            //    areaBuilder = new AreaBuilder(this, monsterInfo, area++);
+            //    areaBuilder.StartZone = zoneCounter.GetZoneStart();
+            //    areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
+            //    areaBuilder.Phase = 1;
+            //    areaBuilder.IndexInPhase = 0;
+            //    areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
+            //    areaBuilder.MaxMainCorridorBattles = 2;
+            //    areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
+            //    areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            //    areaBuilder.Treasure = RemoveRandomItems(phase1UniqueTreasures, treasureRandom, uniqueTreasure)
+            //        .Concat(new[]
+            //        {
+            //            new Treasure(PotionCreator.CreateHealthPotion(phase1TreasureLevel))
+            //        });
+            //    areaBuilder.UniqueStealTreasure = RemoveRandomItems(phase1UniqueStolenTreasures, treasureRandom, stolenTreasure);
+            //    areaBuilder.StealTreasure = new[]
+            //    {
+            //        new Treasure(PotionCreator.CreateManaPotion(phase1TreasureLevel)),
+            //        new Treasure(PotionCreator.CreateManaPotion(phase1TreasureLevel))
+            //    };
+            //    areaBuilder.PlotItem = PlotItems.PortalKey0;
+            //    FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
+            //    yield return areaBuilder;
+            //}
 
             {
                 var phase2TreasureLevel = 35;
-                var phase2Adjective = "Quality";
+                var phase2Adjective = "Common";
                 var phase2Weapons = new List<Treasure>()
                 {
                     new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSword))),
