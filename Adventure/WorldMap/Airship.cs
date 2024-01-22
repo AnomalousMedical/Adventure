@@ -32,7 +32,7 @@ namespace Adventure.WorldMap
 
         private SpriteInstance spriteInstance;
         private readonly FrameEventSprite sprite;
-        private TLASInstanceData[] instanceData;
+        private TLASInstanceData instanceData;
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly Persistence persistence;
         private readonly IBepuScene<WorldMapScene> bepuScene;
@@ -127,9 +127,14 @@ namespace Adventure.WorldMap
             eventLayer = eventManager[description.EventLayer];
             landEventLayer = eventManager[description.LandEventLayer];
 
-            this.sprite.AnimationChanged += Sprite_AnimationChanged;
+            this.instanceData = new TLASInstanceData()
+            {
+                InstanceName = RTId.CreateId("Airship"),
+                Mask = RtStructures.OPAQUE_GEOM_MASK,
+                Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale),
+            };
 
-            this.instanceData = new TLASInstanceData[0];
+            this.sprite.AnimationChanged += Sprite_AnimationChanged;
 
             coroutine.RunTask(async () =>
             {
@@ -193,18 +198,8 @@ namespace Adventure.WorldMap
             {
                 graphicsActive = true;
 
-                this.instanceData = new TLASInstanceData[1];
-                for (var i = 0; i < instanceData.Length; i++)
-                {
-                    this.instanceData[i] = new TLASInstanceData()
-                    {
-                        InstanceName = RTId.CreateId("Airship"),
-                        Mask = RtStructures.OPAQUE_GEOM_MASK,
-                        Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale),
-                    };
-                    rtInstances.AddSprite(sprite, this.instanceData[i], spriteInstance);
-                    rtInstances.AddTlasBuild(this.instanceData[i]);
-                }
+                rtInstances.AddSprite(sprite, this.instanceData, spriteInstance);
+                rtInstances.AddTlasBuild(this.instanceData);
 
                 rtInstances.AddShaderTableBinder(Bind);
             }
@@ -218,21 +213,14 @@ namespace Adventure.WorldMap
 
                 rtInstances.RemoveSprite(sprite);
 
-                foreach (var data in instanceData)
-                {
-                    rtInstances.RemoveTlasBuild(data);
-                }
+                rtInstances.RemoveTlasBuild(instanceData);
                 rtInstances.RemoveShaderTableBinder(Bind);
             }
         }
 
         private void SyncGraphics()
         {
-            var numTransforms = instanceData.Length;
-            for(var i = 0; i < numTransforms; ++i)
-            {
-                instanceData[i].Transform = new InstanceMatrix(currentPosition + map.Transforms[i], currentOrientation, currentScale);
-            }
+            instanceData.Transform = new InstanceMatrix(currentPosition + map.Transforms[0], currentOrientation, currentScale);
         }
 
         public void RequestDestruction()
@@ -242,10 +230,7 @@ namespace Adventure.WorldMap
 
         private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
-            for (var i = 0; i < instanceData.Length; i++)
-            {
-                spriteInstance.Bind(this.instanceData[i].InstanceName, sbt, tlas, sprite);
-            }
+            spriteInstance.Bind(this.instanceData.InstanceName, sbt, tlas, sprite);
         }
 
         public void CreatePhysics()
