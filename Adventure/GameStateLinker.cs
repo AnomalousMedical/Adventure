@@ -22,9 +22,11 @@ namespace Adventure
             ISetupRespawnGameState setupRespawnGameState, 
             IStartExplorationGameState startExplorationGameState,
             IExplorationMenu explorationMenu,
-            IRootMenu rootMenu
+            IRootMenu rootMenu,
+            IResetGameState resetGameState
         )
         {
+            resetGameState.Link(setup);
             setup.Link(explorationMenu, rootMenu, exploration, worldMap, battle, gameOver);
             exploration.Link(battle, worldMap);
             battle.Link(exploration, gameOver);

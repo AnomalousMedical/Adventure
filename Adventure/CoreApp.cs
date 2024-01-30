@@ -190,6 +190,7 @@ namespace Adventure
             services.AddSingleton<IWorldDatabase, WorldDatabase>();
             services.AddSingleton<IBattleManager, BattleManager>();
             services.AddSingleton<IMonsterMaker, MonsterMaker>();
+            services.AddSingleton<IResetGameState, ResetGameState>();
             services.AddSingleton<TextDialog>();
             services.AddScoped<BattleArena>();
             services.AddScoped<BattleArena.Description>();

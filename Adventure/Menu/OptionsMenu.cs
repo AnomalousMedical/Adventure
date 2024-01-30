@@ -21,8 +21,8 @@ namespace Adventure.Menu
         private readonly App app;
         private readonly PlayerMenu playerMenu;
         private readonly IGameStateRequestor gameStateRequestor;
-        private readonly ISetupGameState setupGameState;
         private readonly IPersistenceWriter persistenceWriter;
+        private readonly IResetGameState resetGameState;
         private readonly SharpButton players = new SharpButton() { Text = "Players" };
         private readonly SharpButton toggleFullscreen = new SharpButton() { Text = "Fullscreen" };
         private readonly SharpButton load = new SharpButton() { Text = "Load" };
@@ -45,8 +45,8 @@ namespace Adventure.Menu
             App app,
             PlayerMenu playerMenu,
             IGameStateRequestor gameStateRequestor,
-            ISetupGameState setupGameState,
-            IPersistenceWriter persistenceWriter
+            IPersistenceWriter persistenceWriter,
+            IResetGameState resetGameState
         )
         {
             this.scaleHelper = scaleHelper;
@@ -57,8 +57,8 @@ namespace Adventure.Menu
             this.app = app;
             this.playerMenu = playerMenu;
             this.gameStateRequestor = gameStateRequestor;
-            this.setupGameState = setupGameState;
             this.persistenceWriter = persistenceWriter;
+            this.resetGameState = resetGameState;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -77,8 +77,9 @@ namespace Adventure.Menu
                     persistenceWriter.Save();
                     options.CurrentSave = newSelection;
                     menu.RequestSubMenu(null, gamepadId);
-                    gameStateRequestor.RequestGameState(setupGameState);
+                    gameStateRequestor.RequestGameState(resetGameState);
                     saveFiles = null;
+                    menu.RequestSubMenu(null, gamepadId);
                 }
 
                 if (sharpGui.Button(back, gamepadId, navLeft: loadButtons.TopButton, navRight: loadButtons.TopButton) 
@@ -125,7 +126,8 @@ namespace Adventure.Menu
             {
                 persistenceWriter.Save();
                 options.CurrentSave = persistenceWriter.CreateSaveFileName();
-                gameStateRequestor.RequestGameState(setupGameState);
+                gameStateRequestor.RequestGameState(resetGameState);
+                menu.RequestSubMenu(null, gamepadId);
             }
 
             if (sharpGui.Button(exitGame, gamepadId, navUp: newGame.Id, navDown: back.Id))
