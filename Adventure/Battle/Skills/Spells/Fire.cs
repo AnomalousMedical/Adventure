@@ -4,18 +4,6 @@ using RpgMath;
 
 namespace Adventure.Battle.Skills
 {
-    class WeakFire : ElementalBase
-    {
-        public WeakFire()
-            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
-        {
-            Name = "Weak Fire";
-            MpCost = 8;
-            TriggeredMpCost = 12;
-            Power = 2;
-        }
-    }
-
     class Fire : ElementalBase
     {
         public Fire()
@@ -25,7 +13,6 @@ namespace Adventure.Battle.Skills
             MpCost = 16;
             TriggeredMpCost = 22;
             Power = 4;
-            HitGroupOnTrigger = true;
         }
     }
 

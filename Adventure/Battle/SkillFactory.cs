@@ -19,8 +19,6 @@ namespace Adventure.Battle
         {
             switch (name)
             {
-                case nameof(WeakFire):
-                    return new WeakFire();
                 case nameof(Fire):
                     return new Fire();
                 case nameof(StrongFire):
@@ -28,8 +26,6 @@ namespace Adventure.Battle
                 case nameof(ArchFire):
                     return new ArchFire();
 
-                case nameof(WeakIce):
-                    return new WeakIce();
                 case nameof(Ice):
                     return new Ice();
                 case nameof(StrongIce):
@@ -37,8 +33,6 @@ namespace Adventure.Battle
                 case nameof(ArchIce):
                     return new ArchIce();
 
-                case nameof(WeakLightning):
-                    return new WeakLightning();
                 case nameof(Lightning):
                     return new Lightning();
                 case nameof(StrongLightning):

@@ -4,18 +4,6 @@ using RpgMath;
 
 namespace Adventure.Battle.Skills
 {
-    class WeakLightning : ElementalBase
-    {
-        public WeakLightning()
-            : base(Element.Electricity, new ElectricEffect(), LightningSpellSoundEffect.Instance)
-        {
-            Name = "Weak Lightning";
-            MpCost = 8;
-            TriggeredMpCost = 12;
-            Power = 2;
-        }
-    }
-
     class Lightning : ElementalBase
     {
         public Lightning()
@@ -25,7 +13,6 @@ namespace Adventure.Battle.Skills
             MpCost = 16;
             TriggeredMpCost = 22;
             Power = 4;
-            HitGroupOnTrigger = true;
         }
     }
 

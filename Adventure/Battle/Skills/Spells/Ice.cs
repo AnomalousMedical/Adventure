@@ -4,18 +4,6 @@ using RpgMath;
 
 namespace Adventure.Battle.Skills
 {
-    class WeakIce : ElementalBase
-    {
-        public WeakIce()
-            : base(Element.Ice, new IceEffect(), IceSpellSoundEffect.Instance)
-        {
-            Name = "Weak Ice";
-            MpCost = 8;
-            TriggeredMpCost = 12;
-            Power = 2;
-        }
-    }
-
     class Ice : ElementalBase
     {
         public Ice()
@@ -25,7 +13,6 @@ namespace Adventure.Battle.Skills
             MpCost = 16;
             TriggeredMpCost = 22;
             Power = 4;
-            HitGroupOnTrigger = true;
         }
     }
 

@@ -14,7 +14,7 @@ namespace Adventure.Items.Creators
 
             if (level < SpellLevels.Regular)
             {
-                item.Number = 25;
+                item.Number = 45;
                 item.Name = "Mana Potion";
             }
             else if (level < SpellLevels.Big)

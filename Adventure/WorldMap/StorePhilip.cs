@@ -90,7 +90,7 @@ namespace Adventure.WorldMap
 
             MoveToPosition();
 
-            if (persistence.Current.PlotItems.Contains(PlotItems.Phase3Shop))
+            if (persistence.Current.PlotItems.Contains(PlotItems.Phase2Shop))
             {
                 coroutine.RunTask(async () =>
                 {
@@ -186,17 +186,14 @@ namespace Adventure.WorldMap
         private void Talk(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Talk);
-            if (persistence.Current.PlotItems.Contains(PlotItems.Phase3Shop))
+            if (persistence.Current.PlotItems.Contains(PlotItems.Phase2Shop))
             {
                 //Nothing actually happens here, you have the best store, but this should not appear anyway since this object won't spawn
-            }
-            else if (persistence.Current.PlotItems.Contains(PlotItems.Phase2Shop))
-            {
-                persistence.Current.PlotItems.Add(PlotItems.Phase3Shop);
             }
             else if (persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop))
             {
                 persistence.Current.PlotItems.Add(PlotItems.Phase2Shop);
+                RequestDestruction();
             }
             else
             {
@@ -210,16 +207,7 @@ namespace Adventure.WorldMap
         {
             IntVector2 targetCell;
 
-            if (persistence.Current.PlotItems.Contains(PlotItems.Phase3Shop))
-            {
-                //Go back to start position
-                targetCell = worldDatabase.StorePhilipLocations[0];
-            }
-            else if (persistence.Current.PlotItems.Contains(PlotItems.Phase2Shop))
-            {
-                targetCell = worldDatabase.StorePhilipLocations[2];
-            }
-            else if (persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop))
+            if (persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop))
             {
                 targetCell = worldDatabase.StorePhilipLocations[1];
             }
