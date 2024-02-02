@@ -805,14 +805,14 @@ namespace Adventure.Services
             {
                 var treasureLevel = 40;
                 var adjective = "Fancy Store Bought";
-                yield return new ShopEntry($"{adjective} Sword", 1500, () => SwordCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Spear", 1500, () => SpearCreator.CreateNormal(treasureLevel, adjective));
-                yield return new ShopEntry($"{adjective} Mace", 1500, () => MaceCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Sword", 350, () => SwordCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 350, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Mace", 350, () => MaceCreator.CreateNormal(treasureLevel, adjective));
             }
 
             if (plotItems.Contains(PlotItems.Phase1Shop))
             {
-                var treasureLevel = 10;
+                var treasureLevel = 15;
                 var adjective = "Store Bought";
                 yield return new ShopEntry($"{adjective} Sword", 150, () => SwordCreator.CreateNormal(treasureLevel, adjective));
                 yield return new ShopEntry($"{adjective} Spear", 150, () => SpearCreator.CreateNormal(treasureLevel, adjective));
