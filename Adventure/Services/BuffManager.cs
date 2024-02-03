@@ -23,6 +23,7 @@ namespace Adventure.Services
         {
             foreach(var member in persistence.Current.Party.Members)
             {
+                var removedBuff = false;
                 var buffs = member.CharacterSheet.Buffs;
                 for (var i = 0; i < buffs.Count;)
                 {
@@ -31,11 +32,16 @@ namespace Adventure.Services
                     if (buff.TimeRemaining <= 0)
                     {
                         buffs.RemoveAt(i);
+                        removedBuff = true;
                     }
                     else
                     {
                         ++i;
                     }
+                }
+                if (removedBuff)
+                {
+                    member.CharacterSheet.BuffRemoved();
                 }
 
                 var effects = member.CharacterSheet.Effects;

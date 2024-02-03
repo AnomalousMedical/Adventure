@@ -161,6 +161,11 @@ namespace RpgMath
             return Resistance.Normal;
         }
 
+        public void UpdateBuffs(CharacterBuff buff)
+        {
+
+        }
+
         public Dictionary<Element, Resistance> Resistances { get; } = new Dictionary<Element, Resistance>();
 
         public void Rest()

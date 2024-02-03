@@ -54,6 +54,7 @@ namespace Adventure.Battle
 
         private SharpProgressHorizontal turnProgress = new SharpProgressHorizontal();
         private SharpProgressHorizontal powerProgress = new SharpProgressHorizontal();
+        private SharpText currentBuffs = new SharpText() { Color = Color.White };
         private SharpText name = new SharpText() { Color = Color.White };
         private SharpText currentHp = new SharpText() { Color = Color.White };
         private SharpText currentMp = new SharpText() { Color = Color.White };
@@ -189,6 +190,7 @@ namespace Adventure.Battle
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             powerProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             infoRowLayout = new RowLayout(
+                new FixedWidthLayout(scaleHelper.Scaled(240), currentBuffs),
                 new FixedWidthLayout(scaleHelper.Scaled(240), name),
                 new FixedWidthLayout(scaleHelper.Scaled(165), currentHp),
                 new FixedWidthLayout(scaleHelper.Scaled(125), currentMp),
@@ -231,6 +233,7 @@ namespace Adventure.Battle
             characterSheet.OnMainHandModified += OnMainHandModified;
             characterSheet.OnOffHandModified += OnOffHandModified;
             characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
+            characterSheet.OnBuffsModified += CharacterSheet_OnBuffsModified;
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -308,6 +311,7 @@ namespace Adventure.Battle
             characterSheet.OnBodyModified -= CharacterSheet_OnBodyModified;
             characterSheet.OnMainHandModified -= OnMainHandModified;
             characterSheet.OnOffHandModified -= OnOffHandModified;
+            characterSheet.OnBuffsModified -= CharacterSheet_OnBuffsModified;
 
             eventManager.removeEvent(contextTriggerKeyboard);
             eventManager.removeEvent(contextTriggerJoystick);
@@ -342,6 +346,7 @@ namespace Adventure.Battle
                 }
             }
 
+            sharpGui.Text(currentBuffs);
             sharpGui.Text(name);
             sharpGui.Text(currentHp);
             sharpGui.Text(currentMp);
@@ -1170,6 +1175,11 @@ namespace Adventure.Battle
         private void CharacterSheet_OnBodyModified(CharacterSheet obj)
         {
             coroutine.RunTask(SwapSprites());
+        }
+
+        private void CharacterSheet_OnBuffsModified(CharacterSheet obj)
+        {
+            currentBuffs.Text = String.Join(' ', characterSheet.Buffs.Select(i => i.Name));
         }
 
         public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)

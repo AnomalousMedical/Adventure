@@ -49,8 +49,7 @@ namespace Adventure.Battle.Skills
             }
 
             var buff = CreateBuff();
-            var activeBuffs = target.Buffs;
-            UpdateBuffs(buff, activeBuffs);
+            target.UpdateBuffs(buff);
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
@@ -64,8 +63,7 @@ namespace Adventure.Battle.Skills
             target = battleManager.ValidateTarget(attacker, target);
 
             var buff = CreateBuff();
-            var activeBuffs = target.Stats.Buffs;
-            UpdateBuffs(buff, activeBuffs);
+            target.Stats.UpdateBuffs(buff);
 
             battleManager.AddDamageNumber(target, DamageNumberText, Color.White);
 
@@ -98,23 +96,6 @@ namespace Adventure.Battle.Skills
             return new SkillEffect(true);
         }
 
-        public static void UpdateBuffs(CharacterBuff buff, List<CharacterBuff> activeBuffs)
-        {
-            var count = activeBuffs.Count;
-            for (var i = 0; i < count; i++)
-            {
-                var activeBuff = activeBuffs[i];
-                if (activeBuff.BuffTypeId == buff.BuffTypeId)
-                {
-                    activeBuffs[i] = buff;
-                    return;
-                }
-            }
-
-            //If nothing was added above, add the new buff
-            activeBuffs.Add(buff);
-        }
-
         public abstract CharacterBuff CreateBuff();
 
         public abstract String DamageNumberText { get; }
@@ -134,6 +115,7 @@ namespace Adventure.Battle.Skills
         {
             return new CharacterBuff()
             {
+                Name = Name,
                 Strength = Amount,
                 Vitality = Amount,
                 TimeRemaining = Duration,
@@ -174,6 +156,7 @@ namespace Adventure.Battle.Skills
         {
             return new CharacterBuff()
             {
+                Name = Name,
                 Magic = Amount,
                 Spirit = Amount,
                 TimeRemaining = Duration,
@@ -221,6 +204,7 @@ namespace Adventure.Battle.Skills
         {
             return new CharacterBuff()
             {
+                Name = Name,
                 Dexterity = Amount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id,

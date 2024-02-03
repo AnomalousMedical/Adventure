@@ -426,6 +426,30 @@ namespace RpgMath
 
         public List<CharacterEffect> Effects { get; set; } = new List<CharacterEffect>();
 
+        public event Action<CharacterSheet> OnBuffsModified;
+        public void UpdateBuffs(CharacterBuff buff)
+        {
+            var count = Buffs.Count;
+            for (var i = 0; i < count; i++)
+            {
+                var activeBuff = Buffs[i];
+                if (activeBuff.BuffTypeId == buff.BuffTypeId)
+                {
+                    Buffs[i] = buff;
+                    return;
+                }
+            }
+
+            //If nothing was added above, add the new buff
+            Buffs.Add(buff);
+            OnBuffsModified?.Invoke(this);
+        }
+
+        public void BuffRemoved()
+        {
+            OnBuffsModified?.Invoke(this);
+        }
+
         [JsonIgnore]
         public IEnumerable<String> Skills
         {
@@ -499,6 +523,7 @@ namespace RpgMath
             this.CurrentHp = Hp;
             this.CurrentMp = Mp;
             this.Buffs.Clear();
+            OnBuffsModified?.Invoke(this);
         }
     }
 }

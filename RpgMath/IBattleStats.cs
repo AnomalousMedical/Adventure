@@ -35,7 +35,7 @@ namespace RpgMath
         float BlockDamageReduction { get; }
         bool CanDoublecast { get; }
         bool CanCureAll { get; }
-
         Resistance GetResistance(Element element);
+        void UpdateBuffs(CharacterBuff buff);
     }
 }

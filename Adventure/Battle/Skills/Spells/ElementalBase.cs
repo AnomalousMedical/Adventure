@@ -69,12 +69,13 @@ namespace Adventure.Battle.Skills
 
                     var buff = new CharacterBuff()
                     {
+                        Name = Name,
                         AttackElements = new[] { element },
                         TimeRemaining = 2 * 60 * Clock.SecondsToMicro,
                         BuffTypeId = BuffTypeId,
                         QueueTurnsFront = true
                     };
-                    BuffSpell.UpdateBuffs(buff, currentTarget.Stats.Buffs);
+                    target.Stats.UpdateBuffs(buff);
                 }
             }
             else

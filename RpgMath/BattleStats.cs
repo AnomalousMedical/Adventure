@@ -78,5 +78,10 @@ namespace RpgMath
             }
             return Resistance.Normal;
         }
+
+        public void UpdateBuffs(CharacterBuff buff)
+        {
+            //Not hooked up
+        }
     }
 }
