@@ -192,9 +192,12 @@ namespace Adventure
 
         public void ResetPlaceables()
         {
-            currentZone.ResetPlaceables();
-            currentZone.DestroyPhysics();
-            currentZone.SetupPhysics();
+            if (currentZone != null)
+            {
+                currentZone.ResetPlaceables();
+                currentZone.DestroyPhysics();
+                currentZone.SetupPhysics();
+            }
         }
 
         public void ManagePlayers()

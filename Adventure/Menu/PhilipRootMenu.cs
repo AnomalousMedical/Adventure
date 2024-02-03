@@ -56,7 +56,7 @@ namespace Adventure.Menu
 
             if (sharpGui.Button(rest, gamepad, navUp: buy.Id, navDown: goodbye.Id))
             {
-                restManager.Rest(explorationGameState);
+                restManager.Rest();
             }
 
             if (sharpGui.Button(goodbye, gamepad, navUp: rest.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed(gamepad))

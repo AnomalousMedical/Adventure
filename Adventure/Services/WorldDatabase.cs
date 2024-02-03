@@ -36,6 +36,7 @@ namespace Adventure.Services
         IntVector2 AirshipStartSquare { get; }
         BookCreator BookCreator { get; }
         List<IntVector2> StorePhilipLocations { get; }
+        IntVector2 InkeeperPosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -64,6 +65,7 @@ namespace Adventure.Services
         public IMonsterMaker MonsterMaker { get; }
         public IntVector2 AirshipStartSquare => airshipStartSquare;
         public List<IntVector2> StorePhilipLocations { get; private set; }
+        public IntVector2 InkeeperPosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -327,7 +329,6 @@ namespace Adventure.Services
 
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo thirdStorePhilipIsland;
-            //var phase1Adjective = "Common";
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -702,6 +703,7 @@ namespace Adventure.Services
 
             StorePhilipLocations.Add(GetUnusedSquare(usedSquares, firstStorePhilipIsland, placementRandom));
             StorePhilipLocations.Add(GetUnusedSquare(usedSquares, thirdStorePhilipIsland, placementRandom));
+            InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
         }
 
         /// <summary>

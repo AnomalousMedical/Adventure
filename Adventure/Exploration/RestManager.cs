@@ -1,10 +1,5 @@
 ﻿using Adventure.Services;
 using Engine.Platform;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure
 {
@@ -13,6 +8,8 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly ITimeClock timeClock;
         private readonly IZoneManager zoneManager;
+        private long? endTime = null;
+        private bool active = false;
 
         public RestManager
         (
@@ -26,35 +23,38 @@ namespace Adventure
             this.zoneManager = zoneManager;
         }
 
-        public void Rest(IExplorationGameState explorationGameState)
+        public void Rest()
         {
             persistence.Current.BattleTriggers.ClearData();
             timeClock.SetTimeRatio(100);
+            active = true;
+            endTime = null;
+        }
 
-            long? endTime = null;
-
-            explorationGameState.SetExplorationEvent(c =>
+        public void Update(Clock clock)
+        {
+            if (!active)
             {
-                if (endTime == null)
+                return;
+            }
+
+            if (endTime == null)
+            {
+                endTime = clock.CurrentTimeMicro + (long)(Clock.SecondsToMicro * 1.3f);
+            }
+
+            if (clock.CurrentTimeMicro > endTime)
+            {
+                zoneManager.ResetPlaceables();
+
+                foreach (var member in persistence.Current.Party.Members)
                 {
-                    endTime = c.CurrentTimeMicro + (long)(Clock.SecondsToMicro * 1.3f);
+                    member.CharacterSheet.Rest();
                 }
 
-                if (c.CurrentTimeMicro > endTime)
-                {
-                    zoneManager.ResetPlaceables();
-
-                    foreach (var member in persistence.Current.Party.Members)
-                    {
-                        member.CharacterSheet.Rest();
-                    }
-
-                    timeClock.ResetTimeFactor();
-                    return false;
-                }
-
-                return true;
-            });
+                timeClock.ResetTimeFactor();
+                active = false;
+            }
         }
     }
 }

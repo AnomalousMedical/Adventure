@@ -36,6 +36,8 @@ namespace Adventure.WorldMap
         private readonly EventManager eventManager;
         private readonly IBackgroundMusicPlayer backgroundMusicPlayer;
         private readonly IGcService gcService;
+        private readonly RestManager restManager;
+        private readonly BuffManager buffManager;
         private IExplorationGameState explorationState;
         private IGameState startExplorationGameState;
         private IGameState nextState;
@@ -56,7 +58,9 @@ namespace Adventure.WorldMap
             IExplorationMenu explorationMenu,
             EventManager eventManager,
             IBackgroundMusicPlayer backgroundMusicPlayer,
-            IGcService gcService
+            IGcService gcService,
+            RestManager restManager,
+            BuffManager buffManager
         )
         {
             this.rtInstances = rtInstances;
@@ -72,6 +76,8 @@ namespace Adventure.WorldMap
             this.eventManager = eventManager;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
             this.gcService = gcService;
+            this.restManager = restManager;
+            this.buffManager = buffManager;
         }
 
         public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
@@ -112,6 +118,8 @@ namespace Adventure.WorldMap
         public IGameState Update(Clock clock)
         {
             flyCameraManager.Update(clock);
+            buffManager.Update(clock);
+            restManager.Update(clock);
 
             if (explorationMenu.Update(explorationState))
             {

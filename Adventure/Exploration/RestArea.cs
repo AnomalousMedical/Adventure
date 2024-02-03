@@ -179,7 +179,7 @@ namespace Adventure
         private void Rest(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Rest);
-            restManager.Rest(explorationGameState);
+            restManager.Rest();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

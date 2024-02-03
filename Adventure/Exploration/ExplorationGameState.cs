@@ -24,7 +24,6 @@ namespace Adventure
         /// </summary>
         /// <param name="battleTrigger"></param>
         void RequestBattle(BattleTrigger battleTrigger = null);
-        void SetExplorationEvent(Func<Clock, bool> explorationEvent);
         void RequestWorldMap();
         void LevelUpWorld();
     }
@@ -45,10 +44,10 @@ namespace Adventure
         private readonly BuffManager buffManager;
         private readonly IGcService gcService;
         private readonly IShopManager shopManager;
+        private readonly RestManager restManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
-        private Func<Clock, bool> explorationEvent;
         private ResumeMusicToken resumeMusicToken;
         private readonly object shopBlock = new object();
 
@@ -69,7 +68,8 @@ namespace Adventure
             ILevelCalculator levelCalculator,
             BuffManager buffManager,
             IGcService gcService,
-            IShopManager shopManager
+            IShopManager shopManager,
+            RestManager restManager
         )
         {
             this.bepuScene = bepuScene;
@@ -86,6 +86,7 @@ namespace Adventure
             this.buffManager = buffManager;
             this.gcService = gcService;
             this.shopManager = shopManager;
+            this.restManager = restManager;
         }
 
         public void Dispose()
@@ -148,24 +149,13 @@ namespace Adventure
             nextState = worldMapState;
         }
 
-        public void SetExplorationEvent(Func<Clock, bool> explorationEvent)
-        {
-            this.explorationEvent = explorationEvent;
-        }
-
         public IGameState Update(Clock clock)
         {
             nextState = this;
             buffManager.Update(clock);
+            restManager.Update(clock);
 
-            if (explorationEvent != null)
-            {
-                if (!explorationEvent.Invoke(clock))
-                {
-                    explorationEvent = null;
-                }
-            }
-            else if (explorationMenu.Update(this))
+            if (explorationMenu.Update(this))
             {
                 //If menu did something
             }
