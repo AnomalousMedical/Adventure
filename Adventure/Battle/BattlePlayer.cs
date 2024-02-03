@@ -198,6 +198,7 @@ namespace Adventure.Battle
                 new FixedWidthLayout(scaleHelper.Scaled(210), turnProgress));
             battleScreenLayout.InfoColumn.Add(infoRowLayout);
 
+            currentBuffs.Text = GetCurrentBuffsText();
             name.Text = description.CharacterSheet.Name;
             currentHp.Text = GetCurrentHpText();
             currentHp.Color = GetCurrentHpTextColor();
@@ -271,6 +272,11 @@ namespace Adventure.Battle
         private String GetCurrentMpText()
         {
             return $"{characterSheet.CurrentMp} / {characterSheet.Mp}";
+        }
+
+        private String GetCurrentBuffsText()
+        {
+            return String.Join(' ', characterSheet.Buffs.Select(i => i.Name));
         }
 
         private Color GetCurrentMpTextColor()
@@ -1179,7 +1185,7 @@ namespace Adventure.Battle
 
         private void CharacterSheet_OnBuffsModified(CharacterSheet obj)
         {
-            currentBuffs.Text = String.Join(' ', characterSheet.Buffs.Select(i => i.Name));
+            currentBuffs.Text = GetCurrentBuffsText();
         }
 
         public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)
