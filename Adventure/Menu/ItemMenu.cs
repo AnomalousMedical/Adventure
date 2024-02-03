@@ -99,6 +99,7 @@ namespace Adventure.Menu
                     swapItem.Invoke();
                     swapItemChoices = null;
                     SelectedItem = null;
+                    SwapTarget = null;
                     return;
                 }
 
@@ -157,6 +158,7 @@ namespace Adventure.Menu
                                 }
                                 else
                                 {
+                                    SwapTarget = i;
                                     swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(swapTarget.Name, () =>
                                     {
                                         characterData.RemoveItem(SelectedItem);
@@ -190,6 +192,10 @@ namespace Adventure.Menu
         }
 
         public bool IsChoosingCharacters => this.SelectedItem != null && this.characterChoices != null;
+
+        public bool IsSwappingItems => this.SelectedItem != null && this.swapItemChoices != null;
+
+        public Persistence.CharacterData SwapTarget { get; set; }
 
         public bool IsTransfer { get; set; }
     }
@@ -265,36 +271,42 @@ MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
             }
             else
             {
+                var characterSheetDisplay = characterData;
+                if (useItemMenu.IsSwappingItems)
+                {
+                    characterSheetDisplay = useItemMenu.SwapTarget;
+                }
+
                 info.Text =
-    $@"{characterData.CharacterSheet.Name}
+    $@"{characterSheetDisplay.CharacterSheet.Name}
  
-Lvl: {characterData.CharacterSheet.Level}
+Lvl: {characterSheetDisplay.CharacterSheet.Level}
 
-Items:  {characterData.Inventory.Items.Count} / {characterData.CharacterSheet.InventorySize}
+Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
 
-HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
-MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
+HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
+MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
  
-Att:   {characterData.CharacterSheet.Attack}
-Att%:  {characterData.CharacterSheet.AttackPercent}
-MAtt:  {characterData.CharacterSheet.MagicAttack}
-MAtt%: {characterData.CharacterSheet.MagicAttackPercent}
-Def:   {characterData.CharacterSheet.Defense}
-Def%:  {characterData.CharacterSheet.DefensePercent}
-MDef:  {characterData.CharacterSheet.MagicDefense}
-MDef%: {characterData.CharacterSheet.MagicDefensePercent}
-Item%: {characterData.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
-Heal%: {characterData.CharacterSheet.TotalHealingBonus * 100f + 100f}
+Att:   {characterSheetDisplay.CharacterSheet.Attack}
+Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
+MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
+MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
+Def:   {characterSheetDisplay.CharacterSheet.Defense}
+Def%:  {characterSheetDisplay.CharacterSheet.DefensePercent}
+MDef:  {characterSheetDisplay.CharacterSheet.MagicDefense}
+MDef%: {characterSheetDisplay.CharacterSheet.MagicDefensePercent}
+Item%: {characterSheetDisplay.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
+Heal%: {characterSheetDisplay.CharacterSheet.TotalHealingBonus * 100f + 100f}
  
-Str: {characterData.CharacterSheet.TotalStrength}
-Mag: {characterData.CharacterSheet.TotalMagic}
-Vit: {characterData.CharacterSheet.TotalVitality}
-Spr: {characterData.CharacterSheet.TotalSpirit}
-Dex: {characterData.CharacterSheet.TotalDexterity}
-Lck: {characterData.CharacterSheet.TotalLuck}
+Str: {characterSheetDisplay.CharacterSheet.TotalStrength}
+Mag: {characterSheetDisplay.CharacterSheet.TotalMagic}
+Vit: {characterSheetDisplay.CharacterSheet.TotalVitality}
+Spr: {characterSheetDisplay.CharacterSheet.TotalSpirit}
+Dex: {characterSheetDisplay.CharacterSheet.TotalDexterity}
+Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
  ";
 
-                foreach (var item in characterData.CharacterSheet.EquippedItems())
+                foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
                 {
                     info.Text += $@"
 {item.Name}";
