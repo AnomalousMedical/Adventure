@@ -311,6 +311,18 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                     info.Text += $@"
 {item.Name}";
                 }
+
+                foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
+                {
+                    info.Text += $@"
+{item.Name}";
+                }
+
+                foreach (var item in characterSheetDisplay.CharacterSheet.Effects)
+                {
+                    info.Text += $@"
+{item.StatusEffect}";
+                }
             }
 
             ILayoutItem layout;
