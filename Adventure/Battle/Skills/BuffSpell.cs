@@ -102,7 +102,7 @@ namespace Adventure.Battle.Skills
 
         public int Amount { get; set; }
 
-        public long Duration { get; set; } = 2 * 60 * Clock.SecondsToMicro;
+        public long Duration { get; set; } = 5 * 60 * Clock.SecondsToMicro;
     }
 
     class PhysicalBuff : BuffSpell
@@ -195,6 +195,7 @@ namespace Adventure.Battle.Skills
             Name = "Haste";
             MpCost = 87;
             HealingItemsOnly = false;
+            Duration = 2 * 60 * Clock.SecondsToMicro;
     }
 
         public override string DamageNumberText => "Haste";
