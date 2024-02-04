@@ -28,6 +28,8 @@ namespace Adventure.Battle.Skills
 
         public ISoundEffect SoundEffect { get; set; }
 
+        public bool MultiTarget { get; set; }
+
         public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
         {
             if (source.CurrentMp - MpCost < 0)
@@ -60,27 +62,43 @@ namespace Adventure.Battle.Skills
                 return new SkillEffect(true);
             }
 
+            var applyEffects = new List<Attachment<BattleScene>>();
+
             target = battleManager.ValidateTarget(attacker, target);
-
-            var buff = CreateBuff();
-            target.Stats.UpdateBuffs(buff);
-
-            battleManager.AddDamageNumber(target, DamageNumberText, Color.White);
-
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            IEnumerable<IBattleTarget> targets;
+            if (MultiTarget && triggered)
             {
-                ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
-                o.RenderShadow = false;
-                o.Sprite = asset.CreateSprite();
-                o.SpriteMaterial = asset.CreateMaterial();
-                o.Light = new Light
+                targets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+            }
+            else
+            {
+                targets = new[] { target };
+            }
+
+            foreach(var currentTarget in targets)
+            {
+                var buff = CreateBuff();
+                currentTarget.Stats.UpdateBuffs(buff);
+
+                battleManager.AddDamageNumber(currentTarget, DamageNumberText, Color.White);
+
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
-                    Color = CastColor,
-                    Length = 2.3f,
-                };
-                o.LightOffset = new Vector3(0, 0, -0.1f);
-            });
-            applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                    ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
+                    o.RenderShadow = false;
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = new Light
+                    {
+                        Color = CastColor,
+                        Length = 2.3f,
+                    };
+                    o.LightOffset = new Vector3(0, 0, -0.1f);
+                });
+                applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                applyEffects.Add(applyEffect);
+            }
+
             if (SoundEffect != null)
             {
                 battleManager.SoundEffectPlayer.PlaySound(SoundEffect);
@@ -89,7 +107,10 @@ namespace Adventure.Battle.Skills
             IEnumerator<YieldAction> run()
             {
                 yield return coroutine.WaitSeconds(1.0);
-                applyEffect.RequestDestruction();
+                foreach (var applyEffect in applyEffects)
+                {
+                    applyEffect.RequestDestruction();
+                }
             }
             coroutine.Run(run());
 
@@ -143,6 +164,7 @@ namespace Adventure.Battle.Skills
             Name = "War Cry";
             MpCost = 48;
             SoundEffect = WarCrySpellSoundEffect.Instance;
+            MultiTarget = true;
         }
     }
 
@@ -182,6 +204,7 @@ namespace Adventure.Battle.Skills
             Amount = 45;
             Name = "Intense Focus";
             MpCost = 48;
+            MultiTarget = true;
         }
     }
 
