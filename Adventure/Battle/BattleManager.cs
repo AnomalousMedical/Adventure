@@ -114,10 +114,18 @@ namespace Adventure.Battle
         private List<BattlePlayer> players = new List<BattlePlayer>(4);
         private List<DamageNumber> numbers = new List<DamageNumber>(10);
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
-        private List<Func<Clock, bool>> turnQueue = new List<Func<Clock, bool>>(30);
-        private Func<Clock, bool> currentTurn = null;
         bool allowBattleFinish = false;
         bool showEndBattleButton = false;
+
+
+        class TurnQueueEntry
+        {
+            public Func<Clock, bool> Turn { get; init; }
+
+            public bool Priority { get; init; }
+        }
+        private List<TurnQueueEntry> turnQueue = new List<TurnQueueEntry>(30);
+        private TurnQueueEntry currentTurn = null;
 
         private TargetCursor cursor;
 
@@ -313,7 +321,7 @@ namespace Adventure.Battle
                 {
                     currentTurn = turnQueue[0];
                 }
-                if (currentTurn.Invoke(clock))
+                if (currentTurn.Turn.Invoke(clock))
                 {
                     turnQueue.Remove(currentTurn);
                     currentTurn = null;
@@ -823,7 +831,11 @@ namespace Adventure.Battle
                     if (enemies.Count == 0)
                     {
                         //Add a turn that will hold the turn queue up until the coroutine below is complete
-                        turnQueue.Insert(0, c => fanfareDone);
+                        turnQueue.Insert(0, new TurnQueueEntry()
+                        {
+                            Turn = c => fanfareDone,
+                            Priority = true
+                        });
                     }
 
                     IEnumerator<YieldAction> run()
@@ -899,11 +911,31 @@ namespace Adventure.Battle
         {
             if (queueFront)
             {
-                this.turnQueue.Insert(0, turn);
+                var i = 0;
+                for(; i < turnQueue.Count && this.turnQueue[i].Priority; ++i) { }
+
+                var entity = new TurnQueueEntry()
+                {
+                    Turn = turn,
+                    Priority = true
+                };
+                
+                if (i < turnQueue.Count)
+                {
+                    this.turnQueue.Insert(i, entity);
+                }
+                else
+                {
+                    this.turnQueue.Add(entity);
+                }
             }
             else
             {
-                this.turnQueue.Add(turn);
+                this.turnQueue.Add(new TurnQueueEntry()
+                {
+                    Turn = turn,
+                    Priority = false
+                });
             }
         }
 
