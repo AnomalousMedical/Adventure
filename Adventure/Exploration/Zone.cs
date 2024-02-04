@@ -1008,7 +1008,7 @@ namespace Adventure
                     o.Sprite = gateAsset.CreateSprite();
                     o.SpriteMaterial = gateAsset.CreateMaterial();
                     o.Zone = index;
-                    o.Rotated = alignment == Alignment.WestEast || alignment == Alignment.EastWest;
+                    o.ZoneAlignment = alignment;
                     o.InstanceId = 0; //Only ever 1 gate
                 });
                 placeables.Add(gate);
