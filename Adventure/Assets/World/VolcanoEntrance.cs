@@ -16,6 +16,7 @@ namespace Adventure.Assets.World
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xff3a1c19, "Graphics/Textures/AmbientCG/Rock022_1K", "jpg"), //arch (grey)
+            new SpriteMaterialTextureItem(0xfff36201, "Graphics/Textures/AmbientCG/Lava004_1K", "jpg"), //lava (orange)
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
@@ -31,7 +32,7 @@ namespace Adventure.Assets.World
 
         public ISprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(3f, 22f / 32f * 3f, 1f) };
+            return new Sprite() { BaseScale = new Vector3(3f, 35f / 32f * 3f, 1f) };
         }
     }
 }
