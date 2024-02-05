@@ -252,7 +252,7 @@ namespace Adventure
                 WallTexture = "Graphics/Textures/AmbientCG/Lava004_1K",
                 BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
                 BgMusicNight = "Music/opengameart/congusbongus - Mythica.ogg",
-                EntranceAsset = new ForestEntrance(),
+                EntranceAsset = new VolcanoEntrance(),
                 Treasure = new BiomeTreasure()
                 {
                     Asset = new Assets.World.TreasureChest(),
@@ -263,7 +263,7 @@ namespace Adventure
                     //new BiomeBackgroundItem(3, new Tree())
                 },
                 MaxBackgroundItemRoll = 250,
-                CreateNoise = seed => terrainNoise.CreateLavaNoise(seed)
+                CreateNoise = seed => terrainNoise.CreateLavaNoise(seed),
             };
 
             return biome;
