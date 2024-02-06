@@ -122,7 +122,9 @@ namespace Adventure.Battle
         {
             public Func<Clock, bool> Turn { get; init; }
 
-            public bool Priority { get; init; }
+            public bool Priority { get; set; }
+
+            public int SkipCount { get; set; } = 0;
         }
         private List<TurnQueueEntry> turnQueue = new List<TurnQueueEntry>(30);
         private TurnQueueEntry currentTurn = null;
@@ -912,7 +914,24 @@ namespace Adventure.Battle
             if (queueFront)
             {
                 var i = 0;
-                for(; i < turnQueue.Count && this.turnQueue[i].Priority; ++i) { }
+                for (; i < turnQueue.Count; ++i)
+                {
+                    var item = this.turnQueue[i];
+                    if (!item.Priority)
+                    {
+                        ++item.SkipCount;
+
+                        if(item.SkipCount > 3)
+                        {
+                            item.Priority = true;
+                            //Go to the next item and set it as the answer by breaking
+                            //This prevents skipCount for incrementing for that item too
+                            ++i;
+                        }
+
+                        break;
+                    }
+                }
 
                 var entity = new TurnQueueEntry()
                 {
