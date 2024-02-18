@@ -10,7 +10,8 @@ namespace Adventure.Services;
 
 class PickUpTreasureMenu
 {
-    public const float ReplaceButtonsLayer = 0.15f;
+    public const float ChooseTargetLayer = 0.15f;
+    public const float ReplaceButtonsLayer = 0.45f;
     private static readonly InventoryItem CancelInventoryItem = new InventoryItem();
 
     private enum SaveBlocker { Treasure }
@@ -36,8 +37,10 @@ class PickUpTreasureMenu
     private bool replacingItem = false;
     private bool equippingItem = false;
     private DateTime allowPickupTime;
+    private List<ButtonColumnItem<Action>> characterChoices = null;
 
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
+    private ButtonColumn characterButtons = new ButtonColumn(4, ChooseTargetLayer);
 
     public PickUpTreasureMenu
     (
@@ -67,6 +70,28 @@ class PickUpTreasureMenu
 
     public bool Update(GamepadId gamepadId)
     {
+        //Keep this block first so it exits in the section below
+        var choosingCharacter = characterChoices != null;
+        if (choosingCharacter)
+        {
+            characterButtons.StealFocus(sharpGui);
+
+            characterButtons.Margin = scaleHelper.Scaled(10);
+            characterButtons.MaxWidth = scaleHelper.Scaled(900);
+            characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId);
+            if (action != null)
+            {
+                action.Invoke();
+                characterChoices = null;
+            }
+
+            if (sharpGui.IsStandardBackPressed(gamepadId))
+            {
+                characterChoices = null;
+            }
+        }
+
         if (currentTreasure == null || currentTreasure.Count == 0)
         {
             persistenceWriter.RemoveSaveBlock(SaveBlocker.Treasure);
@@ -194,8 +219,12 @@ class PickUpTreasureMenu
             {
                 if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
                 {
-                    currentTreasure.Pop();
-                    treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions);
+                    characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                    {
+                        currentTreasure.Pop();
+                        treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions);
+                    }))
+                    .ToList();
                 }
             }
 
