@@ -222,7 +222,7 @@ class PickUpTreasureMenu
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
                         currentTreasure.Pop();
-                        treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions);
+                        treasure.Use(i.Inventory, i.CharacterSheet, inventoryFunctions);
                     }))
                     .ToList();
                 }
