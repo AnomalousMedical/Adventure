@@ -82,7 +82,7 @@ namespace Adventure.Services
             {
                 RefillElements();
                 int index;
-                
+
                 index = weaknessRandom.Next(availablePhysicalElements.Count);
                 var weakPhysicalElement = availablePhysicalElements[index];
                 availablePhysicalElements.RemoveAt(index);
@@ -120,8 +120,32 @@ namespace Adventure.Services
         public List<MonsterInfo> CreateElemental(int seed, Element absorbElement)
         {
             var monsters = CreateBaseMonsters(seed);
-            foreach(var monster in monsters)
+            foreach (var monster in monsters)
             {
+                if (monster.Resistances.TryGetValue(absorbElement, out var resistance))
+                {
+                    switch (resistance)
+                    {
+                        case Resistance.Weak:
+                            var elements = new List<Element> { Element.Ice, Element.Electricity, Element.Fire };
+
+                            //Remove the new absorb element
+                            elements.Remove(absorbElement);
+
+                            //Remove the resist elements
+                            foreach (var resist in monster.Resistances.Where(i => i.Value == Resistance.Resist).Select(i => i.Key))
+                            {
+                                elements.Remove(resist);
+                            }
+
+                            //Use the element left over
+                            if (elements.Count > 0)
+                            {
+                                monster.Resistances[elements[0]] = Resistance.Weak;
+                            }
+                            break;
+                    }
+                }
                 monster.Resistances[absorbElement] = Resistance.Absorb;
             }
             return monsters;
@@ -153,7 +177,7 @@ namespace Adventure.Services
                 }
                 enemyResistances[resistance.Key] = resistance.Value;
             }
-            
+
             var enemy = new BiomeEnemy
             {
                 Asset = monster.Asset.CreateAnotherInstance(),
