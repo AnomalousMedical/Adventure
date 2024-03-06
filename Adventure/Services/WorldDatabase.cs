@@ -320,13 +320,6 @@ namespace Adventure.Services
             var zoneCounter = new ZoneCounter();
             var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
 
-            //Setup islands                      
-            //var firstIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[0]], placementRandom, usedSquares);
-            //var secondIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[1]], placementRandom, usedSquares);
-            //var thirdIslandSquares = GetIslandExtremes(map.IslandInfo[map.IslandSizeOrder[2]], placementRandom, usedSquares);
-            //portalLocations.Add(firstIslandSquares[0][0]);
-            //portalLocations.Add(airshipPortalSquare);
-
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo thirdStorePhilipIsland;
 
@@ -398,20 +391,15 @@ namespace Adventure.Services
                 var phase2Potions = new List<Treasure>()
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
-                    new Treasure(PotionCreator.CreateStrengthBoost(2)),
-                    new Treasure(PotionCreator.CreateMagicBoost(2)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
+                    new Treasure(PotionCreator.CreateStrengthBoost(5)),
+                    new Treasure(PotionCreator.CreateMagicBoost(5)),
+                    new Treasure(PotionCreator.CreateSpiritBoost(4)),
+                    new Treasure(PotionCreator.CreateVitalityBoost(4)),
                 };
 
                 var phase2UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(DaggerCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(Steal))),
-                    new Treasure(PotionCreator.CreateStrengthBoost(3)),
-                    new Treasure(PotionCreator.CreateMagicBoost(3)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
                     new Treasure(PotionCreator.CreateLuckBoost(2))
                 };
 
@@ -517,34 +505,21 @@ namespace Adventure.Services
                 var phase3Potions = new List<Treasure>
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
-                    new Treasure(PotionCreator.CreateStrengthBoost(2)),
-                    new Treasure(PotionCreator.CreateStrengthBoost(1)),
-                    new Treasure(PotionCreator.CreateMagicBoost(2)),
-                    new Treasure(PotionCreator.CreateMagicBoost(1)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
-                    new Treasure(PotionCreator.CreateLuckBoost(2)),
+                    new Treasure(PotionCreator.CreateStrengthBoost(5)),
+                    new Treasure(PotionCreator.CreateStrengthBoost(5)),
+                    new Treasure(PotionCreator.CreateMagicBoost(5)),
+                    new Treasure(PotionCreator.CreateMagicBoost(5)),
+                    new Treasure(PotionCreator.CreateSpiritBoost(4)),
+                    new Treasure(PotionCreator.CreateSpiritBoost(4)),
+                    new Treasure(PotionCreator.CreateVitalityBoost(4)),
+                    new Treasure(PotionCreator.CreateVitalityBoost(4)),
                 };
 
                 var phase3UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(DaggerCreator.CreateNormal(nameof(UltimateDagger), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste))),
                     new Treasure(AccessoryCreator.CreateDoublecast()),
-                    new Treasure(PotionCreator.CreateStrengthBoost(3)),
-                    new Treasure(PotionCreator.CreateStrengthBoost(2)),
-                    new Treasure(PotionCreator.CreateStrengthBoost(1)),
-                    new Treasure(PotionCreator.CreateMagicBoost(3)),
-                    new Treasure(PotionCreator.CreateMagicBoost(2)),
-                    new Treasure(PotionCreator.CreateMagicBoost(1)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(2)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(1)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(2)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(1)),
-                    new Treasure(PotionCreator.CreateLuckBoost(2)),
-                    new Treasure(PotionCreator.CreateLuckBoost(2))
+                    new Treasure(PotionCreator.CreateLuckBoost(6)),
                 };
 
                 var zoneCount = 3;
