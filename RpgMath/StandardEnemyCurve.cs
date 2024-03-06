@@ -76,14 +76,17 @@ namespace RpgMath
                     }
                     else
                     {
-                        value *= (level / 10 * 2 + 7);
+                        value *= (level / 10 * 2 + 2);
                     }
                     break;
                 case EnemyType.Badass:
                     value *= 2;
                     break;
-                case EnemyType.Peon:
+                case EnemyType.Normal:
                     value /= 2;
+                    break;
+                case EnemyType.Peon:
+                    value /= 4;
                     break;
             }
 
