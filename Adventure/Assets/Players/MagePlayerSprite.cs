@@ -12,8 +12,9 @@ class MagePlayerSprite : PlayerSprite
             colorMap: "Graphics/Sprites/Anomalous/Players/Mage.png",
             materials: new HashSet<SpriteMaterialTextureItem>
             {
-                new SpriteMaterialTextureItem(0xffb30cb9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                new SpriteMaterialTextureItem(0xffb21829, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff6b0a6e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff727272, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff549bff, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff2a1903, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff5f3500, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
             }
@@ -24,8 +25,9 @@ class MagePlayerSprite : PlayerSprite
             colorMap: "Graphics/Sprites/Anomalous/Players/Mage2.png",
             materials: new HashSet<SpriteMaterialTextureItem>
             {
-                new SpriteMaterialTextureItem(0xffb30cb9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                new SpriteMaterialTextureItem(0xffb21829, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff6b0a6e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff727272, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff549bff, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff2a1903, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff5f3500, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
             }
@@ -36,8 +38,9 @@ class MagePlayerSprite : PlayerSprite
             colorMap: "Graphics/Sprites/Anomalous/Players/Mage3.png",
             materials: new HashSet<SpriteMaterialTextureItem>
             {
-                new SpriteMaterialTextureItem(0xffb30cb9, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-                new SpriteMaterialTextureItem(0xffb21829, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff6b0a6e, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff727272, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
+                new SpriteMaterialTextureItem(0xff549bff, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff2a1903, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
                 new SpriteMaterialTextureItem(0xff5f3500, "Graphics/Textures/AmbientCG/Leather026_1K", "jpg"),
             }
