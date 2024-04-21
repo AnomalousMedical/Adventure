@@ -15,11 +15,6 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, String adjective, params string[] spells)
-        {
-            return CreateNormal(nameof(IceStaff07), level, adjective, spells);
-        }
-
         public InventoryItem CreateNormal(String sprite, int level, String adjective, params string[] spells)
         {
             var staff = new Equipment

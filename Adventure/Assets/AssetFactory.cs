@@ -31,13 +31,11 @@ namespace Adventure.Assets
                 case nameof(FinalShield): return new FinalShield();
                 case nameof(FinalSpear): return new FinalSpear();
                 case nameof(FinalSword): return new FinalSword();
+                case nameof(FinalStaff): return new FinalStaff();
                 case nameof(Greatsword01): return new Greatsword01();
                 case nameof(MaceLarge2New): return new MaceLarge2New();
                 case nameof(ShieldOfReflection): return new ShieldOfReflection();
                 case nameof(Spear2Old): return new Spear2Old();
-                case nameof(FireStaff07): return new FireStaff07();
-                case nameof(IceStaff07): return new IceStaff07();
-                case nameof(ZapStaff07): return new ZapStaff07();
                 case nameof(UltimateBook): return new UltimateBook();
                 case nameof(UltimateDagger): return new UltimateDagger();
                 case nameof(UltimateHammer): return new UltimateHammer();
