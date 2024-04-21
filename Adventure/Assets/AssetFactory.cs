@@ -29,7 +29,7 @@ namespace Adventure.Assets
                 case nameof(Book1): return new Book1();
                 case nameof(Book2): return new Book2();
                 case nameof(Book3): return new Book3();
-                case nameof(MaceLarge2New): return new MaceLarge2New();
+                case nameof(Hammer1): return new Hammer1();
                 case nameof(Hammer2): return new Hammer2();
                 case nameof(Hammer3): return new Hammer3();
                 case nameof(Shield1): return new Shield1();

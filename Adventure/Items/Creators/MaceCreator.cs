@@ -14,7 +14,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, string sprite = nameof(MaceLarge2New))
+        public InventoryItem CreateNormal(int level, string adjective, string sprite)
         {
             var mace = new Equipment
             {

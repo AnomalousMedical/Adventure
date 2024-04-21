@@ -5,21 +5,15 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class MaceLarge2New : ISpriteAsset
+    class Hammer1 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new MaceLarge2New();
+        public ISpriteAsset CreateAnotherInstance() => new Hammer1();
 
-        public Quaternion GetOrientation()
-        {
-            return new Quaternion(0, MathFloat.PI / 4f, 0);
-        }
-
-        private const string colorMap = "Graphics/Sprites/Crawl/Weapons/mace_large_2_new.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Hammer1.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff9e0000, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"), //Handle (red)
-            new SpriteMaterialTextureItem(0xffffc000, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Highlight (gold)
-            new SpriteMaterialTextureItem(0xffbfcfde, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Bludgeon (silver)
+            new SpriteMaterialTextureItem(0xff692c0c, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xff5c716f, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
@@ -27,6 +21,11 @@ namespace Adventure.Assets.Equipment
             colorMap: colorMap,
             materials: materials
         );
+
+        public Quaternion GetOrientation()
+        {
+            return Quaternion.Identity;
+        }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -40,7 +39,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(9, 22, 0, 32, 32), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(7, 14, 0, 14f, 22f), //Center of grip
                     }
                 } )
             },
@@ -49,7 +48,7 @@ namespace Adventure.Assets.Equipment
         public ISprite CreateSprite()
         {
             return new Sprite(animations)
-            { BaseScale = new Vector3(0.75f, 0.75f, 0.75f) };
+            { BaseScale = new Vector3(14f / 22f * 0.75f, 0.75f, 1.0f) };
         }
     }
 }
