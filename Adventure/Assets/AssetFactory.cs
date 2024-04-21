@@ -29,9 +29,9 @@ namespace Adventure.Assets
                 case nameof(Book1): return new Book1();
                 case nameof(Book2): return new Book2();
                 case nameof(Book3): return new Book3();
-                case nameof(FinalHammer): return new FinalHammer();
-                case nameof(FinalSpear): return new FinalSpear();
-                case nameof(FinalSword): return new FinalSword();
+                case nameof(Hammer3): return new Hammer3();
+                case nameof(Spear3): return new Spear3();
+                case nameof(Sword3): return new Sword3();
                 case nameof(Greatsword01): return new Greatsword01();
                 case nameof(MaceLarge2New): return new MaceLarge2New();
                 case nameof(Spear2Old): return new Spear2Old();

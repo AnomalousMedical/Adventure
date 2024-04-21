@@ -481,9 +481,9 @@ namespace Adventure.Services
                 var phase3Adjective = "Superior";
                 var phase3Weapons = new List<Treasure>
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalSword))),
-                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalSpear))),
-                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalHammer))),
+                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(Sword3))),
+                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(Spear3))),
+                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(Hammer3))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff3), phase3TreasureLevel, "Arch Mage's", nameof(IonShread), nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))),
                     new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 0.45f, nameof(Shield3))),
                     new Treasure(BookCreator.CreateRestoration(nameof(Book3), phase3TreasureLevel, phase3Adjective, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))),
