@@ -32,7 +32,7 @@ namespace Adventure.Assets.World
 
         public ISprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(1f, 1024f / 32f * 1f, 1f) };
+            return new Sprite() { BaseScale = new Vector3(1f, 892f / 77f * 1f, 1f) };
         }
     }
 }
