@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class UltimateHammer : ISpriteAsset
+    class Hammer2 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new UltimateHammer();
+        public ISpriteAsset CreateAnotherInstance() => new Hammer2();
 
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/UltimateHammer.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Hammer2.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xffb11e15, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),

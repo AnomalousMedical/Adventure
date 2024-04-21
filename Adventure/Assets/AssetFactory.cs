@@ -29,21 +29,21 @@ namespace Adventure.Assets
                 case nameof(Book1): return new Book1();
                 case nameof(Book2): return new Book2();
                 case nameof(Book3): return new Book3();
-                case nameof(Hammer3): return new Hammer3();
-                case nameof(Spear3): return new Spear3();
-                case nameof(Sword3): return new Sword3();
-                case nameof(Greatsword01): return new Greatsword01();
                 case nameof(MaceLarge2New): return new MaceLarge2New();
-                case nameof(Spear2Old): return new Spear2Old();
-                case nameof(UltimateHammer): return new UltimateHammer();
-                case nameof(UltimateSpear): return new UltimateSpear();
+                case nameof(Hammer2): return new Hammer2();
+                case nameof(Hammer3): return new Hammer3();
                 case nameof(Shield1): return new Shield1();
                 case nameof(Shield2): return new Shield2();
                 case nameof(Shield3): return new Shield3();
+                case nameof(Spear2Old): return new Spear2Old();
+                case nameof(Spear2): return new Spear2();
+                case nameof(Spear3): return new Spear3();
                 case nameof(Staff1): return new Staff1();
                 case nameof(Staff2): return new Staff2();
                 case nameof(Staff3): return new Staff3();
-                case nameof(UltimateSword): return new UltimateSword();
+                case nameof(Greatsword01): return new Greatsword01();
+                case nameof(Sword2): return new Sword2();
+                case nameof(Sword3): return new Sword3();
 
                 default: throw new NotImplementedException(name);
             }
