@@ -5,22 +5,16 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class Greatsword01 : ISpriteAsset
+    class Sword1 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new Greatsword01();
+        public ISpriteAsset CreateAnotherInstance() => new Sword1();
 
-        public Quaternion GetOrientation()
-        {
-            return new Quaternion(0, MathFloat.PI / 4f, 0);
-        }
-
-        private const string colorMap = "Graphics/Sprites/Crawl/Weapons/greatsword_01.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Sword1.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff802000, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"), //Hilt (brown)
-            new SpriteMaterialTextureItem(0xffadadad, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
-            new SpriteMaterialTextureItem(0xff5e5e5f, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
-            new SpriteMaterialTextureItem(0xffe4ac26, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Blade (grey)
+            new SpriteMaterialTextureItem(0xff692c0c, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
+            new SpriteMaterialTextureItem(0xffc0c0bf, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(0xff5e5858, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
@@ -28,6 +22,11 @@ namespace Adventure.Assets.Equipment
             colorMap: colorMap,
             materials: materials
         );
+
+        public Quaternion GetOrientation()
+        {
+            return Quaternion.Identity;
+        }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -41,7 +40,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(7, 24, 0, 32, 32), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(4.5f, 24.5f, 0, 9, 31), //Center of grip
                     }
                 } )
             },
@@ -50,7 +49,7 @@ namespace Adventure.Assets.Equipment
         public ISprite CreateSprite()
         {
             return new Sprite(animations)
-            { BaseScale = new Vector3(0.75f, 0.75f, 0.75f) };
+            { BaseScale = new Vector3(9f / 31f * 1f, 1f, 1.0f) };
         }
     }
 }
