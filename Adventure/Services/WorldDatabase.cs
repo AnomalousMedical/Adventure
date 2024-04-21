@@ -285,7 +285,7 @@ namespace Adventure.Services
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
-                GiveAndEquip(hero, new Treasure(BookCreator.CreateRestoration(phase0TreasureLevel, "Torn", nameof(Cure))));
+                GiveAndEquip(hero, new Treasure(BookCreator.CreateRestoration(nameof(Book1), phase0TreasureLevel, "Torn", nameof(Cure))));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, "Worn", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
@@ -369,7 +369,7 @@ namespace Adventure.Services
                     new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSword))),
                     new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSpear))),
                     new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateHammer))),
-                    new Treasure(BookCreator.CreateRestoration(phase2TreasureLevel, phase2Adjective, nameof(MegaCure), nameof(BattleCry), nameof(Focus))),
+                    new Treasure(BookCreator.CreateRestoration(nameof(Book2), phase2TreasureLevel, phase2Adjective, nameof(MegaCure), nameof(BattleCry), nameof(Focus))),
                     new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f, nameof(ShieldOfReflection))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff2), phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning))),
                 };
@@ -486,7 +486,7 @@ namespace Adventure.Services
                     new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, nameof(FinalHammer))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff3), phase3TreasureLevel, "Arch Mage's", nameof(IonShread), nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning))),
                     new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, phase3Adjective, 0.45f, nameof(Shield3))),
-                    new Treasure(BookCreator.CreateRestoration(nameof(UltimateBook), phase3TreasureLevel, phase3Adjective, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))),
+                    new Treasure(BookCreator.CreateRestoration(nameof(Book3), phase3TreasureLevel, phase3Adjective, nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus))),
                 };
 
                 var phase3Armors = new List<Treasure>

@@ -15,11 +15,6 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateRestoration(int level, string adjective, params String[] spells)
-        {
-            return CreateRestoration(nameof(FancyBook), level, adjective, spells);
-        }
-
         public InventoryItem CreateRestoration(String sprite, int level, string adjective, params String[] spells)
         {
             var book = new Equipment

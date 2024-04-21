@@ -24,7 +24,9 @@ namespace Adventure.Assets
                 //Equipment
                 case nameof(BattleAxe6): return new BattleAxe6();
                 case nameof(DaggerNew): return new DaggerNew();
-                case nameof(FancyBook): return new FancyBook();
+                case nameof(Book1): return new Book1();
+                case nameof(Book2): return new Book2();
+                case nameof(Book3): return new Book3();
                 case nameof(FinalHammer): return new FinalHammer();
                 case nameof(FinalSpear): return new FinalSpear();
                 case nameof(FinalSword): return new FinalSword();
@@ -32,7 +34,6 @@ namespace Adventure.Assets
                 case nameof(MaceLarge2New): return new MaceLarge2New();
                 case nameof(ShieldOfReflection): return new ShieldOfReflection();
                 case nameof(Spear2Old): return new Spear2Old();
-                case nameof(UltimateBook): return new UltimateBook();
                 case nameof(UltimateDagger): return new UltimateDagger();
                 case nameof(UltimateHammer): return new UltimateHammer();
                 case nameof(UltimateSpear): return new UltimateSpear();
