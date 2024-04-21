@@ -295,9 +295,11 @@ namespace Adventure.Battle
                     this.currentPosition = ActivePosition;
                     name.Color = Color.LightBlue;
                     IsDefending = false;
+                    sprite.SetAnimation("stand-front");
                 }
                 else
                 {
+                    sprite.SetAnimation("stand-left");
                     if (IsDefending)
                     {
                         this.currentPosition = DefendPosition;
