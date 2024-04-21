@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class UltimateDagger : ISpriteAsset
+    class Dagger3 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new UltimateDagger();
+        public ISpriteAsset CreateAnotherInstance() => new Dagger3();
 
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/UltimateDagger.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Dagger3.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xff425d5a, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),

@@ -266,7 +266,7 @@ namespace Adventure.Services
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, "Busted")));
-                GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(phase0TreasureLevel, "Rusty", nameof(Steal))));
+                GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(nameof(Dagger1), phase0TreasureLevel, "Rusty", nameof(Steal))));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Cracked", EquipmentTier.Tier1)));
                 yield return new PartyMember
                 {
@@ -399,7 +399,7 @@ namespace Adventure.Services
 
                 var phase2UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(DaggerCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(Steal))),
+                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger2), phase2TreasureLevel, phase2Adjective, nameof(Steal))),
                     new Treasure(PotionCreator.CreateLuckBoost(2))
                 };
 
@@ -517,7 +517,7 @@ namespace Adventure.Services
 
                 var phase3UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(DaggerCreator.CreateNormal(nameof(UltimateDagger), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste))),
+                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste))),
                     new Treasure(AccessoryCreator.CreateDoublecast()),
                     new Treasure(PotionCreator.CreateLuckBoost(6)),
                 };

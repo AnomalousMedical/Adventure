@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class DaggerNew : ISpriteAsset
+    class Dagger1 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new DaggerNew();
+        public ISpriteAsset CreateAnotherInstance() => new Dagger1();
 
-        private const string colorMap = "Graphics/Sprites/Crawl/Weapons/dagger_new.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Dagger1.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xff692c0c, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"), //Hilt (brown)
@@ -25,7 +25,7 @@ namespace Adventure.Assets.Equipment
 
         public Quaternion GetOrientation()
         {
-            return new Quaternion(0, MathFloat.PI / 4f, 0);
+            return Quaternion.Identity;
         }
 
         public SpriteMaterialDescription CreateMaterial()
@@ -40,7 +40,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(11, 20, 0, 32, 32), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(3.5f, 14, 0, 7, 22), //Center of grip
                     }
                 } )
             },
@@ -49,7 +49,7 @@ namespace Adventure.Assets.Equipment
         public ISprite CreateSprite()
         {
             return new Sprite(animations)
-            { BaseScale = new Vector3(0.65f, 0.65f, 0.65f) };
+            { BaseScale = new Vector3(7f / 22f * 0.65f, 0.65f, 0.65f) };
         }
     }
 }

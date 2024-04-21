@@ -15,11 +15,6 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, params String[] skills)
-        {
-            return CreateNormal(nameof(DaggerNew), level, adjective, skills);
-        }
-
         public InventoryItem CreateNormal(String spriteName, int level, string adjective, params String[] skills)
         {
             var sword = new Equipment
