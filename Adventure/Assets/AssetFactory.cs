@@ -35,7 +35,7 @@ namespace Adventure.Assets
                 case nameof(Shield1): return new Shield1();
                 case nameof(Shield2): return new Shield2();
                 case nameof(Shield3): return new Shield3();
-                case nameof(Spear2Old): return new Spear2Old();
+                case nameof(Spear1): return new Spear1();
                 case nameof(Spear2): return new Spear2();
                 case nameof(Spear3): return new Spear3();
                 case nameof(Staff1): return new Staff1();

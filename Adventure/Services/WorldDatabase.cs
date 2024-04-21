@@ -228,7 +228,7 @@ namespace Adventure.Services
                     CharacterSheet = sheet,
                 };
                 hero.CharacterSheet.Rest();
-                GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty")));
+                GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, "Rusty", nameof(Spear1))));
                 GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, "Buckler", 0.15f, nameof(Shield1))));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, "Tarnished", EquipmentTier.Tier1)));
                 yield return new PartyMember
@@ -783,7 +783,7 @@ namespace Adventure.Services
                 var treasureLevel = 40;
                 var adjective = "Fancy Store Bought";
                 yield return new ShopEntry($"{adjective} Sword", 350, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
-                yield return new ShopEntry($"{adjective} Spear", 350, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 350, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
                 yield return new ShopEntry($"{adjective} Mace", 350, () => MaceCreator.CreateNormal(treasureLevel, adjective));
             }
 
@@ -792,7 +792,7 @@ namespace Adventure.Services
                 var treasureLevel = 15;
                 var adjective = "Store Bought";
                 yield return new ShopEntry($"{adjective} Sword", 150, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
-                yield return new ShopEntry($"{adjective} Spear", 150, () => SpearCreator.CreateNormal(treasureLevel, adjective));
+                yield return new ShopEntry($"{adjective} Spear", 150, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
                 yield return new ShopEntry($"{adjective} Mace", 150, () => MaceCreator.CreateNormal(treasureLevel, adjective));
             }
         }
