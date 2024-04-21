@@ -9,14 +9,12 @@ namespace Adventure.Assets.Equipment
     {
         public ISpriteAsset CreateAnotherInstance() => new BasicStaff();
 
-        public const uint Staff = 0xff9f7f66;//Staff (brown)
-        public const uint Crystal = 0xff3722af;//Crystal (purple)
+        public const uint Staff = 0xff5b3c18;//Staff (brown)
 
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/BasicStaff.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Leather001_1K", "jpg"),
-            new SpriteMaterialTextureItem(Crystal, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg"),
+            new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
         };
 
         protected Dictionary<uint, uint> PalletSwap { get; set; }
