@@ -14,7 +14,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, float damageReduction, string sprite = nameof(ShieldOfReflection))
+        public InventoryItem CreateNormal(int level, string adjective, float damageReduction, string sprite)
         {
             var shield = new Equipment
             {

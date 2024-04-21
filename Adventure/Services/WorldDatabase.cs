@@ -370,7 +370,7 @@ namespace Adventure.Services
                     new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateSpear))),
                     new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, nameof(UltimateHammer))),
                     new Treasure(BookCreator.CreateRestoration(nameof(Book2), phase2TreasureLevel, phase2Adjective, nameof(MegaCure), nameof(BattleCry), nameof(Focus))),
-                    new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f, nameof(ShieldOfReflection))),
+                    new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, phase2Adjective, 0.35f, nameof(Shield2))),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff2), phase2TreasureLevel, "Mage's", nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning))),
                 };
 
