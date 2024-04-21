@@ -22,16 +22,12 @@ namespace Adventure.Assets
             switch (name)
             {
                 //Equipment
-                case nameof(BasicStaff): return new BasicStaff();
                 case nameof(BattleAxe6): return new BattleAxe6();
-                case nameof(Buckler): return new Buckler();
                 case nameof(DaggerNew): return new DaggerNew();
                 case nameof(FancyBook): return new FancyBook();
                 case nameof(FinalHammer): return new FinalHammer();
-                case nameof(FinalShield): return new FinalShield();
                 case nameof(FinalSpear): return new FinalSpear();
                 case nameof(FinalSword): return new FinalSword();
-                case nameof(FinalStaff): return new FinalStaff();
                 case nameof(Greatsword01): return new Greatsword01();
                 case nameof(MaceLarge2New): return new MaceLarge2New();
                 case nameof(ShieldOfReflection): return new ShieldOfReflection();
@@ -39,9 +35,13 @@ namespace Adventure.Assets
                 case nameof(UltimateBook): return new UltimateBook();
                 case nameof(UltimateDagger): return new UltimateDagger();
                 case nameof(UltimateHammer): return new UltimateHammer();
-                case nameof(UltimateShield): return new UltimateShield();
                 case nameof(UltimateSpear): return new UltimateSpear();
-                case nameof(UltimateStaff): return new UltimateStaff();
+                case nameof(Shield1): return new Shield1();
+                case nameof(Shield2): return new Shield2();
+                case nameof(Shield3): return new Shield3();
+                case nameof(Staff1): return new Staff1();
+                case nameof(Staff2): return new Staff2();
+                case nameof(Staff3): return new Staff3();
                 case nameof(UltimateSword): return new UltimateSword();
 
                 default: throw new NotImplementedException(name);

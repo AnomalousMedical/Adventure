@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class Buckler : ISpriteAsset
+    class Shield1 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new Buckler();
+        public ISpriteAsset CreateAnotherInstance() => new Shield1();
 
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Buckler.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Shield1.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xffbac5d7, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true), //Outer and inner rings (grey)

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class BasicStaff : ISpriteAsset
+    class Staff1 : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new BasicStaff();
+        public ISpriteAsset CreateAnotherInstance() => new Staff1();
 
         public const uint Staff = 0xff5b3c18;//Staff (brown)
 
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/BasicStaff.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Staff1.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(Staff, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
