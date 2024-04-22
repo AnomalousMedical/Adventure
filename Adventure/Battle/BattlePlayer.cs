@@ -77,7 +77,7 @@ namespace Adventure.Battle
 
         public Vector3 DamageDisplayLocation => this.currentPosition;
 
-        private Vector3 ActivePosition => this.startPosition + new Vector3(-1.65f, 0f, 0f);
+        private Vector3 ActivePosition => this.startPosition + new Vector3(-1.35f, 0f, 0f);
 
         private Vector3 DefendPosition => this.startPosition + new Vector3(+0.78f, 0f, 0f);
 
@@ -295,7 +295,7 @@ namespace Adventure.Battle
                     this.currentPosition = ActivePosition;
                     name.Color = Color.LightBlue;
                     IsDefending = false;
-                    sprite.SetAnimation("stand-front");
+                    sprite.SetAnimation("stand-down");
                 }
                 else
                 {
@@ -1060,6 +1060,7 @@ namespace Adventure.Battle
         public void MoveToGuard(in Vector3 position)
         {
             this.currentPosition = position;
+            sprite.SetAnimation("stand-left");
             Sprite_FrameChanged(sprite);
         }
 
@@ -1068,10 +1069,12 @@ namespace Adventure.Battle
             if (battleManager.GetActivePlayer() == this)
             {
                 this.currentPosition = this.ActivePosition;
+                sprite.SetAnimation("stand-down");
             }
             else
             {
                 this.currentPosition = this.startPosition;
+                sprite.SetAnimation("stand-left");
             }
             Sprite_FrameChanged(sprite);
         }
