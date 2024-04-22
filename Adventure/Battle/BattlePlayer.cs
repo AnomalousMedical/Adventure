@@ -1178,6 +1178,7 @@ namespace Adventure.Battle
                 sprite.SetAnimation("victory");
                 this.currentPosition = this.startPosition;
             }
+            Sprite_FrameChanged(sprite);
         }
 
         private void CharacterSheet_OnBodyModified(CharacterSheet obj)
