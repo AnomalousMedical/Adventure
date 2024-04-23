@@ -234,7 +234,7 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = $"I am {sheet.Name}. I am a Warrior.",
+                    Greeting = "My shield will guard us.",
                 };
             }
 
@@ -252,7 +252,7 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = $"I am {sheet.Name}. I am a Mage.",
+                    Greeting = "Let's get moving.",
                 };
             }
 
@@ -271,7 +271,7 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = $"I am {sheet.Name}. I am a Thief.",
+                    Greeting = "I hope we find lots of great treasure!",
                 };
             }
 
@@ -290,7 +290,7 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = $"I am {sheet.Name}. I am a Cleric.",
+                    Greeting = "I wonder what's made everything so agressive?",
                 };
             }
         }
@@ -385,7 +385,7 @@ namespace Adventure.Services
                 var phase2Accessories = new List<Treasure>()
                 {
                     new Treasure(AccessoryCreator.CreateCounterAttack()),
-                    new Treasure(AccessoryCreator.CreateHealing(phase2Adjective, 0.25f, true)),
+                    new Treasure(AccessoryCreator.CreateHealing(0.25f, true)),
                 };
 
                 var phase2Potions = new List<Treasure>()
@@ -499,7 +499,7 @@ namespace Adventure.Services
 
                 var phase3Accessories = new List<Treasure>
                 {
-                    new Treasure(AccessoryCreator.CreateItemUsage(phase3Adjective, 0.5f)),
+                    new Treasure(AccessoryCreator.CreateItemUsage(0.5f)),
                 };
 
                 var phase3Potions = new List<Treasure>

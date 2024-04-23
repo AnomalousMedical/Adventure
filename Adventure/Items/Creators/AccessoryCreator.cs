@@ -17,7 +17,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = $"Counter attack accessory",
+                Name = $"Gauntlets of Revenge",
                 CounterPercent = 40L
             };
 
@@ -35,11 +35,11 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(accessory);
         }
 
-        public InventoryItem CreateHealing(String adjective, float healingBonus, bool cureAll)
+        public InventoryItem CreateHealing(float healingBonus, bool cureAll)
         {
             var accessory = new Equipment
             {
-                Name = $"{adjective} Bangle of Restoration",
+                Name = "Ring of Healing",
                 HealingBonus = healingBonus,
                 CureAll = cureAll
             };
@@ -58,11 +58,11 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(accessory);
         }
 
-        public InventoryItem CreateItemUsage(String adjective, float itemUsageBonus)
+        public InventoryItem CreateItemUsage(float itemUsageBonus)
         {
             var accessory = new Equipment
             {
-                Name = $"{adjective} Gloves of Handling",
+                Name = "Gloves of Handling",
                 ItemUsageBonus = itemUsageBonus
             };
 
