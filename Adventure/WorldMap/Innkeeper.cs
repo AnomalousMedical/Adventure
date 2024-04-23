@@ -30,6 +30,8 @@ namespace Adventure.WorldMap
         private readonly IWorldMapManager worldMapManager;
         private readonly IWorldDatabase worldDatabase;
         private readonly RestManager restManager;
+        private readonly TextDialog textDialog;
+        private readonly ICoroutineRunner coroutineRunner;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -56,7 +58,9 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             IWorldMapManager worldMapManager,
             IWorldDatabase worldDatabase,
-            RestManager restManager)
+            RestManager restManager,
+            TextDialog textDialog,
+            ICoroutineRunner coroutineRunner)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -68,6 +72,8 @@ namespace Adventure.WorldMap
             this.worldMapManager = worldMapManager;
             this.worldDatabase = worldDatabase;
             this.restManager = restManager;
+            this.textDialog = textDialog;
+            this.coroutineRunner = coroutineRunner;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -175,7 +181,11 @@ namespace Adventure.WorldMap
         private void Talk(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Talk);
-            restManager.Rest();
+            coroutineRunner.RunTask(async () =>
+            {
+                await textDialog.ShowTextAndWait("Hope you sleep well.", args.GamepadId);
+                restManager.Rest();
+            });
         }
 
         private void MoveToPosition()

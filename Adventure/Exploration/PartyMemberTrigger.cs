@@ -47,7 +47,6 @@ namespace Adventure.Exploration
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
-        private readonly IExplorationMenu explorationMenu;
         private readonly IAssetFactory assetFactory;
         private readonly TextDialog textDialog;
         private readonly PartyMemberManager partyMemberManager;
@@ -90,7 +89,6 @@ namespace Adventure.Exploration
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             Persistence persistence,
-            IExplorationMenu explorationMenu,
             IAssetFactory assetFactory,
             IObjectResolverFactory objectResolverFactory,
             TextDialog textDialog,
@@ -111,7 +109,6 @@ namespace Adventure.Exploration
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
-            this.explorationMenu = explorationMenu;
             this.assetFactory = assetFactory;
             this.textDialog = textDialog;
             this.partyMemberManager = partyMemberManager;
@@ -281,7 +278,7 @@ namespace Adventure.Exploration
 
             coroutine.RunTask(async () =>
             {
-                await textDialog.ShowTextAndWait(this.partyMember.Greeting, explorationMenu, args.GamepadId);
+                await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
 
                 //If something were to go wrong handing out the party member it would be lost, but the
                 //other option opens it up to duplication

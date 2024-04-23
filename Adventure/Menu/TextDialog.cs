@@ -20,6 +20,7 @@ namespace Adventure.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private readonly IScaleHelper scaleHelper;
+        private readonly IExplorationMenu explorationMenu;
         private SharpPanel panel = new SharpPanel();
         private SharpText text = new SharpText()
         {
@@ -35,12 +36,14 @@ namespace Adventure.Menu
         (
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            IScaleHelper scaleHelper
+            IScaleHelper scaleHelper,
+            IExplorationMenu explorationMenu
         )
         {
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
             this.scaleHelper = scaleHelper;
+            this.explorationMenu = explorationMenu;
         }
 
         public void SetText(String contents)
@@ -60,7 +63,7 @@ namespace Adventure.Menu
             return currentTask.Task;
         }
 
-        public Task ShowTextAndWait(String contents, IExplorationMenu explorationMenu, GamepadId gamepad)
+        public Task ShowTextAndWait(String contents, GamepadId gamepad)
         {
             SetText(contents);
             explorationMenu.RequestSubMenu(this, gamepad);
