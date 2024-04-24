@@ -38,6 +38,7 @@ namespace Adventure.Services
         List<IntVector2> StorePhilipLocations { get; }
         IntVector2 InkeeperPosition { get; }
         IntVector2 BlacksmithPosition { get; }
+        IntVector2 AlchemistPosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -68,6 +69,7 @@ namespace Adventure.Services
         public List<IntVector2> StorePhilipLocations { get; private set; }
         public IntVector2 InkeeperPosition { get; private set; }
         public IntVector2 BlacksmithPosition { get; private set; }
+        public IntVector2 AlchemistPosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -682,6 +684,7 @@ namespace Adventure.Services
             StorePhilipLocations.Add(GetUnusedSquare(usedSquares, thirdStorePhilipIsland, placementRandom));
             InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
         }
 
         /// <summary>
