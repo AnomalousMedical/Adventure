@@ -41,7 +41,6 @@ namespace Adventure.Services
         int CurrentSeed { get; }
         IntVector2 AirshipStartSquare { get; }
         BookCreator BookCreator { get; }
-        List<IntVector2> StorePhilipLocations { get; }
         IntVector2 InkeeperPosition { get; }
         IntVector2 BlacksmithPosition { get; }
         IntVector2 AlchemistPosition { get; }
@@ -74,7 +73,6 @@ namespace Adventure.Services
         public BookCreator BookCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
         public IntVector2 AirshipStartSquare => airshipStartSquare;
-        public List<IntVector2> StorePhilipLocations { get; private set; }
         public IntVector2 InkeeperPosition { get; private set; }
         public IntVector2 BlacksmithPosition { get; private set; }
         public IntVector2 AlchemistPosition { get; private set; }
@@ -190,7 +188,6 @@ namespace Adventure.Services
             //Setup seeds and randoms
             createdZoneSeeds = new List<int>();
             zoneRandom = new FIRandom(newSeed);
-            StorePhilipLocations = new List<IntVector2>();
             var biomeRandom = new FIRandom(newSeed);
             var placementRandom = new FIRandom(newSeed);
             var elementalRandom = new FIRandom(newSeed);
@@ -334,8 +331,6 @@ namespace Adventure.Services
             var zoneCounter = new ZoneCounter();
             var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
 
-            IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
-            IslandInfo thirdStorePhilipIsland;
             IslandInfo blacksmithUpgradeIsland;
             IslandInfo alchemistUpgradeIsland;
 
@@ -582,7 +577,6 @@ namespace Adventure.Services
 
                 //Area 6
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
-                thirdStorePhilipIsland = island;
                 alchemistUpgradeIsland = island;
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
@@ -693,9 +687,6 @@ namespace Adventure.Services
                 SetIslandBiome(island, map, areaBuilder.Biome);
                 yield return areaBuilder;
             }
-
-            StorePhilipLocations.Add(GetUnusedSquare(usedSquares, firstStorePhilipIsland, placementRandom));
-            StorePhilipLocations.Add(GetUnusedSquare(usedSquares, thirdStorePhilipIsland, placementRandom));
             
             InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
