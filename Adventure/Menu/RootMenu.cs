@@ -22,15 +22,11 @@ namespace Adventure.Menu
         private readonly IScreenPositioner screenPositioner;
         private readonly ItemMenu itemMenu;
         private readonly SkillMenu skillMenu;
-        private readonly PlayerMenu playerMenu;
         private readonly OptionsMenu optionsMenu;
         private readonly Persistence persistence;
-        private readonly IPersistenceWriter persistenceWriter;
-        private readonly IShopManager shopManager;
-        private readonly BuyMenu buyMenu;
+
         SharpButton skills = new SharpButton() { Text = "Skills" };
         SharpButton items = new SharpButton() { Text = "Items" };
-        SharpButton shop = new SharpButton() { Text = "Shop" };
         SharpButton options = new SharpButton() { Text = "Options" };
         SharpButton debug = new SharpButton() { Text = "Debug" };
 
@@ -44,34 +40,23 @@ namespace Adventure.Menu
             IScreenPositioner screenPositioner,
             ItemMenu itemMenu,
             SkillMenu skillMenu,
-            PlayerMenu playerMenu,
             OptionsMenu optionsMenu,
-            Persistence persistence,
-            IPersistenceWriter persistenceWriter,
-            IShopManager shopManager,
-            BuyMenu buyMenu)
+            Persistence persistence
+        )
         {
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.itemMenu = itemMenu;
             this.skillMenu = skillMenu;
-            this.playerMenu = playerMenu;
             this.optionsMenu = optionsMenu;
             this.persistence = persistence;
-            this.persistenceWriter = persistenceWriter;
-            this.shopManager = shopManager;
-            this.buyMenu = buyMenu;
         }
 
-        private IEnumerable<SharpButton> GetMenuItems(bool hasShop)
+        private IEnumerable<SharpButton> GetMenuItems()
         {
             yield return skills;
             yield return items;
-            if (hasShop)
-            {
-                yield return shop;
-            }
             yield return options;
             yield return debug;
         }
@@ -89,8 +74,6 @@ namespace Adventure.Menu
             var infoDesiredSize = infoLayout.GetDesiredSize(sharpGui);
             infoLayout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
-            var hasShop = persistence.Current.PlotItems.Contains(PlotItems.Phase1Shop) && shopManager.AllowShop;
-
             sharpGui.Text(timePlayed);
             if (persistence.Current.Party.Undefeated)
             {
@@ -104,7 +87,7 @@ namespace Adventure.Menu
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(GetMenuItems(hasShop)) { Margin = new IntPad(10) }
+               new ColumnLayout(GetMenuItems()) { Margin = new IntPad(10) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -114,22 +97,11 @@ namespace Adventure.Menu
             {
                 explorationMenu.RequestSubMenu(skillMenu, gamepad);
             }
-            else if (sharpGui.Button(items, gamepad, navDown: hasShop ? shop.Id : options.Id, navUp: skills.Id))
+            else if (sharpGui.Button(items, gamepad, navDown: options.Id, navUp: skills.Id))
             {
                 explorationMenu.RequestSubMenu(itemMenu, gamepad);
             }
-            else if (hasShop && sharpGui.Button(shop, gamepad, navDown: options.Id, navUp: items.Id))
-            {
-                //if (explorationGameState.Active && persistence.Current.Party.OldSchool)
-                //{
-                //    persistenceWriter.SaveNewSchool();
-                //    persistence.Current.Party.OldSchool = false;
-                //}
-
-                buyMenu.PreviousMenu = this;
-                explorationMenu.RequestSubMenu(buyMenu, gamepad);
-            }
-            else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: hasShop ? shop.Id : items.Id))
+            else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: items.Id))
             {
                 optionsMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(optionsMenu, gamepad);
