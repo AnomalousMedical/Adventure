@@ -213,7 +213,6 @@ namespace Adventure
             services.AddSingleton<IAssetFactory, AssetFactory>();
             services.AddSingleton<ISkillFactory, SkillFactory>();
             services.AddSingleton<Party>();
-            services.AddSingleton<IShopManager, ShopManager>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IContextMenu, ContextMenu>();

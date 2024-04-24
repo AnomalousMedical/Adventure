@@ -43,7 +43,6 @@ namespace Adventure
         private readonly ILevelCalculator levelCalculator;
         private readonly BuffManager buffManager;
         private readonly IGcService gcService;
-        private readonly IShopManager shopManager;
         private readonly RestManager restManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
@@ -68,7 +67,6 @@ namespace Adventure
             ILevelCalculator levelCalculator,
             BuffManager buffManager,
             IGcService gcService,
-            IShopManager shopManager,
             RestManager restManager
         )
         {
@@ -85,7 +83,6 @@ namespace Adventure
             this.levelCalculator = levelCalculator;
             this.buffManager = buffManager;
             this.gcService = gcService;
-            this.shopManager = shopManager;
             this.restManager = restManager;
         }
 
@@ -118,11 +115,9 @@ namespace Adventure
                 timeClock.NightStarted += TimeClock_NightStarted;
                 ZoneManager_ZoneChanged(null);
                 zoneManager.CenterCamera();
-                shopManager.AddShopBlock(shopBlock);
             }
             else
             {
-                shopManager.RemoveShopBlock(shopBlock);
                 zoneManager.ZoneChanged -= ZoneManager_ZoneChanged;
                 timeClock.DayStarted -= TimeClock_DayStarted;
                 timeClock.NightStarted -= TimeClock_NightStarted;
