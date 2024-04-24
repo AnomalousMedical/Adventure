@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
-    class BlacksmithUpgrade : IDisposable, IWorldMapPlaceable
+    class AlchemistUpgrade : IDisposable, IWorldMapPlaceable
     {
         public class Description : SceneObjectDesc
         {
@@ -45,7 +45,7 @@ namespace Adventure.WorldMap
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public BlacksmithUpgrade(
+        public AlchemistUpgrade(
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -82,7 +82,7 @@ namespace Adventure.WorldMap
             {
                 this.tlasData[i] = new TLASInstanceData()
                 {
-                    InstanceName = RTId.CreateId("BlacksmithUpgrade"),
+                    InstanceName = RTId.CreateId("AlchemistUpgrade"),
                     Mask = RtStructures.OPAQUE_GEOM_MASK,
                     Transform = new InstanceMatrix(finalPosition + description.Transforms[i], currentOrientation, currentScale)
                 };
@@ -90,7 +90,7 @@ namespace Adventure.WorldMap
 
             MoveToPosition();
 
-            if (persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
+            if (persistence.Current.PlotItems.Contains(PlotItems.AlchemistUpgrade))
             {
                 coroutine.RunTask(async () =>
                 {
@@ -186,13 +186,13 @@ namespace Adventure.WorldMap
         private void Talk(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Talk);
-            if (persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
+            if (persistence.Current.PlotItems.Contains(PlotItems.AlchemistUpgrade))
             {
                 //Nothing actually happens here, you have the best store, but this should not appear anyway since this object won't spawn
             }
             else
             {
-                persistence.Current.PlotItems.Add(PlotItems.BlacksmithUpgrade);
+                persistence.Current.PlotItems.Add(PlotItems.AlchemistUpgrade);
                 RequestDestruction();
             }
 
@@ -203,7 +203,7 @@ namespace Adventure.WorldMap
         {
             IntVector2 targetCell;
 
-            targetCell = worldDatabase.BlacksmithUpgradePosition;
+            targetCell = worldDatabase.AlchemistUpgradePosition;
 
             currentPosition = worldMapManager.GetCellCenterpoint(targetCell);
             var finalPosition = currentPosition;

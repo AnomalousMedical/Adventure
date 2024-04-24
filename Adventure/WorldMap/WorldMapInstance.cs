@@ -433,6 +433,19 @@ namespace Adventure.WorldMap
             }
 
             {
+                var alchemistUpgrade = objectResolver.Resolve<AlchemistUpgrade, AlchemistUpgrade.Description>(o =>
+                {
+                    o.Transforms = transforms;
+                    var entrance = new Gargoyle();
+                    o.Sprite = entrance.CreateSprite();
+                    o.SpriteMaterial = entrance.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(alchemistUpgrade);
+            }
+
+            {
                 var innkeeper = objectResolver.Resolve<Innkeeper, Innkeeper.Description>(o =>
                 {
                     o.Transforms = transforms;

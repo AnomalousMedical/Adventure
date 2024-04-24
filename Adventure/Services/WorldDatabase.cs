@@ -46,6 +46,7 @@ namespace Adventure.Services
         IntVector2 BlacksmithPosition { get; }
         IntVector2 AlchemistPosition { get; }
         IntVector2 BlacksmithUpgradePosition { get; }
+        IntVector2 AlchemistUpgradePosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -78,6 +79,7 @@ namespace Adventure.Services
         public IntVector2 BlacksmithPosition { get; private set; }
         public IntVector2 AlchemistPosition { get; private set; }
         public IntVector2 BlacksmithUpgradePosition { get; private set; }
+        public IntVector2 AlchemistUpgradePosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -335,6 +337,7 @@ namespace Adventure.Services
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo thirdStorePhilipIsland;
             IslandInfo blacksmithUpgradeIsland;
+            IslandInfo alchemistUpgradeIsland;
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -580,6 +583,7 @@ namespace Adventure.Services
                 //Area 6
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
                 thirdStorePhilipIsland = island;
+                alchemistUpgradeIsland = island;
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -698,6 +702,7 @@ namespace Adventure.Services
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
+            AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);
         }
 
         /// <summary>
@@ -785,20 +790,13 @@ namespace Adventure.Services
             switch (shopType)
             {
                 case ShopType.Alchemist:
-                    if (plotItems.Contains(PlotItems.Phase2Shop))
+                    if (plotItems.Contains(PlotItems.AlchemistUpgrade))
                     {
                         yield return new ShopEntry("Giant Mana Potion", 135, () => PotionCreator.CreateManaPotion(55));
                     }
 
-                    if (plotItems.Contains(PlotItems.Phase1Shop))
-                    {
-                        yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
-                    }
-
-                    if (plotItems.Contains(PlotItems.Phase1Shop))
-                    {
-                        yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
-                    }
+                    yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
+                    yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
                     break;
 
                 case ShopType.Blacksmith:
