@@ -16,6 +16,7 @@ namespace Adventure.Services
         AirshipKey1,
         Phase1Shop,
         Phase2Shop,
+        BlacksmithUpgrade,
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

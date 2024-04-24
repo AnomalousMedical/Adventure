@@ -406,8 +406,21 @@ namespace Adventure.WorldMap
         {
             areaLocations = new IntVector2[areaBuilders.Count];
 
+            //{
+            //    var storePhilip = objectResolver.Resolve<StorePhilip, StorePhilip.Description>(o =>
+            //    {
+            //        o.Transforms = transforms;
+            //        var entrance = new Gargoyle();
+            //        o.Sprite = entrance.CreateSprite();
+            //        o.SpriteMaterial = entrance.CreateMaterial();
+            //        o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+            //    });
+
+            //    placeables.Add(storePhilip);
+            //}
+
             {
-                var storePhilip = objectResolver.Resolve<StorePhilip, StorePhilip.Description>(o =>
+                var blacksmithUpgrade = objectResolver.Resolve<BlacksmithUpgrade, BlacksmithUpgrade.Description>(o =>
                 {
                     o.Transforms = transforms;
                     var entrance = new Gargoyle();
@@ -416,7 +429,7 @@ namespace Adventure.WorldMap
                     o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
                 });
 
-                placeables.Add(storePhilip);
+                placeables.Add(blacksmithUpgrade);
             }
 
             {

@@ -45,6 +45,7 @@ namespace Adventure.Services
         IntVector2 InkeeperPosition { get; }
         IntVector2 BlacksmithPosition { get; }
         IntVector2 AlchemistPosition { get; }
+        IntVector2 BlacksmithUpgradePosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -76,6 +77,7 @@ namespace Adventure.Services
         public IntVector2 InkeeperPosition { get; private set; }
         public IntVector2 BlacksmithPosition { get; private set; }
         public IntVector2 AlchemistPosition { get; private set; }
+        public IntVector2 BlacksmithUpgradePosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -332,6 +334,7 @@ namespace Adventure.Services
 
             IslandInfo firstStorePhilipIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             IslandInfo thirdStorePhilipIsland;
+            IslandInfo blacksmithUpgradeIsland;
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -542,6 +545,7 @@ namespace Adventure.Services
                 Element firstMonsterElement;
                 //Area 5
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+                blacksmithUpgradeIsland = island;
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -688,9 +692,12 @@ namespace Adventure.Services
 
             StorePhilipLocations.Add(GetUnusedSquare(usedSquares, firstStorePhilipIsland, placementRandom));
             StorePhilipLocations.Add(GetUnusedSquare(usedSquares, thirdStorePhilipIsland, placementRandom));
+            
             InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+
+            BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
         }
 
         /// <summary>
@@ -795,7 +802,7 @@ namespace Adventure.Services
                     break;
 
                 case ShopType.Blacksmith:
-                    if (plotItems.Contains(PlotItems.Phase2Shop))
+                    if (plotItems.Contains(PlotItems.BlacksmithUpgrade))
                     {
                         var treasureLevel = 40;
                         var adjective = "Fancy Store Bought";
@@ -804,7 +811,6 @@ namespace Adventure.Services
                         yield return new ShopEntry($"{adjective} Mace", 350, () => MaceCreator.CreateNormal(treasureLevel, adjective, nameof(Hammer1)));
                     }
 
-                    if (plotItems.Contains(PlotItems.Phase1Shop))
                     {
                         var treasureLevel = 15;
                         var adjective = "Store Bought";

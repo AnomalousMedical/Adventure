@@ -149,6 +149,8 @@ namespace Adventure
             services.AddScoped<ZoneConnector.Description>();
             services.AddScoped<StorePhilip>();
             services.AddScoped<StorePhilip.Description>();
+            services.AddScoped<BlacksmithUpgrade>();
+            services.AddScoped<BlacksmithUpgrade.Description>();
             services.AddScoped<Innkeeper>();
             services.AddScoped<Innkeeper.Description>();
             services.AddScoped<Blacksmith>();
