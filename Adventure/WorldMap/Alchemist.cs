@@ -33,6 +33,7 @@ namespace Adventure.WorldMap
         private readonly ICoroutineRunner coroutineRunner;
         private readonly BuyMenu buyMenu;
         private readonly IExplorationMenu explorationMenu;
+        private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -62,7 +63,8 @@ namespace Adventure.WorldMap
             TextDialog textDialog,
             ICoroutineRunner coroutineRunner,
             BuyMenu buyMenu,
-            IExplorationMenu explorationMenu)
+            IExplorationMenu explorationMenu,
+            Persistence persistence)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -77,6 +79,7 @@ namespace Adventure.WorldMap
             this.coroutineRunner = coroutineRunner;
             this.buyMenu = buyMenu;
             this.explorationMenu = explorationMenu;
+            this.persistence = persistence;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -186,7 +189,12 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                await textDialog.ShowTextAndWait("I have potions to restore and invigorate.", args.GamepadId);
+                var message = "I have potions to restore and invigorate.";
+                if (persistence.Current.PlotItems.Contains(PlotItems.AlchemistUpgrade))
+                {
+                    message = "My potions will really pack a punch now.";
+                }
+                await textDialog.ShowTextAndWait(message, args.GamepadId);
                 buyMenu.PreviousMenu = null;
                 buyMenu.CurrentShopType = ShopType.Alchemist;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);

@@ -14,8 +14,6 @@ namespace Adventure.Services
     {
         AirshipKey0,
         AirshipKey1,
-        Phase1Shop,
-        Phase2Shop,
         BlacksmithUpgrade,
         AlchemistUpgrade,
     }
