@@ -151,6 +151,8 @@ namespace Adventure
             services.AddScoped<StorePhilip.Description>();
             services.AddScoped<Innkeeper>();
             services.AddScoped<Innkeeper.Description>();
+            services.AddScoped<Blacksmith>();
+            services.AddScoped<Blacksmith.Description>();
             services.AddScoped<WorldWater>();
             services.AddScoped<WorldWater.Description>();
             services.AddScoped<WorldMapInstance>();
