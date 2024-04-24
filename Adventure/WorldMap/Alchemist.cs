@@ -188,6 +188,7 @@ namespace Adventure.WorldMap
             {
                 await textDialog.ShowTextAndWait("I have potions to restore and invigorate.", args.GamepadId);
                 buyMenu.PreviousMenu = null;
+                buyMenu.CurrentShopType = ShopType.Alchemist;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
             });
         }

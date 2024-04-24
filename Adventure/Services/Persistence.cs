@@ -6,14 +6,12 @@ using RpgMath;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using static Adventure.Services.Persistence;
 
 namespace Adventure.Services
 {
     [JsonConverter(typeof(JsonStringEnumConverter<PlotItems>))]
     enum PlotItems
     {
-        PortalKey0,
         AirshipKey0,
         AirshipKey1,
         Phase1Shop,

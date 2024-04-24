@@ -112,6 +112,8 @@ namespace Adventure.Menu
 
         public IExplorationSubMenu PreviousMenu { get; set; }
 
+        public ShopType CurrentShopType { get; set; }
+
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
@@ -187,7 +189,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
 
             var canBuy = characterData.HasRoom;
 
-            var shopItems = worldDatabase.CreateShopItems(persistence.Current.PlotItems)
+            var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
                 .Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i))
                 .ToArray();
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);

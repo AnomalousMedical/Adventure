@@ -188,6 +188,7 @@ namespace Adventure.WorldMap
             {
                 await textDialog.ShowTextAndWait("I have many weapons to buy and sell.", args.GamepadId);
                 buyMenu.PreviousMenu = null;
+                buyMenu.CurrentShopType = ShopType.Blacksmith;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
             });
         }

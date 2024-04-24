@@ -10,13 +10,19 @@ using System.Linq;
 
 namespace Adventure.Services
 {
+    public enum ShopType
+    {
+        Alchemist,
+        Blacksmith,
+    }
+
     interface IWorldDatabase
     {
         int GetZoneSeed(int index);
         IAreaBuilder GetAreaBuilder(int zoneIndex);
         int GetLevelDelta(int area);
         void Reset(int newSeed);
-        IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems);
+        IEnumerable<ShopEntry> CreateShopItems(ShopType shopType, HashSet<PlotItems> plotItems);
         IEnumerable<PartyMember> CreateParty();
 
         IBiomeManager BiomeManager { get; }
@@ -331,7 +337,7 @@ namespace Adventure.Services
             //Phase 0
             {
                 var startingBiome = BiomeType.Countryside;
-                
+
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
                 var phase0UniqueTreasures = new List<Treasure>
                 {
@@ -767,39 +773,46 @@ namespace Adventure.Services
             return islandZoneLocations;
         }
 
-        public IEnumerable<ShopEntry> CreateShopItems(HashSet<PlotItems> plotItems)
+        public IEnumerable<ShopEntry> CreateShopItems(ShopType shopType, HashSet<PlotItems> plotItems)
         {
-            if (plotItems.Contains(PlotItems.Phase2Shop))
+            switch (shopType)
             {
-                yield return new ShopEntry("Giant Mana Potion", 135, () => PotionCreator.CreateManaPotion(55));
-            }
+                case ShopType.Alchemist:
+                    if (plotItems.Contains(PlotItems.Phase2Shop))
+                    {
+                        yield return new ShopEntry("Giant Mana Potion", 135, () => PotionCreator.CreateManaPotion(55));
+                    }
 
-            if (plotItems.Contains(PlotItems.Phase1Shop))
-            {
-                yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
-            }
+                    if (plotItems.Contains(PlotItems.Phase1Shop))
+                    {
+                        yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
+                    }
 
-            if (plotItems.Contains(PlotItems.Phase1Shop))
-            {
-                yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
-            }
+                    if (plotItems.Contains(PlotItems.Phase1Shop))
+                    {
+                        yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
+                    }
+                    break;
 
-            if (plotItems.Contains(PlotItems.Phase2Shop))
-            {
-                var treasureLevel = 40;
-                var adjective = "Fancy Store Bought";
-                yield return new ShopEntry($"{adjective} Sword", 350, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
-                yield return new ShopEntry($"{adjective} Spear", 350, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
-                yield return new ShopEntry($"{adjective} Mace", 350, () => MaceCreator.CreateNormal(treasureLevel, adjective, nameof(Hammer1)));
-            }
+                case ShopType.Blacksmith:
+                    if (plotItems.Contains(PlotItems.Phase2Shop))
+                    {
+                        var treasureLevel = 40;
+                        var adjective = "Fancy Store Bought";
+                        yield return new ShopEntry($"{adjective} Sword", 350, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
+                        yield return new ShopEntry($"{adjective} Spear", 350, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
+                        yield return new ShopEntry($"{adjective} Mace", 350, () => MaceCreator.CreateNormal(treasureLevel, adjective, nameof(Hammer1)));
+                    }
 
-            if (plotItems.Contains(PlotItems.Phase1Shop))
-            {
-                var treasureLevel = 15;
-                var adjective = "Store Bought";
-                yield return new ShopEntry($"{adjective} Sword", 150, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
-                yield return new ShopEntry($"{adjective} Spear", 150, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
-                yield return new ShopEntry($"{adjective} Mace", 150, () => MaceCreator.CreateNormal(treasureLevel, adjective, nameof(Hammer1)));
+                    if (plotItems.Contains(PlotItems.Phase1Shop))
+                    {
+                        var treasureLevel = 15;
+                        var adjective = "Store Bought";
+                        yield return new ShopEntry($"{adjective} Sword", 150, () => SwordCreator.CreateNormal(treasureLevel, adjective, nameof(Sword1)));
+                        yield return new ShopEntry($"{adjective} Spear", 150, () => SpearCreator.CreateNormal(treasureLevel, adjective, nameof(Spear1)));
+                        yield return new ShopEntry($"{adjective} Mace", 150, () => MaceCreator.CreateNormal(treasureLevel, adjective, nameof(Hammer1)));
+                    }
+                    break;
             }
         }
 
