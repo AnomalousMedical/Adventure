@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Assets.PixelEffects;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 using System.Collections.Generic;
@@ -95,7 +96,7 @@ namespace Adventure.Battle.Skills
 
             var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
             {
-                var asset = new Assets.PixelEffects.MagicBubbles();
+                var asset = new MagicBubbles();
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
@@ -110,7 +111,7 @@ namespace Adventure.Battle.Skills
 
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(1.5);
+                yield return coroutine.WaitSeconds(MagicBubbles.Duration);
                 applyEffect.RequestDestruction();
             }
             coroutine.Run(run());

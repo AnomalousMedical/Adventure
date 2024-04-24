@@ -13,6 +13,8 @@ namespace Adventure.Assets.PixelEffects
     {
         public ISpriteAsset CreateAnotherInstance() => new MagicBubbles();
 
+        public const float Duration = 0.5f;
+
         private const string colorMap = "Graphics/Sprites/vfx-free-pack/heal_347x341.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>();
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription

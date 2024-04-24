@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.PixelEffects;
 using Adventure.Assets.SoundEffects;
 using Adventure.Services;
 using Engine;
@@ -92,7 +93,7 @@ namespace Adventure.Battle.Skills
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
                 {
-                    ISpriteAsset asset = new Assets.PixelEffects.MagicBubbles();
+                    ISpriteAsset asset = new MagicBubbles();
                     o.RenderShadow = false;
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
@@ -110,7 +111,7 @@ namespace Adventure.Battle.Skills
             var effect = new SkillEffect();
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(0.5);
+                yield return coroutine.WaitSeconds(MagicBubbles.Duration);
                 foreach (var currentTarget in targets)
                 {
                     battleManager.HandleDeath(currentTarget);
