@@ -30,6 +30,8 @@ namespace Adventure.WorldMap
         private readonly IWorldMapManager worldMapManager;
         private readonly Persistence persistence;
         private readonly IWorldDatabase worldDatabase;
+        private readonly ICoroutineRunner coroutineRunner;
+        private readonly TextDialog textDialog;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -56,7 +58,9 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             IWorldMapManager worldMapManager,
             Persistence persistence,
-            IWorldDatabase worldDatabase)
+            IWorldDatabase worldDatabase,
+            ICoroutineRunner coroutineRunner,
+            TextDialog textDialog)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -68,6 +72,8 @@ namespace Adventure.WorldMap
             this.worldMapManager = worldMapManager;
             this.persistence = persistence;
             this.worldDatabase = worldDatabase;
+            this.coroutineRunner = coroutineRunner;
+            this.textDialog = textDialog;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -192,8 +198,12 @@ namespace Adventure.WorldMap
             }
             else
             {
-                persistence.Current.PlotItems.Add(PlotItems.BlacksmithUpgrade);
-                RequestDestruction();
+                coroutineRunner.RunTask(async () =>
+                {
+                    await textDialog.ShowTextAndWait("The gargoyle whispers ancient blacksmithing secrets into your ear...", args.GamepadId);
+                    persistence.Current.PlotItems.Add(PlotItems.BlacksmithUpgrade);
+                    RequestDestruction();
+                });
             }
 
             MoveToPosition();
