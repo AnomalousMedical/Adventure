@@ -189,7 +189,7 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                var message = "I have potions to restore and invigorate.";
+                var message = "My potions will keep you going.";
                 if (persistence.Current.PlotItems.Contains(PlotItems.AlchemistUpgrade))
                 {
                     message = "My potions will really pack a punch now.";

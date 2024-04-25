@@ -189,10 +189,10 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                var message = "I have many weapons to buy and sell.";
+                var message = "I have the best weapons around.";
                 if(persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
                 {
-                    message = "With this knowledge I can make even more advanced weapons.";
+                    message = "With this knowledge I can make my weapons even better.";
                 }
                 await textDialog.ShowTextAndWait(message, args.GamepadId);
                 buyMenu.PreviousMenu = null;
