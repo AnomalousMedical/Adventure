@@ -76,7 +76,7 @@ namespace RpgMath
                     }
                     else
                     {
-                        value *= (level / 10 * 2 + 2);
+                        value *= (level / 10 * 2 + 4); //Was originally +7
                     }
                     break;
                 case EnemyType.Badass:
