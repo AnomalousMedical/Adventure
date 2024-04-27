@@ -475,7 +475,7 @@ namespace Adventure.WorldMap
                 var fortuneTeller = objectResolver.Resolve<FortuneTeller, FortuneTeller.Description>(o =>
                 {
                     o.Transforms = transforms;
-                    var sprite = new Assets.NPC.Alchemist();
+                    var sprite = new Assets.NPC.FortuneTeller();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
                     o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
