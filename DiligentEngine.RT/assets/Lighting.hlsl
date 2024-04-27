@@ -119,7 +119,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
     float3  col = float3(0.0, 0.0, 0.0);
 
     // Add a small offset to avoid self-intersections.
-    ray.Origin = Pos + Norm * SMALL_OFFSET;
+    ray.Origin = Pos + Norm * instanceData.raycastSmallOffset;
     ray.TMin = 0.0;
 
     for (int i = 0; i < g_ConstantsCB.NumActiveLights; ++i)
@@ -159,7 +159,7 @@ void LightingPass(inout float3 Color, float3 Pos, float3 Norm, float3 pertbNorm,
     float3  col = float3(0.0, 0.0, 0.0);
 
     // Add a small offset to avoid self-intersections.
-    ray.Origin = Pos + Norm * SMALL_OFFSET;
+    ray.Origin = Pos + Norm * instanceData.raycastSmallOffset;
     ray.TMin = 0.0;
 
     float3 view = g_ConstantsCB.CameraPos.xyz - Pos;
@@ -321,7 +321,7 @@ void LightAndShadeBaseNormalPhysicalReflective
     {
         // Reflect from the normal
         RayDesc ray;
-        ray.Origin = WorldRayOrigin() + WorldRayDirection() * RayTCurrent() + normal * SMALL_OFFSET;
+        ray.Origin = WorldRayOrigin() + WorldRayDirection() * RayTCurrent() + normal * instanceData.raycastSmallOffset;
         ray.TMin = 0.0;
         ray.TMax = 100.0;
         ray.Direction = reflect(WorldRayDirection(), pertNormal);

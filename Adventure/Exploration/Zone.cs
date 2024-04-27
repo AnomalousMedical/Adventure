@@ -470,6 +470,7 @@ namespace Adventure
                 floorBlasInstanceData = activeTextures.AddActiveTexture(floorTexture, floorTexture2, wallTexture, wallTexture2, noiseTexture);
                 floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, biome.ReflectFloor, false, BlasSpecialMaterial.MultiTexture);
                 floorBlasInstanceData.padding = 4; //The padding is the noise, which is the 5th texture
+                floorBlasInstanceData.raycastSmallOffset = 0.1f;
                 rtInstances.AddTlasBuild(floorInstanceData);
 
                 ResetPlacementData();

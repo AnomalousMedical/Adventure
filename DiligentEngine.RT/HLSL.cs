@@ -46,6 +46,11 @@ namespace DiligentEngine.RT.HLSL
     [StructLayout(LayoutKind.Sequential)]
     public struct BlasInstanceData
     {
+        public BlasInstanceData()
+        {
+            raycastSmallOffset = 0.0001f;
+        }
+
         public float u1;//also base color extras in mesh
         public float v1;
         public float u2;//also normal extras in mesh
@@ -63,7 +68,7 @@ namespace DiligentEngine.RT.HLSL
         public uint vertexOffset;
         public uint dispatchType;
         public uint padding;
-        public uint extra0;
+        public float raycastSmallOffset; //A small offset to apply to rays cast in the shader. This is a cheap / ok fix, but there is a better way: https://developer.nvidia.com/blog/solving-self-intersection-artifacts-in-directx-raytracing/
         public uint extra1;
         public uint extra2;
         public uint extra3;

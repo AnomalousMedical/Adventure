@@ -13,7 +13,7 @@ struct BlasInstanceData
     uint vertexOffset;
     uint dispatchType;
     uint padding;   //also GlassMaterialColor
-    uint extra0;    //also edge distance texture index
+    float raycastSmallOffset;
     uint extra1;
     uint extra2;
     uint extra3;
@@ -122,7 +122,5 @@ struct AngularInfo
 
 
 // Small offset between ray intersection and new ray origin to avoid self-intersections.
-//TODO: IT might be ideal to move this epsilon to config struct.
-//This value is fairly large, but it fixes the triangles that appear in the world mesh
-# define SMALL_OFFSET 0.1
+# define SMALL_OFFSET 0.0001
 
