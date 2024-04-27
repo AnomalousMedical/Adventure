@@ -14,6 +14,10 @@ namespace Adventure
         void GiveTo(Inventory inventory);
 
         void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions);
+
+        int? Id { get; }
+
+        string FortuneText { get; }
     }
 
     class Treasure : ITreasure
@@ -25,6 +29,10 @@ namespace Adventure
         public bool CanUseOnPickup => inventoryItem.CanUseOnPickup;
 
         public bool CanEquipOnPickup => inventoryItem.Equipment != null;
+
+        public int? Id { get; init; }
+
+        public string FortuneText { get; init; }
 
         public Treasure(InventoryItem inventoryItem)
         {

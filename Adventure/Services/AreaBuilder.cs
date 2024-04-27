@@ -24,6 +24,10 @@ namespace Adventure.Services
         IntVector2 Location { get; }
 
         public int? EnemyLevel { get; }
+
+        public IEnumerable<ITreasure> UniqueStealTreasure { get; }
+
+        public IEnumerable<ITreasure> BossUniqueStealTreasure { get; }
     }
 
     class AreaBuilder : IAreaBuilder

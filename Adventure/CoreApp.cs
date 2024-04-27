@@ -157,6 +157,8 @@ namespace Adventure
             services.AddScoped<Blacksmith.Description>();
             services.AddScoped<Alchemist>();
             services.AddScoped<Alchemist.Description>();
+            services.AddScoped<FortuneTeller>();
+            services.AddScoped<FortuneTeller.Description>();
             services.AddScoped<WorldWater>();
             services.AddScoped<WorldWater.Description>();
             services.AddScoped<WorldMapInstance>();

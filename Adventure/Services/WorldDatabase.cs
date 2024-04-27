@@ -46,6 +46,7 @@ namespace Adventure.Services
         IntVector2 AlchemistPosition { get; }
         IntVector2 BlacksmithUpgradePosition { get; }
         IntVector2 AlchemistUpgradePosition { get; }
+        IntVector2 FortuneTellerPosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -78,6 +79,7 @@ namespace Adventure.Services
         public IntVector2 AlchemistPosition { get; private set; }
         public IntVector2 BlacksmithUpgradePosition { get; private set; }
         public IntVector2 AlchemistUpgradePosition { get; private set; }
+        public IntVector2 FortuneTellerPosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -314,7 +316,7 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var biomes = new List<BiomeType>() { BiomeType.Desert, BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain };
+            var biomes = new List<BiomeType>() { BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain }; //BiomeType.Desert, 
             var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
@@ -340,7 +342,7 @@ namespace Adventure.Services
                 var startingBiome = BiomeType.Countryside;
 
                 var firstBoss = monsterInfo.Where(i => i.NativeBiome == startingBiome).First();
-                var phase0UniqueTreasures = new List<Treasure>
+                var phase0Treasures = new List<Treasure>
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)),
@@ -359,7 +361,7 @@ namespace Adventure.Services
                 areaBuilder.Biome = startingBiome;
                 areaBuilder.BossMonster = firstBoss;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-                areaBuilder.Treasure = phase0UniqueTreasures;
+                areaBuilder.Treasure = phase0Treasures;
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)),
@@ -410,8 +412,8 @@ namespace Adventure.Services
 
                 var phase2UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger2), phase2TreasureLevel, phase2Adjective, nameof(Steal))),
-                    new Treasure(PotionCreator.CreateLuckBoost(2))
+                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger2), phase2TreasureLevel, phase2Adjective, nameof(Steal)))
+                    { Id = 200, FortuneText = "Assassin" }
                 };
 
                 const int zoneCount = 2;
@@ -528,9 +530,12 @@ namespace Adventure.Services
 
                 var phase3UniqueStolenTreasures = new List<Treasure>
                 {
-                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste))),
-                    new Treasure(AccessoryCreator.CreateDoublecast()),
-                    new Treasure(PotionCreator.CreateLuckBoost(6)),
+                    new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste)))
+                    { Id = 300, FortuneText = "Hourglass" },
+                    new Treasure(AccessoryCreator.CreateDoublecast())
+                    { Id = 301, FortuneText = "Ring of Elements" },
+                    new Treasure(PotionCreator.CreateLuckBoost(20))
+                    { Id = 302, FortuneText = "Elephant" },
                 };
 
                 var zoneCount = 3;
@@ -691,6 +696,7 @@ namespace Adventure.Services
             InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            FortuneTellerPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
             AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);

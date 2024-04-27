@@ -38,7 +38,7 @@ namespace Adventure
         public record struct BattleTriggerPersistenceData(bool Dead, bool StolenFrom);
         private BattleTriggerPersistenceData state;
 
-        public record struct UniqueStolenTreasureData(bool Stolen);
+        public record struct UniqueStolenTreasureData(bool Stolen, int?[] UniqueTreasureIds);
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -270,7 +270,7 @@ namespace Adventure
 
             if (hasUniqueStolenTreasure)
             {
-                SetUniqueStolenTreasureState(description, persistence, new UniqueStolenTreasureData(true));
+                SetUniqueStolenTreasureState(description, persistence, new UniqueStolenTreasureData(true, stealTreasures.Where(i => i.Id != null).Select(i => i.Id).ToArray()));
             }
 
             var treasures = stealTreasures;
