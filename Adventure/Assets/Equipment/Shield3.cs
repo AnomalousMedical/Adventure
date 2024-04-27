@@ -31,8 +31,8 @@ namespace Adventure.Assets.Equipment
             return defaultMaterial;
         }
 
-        const float width = 25;
-        const float height = 42;
+        const float width = 19;
+        const float height = 27;
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
         {
@@ -41,28 +41,28 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(12, 28.5f, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
                     }
                 },
                 new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(12, 28.5f, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
                     }
                 },
                 new SpriteFrame(2f / 3f, 0f, 1, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(12, 28.5f, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
                     }
                 },
                 new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(12, 28.5f, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
                     }
                 })
             },
@@ -71,7 +71,7 @@ namespace Adventure.Assets.Equipment
         public ISprite CreateSprite()
         {
             return new KeepTimeSprite(animations)
-            { BaseScale = new Vector3(width / height * 0.95f, 0.95f, 1.0f) };
+            { BaseScale = new Vector3(width / height * 0.85f, 0.85f, 1.0f) };
         }
     }
 }
