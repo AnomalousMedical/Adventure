@@ -187,8 +187,6 @@ namespace Adventure
             services.AddScoped<LootDropTrigger.Description>();
             services.AddScoped<Sky>();
             services.AddScoped<TargetCursor>();
-            services.AddScoped<Philip>();
-            services.AddScoped<Philip.Description>();
             services.AddScoped<IBattleSkills, BattleSkills>();
             services.AddScoped<BattleItemMenu>();
             services.AddScoped<StealEffect>();
@@ -226,7 +224,6 @@ namespace Adventure
             services.AddSingleton<ISeedProvider, RandomSeedProvider>();
 #endif
             services.AddSingleton<IPersistenceWriter, PersistenceWriter>();
-            services.AddSingleton<PhilipRootMenu>();
             services.AddSingleton<IGenesysModule, GenesysModule>();
             services.AddSingleton<IEquipmentCurve, StandardEquipmentCurve>();
             services.AddSingleton<ItemMenu>();

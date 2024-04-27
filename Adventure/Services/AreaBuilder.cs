@@ -119,7 +119,6 @@ namespace Adventure.Services
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
 
-            o.MakePhilip = false;
             o.MakeRest = false;
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;

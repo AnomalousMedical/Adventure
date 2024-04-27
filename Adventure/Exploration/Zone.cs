@@ -126,11 +126,6 @@ namespace Adventure
             /// </summary>
             public bool MakeRest { get; set; }
 
-            /// <summary>
-            /// Set this to true to make Philip in this zone.
-            /// </summary>
-            public bool MakePhilip { get; set; }
-
             public bool MakeBoss { get; set; }
 
             public bool MakeGate { get; set; }
@@ -204,7 +199,6 @@ namespace Adventure
         private int enemySeed;
         private int index;
         private bool makeRestArea;
-        private bool makePhilip;
         private bool makeBoss;
         private bool makeGate;
         private int enemyLevel;
@@ -268,7 +262,6 @@ namespace Adventure
             this.enemySeed = description.EnemySeed;
             this.makeRestArea = description.MakeRest;
             this.Area = description.Area;
-            this.makePhilip = description.MakePhilip;
             this.makeBoss = description.MakeBoss;
             this.makeGate = description.MakeGate;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
@@ -723,7 +716,6 @@ namespace Adventure
         private int treasureIndex;
         private int enemyIndex;
         private bool placeRestArea;
-        private bool placePhilip;
         private bool placeBoss;
         private bool placeGate;
         private bool placeKey;
@@ -735,7 +727,6 @@ namespace Adventure
             treasureIndex = 0;
             enemyIndex = 0;
             placeRestArea = this.makeRestArea;
-            placePhilip = this.makePhilip;
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
             placeFirstChest = true;
@@ -925,24 +916,6 @@ namespace Adventure
                 var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
                 var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 PlaceKey(point);
-            }
-
-            //Philip gets a room always
-            if (placePhilip)
-            {
-                var philipRoom = GetRoom();
-                var room = mapMesh.MapBuilder.Rooms[philipRoom];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                var mapLoc = mapMesh.PointToVector(point.x, point.y);
-
-                placePhilip = false;
-                var philip = objectResolver.Resolve<Philip, Philip.Description>(o =>
-                {
-                    o.ZoneIndex = index;
-                    o.MapOffset = mapLoc;
-                    o.Translation = currentPosition + o.MapOffset;
-                });
-                this.placeables.Add(philip);
             }
 
             Vector3 endZoneItemOffset;
