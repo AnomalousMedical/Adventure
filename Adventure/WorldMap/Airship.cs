@@ -190,6 +190,7 @@ namespace Adventure.WorldMap
             eventManager.removeEvent(moveBackward);
             eventManager.removeEvent(moveLeft);
             eventManager.removeEvent(moveRight);
+            DestroyPhysics();
         }
 
         private void CreateGraphics()
