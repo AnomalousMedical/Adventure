@@ -169,7 +169,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Rest", Talk, player.GamepadId);
+                contextMenu.HandleContext("Greet", Talk, player.GamepadId);
             }
         }
 
