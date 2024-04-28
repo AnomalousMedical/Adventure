@@ -61,6 +61,8 @@ namespace Adventure.Services
             public WorldData World { get; init; } = new WorldData();
 
             public PartyData Party { get; init; } = new PartyData();
+
+            public DateTime SaveTime { get; set; }
         }
 
         public class PersistenceEntry<T>

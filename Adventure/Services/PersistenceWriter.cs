@@ -12,6 +12,7 @@ namespace Adventure.Services
     {
         void AddSaveBlock(object blocker);
         string CreateSaveFileName();
+        IAsyncEnumerable<SaveDataInfo> GetAllSaveData();
         IEnumerable<string> GetSaveFiles();
         void Load();
         void RemoveSaveBlock(object blocker);
@@ -19,6 +20,13 @@ namespace Adventure.Services
         void SaveDefeated();
         void SaveGameOver(bool isGameOver);
         void SaveNewSchool();
+    }
+
+    class SaveDataInfo
+    {
+        public Persistence.GameState GameState { get; set; }
+
+        public String FileName { get; set; }
     }
 
     class PersistenceWriter : IPersistenceWriter, IDisposable
@@ -118,12 +126,13 @@ namespace Adventure.Services
 
         private void SaveData(Persistence.GameState state)
         {
+            state.SaveTime = DateTime.Now;
             var outFile = GetSaveFile();
             using var stream = File.Open(outFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
             JsonSerializer.Serialize(stream, state, PersistenceWriterSourceGenerationContext.Default.GameState);
             logger.LogInformation($"Wrote save to '{outFile}'.");
         }
-        
+
         private String GetSaveFile()
         {
             var outDir = GetSaveDirectory();
@@ -141,6 +150,21 @@ namespace Adventure.Services
             Directory.CreateDirectory(outDir);
 
             return Directory.GetFiles(outDir, "save*.json", SearchOption.TopDirectoryOnly).Select(i => Path.GetFileName(i));
+        }
+
+        public async IAsyncEnumerable<SaveDataInfo> GetAllSaveData()
+        {
+            foreach (var file in GetSaveFiles())
+            {
+                var outDir = GetSaveDirectory();
+                var outFile = Path.Combine(outDir, Path.GetFileName(file));
+                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                yield return new SaveDataInfo()
+                {
+                    GameState = await JsonSerializer.DeserializeAsync<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState),
+                    FileName = file,
+                };
+            }
         }
 
         private string GetSaveDirectory()

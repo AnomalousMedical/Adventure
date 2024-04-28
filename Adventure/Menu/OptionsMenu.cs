@@ -23,6 +23,7 @@ namespace Adventure.Menu
         private readonly IGameStateRequestor gameStateRequestor;
         private readonly IPersistenceWriter persistenceWriter;
         private readonly IResetGameState resetGameState;
+        private readonly ICoroutineRunner coroutineRunner;
         private readonly SharpButton players = new SharpButton() { Text = "Players" };
         private readonly SharpButton toggleFullscreen = new SharpButton() { Text = "Fullscreen" };
         private readonly SharpButton load = new SharpButton() { Text = "Load" };
@@ -33,7 +34,9 @@ namespace Adventure.Menu
 
         private const int NoSelectedCharacter = -1;
         private int selectedCharacter = NoSelectedCharacter;
-        private List<ButtonColumnItem<String>> saveFiles = null;
+
+        record SaveInfo(string FileName, DateTime SaveTime);
+        private List<ButtonColumnItem<SaveInfo>> saveFiles = null;
 
         public OptionsMenu
         (
@@ -46,7 +49,8 @@ namespace Adventure.Menu
             PlayerMenu playerMenu,
             IGameStateRequestor gameStateRequestor,
             IPersistenceWriter persistenceWriter,
-            IResetGameState resetGameState
+            IResetGameState resetGameState,
+            ICoroutineRunner coroutineRunner
         )
         {
             this.scaleHelper = scaleHelper;
@@ -59,6 +63,7 @@ namespace Adventure.Menu
             this.gameStateRequestor = gameStateRequestor;
             this.persistenceWriter = persistenceWriter;
             this.resetGameState = resetGameState;
+            this.coroutineRunner = coroutineRunner;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -72,17 +77,17 @@ namespace Adventure.Menu
                 loadButtons.Bottom = screenPositioner.ScreenSize.Height;
 
                 var newSelection = loadButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
-                if(newSelection != null)
+                if (newSelection != null)
                 {
                     persistenceWriter.Save();
-                    options.CurrentSave = newSelection;
+                    options.CurrentSave = newSelection.FileName;
                     menu.RequestSubMenu(null, gamepadId);
                     gameStateRequestor.RequestGameState(resetGameState);
                     saveFiles = null;
                     menu.RequestSubMenu(null, gamepadId);
                 }
 
-                if (sharpGui.Button(back, gamepadId, navLeft: loadButtons.TopButton, navRight: loadButtons.TopButton) 
+                if (sharpGui.Button(back, gamepadId, navLeft: loadButtons.TopButton, navRight: loadButtons.TopButton)
                     || sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     saveFiles = null;
@@ -117,9 +122,51 @@ namespace Adventure.Menu
                 }
             }
 
-            if(sharpGui.Button(load, gamepadId, navUp: toggleFullscreen.Id, navDown: newGame.Id))
+            if (sharpGui.Button(load, gamepadId, navUp: toggleFullscreen.Id, navDown: newGame.Id))
             {
-                saveFiles = persistenceWriter.GetSaveFiles().Select(i => new ButtonColumnItem<string>(i, i)).ToList();
+                saveFiles = new List<ButtonColumnItem<SaveInfo>>();
+                var mySaveFiles = saveFiles;
+                coroutineRunner.RunTask(async () =>
+                {
+                    await foreach (var save in persistenceWriter.GetAllSaveData())
+                    {
+                        if (saveFiles != mySaveFiles)
+                        {
+                            break;
+                        }
+
+                        var message =
+@$"{save.GameState.Party.Members.FirstOrDefault()?.CharacterSheet?.Name}
+Areas Cleared: {save.GameState.World.CompletedAreaLevels.Count}
+Level: {save.GameState.World.Level}
+Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
+
+                        if (save.GameState.Party.Undefeated)
+                        {
+                            message += "\nUndefeated";
+                        }
+
+                        if (save.GameState.Party.OldSchool)
+                        {
+                            message += "\nOld School";
+                        }
+
+                        message += $"\nSaved: {save.GameState.SaveTime}";
+
+                        var buttonColumnItem = new ButtonColumnItem<SaveInfo>(message, new SaveInfo(save.FileName, save.GameState.SaveTime));
+
+                        if (mySaveFiles.Count == 0)
+                        {
+                            mySaveFiles.Add(buttonColumnItem);
+                        }
+                        else
+                        {
+                            var i = 0;
+                            for (; i < mySaveFiles.Count && save.GameState.SaveTime < mySaveFiles[i].Item.SaveTime; i++) { }
+                            mySaveFiles.Insert(i, buttonColumnItem);
+                        }
+                    }
+                });
             }
 
             if (sharpGui.Button(newGame, gamepadId, navUp: load.Id, navDown: exitGame.Id))
