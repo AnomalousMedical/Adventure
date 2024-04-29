@@ -104,9 +104,6 @@ class PickUpTreasureMenu
             currentSheet = 0;
         }
         var sheet = persistence.Current.Party.Members[currentSheet];
-        var hasInventoryRoom = sheet.HasRoom;
-
-        take.Text = hasInventoryRoom ? "Take" : "Replace";
 
         currentCharacter.Text = sheet.CharacterSheet.Name;
         inventoryInfo.Text = equippingItem ? "Equip" : $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
@@ -120,6 +117,10 @@ class PickUpTreasureMenu
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
         var treasure = currentTreasure.Peek();
+
+        var hasInventoryRoom = treasure.IsPlotItem || sheet.HasRoom;
+
+        take.Text = hasInventoryRoom ? "Take" : "Replace";
 
         itemInfo.Text = treasure.InfoText;
 
@@ -185,7 +186,7 @@ class PickUpTreasureMenu
         {
             if (sharpGui.Button(equip, gamepadId, navUp: continueButton.Id, navDown: continueButton.Id))
             {
-                treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions);
+                treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions, persistence.Current);
                 currentTreasure.Pop();
                 equippingItem = false;
             }
@@ -206,7 +207,7 @@ class PickUpTreasureMenu
                     {
                         currentTreasure.Pop();
                     }
-                    treasure.GiveTo(sheet.Inventory);
+                    treasure.GiveTo(sheet.Inventory, persistence.Current);
                 }
                 else
                 {
@@ -222,7 +223,7 @@ class PickUpTreasureMenu
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
                         currentTreasure.Pop();
-                        treasure.Use(i.Inventory, i.CharacterSheet, inventoryFunctions);
+                        treasure.Use(i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
                     }))
                     .ToList();
                 }
@@ -270,7 +271,7 @@ class PickUpTreasureMenu
                             currentTreasure.Pop();
                         }
                         sheet.RemoveItem(removeItem);
-                        treasure.GiveTo(sheet.Inventory);
+                        treasure.GiveTo(sheet.Inventory, persistence.Current);
                     }
                 }
 

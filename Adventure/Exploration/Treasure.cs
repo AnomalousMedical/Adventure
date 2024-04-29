@@ -1,4 +1,5 @@
 ﻿using Adventure.Items;
+using Adventure.Services;
 using RpgMath;
 
 namespace Adventure
@@ -11,9 +12,11 @@ namespace Adventure
 
         bool CanEquipOnPickup { get; }
 
-        void GiveTo(Inventory inventory);
+        bool IsPlotItem { get; }
 
-        void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions);
+        void GiveTo(Inventory inventory, Persistence.GameState gameState);
+
+        void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
 
         int? Id { get; }
 
@@ -30,6 +33,8 @@ namespace Adventure
 
         public bool CanEquipOnPickup => inventoryItem.Equipment != null;
 
+        public bool IsPlotItem => false;
+
         public int? Id { get; init; }
 
         public string FortuneText { get; init; }
@@ -39,14 +44,47 @@ namespace Adventure
             this.inventoryItem = inventoryItem;
         }
 
-        public void GiveTo(Inventory inventory)
+        public void GiveTo(Inventory inventory, Persistence.GameState gameState)
         {
             inventory.Items.Insert(0, inventoryItem);
         }
 
-        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions)
+        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState)
         {
             inventoryFunctions.Use(this.inventoryItem, inventory, user, user);
+        }
+    }
+
+    class PlotItemTreasure : ITreasure
+    {
+        private readonly PlotItems plotItem;
+
+        public string InfoText { get; init; }
+
+        public bool CanUseOnPickup => false;
+
+        public bool CanEquipOnPickup => false;
+
+        public bool IsPlotItem => true;
+
+        public int? Id { get; init; }
+
+        public string FortuneText { get; init; }
+
+        public PlotItemTreasure(PlotItems plotItem, string infoText)
+        {
+            this.InfoText = infoText;
+            this.plotItem = plotItem;
+        }
+
+        public void GiveTo(Inventory inventory, Persistence.GameState gameState)
+        {
+            gameState.PlotItems.Add(plotItem);
+        }
+
+        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState)
+        {
+            gameState.PlotItems.Add(plotItem);
         }
     }
 }

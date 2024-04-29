@@ -57,8 +57,11 @@ namespace Adventure.Menu
                 if (persistence.Current.Party.Gold - SelectedItem.Cost > 0)
                 {
                     persistence.Current.Party.Gold -= SelectedItem.Cost;
-                    var item = SelectedItem.CreateItem();
-                    characterData.Inventory.Items.Insert(0, item);
+                    var item = SelectedItem.CreateItem?.Invoke();
+                    if (item != null)
+                    {
+                        characterData.Inventory.Items.Insert(0, item);
+                    }
                     if(SelectedItem.UniqueSalePlotItem != null)
                     {
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
@@ -187,15 +190,17 @@ Lck: {characterData.CharacterSheet.TotalLuck}
 
             confirmBuyMenu.Update(characterData, gamepadId);
 
-            var canBuy = characterData.HasRoom;
-
             var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
                 .Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i))
                 .ToArray();
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
-            if (canBuy && selectedItem != null)
+            if (selectedItem != null)
             {
-                confirmBuyMenu.SelectedItem = selectedItem;
+                var canBuy = selectedItem.CreateItem == null || characterData.HasRoom;
+                if (canBuy)
+                {
+                    confirmBuyMenu.SelectedItem = selectedItem;
+                }
             }
 
             if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))

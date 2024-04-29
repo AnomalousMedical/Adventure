@@ -16,6 +16,9 @@ namespace Adventure.Services
         AirshipKey1,
         BlacksmithUpgrade,
         AlchemistUpgrade,
+        RuneOfFire,
+        RuneOfIce,
+        RuneOfElectricity,
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

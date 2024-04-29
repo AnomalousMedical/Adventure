@@ -310,8 +310,8 @@ namespace Adventure.Services
 
         void GiveAndEquip(Persistence.CharacterData hero, Treasure treasure)
         {
-            treasure.GiveTo(hero.Inventory);
-            treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions);
+            treasure.GiveTo(hero.Inventory, null);
+            treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions, null);
         }
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
@@ -528,14 +528,17 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateVitalityBoost(4)),
                 };
 
-                var phase3UniqueStolenTreasures = new List<Treasure>
+                var phase3UniqueStolenTreasures = new List<ITreasure>
                 {
                     new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste)))
                     { Id = 300, FortuneText = "Hourglass" },
-                    new Treasure(AccessoryCreator.CreateDoublecast())
-                    { Id = 301, FortuneText = "Ring of Elements" },
+                    //new Treasure(AccessoryCreator.CreateDoublecast())
+                    //{ Id = 301, FortuneText = "Ring of Elements" },
                     new Treasure(PotionCreator.CreateLuckBoost(20))
                     { Id = 302, FortuneText = "Elephant" },
+                    new PlotItemTreasure(PlotItems.RuneOfFire, "Rune of Fire")
+                    { Id = 303, FortuneText = "Fire" }
+
                 };
 
                 var zoneCount = 3;
@@ -794,6 +797,12 @@ namespace Adventure.Services
 
                     yield return new ShopEntry("Big Mana Potion", 70, () => PotionCreator.CreateManaPotion(35));
                     yield return new ShopEntry("Ferryman's Bribe", 350, () => PotionCreator.CreateFerrymansBribe());
+
+                    if(!plotItems.Contains(PlotItems.RuneOfElectricity))
+                    {
+                        yield return new ShopEntry("Rune of Electricity", 1500, null, PlotItems.RuneOfElectricity);
+                    }
+
                     break;
 
                 case ShopType.Blacksmith:
