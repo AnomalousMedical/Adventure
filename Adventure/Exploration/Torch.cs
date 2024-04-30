@@ -39,6 +39,7 @@ namespace Adventure
         private readonly IExplorationGameState explorationGameState;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Persistence persistence;
+        private readonly LightManager lightManager;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -50,6 +51,7 @@ namespace Adventure
         private int zoneIndex;
         private int instanceId;
         private TorchPersistenceData state;
+        private Light light;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -68,7 +70,8 @@ namespace Adventure
             IContextMenu contextMenu,
             IExplorationGameState explorationGameState,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
-            Persistence persistence
+            Persistence persistence,
+            LightManager lightManager
         )
         {
             this.sprite = description.Sprite;
@@ -83,11 +86,24 @@ namespace Adventure
             this.explorationGameState = explorationGameState;
             this.collidableIdentifier = collidableIdentifier;
             this.persistence = persistence;
+            this.lightManager = lightManager;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
             this.currentScale = sprite.BaseScale * description.Scale;
+
+            this.light = new Light()
+            {
+                Color = Color.FromARGB(0xffce7f18),
+                Length = 2.3f,
+            };
+
+            var frameEventSprite = sprite as FrameEventSprite;
+            if (frameEventSprite != null)
+            {
+                frameEventSprite.FrameChanged += FrameEventSprite_FrameChanged;
+            }
 
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
@@ -107,7 +123,7 @@ namespace Adventure
 
                 if (state.Lit)
                 {
-                    sprite.SetAnimation("lit");
+                    LightTorch();
                 }
 
                 rtInstances.AddTlasBuild(tlasData);
@@ -152,6 +168,15 @@ namespace Adventure
 
         public void Dispose()
         {
+            if (state.Lit)
+            {
+                lightManager.RemoveLight(light);
+            }
+            var frameEventSprite = sprite as FrameEventSprite;
+            if (frameEventSprite != null)
+            {
+                frameEventSprite.FrameChanged -= FrameEventSprite_FrameChanged;
+            }
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
@@ -173,7 +198,7 @@ namespace Adventure
 
         private void HandleCollision(CollisionEvent evt)
         {
-            if (!state.Lit 
+            if (!state.Lit
              && collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
              || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
@@ -191,12 +216,24 @@ namespace Adventure
             contextMenu.ClearContext(Light);
             state.Lit = true;
             persistence.Current.Torches.SetData(zoneIndex, instanceId, state);
-            this.sprite.SetAnimation("lit");
+            LightTorch();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
+        }
+
+        private void LightTorch()
+        {
+            sprite.SetAnimation("lit");
+            lightManager.AddLight(light);
+            FrameEventSprite_FrameChanged(null);
+        }
+
+        private void FrameEventSprite_FrameChanged(FrameEventSprite obj)
+        {
+            light.Position = (sprite.GetCurrentFrame().Attachments[0].translate + currentPosition).ToVector4();
         }
     }
 }

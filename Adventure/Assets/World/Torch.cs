@@ -34,12 +34,24 @@ class Torch : ISpriteAsset
         var anims = new Dictionary<string, SpriteAnimation>()
             {
                 { "default", new SpriteAnimation(animSpeed,
-                    new SpriteFrame(0, 0, 1f / 3f, 1)) 
+                    new SpriteFrame(0, 0, 1f / 3f, 1))
                 },
 
                 { "lit", new SpriteAnimation(animSpeed,
-                    new SpriteFrame(1f / 3f, 0, 2f / 3f, 1),
-                    new SpriteFrame(2f / 3f, 0f, 1, 1)) 
+                    new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
+                    {
+                        Attachments = new List<SpriteFrameAttachment>()
+                        {
+                            SpriteFrameAttachment.FromFramePosition(4, -1.6f, -0.1f, 9, 24),
+                        }
+                    },
+                    new SpriteFrame(2f / 3f, 0f, 1, 1)
+                    {
+                        Attachments = new List<SpriteFrameAttachment>()
+                        {
+                            SpriteFrameAttachment.FromFramePosition(4.1f, -1.5f, -0.1f, 9, 24),
+                        }
+                    })
                 },
             };
 
@@ -48,6 +60,6 @@ class Torch : ISpriteAsset
 
     public ISprite CreateSprite()
     {
-        return new Sprite(animations) { BaseScale = new Vector3(9f / 24f * 0.65f, 0.65f, 0.1f) };
+        return new FrameEventSprite(animations) { BaseScale = new Vector3(9f / 24f * 0.65f, 0.65f, 0.1f) };
     }
 }
