@@ -173,6 +173,8 @@ namespace Adventure
             services.AddScoped<PartyMemberTrigger.Description>();
             services.AddScoped<Gate>();
             services.AddScoped<Gate.Description>();
+            services.AddScoped<Torch>();
+            services.AddScoped<Torch.Description>();
             services.AddScoped<Key>();
             services.AddScoped<Key.Description>();
             services.AddScoped<PlotItemPlaceable>();

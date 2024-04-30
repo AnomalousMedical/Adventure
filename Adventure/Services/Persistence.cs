@@ -53,6 +53,8 @@ namespace Adventure.Services
 
             public PersistenceEntry<Key.KeyPersistenceData> Keys { get; init; } = new PersistenceEntry<Key.KeyPersistenceData>();
 
+            public PersistenceEntry<Torch.TorchPersistenceData> Torches { get; init; } = new PersistenceEntry<Torch.TorchPersistenceData>();
+
             public ZoneData Zone { get; init; } = new ZoneData();
 
             public PlayerData Player { get; init; } = new PlayerData();

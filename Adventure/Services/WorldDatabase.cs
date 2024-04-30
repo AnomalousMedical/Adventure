@@ -557,6 +557,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 0;
+                areaBuilder.TorchZones = new[] { areaBuilder.StartZone };
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
@@ -591,6 +592,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 1;
+                areaBuilder.TorchZones = new[] { areaBuilder.StartZone };
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
@@ -625,6 +627,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.GateZones = new[] { areaBuilder.StartZone };
+                areaBuilder.TorchZones = new[] { areaBuilder.StartZone };
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);

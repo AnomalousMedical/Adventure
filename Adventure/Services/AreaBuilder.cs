@@ -59,6 +59,8 @@ namespace Adventure.Services
 
         public IEnumerable<int> GateZones { get; set; }
 
+        public IEnumerable<int> TorchZones { get; set; }
+
         public BiomeType Biome { get; set; }
 
         public IntVector2 Location { get; set; }
@@ -122,6 +124,7 @@ namespace Adventure.Services
             o.MakeRest = false;
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
+            o.MakeTorch = TorchZones?.Contains(zoneIndex) == true;
             o.StartEnd = StartEnd;
             o.Area = Index;
             o.Alignment = Alignment;

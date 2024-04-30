@@ -130,6 +130,8 @@ namespace Adventure
 
             public bool MakeGate { get; set; }
 
+            public bool MakeTorch { get; set; }
+
             /// <summary>
             /// The level of the enemies from 1 to 99
             /// </summary>
@@ -201,6 +203,7 @@ namespace Adventure
         private bool makeRestArea;
         private bool makeBoss;
         private bool makeGate;
+        private bool makeTorch;
         private int enemyLevel;
         private int maxMainCorridorBattles;
         private IEnumerable<ITreasure> treasure;
@@ -264,6 +267,7 @@ namespace Adventure
             this.Area = description.Area;
             this.makeBoss = description.MakeBoss;
             this.makeGate = description.MakeGate;
+            this.makeTorch = description.MakeTorch;
             this.mapUnits = new Vector3(description.MapUnitX, description.MapUnitY, description.MapUnitZ);
             this.objectResolver = objectResolverFactory.Create();
             this.destructionRequest = destructionRequest;
@@ -719,6 +723,7 @@ namespace Adventure
         private bool placeBoss;
         private bool placeGate;
         private bool placeKey;
+        private bool placeTorch;
         private bool placeFirstChest;
 
         private void ResetPlacementData()
@@ -729,6 +734,7 @@ namespace Adventure
             placeRestArea = this.makeRestArea;
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
+            placeTorch = this.makeTorch;
             placeFirstChest = true;
         }
 
@@ -909,13 +915,43 @@ namespace Adventure
             //Reset skip rooms, the players go in the corners so these other things can go in too
             skipRooms = 0;
 
+            int? keyRoomIndex = null;
             if (placeKey)
             {
-                //This might not be possible, so the key will go in a corridor later if it isn't placed here
-                var keyRoomIndex = GetRoom();
-                var room = mapMesh.MapBuilder.Rooms[keyRoomIndex];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                keyRoomIndex = GetRoom();
+                var room = mapMesh.MapBuilder.Rooms[keyRoomIndex.Value];
+                var point = new Point(room.Left, room.Top + room.Height / 2);
                 PlaceKey(point);
+            }
+
+            if(placeTorch)
+            {
+                placeTorch = false;
+                int roomIndex;
+                //If there are less than 3 rooms put the torch with the key or get a new room.
+                if (rooms.Count < 3)
+                {
+                     roomIndex = keyRoomIndex ?? GetRoom();
+                }
+                //Otherwise get a unique room for the torch.
+                else
+                {
+                    roomIndex = GetRoom();
+                }
+                var room = mapMesh.MapBuilder.Rooms[roomIndex];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var mapLoc = mapMesh.PointToVector(point.x, point.y);
+                var torch = objectResolver.Resolve<Torch, Torch.Description>(o =>
+                {
+                    o.InstanceId = 0;
+                    o.ZoneIndex = index;
+                    o.MapOffset = mapLoc;
+                    o.Translation = currentPosition + o.MapOffset;
+                    var asset = biome.TorchAsset;
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                });
+                this.placeables.Add(torch);
             }
 
             Vector3 endZoneItemOffset;
