@@ -335,9 +335,32 @@ namespace Adventure.Services
             var zoneCounter = new ZoneCounter();
             var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
 
-            IslandInfo blacksmithUpgradeIsland;
-            IslandInfo alchemistUpgradeIsland;
-            IslandInfo elementalStoneIsland;
+            List<int> specialIslands = new List<int>() { 0, 1, 2 }; //This is used to select from the items below
+            IslandInfo blacksmithUpgradeIsland = null;
+            IslandInfo alchemistUpgradeIsland = null;
+            IslandInfo elementalStoneIsland = null;
+            void AssignToSpecialIsland(IslandInfo theIsland)
+            {
+                if(specialIslands.Count == 0)
+                {
+                    throw new InvalidOperationException("Ran out of special islands.");
+                }
+                var randomNum = placementRandom.Next(specialIslands.Count);
+                var specialIslandId = specialIslands[randomNum];
+                specialIslands.RemoveAt(randomNum);
+                switch (specialIslandId)
+                {
+                    case 0:
+                        blacksmithUpgradeIsland = theIsland;
+                        break;
+                    case 1:
+                        alchemistUpgradeIsland = theIsland;
+                        break;
+                    case 2:
+                        elementalStoneIsland = theIsland;
+                        break;
+                }
+            }
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -538,8 +561,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateLuckBoost(20))
                     { Id = 302, FortuneText = "Elephant" },
                     new PlotItemTreasure(PlotItems.RuneOfIce, "Rune of Ice")
-                    { Id = 303, FortuneText = "Ice" }
-
+                    { Id = 303, FortuneText = "Ice" },
                 };
 
                 var zoneCount = 3;
@@ -552,7 +574,7 @@ namespace Adventure.Services
                 Element firstMonsterElement;
                 //Area 5
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
-                blacksmithUpgradeIsland = island;
+                AssignToSpecialIsland(island);
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -587,7 +609,7 @@ namespace Adventure.Services
 
                 //Area 6
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
-                alchemistUpgradeIsland = island;
+                AssignToSpecialIsland(island);
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -622,7 +644,7 @@ namespace Adventure.Services
 
                 //Area 7
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
-                elementalStoneIsland = island;
+                AssignToSpecialIsland(island);
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
