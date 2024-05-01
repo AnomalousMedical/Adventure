@@ -488,10 +488,10 @@ namespace Adventure.WorldMap
                 var elementalStone = objectResolver.Resolve<ElementalStone, ElementalStone.Description>(o =>
                 {
                     o.Transforms = transforms;
-                    var sprite = new Assets.World.Tent();
+                    var sprite = new Assets.World.ElementalStone();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                    o.Scale = new Vector3(0.7f, 0.7f, 1.0f);
                 });
 
                 placeables.Add(elementalStone);
