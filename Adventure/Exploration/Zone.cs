@@ -915,12 +915,18 @@ namespace Adventure
             //Reset skip rooms, the players go in the corners so these other things can go in too
             skipRooms = 0;
 
+            var shareKeyAndTorchRoom = rooms.Count < 3;
             int? keyRoomIndex = null;
             if (placeKey)
             {
                 keyRoomIndex = GetRoom();
                 var room = mapMesh.MapBuilder.Rooms[keyRoomIndex.Value];
-                var point = new Point(room.Left, room.Top + room.Height / 2);
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                if (placeTorch && shareKeyAndTorchRoom)
+                {
+                    //Move the key to the left side if the torch and key are in the same room.
+                    point.x = room.Left;
+                }
                 PlaceKey(point);
             }
 
@@ -928,8 +934,7 @@ namespace Adventure
             {
                 placeTorch = false;
                 int roomIndex;
-                //If there are less than 3 rooms put the torch with the key or get a new room.
-                if (rooms.Count < 3)
+                if (shareKeyAndTorchRoom)
                 {
                      roomIndex = keyRoomIndex ?? GetRoom();
                 }
