@@ -536,8 +536,8 @@ namespace Adventure.Services
                     //{ Id = 301, FortuneText = "Ring of Elements" },
                     new Treasure(PotionCreator.CreateLuckBoost(20))
                     { Id = 302, FortuneText = "Elephant" },
-                    new PlotItemTreasure(PlotItems.RuneOfFire, "Rune of Fire")
-                    { Id = 303, FortuneText = "Fire" }
+                    new PlotItemTreasure(PlotItems.RuneOfIce, "Rune of Ice")
+                    { Id = 303, FortuneText = "Ice" }
 
                 };
 
