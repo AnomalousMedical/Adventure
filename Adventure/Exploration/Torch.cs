@@ -34,12 +34,14 @@ namespace Adventure
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IExplorationGameState explorationGameState;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly LightManager lightManager;
+        private readonly TextDialog textDialog;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -71,7 +73,8 @@ namespace Adventure
             IExplorationGameState explorationGameState,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             Persistence persistence,
-            LightManager lightManager
+            LightManager lightManager,
+            TextDialog textDialog
         )
         {
             this.sprite = description.Sprite;
@@ -80,6 +83,7 @@ namespace Adventure
             this.state = persistence.Current.Torches.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.bepuScene = bepuScene;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
@@ -87,6 +91,7 @@ namespace Adventure
             this.collidableIdentifier = collidableIdentifier;
             this.persistence = persistence;
             this.lightManager = lightManager;
+            this.textDialog = textDialog;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -214,9 +219,30 @@ namespace Adventure
         private void Light(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Light);
-            state.Lit = true;
-            persistence.Current.Torches.SetData(zoneIndex, instanceId, state);
-            LightTorch();
+            if (!state.Lit)
+            {
+                state.Lit = true;
+                persistence.Current.Torches.SetData(zoneIndex, instanceId, state);
+                LightTorch();
+                coroutine.RunTask(async () =>
+                {
+                    switch (persistence.Current.Torches.Entries.Count)
+                    {
+                        case 1:
+                            await textDialog.ShowTextAndWait("A voice whispers in your ear:\n\"Find the two that remain...\"", args.GamepadId);
+                            break;
+                        case 2:
+                            await textDialog.ShowTextAndWait("A voice whispers in your ear:\n\"Only one left now...\"", args.GamepadId);
+                            break;
+                        default:
+                        case 3:
+                            await textDialog.ShowTextAndWait("A voice whispers in your ear:\n\"All have been lit. Your prize is in the flames...\"", args.GamepadId);
+                            await textDialog.ShowTextAndWait("You reach out and oddly the flames feel cool on your fingers. You reach into the flame and pull out the rune of fire.", args.GamepadId);
+                            persistence.Current.PlotItems.Add(PlotItems.RuneOfFire);
+                            break;
+                    }
+                });
+            }
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
