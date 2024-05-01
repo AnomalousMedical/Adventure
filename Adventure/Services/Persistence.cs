@@ -19,6 +19,7 @@ namespace Adventure.Services
         RuneOfFire,
         RuneOfIce,
         RuneOfElectricity,
+        ElementalStone,
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

@@ -47,6 +47,7 @@ namespace Adventure.Services
         IntVector2 BlacksmithUpgradePosition { get; }
         IntVector2 AlchemistUpgradePosition { get; }
         IntVector2 FortuneTellerPosition { get; }
+        IntVector2 ElementalStonePosition { get; }
     }
 
     record ShopEntry(String Text, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -80,6 +81,7 @@ namespace Adventure.Services
         public IntVector2 BlacksmithUpgradePosition { get; private set; }
         public IntVector2 AlchemistUpgradePosition { get; private set; }
         public IntVector2 FortuneTellerPosition { get; private set; }
+        public IntVector2 ElementalStonePosition { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -335,6 +337,7 @@ namespace Adventure.Services
 
             IslandInfo blacksmithUpgradeIsland;
             IslandInfo alchemistUpgradeIsland;
+            IslandInfo elementalStoneIsland;
 
             var bigIsland = map.IslandInfo[map.IslandSizeOrder[0]];
             //Phase 0
@@ -532,8 +535,6 @@ namespace Adventure.Services
                 {
                     new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, phase3Adjective, nameof(Steal), nameof(Haste)))
                     { Id = 300, FortuneText = "Hourglass" },
-                    //new Treasure(AccessoryCreator.CreateDoublecast())
-                    //{ Id = 301, FortuneText = "Ring of Elements" },
                     new Treasure(PotionCreator.CreateLuckBoost(20))
                     { Id = 302, FortuneText = "Elephant" },
                     new PlotItemTreasure(PlotItems.RuneOfIce, "Rune of Ice")
@@ -621,6 +622,7 @@ namespace Adventure.Services
 
                 //Area 7
                 island = map.IslandInfo[GetUnusedIsland(usedIslands, placementRandom)];
+                elementalStoneIsland = island;
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
                 areaBuilder.StartZone = zoneCounter.GetZoneStart();
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
@@ -706,6 +708,7 @@ namespace Adventure.Services
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
             AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);
+            ElementalStonePosition = GetUnusedSquare(usedSquares, elementalStoneIsland, placementRandom);
         }
 
         /// <summary>

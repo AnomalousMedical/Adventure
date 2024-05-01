@@ -485,6 +485,19 @@ namespace Adventure.WorldMap
             }
 
             {
+                var elementalStone = objectResolver.Resolve<ElementalStone, ElementalStone.Description>(o =>
+                {
+                    o.Transforms = transforms;
+                    var sprite = new Assets.World.Tent();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                });
+
+                placeables.Add(elementalStone);
+            }
+
+            {
                 var water = objectResolver.Resolve<WorldWater, WorldWater.Description>(o =>
                 {
                     o.Transform = new InstanceMatrix(new Vector3(0f, 0.79f, 0f), Quaternion.Identity, new Vector3(1.0f, 1.0f, 1.0f));
