@@ -282,7 +282,7 @@ namespace Adventure.Services
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, "Busted", nameof(Sword1))));
                 GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(nameof(Dagger1), phase0TreasureLevel, "Rusty", nameof(Steal))));
-                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Cracked", EquipmentTier.Tier1)));
+                GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, "Cracked", EquipmentTier.Tier1, 1)));
                 yield return new PartyMember
                 {
                     CharacterData = hero,
@@ -416,7 +416,7 @@ namespace Adventure.Services
                 var phase2Armors = new List<Treasure>()
                 {
                     new Treasure(ArmorCreator.CreatePlate(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
-                    new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
+                    new Treasure(ArmorCreator.CreateLeather(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2, 2)),
                     new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
                     new Treasure(ArmorCreator.CreateCloth(phase2TreasureLevel, phase2Adjective, EquipmentTier.Tier2)),
                 };
@@ -531,27 +531,24 @@ namespace Adventure.Services
                 var phase3Armors = new List<Treasure>
                 {
                     new Treasure(ArmorCreator.CreatePlate(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
-                    new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
+                    new Treasure(ArmorCreator.CreateLeather(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3, 3)),
                     new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
                     new Treasure(ArmorCreator.CreateCloth(phase3TreasureLevel, phase3Adjective, EquipmentTier.Tier3)),
                 };
 
-                var phase3Accessories = new List<Treasure>
+                var phase3Accessories = new List<ITreasure>
                 {
                     new Treasure(AccessoryCreator.CreateItemUsage(0.5f)),
+                    new PlotItemTreasure(PlotItems.RuneOfIce, "Rune of Ice")
                 };
 
                 var phase3Potions = new List<Treasure>
                 {
                     new Treasure(PotionCreator.CreateFerrymansBribe()),
-                    new Treasure(PotionCreator.CreateStrengthBoost(5)),
-                    new Treasure(PotionCreator.CreateStrengthBoost(5)),
-                    new Treasure(PotionCreator.CreateMagicBoost(5)),
-                    new Treasure(PotionCreator.CreateMagicBoost(5)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(4)),
-                    new Treasure(PotionCreator.CreateSpiritBoost(4)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(4)),
-                    new Treasure(PotionCreator.CreateVitalityBoost(4)),
+                    new Treasure(PotionCreator.CreateStrengthBoost(10)),
+                    new Treasure(PotionCreator.CreateMagicBoost(10)),
+                    new Treasure(PotionCreator.CreateSpiritBoost(10)),
+                    new Treasure(PotionCreator.CreateVitalityBoost(10)),
                 };
 
                 var phase3UniqueStolenTreasures = new List<ITreasure>
@@ -560,8 +557,6 @@ namespace Adventure.Services
                     { Id = 300, FortuneText = "Hourglass" },
                     new Treasure(PotionCreator.CreateLuckBoost(20))
                     { Id = 302, FortuneText = "Elephant" },
-                    new PlotItemTreasure(PlotItems.RuneOfIce, "Rune of Ice")
-                    { Id = 303, FortuneText = "Ice" },
                 };
 
                 var zoneCount = 3;

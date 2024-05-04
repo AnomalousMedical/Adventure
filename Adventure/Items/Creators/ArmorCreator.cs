@@ -31,14 +31,14 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateLeather(int level, string adjective, EquipmentTier tier)
+        public InventoryItem CreateLeather(int level, string adjective, EquipmentTier tier, int inventorySlots)
         {
             var armor = new Equipment
             {
                 Name = $"{adjective} Leather Armor",
                 Defense = equipmentCurve.GetDefense(level, 2f / 3f),
                 MagicDefense = equipmentCurve.GetMDefense(level, 2f / 3f),
-                InventorySlots = level / 10 + 1,
+                InventorySlots = inventorySlots,
                 Tier = tier,
             };
 
