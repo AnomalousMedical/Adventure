@@ -1,5 +1,7 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle;
+using Adventure.Items;
 using Adventure.Services;
+using Engine;
 using RpgMath;
 
 namespace Adventure
@@ -17,6 +19,8 @@ namespace Adventure
         void GiveTo(Inventory inventory, Persistence.GameState gameState);
 
         void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
+
+        void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState);
 
         int? Id { get; }
 
@@ -53,6 +57,11 @@ namespace Adventure
         {
             inventoryFunctions.Use(this.inventoryItem, inventory, user, user);
         }
+
+        public void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState)
+        {
+            inventoryFunctions.Use(this.inventoryItem, inventory, battleManager, objectResolver, coroutine, attacker, target);
+        }
     }
 
     class PlotItemTreasure : ITreasure
@@ -83,6 +92,11 @@ namespace Adventure
         }
 
         public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState)
+        {
+            gameState.PlotItems.Add(plotItem);
+        }
+
+        public void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState)
         {
             gameState.PlotItems.Add(plotItem);
         }

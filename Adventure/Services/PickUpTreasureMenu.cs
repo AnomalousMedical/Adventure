@@ -1,6 +1,7 @@
 ﻿using Adventure.Items;
 using Engine;
 using Engine.Platform;
+using RpgMath;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,9 @@ class PickUpTreasureMenu
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
     private ButtonColumn characterButtons = new ButtonColumn(4, ChooseTargetLayer);
 
+    public delegate void UseCallback(ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
+    private UseCallback useCallback;
+
     public PickUpTreasureMenu
     (
         Persistence persistence,
@@ -60,8 +64,9 @@ class PickUpTreasureMenu
         this.inventoryFunctions = inventoryFunctions;
     }
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay)
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
     {
+        this.useCallback = useCallback;
         this.currentTreasure = new Stack<ITreasure>(treasure);
         persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
         replacingItem = false;
@@ -96,6 +101,7 @@ class PickUpTreasureMenu
         {
             persistenceWriter.RemoveSaveBlock(SaveBlocker.Treasure);
             persistenceWriter.Save();
+            useCallback = null;
             return true;
         }
 
@@ -223,7 +229,7 @@ class PickUpTreasureMenu
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
                         currentTreasure.Pop();
-                        treasure.Use(i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
+                        useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
                     }))
                     .ToList();
                 }

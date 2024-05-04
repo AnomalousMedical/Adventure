@@ -1,6 +1,8 @@
-﻿using Adventure.Services;
+﻿using Adventure.Items;
+using Adventure.Services;
 using Engine;
 using Engine.Platform;
+using RpgMath;
 using SharpGui;
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,11 @@ namespace Adventure.Menu
 
         public void GatherTreasures(IEnumerable<ITreasure> treasure)
         {
-            pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500));
+            pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500),
+            (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
+            {
+                treasure.Use(inventory, user, inventoryFunctions, gameState);
+            });
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)

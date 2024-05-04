@@ -1,5 +1,7 @@
-﻿using Adventure.Items.Actions;
+﻿using Adventure.Battle;
+using Adventure.Items.Actions;
 using Adventure.Services;
+using Engine;
 using Microsoft.Extensions.DependencyInjection;
 using RpgMath;
 using System;
@@ -10,7 +12,10 @@ namespace Adventure.Items;
 interface IInventoryFunctions
 {
     IInventoryAction CreateAction(InventoryItem item, Inventory inventory);
+
     void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target);
+
+    void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
 }
 
 class InventoryFunctions : IInventoryFunctions
@@ -26,6 +31,12 @@ class InventoryFunctions : IInventoryFunctions
     {
         var action = CreateAction(item, inventory);
         action.Use(item, inventory, attacker, target);
+    }
+
+    public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
+    {
+        var action = CreateAction(item, inventory);
+        action.Use(item, inventory, battleManager, objectResolver, coroutine, attacker, target);
     }
 
     public IInventoryAction CreateAction(InventoryItem item, Inventory inventory)

@@ -77,6 +77,7 @@ namespace Adventure.Battle
         IEnumerable<IBattleTarget> GetTargetsInGroup(IBattleTarget target);
         BattlePlayer GetActivePlayer();
         IBattleTarget GetGuard(IBattleTarget attacker, IBattleTarget target);
+        IBattleTarget GetTargetForStats(IBattleStats stats);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -1003,6 +1004,11 @@ namespace Adventure.Battle
         public IEnumerable<ITreasure> Steal()
         {
             return stealCb?.Invoke() ?? Enumerable.Empty<ITreasure>();
+        }
+
+        public IBattleTarget GetTargetForStats(IBattleStats stats)
+        {
+            return players.FirstOrDefault(i => i.Stats == stats) as IBattleTarget ?? enemies.FirstOrDefault(i => i.Stats == stats);
         }
     }
 }

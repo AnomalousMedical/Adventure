@@ -194,6 +194,7 @@ namespace Adventure
             services.AddScoped<IBattleSkills, BattleSkills>();
             services.AddScoped<BattleItemMenu>();
             services.AddScoped<StealEffect>();
+            services.AddScoped<StealEffect.Description>();
             services.AddScoped<AttackEffect>();
             services.AddSingleton<TreasureMenu>();
             services.AddSingleton<LightManager>();
