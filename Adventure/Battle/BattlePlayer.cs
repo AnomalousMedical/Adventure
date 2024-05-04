@@ -940,6 +940,7 @@ namespace Adventure.Battle
                 var castAttach = frame.Attachments[this.secondaryHand];
                 offset = scale * castAttach.translate;
                 offset = Quaternion.quatRotate(this.currentOrientation, offset) + this.currentPosition;
+                offset += new Vector3(0f, 0f, -0.03f);
                 castEffect.SetPosition(offset, this.currentOrientation, scale);
             }
         }
