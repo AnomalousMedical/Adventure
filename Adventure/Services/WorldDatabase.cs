@@ -443,11 +443,11 @@ namespace Adventure.Services
                 };
 
                 const int zoneCount = 2;
-                var weapons = phase2Weapons.Count / zoneCount;
-                var armors = phase2Armors.Count / zoneCount;
-                var accessories = phase2Accessories.Count / zoneCount;
-                var potions = phase2Potions.Count / zoneCount;
-                var stolenTreasure = phase2UniqueStolenTreasures.Count / zoneCount;
+                var weapons = Math.Max(1, phase2Weapons.Count / zoneCount);
+                var armors = Math.Max(1, phase2Armors.Count / zoneCount);
+                var accessories = Math.Max(1, phase2Accessories.Count / zoneCount);
+                var potions = Math.Max(1, phase2Potions.Count / zoneCount);
+                var stolenTreasure = Math.Max(1, phase2UniqueStolenTreasures.Count / zoneCount);
 
                 //Area 3
                 areaBuilder = new AreaBuilder(this, monsterInfo, area++);
@@ -560,11 +560,11 @@ namespace Adventure.Services
                 };
 
                 var zoneCount = 3;
-                var weapons = phase3Weapons.Count / zoneCount;
-                var armors = phase3Armors.Count / zoneCount;
-                var accessories = phase3Accessories.Count / zoneCount;
-                var potions = phase3Potions.Count / zoneCount;
-                var stolenTreasure = phase3UniqueStolenTreasures.Count / zoneCount;
+                var weapons = Math.Max(1, phase3Weapons.Count / zoneCount);
+                var armors = Math.Max(1, phase3Armors.Count / zoneCount);
+                var accessories = Math.Max(1, phase3Accessories.Count / zoneCount);
+                var potions = Math.Max(1, phase3Potions.Count / zoneCount);
+                var stolenTreasure = Math.Max(1, phase3UniqueStolenTreasures.Count / zoneCount);
 
                 Element firstMonsterElement;
                 //Area 5
@@ -1021,9 +1021,12 @@ namespace Adventure.Services
             //This needs to actually iterate or else you won't get the same treasure
             //because it won't be solved until later when the enumerable runs
             var results = new List<T>();
-            for (int i = 0; i < count; ++i)
+            if (items.Count > 0)
             {
-                results.Add(RemoveRandomItem(items, random));
+                for (int i = 0; i < count; ++i)
+                {
+                    results.Add(RemoveRandomItem(items, random));
+                }
             }
             return results;
         }
