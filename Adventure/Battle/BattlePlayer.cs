@@ -83,7 +83,7 @@ namespace Adventure.Battle
 
         public Vector3 CursorDisplayLocation => this.currentPosition + new Vector3(-0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
-        public Vector3 MeleeAttackLocation => this.currentPosition - new Vector3(sprite.BaseScale.x * 0.5f, 0, 0);
+        public Vector3 MeleeAttackLocation => this.currentPosition - new Vector3(sprite.BaseScale.x * 0.5f, 0, -0.01f);
 
         public Vector3 MagicHitLocation => this.currentPosition + new Vector3(0f, 0f, -0.1f);
 
@@ -1061,6 +1061,7 @@ namespace Adventure.Battle
         public void MoveToGuard(in Vector3 position)
         {
             this.currentPosition = position;
+            this.currentPosition.z += -0.03f;
             sprite.SetAnimation("stand-left");
             Sprite_FrameChanged(sprite);
         }
