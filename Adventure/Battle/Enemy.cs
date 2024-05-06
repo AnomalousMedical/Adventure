@@ -1,4 +1,7 @@
-﻿using Adventure.Assets.SoundEffects;
+﻿using Adventure.Assets;
+using Adventure.Assets.SoundEffects;
+using Adventure.Battle.Skills;
+using Adventure.Services;
 using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
@@ -26,6 +29,7 @@ namespace Adventure.Battle
 
         private readonly RTInstances<BattleScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
@@ -34,8 +38,10 @@ namespace Adventure.Battle
         private readonly ICharacterTimer characterTimer;
         private readonly IBattleManager battleManager;
         private readonly ITurnTimer turnTimer;
+        private readonly IObjectResolver objectResolver;
         private BattleStats battleStats;
         private Func<Clock, IBattleTarget, bool> counterAttack;
+        private Attachment<BattleScene> castEffect;
 
         private Vector3 startPosition;
         private Vector3 currentPosition;
@@ -62,14 +68,17 @@ namespace Adventure.Battle
             Desc description,
             ICharacterTimer characterTimer,
             IBattleManager battleManager,
-            ITurnTimer turnTimer)
+            ITurnTimer turnTimer,
+            IObjectResolverFactory objectResolverFactory)
         {
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.characterTimer = characterTimer;
             this.battleManager = battleManager;
             this.turnTimer = turnTimer;
+            this.objectResolver = objectResolverFactory.Create();
             this.sprite = description.Sprite;
             this.sprite.RandomizeFrameTime();
             this.battleStats = description.BattleStats ?? throw new InvalidOperationException("You must include battle stats in an enemy description.");
@@ -114,6 +123,12 @@ namespace Adventure.Battle
 
         private void CharacterTimer_TurnReady(ICharacterTimer obj)
         {
+            MeleeAttack();
+            //Cast(new Fire());
+        }
+
+        private void MeleeAttack()
+        {
             var swingEnd = Quaternion.Identity;
             var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
 
@@ -154,7 +169,7 @@ namespace Adventure.Battle
                 {
                     findGuard = false;
                     guardInput = battleManager.GetGuard(this, target);
-                    if(guardInput == null)
+                    if (guardInput == null)
                     {
                         //If a guard can't be found, use the target
                         guardInput = target;
@@ -229,6 +244,186 @@ namespace Adventure.Battle
             });
         }
 
+        private void Cast(ISkill skill)
+        {
+            castEffect?.RequestDestruction();
+            castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            {
+                var asset = new Assets.PixelEffects.Nebula();
+                o.RenderShadow = false;
+                o.Sprite = asset.CreateSprite();
+                o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = skill.CastColor,
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
+            });
+
+            castEffect.SetPosition(this.currentPosition + new Vector3(0, 0, -0.01f), this.currentOrientation, this.currentScale);
+
+            var swingEnd = Quaternion.Identity;
+            var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
+
+            long remainingTime = (long)(1.8f * Clock.SecondsToMicro);
+            long standTime = (long)(0.2f * Clock.SecondsToMicro);
+            long standStartTime = remainingTime / 2;
+            long swingTime = standStartTime - standTime / 3;
+            long standEndTime = standStartTime - standTime;
+            bool needsAttack = true;
+            var target = battleManager.GetRandomPlayer();
+            IBattleTarget guardInput = null; //This is the character input to check for guard
+            bool findGuard = true;
+            var blockManager = new ContextTriggerManager();
+            bool createSkillCastEffect = true;
+            ISkillEffect skillEffect = null;
+
+            battleManager.QueueTurn(c =>
+            {
+                //If there is a counter attack just do that
+                if (counterAttack != null)
+                {
+                    var complete = counterAttack.Invoke(c, this);
+                    if (complete)
+                    {
+                        counterAttack = null;
+                    }
+                    return false;
+                }
+
+                if (IsDead)
+                {
+                    DestroyCastEffect();
+                    return true;
+                }
+
+                if (createSkillCastEffect)
+                {
+                    createSkillCastEffect = false;
+                    castEffect?.RequestDestruction();
+                    castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                    {
+                        ISpriteAsset asset = skill.SpriteAsset;
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = skill.CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+                }
+
+                //If there is an effect, just let it run
+                if (skillEffect != null && !skillEffect.Finished)
+                {
+                    skillEffect.Update(c);
+                    return false;
+                }
+
+                if (findGuard)
+                {
+                    findGuard = false;
+                    guardInput = battleManager.GetGuard(this, target);
+                    if (guardInput == null)
+                    {
+                        //If a guard can't be found, use the target
+                        guardInput = target;
+                    }
+                }
+
+                var done = false;
+                remainingTime -= c.DeltaTimeMicro;
+                Vector3 start;
+                Vector3 end;
+                float interpolate;
+
+                if (remainingTime > standStartTime)
+                {
+                    //sprite.SetAnimation("cast-left");
+                    if (!battleManager.IsStillValidTarget(target))
+                    {
+                        target = battleManager.ValidateTarget(this, target);
+                    }
+                    start = this.startPosition;
+                    end = target.MeleeAttackLocation;
+                    interpolate = (remainingTime - standStartTime) / (float)standStartTime;
+                    blockManager.CheckTrigger(guardInput, false); //Can't ever block magic, but want to punish the player for spamming the button.
+                }
+                else if (remainingTime > standEndTime)
+                {
+                    //sprite.SetAnimation("cast-left");
+                    interpolate = 0.0f;
+                    start = target.MeleeAttackLocation;
+                    end = target.MeleeAttackLocation;
+
+                    if (needsAttack && remainingTime < swingTime)
+                    {
+                        needsAttack = false;
+                        DestroyCastEffect();
+
+                        var mpCost = skill.GetMpCost(false, false); //Enemy mp costs are always the base cost
+                        if (battleStats.CurrentMp < mpCost)
+                        {
+                            battleManager.AddDamageNumber(this, "Not Enough MP", Color.Red);
+                        }
+                        else
+                        {
+                            TakeMp(mpCost);
+                            //Apply skill bonus effect if the player spammed, never apply spammed effect for enemies since it is a penalty on the spell
+                            //We want the player taking more damage if they are hitting the triggers for enemy spells
+                            skillEffect = skill.Apply(battleManager, objectResolver, coroutine, this, target, blockManager.Spammed, false);
+                        }
+                    }
+                }
+                else
+                {
+                    //sprite.SetAnimation("stand-left");
+
+                    start = target.MeleeAttackLocation;
+                    end = this.startPosition;
+                    interpolate = remainingTime / (float)standEndTime;
+                }
+
+                var position = end.lerp(start, interpolate);
+
+                if (remainingTime < 0)
+                {
+                    position = end;
+                    sprite.SetAnimation("stand-left");
+                    TurnComplete();
+                    done = true;
+                }
+
+                //Sprite_FrameChanged(sprite);
+
+                if (castEffect != null)
+                {
+                    var scale = sprite.BaseScale * this.currentScale;
+                    if (blockManager.Spammed)
+                    {
+                        scale *= 1.63f;
+                    }
+                    else if (blockManager.Activated)
+                    {
+                        scale *= 0.72f;
+                    }
+                    castEffect.SetWorldPosition(position, this.currentOrientation, castEffect.BaseScale * scale);
+                }
+
+                return done;
+            });
+        }
+
+        private void DestroyCastEffect()
+        {
+            castEffect?.RequestDestruction();
+            castEffect = null;
+        }
+
         public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)
         {
             this.counterAttack = counter;
@@ -256,6 +451,7 @@ namespace Adventure.Battle
 
         public void Dispose()
         {
+            DestroyCastEffect();
             turnTimer.RemoveTimer(characterTimer);
             disposed = true;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
