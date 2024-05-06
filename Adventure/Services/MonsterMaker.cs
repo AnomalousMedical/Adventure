@@ -1,6 +1,7 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.Enemies;
 using Adventure.Assets.SoundEffects;
+using Adventure.Battle.Skills;
 using Engine;
 using RpgMath;
 using System;
@@ -190,6 +191,41 @@ namespace Adventure.Services
             {
                 var elementColor = ElementColors.GetElementalHue(absorbElement.Value);
                 enemy.Asset.SetupSwap(elementColor, 100, 50);
+
+                const int weakStart = 0;
+                const int medStart = 40;
+                const int strongStart = 55;
+                const int strongEnd = 99;
+
+                const float castChance = 50f / 100f;
+
+                switch (absorbElement)
+                {
+                    case Element.Ice:
+                        enemy.Skills = new[]
+                        {
+                            new BattleStats.SkillInfo(nameof(Ice), weakStart, medStart, castChance),
+                            new BattleStats.SkillInfo(nameof(StrongIce), medStart, strongStart, castChance),
+                            new BattleStats.SkillInfo(nameof(ArchIce), strongStart, strongEnd, castChance),
+                        };
+                        break;
+                    case Element.Fire:
+                        enemy.Skills = new[]
+                        {
+                            new BattleStats.SkillInfo(nameof(Fire), weakStart, medStart, castChance),
+                            new BattleStats.SkillInfo(nameof(StrongFire), medStart, strongStart, castChance),
+                            new BattleStats.SkillInfo(nameof(ArchFire), strongStart, strongEnd, castChance),
+                        };
+                        break;
+                    case Element.Electricity:
+                        enemy.Skills = new[]
+                        {
+                            new BattleStats.SkillInfo(nameof(Lightning), weakStart, medStart, castChance),
+                            new BattleStats.SkillInfo(nameof(StrongLightning), medStart, strongStart, castChance),
+                            new BattleStats.SkillInfo(nameof(ArchLightning), strongStart, strongEnd, castChance),
+                        };
+                        break;
+                }
             }
 
             return enemy;

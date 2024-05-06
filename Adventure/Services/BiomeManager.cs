@@ -35,6 +35,8 @@ namespace Adventure
         public Dictionary<Element, Resistance> Resistances { get; set; }
 
         public ISoundEffect AttackSound { get; set; }
+
+        public IEnumerable<BattleStats.SkillInfo> Skills { get; set; }
     }
 
     class BiomeTreasure

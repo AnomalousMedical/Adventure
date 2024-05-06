@@ -52,7 +52,11 @@ namespace RpgMath
 
         public Dictionary<Element, Resistance> Resistances { get; set; }
 
-        public IEnumerable<string> Skills => Enumerable.Empty<string>();
+        public IEnumerable<string> Skills => SkillConfig?.Select(i => i.Name);
+
+        public record SkillInfo(string Name, int MinLevel, int MaxLevel, float Chance);
+
+        public IEnumerable<SkillInfo> SkillConfig { get; set; } = Enumerable.Empty<SkillInfo>();
 
         public List<CharacterBuff> Buffs { get; set; } = new List<CharacterBuff>(); //These are not hooked up to the stats
 

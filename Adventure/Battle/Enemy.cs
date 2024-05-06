@@ -38,6 +38,7 @@ namespace Adventure.Battle
         private readonly ICharacterTimer characterTimer;
         private readonly IBattleManager battleManager;
         private readonly ITurnTimer turnTimer;
+        private readonly ISkillFactory skillFactory;
         private readonly IObjectResolver objectResolver;
         private BattleStats battleStats;
         private Func<Clock, IBattleTarget, bool> counterAttack;
@@ -69,7 +70,8 @@ namespace Adventure.Battle
             ICharacterTimer characterTimer,
             IBattleManager battleManager,
             ITurnTimer turnTimer,
-            IObjectResolverFactory objectResolverFactory)
+            IObjectResolverFactory objectResolverFactory,
+            ISkillFactory skillFactory)
         {
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -78,6 +80,7 @@ namespace Adventure.Battle
             this.characterTimer = characterTimer;
             this.battleManager = battleManager;
             this.turnTimer = turnTimer;
+            this.skillFactory = skillFactory;
             this.objectResolver = objectResolverFactory.Create();
             this.sprite = description.Sprite;
             this.sprite.RandomizeFrameTime();
@@ -123,8 +126,29 @@ namespace Adventure.Battle
 
         private void CharacterTimer_TurnReady(ICharacterTimer obj)
         {
-            MeleeAttack();
-            //Cast(new Fire());
+            ISkill skillToUse = null;
+            foreach(var skill in battleStats.SkillConfig)
+            {
+                if(battleStats.Level > skill.MinLevel && battleStats.Level < skill.MaxLevel)
+                {
+                    const int maxRoll = 1000;
+                    int needRoll = (int)(maxRoll * skill.Chance);
+                    if(Random.Shared.Next(maxRoll) < needRoll)
+                    {
+                        skillToUse = skillFactory.CreateSkill(skill.Name);
+                        break;
+                    }
+                }
+            }
+
+            if(skillToUse != null)
+            {
+                Cast(skillToUse);
+            }
+            else
+            {
+                MeleeAttack();
+            }
         }
 
         private void MeleeAttack()

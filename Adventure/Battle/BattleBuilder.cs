@@ -91,7 +91,8 @@ namespace Adventure.Battle
                         TotalDexterity = curve.GetDexterity(level, enemyType),
                         TotalLuck = curve.GetLuck(level, enemyType),
                         Level = level,
-                        Resistances = biomeEnemy.Resistances
+                        Resistances = biomeEnemy.Resistances,
+                        SkillConfig = biomeEnemy.Skills ?? Enumerable.Empty<BattleStats.SkillInfo>(),
                     };
                     c.Scale = curve.GetScale(level, enemyType);
                     c.Translation = new Vector3(location.x, c.Sprite.BaseScale.y * c.Scale.y / 2.0f, location.z);
