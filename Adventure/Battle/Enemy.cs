@@ -285,7 +285,9 @@ namespace Adventure.Battle
                 o.LightOffset = new Vector3(0, 0, -0.1f);
             });
 
-            castEffect.SetPosition(this.currentPosition + new Vector3(0, 0, -0.01f), this.currentOrientation, this.currentScale);
+            var castScaleFactor = MathF.Max(1.0f, MathF.Min(this.currentScale.x, this.currentScale.y));
+            var castScale = new Vector3(castScaleFactor, castScaleFactor, this.currentScale.z);
+            castEffect.SetPosition(this.currentPosition + new Vector3(0, 0, -0.01f), this.currentOrientation, castScale);
 
             var swingEnd = Quaternion.Identity;
             var swingStart = new Quaternion(0f, MathF.PI / 2.1f, 0f);
@@ -426,7 +428,7 @@ namespace Adventure.Battle
 
                 if (castEffect != null)
                 {
-                    var scale = sprite.BaseScale * this.currentScale;
+                    var scale = castScale;
                     if (blockManager.Spammed)
                     {
                         scale *= 1.63f;
