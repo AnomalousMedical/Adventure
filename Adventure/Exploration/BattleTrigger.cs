@@ -273,10 +273,7 @@ namespace Adventure
                 SetUniqueStolenTreasureState(description, persistence, new UniqueStolenTreasureData(true, stealTreasures.Where(i => i.Id != null).Select(i => i.Id).ToArray()));
             }
 
-            var treasures = stealTreasures;
-            stealTreasures = null;
-
-            return treasures;
+            return stealTreasures;
         }
 
         private void EnsureStealTreasures()

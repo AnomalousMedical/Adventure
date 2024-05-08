@@ -4,6 +4,7 @@ using Engine;
 using Engine.Platform;
 using RpgMath;
 using System;
+using System.Linq;
 
 namespace Adventure.Battle.Skills
 {
@@ -45,13 +46,16 @@ namespace Adventure.Battle.Skills
         {
             this.battleManager = description.BattleManager;
             this.pickUpTreasureMenu = pickUpTreasureMenu;
-            battleManager.AllowActivePlayerGui = false;
             var treasures = battleManager.Steal();
-            pickUpTreasureMenu.GatherTreasures(treasures, TimeSpan.FromSeconds(1), (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
+            if (treasures.Any()) //Only show the menu if there are treasures, this disrupts the gui otherwise for the current player's turn
             {
-                var useTarget = battleManager.GetTargetForStats(user);
-                treasure.Use(inventory, inventoryFunctions, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker, useTarget, gameState);
-            });
+                battleManager.AllowActivePlayerGui = false;
+                pickUpTreasureMenu.GatherTreasures(treasures, TimeSpan.FromSeconds(1), (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
+                {
+                    var useTarget = battleManager.GetTargetForStats(user);
+                    treasure.Use(inventory, inventoryFunctions, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker, useTarget, gameState);
+                });
+            }
         }
 
         public bool Finished { get; private set; }
