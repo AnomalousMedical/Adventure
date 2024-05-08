@@ -484,6 +484,7 @@ namespace Adventure.Battle
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
+            objectResolver.Dispose();
         }
 
         public void ApplyDamage(IBattleTarget attacker, IDamageCalculator calculator, long damage)
