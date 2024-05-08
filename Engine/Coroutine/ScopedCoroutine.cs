@@ -32,9 +32,16 @@ namespace Engine
 
         private IEnumerator<YieldAction> Enumerate(IEnumerator<YieldAction> coroutine)
         {
-            while (allowPassthrough && coroutine.MoveNext())
+            try
             {
-                yield return coroutine.Current;
+                while (allowPassthrough && coroutine.MoveNext())
+                {
+                    yield return coroutine.Current;
+                }
+            }
+            finally
+            {
+                coroutine.Dispose();
             }
         }
 
