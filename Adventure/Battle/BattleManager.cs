@@ -988,6 +988,7 @@ namespace Adventure.Battle
             var living = players.Where(i => !i.IsDead).Sum(i => 1);
             if(living == 0)
             {
+                currentTurn = null; //If all players died clear the current turn, this is player only, enemies are different
                 BattleEnded();
             }
         }
