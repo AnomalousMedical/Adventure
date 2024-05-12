@@ -39,7 +39,15 @@ namespace Adventure.Assets.Equipment
             var attachments = new List<SpriteFrameAttachment>()
             {
                 SpriteFrameAttachment.FromFramePosition(13.5f, 42f, 0, 27, 54), //Center of grip
+                SpriteFrameAttachment.FromFramePosition(4f, 7f, -0.1f, 27, 54), //Light
             };
+
+            var reverseAttachments = new List<SpriteFrameAttachment>()
+            {
+                SpriteFrameAttachment.FromFramePosition(13.5f, 42f, 0, 27, 54), //Center of grip
+                SpriteFrameAttachment.FromFramePosition(23f, 7f, -0.1f, 27, 54), //Light
+            };
+
             var animSpeed = (int)(0.7f * Clock.SecondsToMicro);
 
             var defaultOrientation = new SpriteAnimation(animSpeed,
@@ -59,15 +67,15 @@ namespace Adventure.Assets.Equipment
             var reversedOrientation = new SpriteAnimation(animSpeed,
                     new SpriteFrame(1f / 3f, 0, 0f, 1)
                     {
-                        Attachments = attachments
+                        Attachments = reverseAttachments
                     },
                     new SpriteFrame(2f / 3f, 0, 1f / 3f, 1)
                     {
-                        Attachments = attachments
+                        Attachments = reverseAttachments
                     },
                     new SpriteFrame(1, 0f, 2f / 3f, 1)
                     {
-                        Attachments = attachments
+                        Attachments = reverseAttachments
                     });
 
             var anims = new Dictionary<string, SpriteAnimation>()
@@ -87,5 +95,16 @@ namespace Adventure.Assets.Equipment
             return new KeepTimeSprite(animations)
             { BaseScale = new Vector3(27f / 54f * 1.45f, 1.45f, 1.0f) };
         }
+
+        public Light CreateLight()
+        {
+            return new Light()
+            {
+                Color = Color.FromRGB(0xffeb00),
+                Length = 0.7f,
+            };
+        }
+
+        public int? LightAttachmentChannel => 1;
     }
 }
