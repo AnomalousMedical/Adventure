@@ -22,6 +22,8 @@ namespace Adventure
             public Light Light { get; set; }
 
             public Vector3 LightOffset { get; set; }
+
+            public int? LightAttachmentChannel { get; set; }
         }
 
         
@@ -35,6 +37,7 @@ namespace Adventure
         private readonly TLASInstanceData tlasData;
         private readonly Light light;
         private readonly Vector3 lightOffset;
+        private readonly int? lightAttachmentChannel;
         private bool dummyLight;
 
         private SpriteInstance spriteInstance;
@@ -63,6 +66,7 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.lightManager = lightManager;
             this.lightOffset = attachmentDescription.LightOffset;
+            this.lightAttachmentChannel = attachmentDescription.LightAttachmentChannel;
 
             this.tlasData = new TLASInstanceData()
             {
@@ -173,7 +177,19 @@ namespace Adventure
         {
             this.tlasData.Transform = new InstanceMatrix(finalPosition, finalOrientation, finalScale);
 
-            light.Position = (finalPosition + lightOffset).ToVector4();
+            var lightPosition = lightOffset;
+
+            if(lightAttachmentChannel != null)
+            {
+                var lightAttachment = sprite.GetCurrentFrame().Attachments[lightAttachmentChannel.Value];
+                lightPosition += lightAttachment.translate;
+            }
+
+            lightPosition *= finalScale;
+            lightPosition = Quaternion.quatRotate(finalOrientation, lightPosition);
+            lightPosition += finalPosition;
+
+            light.Position = lightPosition.ToVector4();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

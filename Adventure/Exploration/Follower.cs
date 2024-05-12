@@ -117,10 +117,6 @@ namespace Adventure
             characterSheet.OnOffHandModified += OnOffHandModified;
             characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
-            OnMainHandModified(characterSheet);
-            OnOffHandModified(characterSheet);
-
-
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.coroutine = coroutine;
@@ -133,6 +129,9 @@ namespace Adventure
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
+
+            OnMainHandModified(characterSheet);
+            OnOffHandModified(characterSheet);
 
             this.tlasData = new TLASInstanceData()
             {
@@ -319,6 +318,12 @@ namespace Adventure
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    if (o.Light != null)
+                    {
+                        o.Light.Length *= this.currentScale.x;
+                    }
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 
@@ -357,6 +362,12 @@ namespace Adventure
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    if (o.Light != null)
+                    {
+                        o.Light.Length *= this.currentScale.x;
+                    }
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 

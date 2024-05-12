@@ -149,10 +149,6 @@ namespace Adventure.WorldMap
             characterSheet.OnOffHandModified += OnOffHandModified;
             characterSheet.OnBodyModified += CharacterSheet_OnBodyModified;
 
-            OnMainHandModified(characterSheet);
-            OnOffHandModified(characterSheet);
-
-
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.coroutine = coroutine;
@@ -171,6 +167,9 @@ namespace Adventure.WorldMap
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
+
+            OnMainHandModified(characterSheet);
+            OnOffHandModified(characterSheet);
 
             this.tlasData = new TLASInstanceData()
             {
@@ -537,6 +536,12 @@ namespace Adventure.WorldMap
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    if (o.Light != null)
+                    {
+                        o.Light.Length *= this.currentScale.x;
+                    }
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 
@@ -577,6 +582,12 @@ namespace Adventure.WorldMap
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    if (o.Light != null)
+                    {
+                        o.Light.Length *= this.currentScale.x;
+                    }
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 

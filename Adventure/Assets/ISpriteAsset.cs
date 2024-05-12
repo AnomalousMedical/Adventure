@@ -1,5 +1,7 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using Adventure.Services;
+using DiligentEngine.RT.Sprites;
 using Engine;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +21,9 @@ namespace Adventure.Assets
         void SetupSwap(float h, float s, float l) { }
 
         ISpriteAsset CreateAnotherInstance();
+
+        Light CreateLight() => null;
+
+        int? LightAttachmentChannel => null;
     }
 }

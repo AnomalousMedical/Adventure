@@ -1096,6 +1096,8 @@ namespace Adventure.Battle
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 
@@ -1135,6 +1137,8 @@ namespace Adventure.Battle
                     o.Orientation = asset.GetOrientation();
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
+                    o.Light = asset.CreateLight();
+                    o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
             }
 
