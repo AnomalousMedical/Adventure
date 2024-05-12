@@ -52,4 +52,56 @@ namespace Adventure.Services
             }
         }
     }
+
+    class TypedLightManager<T>
+    {
+        private readonly LightManager lightManager;
+        private readonly List<Light> lights = new List<Light>();
+        private bool active;
+
+        public TypedLightManager(LightManager lightManager)
+        {
+            this.lightManager = lightManager;
+        }
+
+        public void AddLight(Light light)
+        {
+            lights.Add(light);
+            if (active)
+            {
+                lightManager.AddLight(light);
+            }
+        }
+
+        public void RemoveLight(Light light)
+        {
+            lights.Remove(light);
+            if (active)
+            {
+                lightManager.RemoveLight(light);
+            }
+        }
+
+        public void SetActive(bool active)
+        {
+            if (this.active != active)
+            {
+                this.active = active;
+                if (active)
+                {
+                    foreach (var light in lights)
+                    {
+                        lightManager.AddLight(light);
+                    }
+                }
+                else
+                {
+                    foreach (var light in lights)
+                    {
+                        lightManager.RemoveLight(light);
+                    }
+                }
+            }
+        }
+    }
 }

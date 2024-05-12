@@ -239,6 +239,9 @@ namespace Adventure
             services.AddSingleton<SpearCreator>();
             services.AddSingleton<MaceCreator>();
             services.AddSingleton<ShieldCreator>();
+            services.AddSingleton<TypedLightManager<ZoneScene>>();
+            services.AddSingleton<TypedLightManager<WorldMapScene>>();
+            services.AddSingleton<TypedLightManager<BattleScene>>();
             services.AddSingleton<AccessoryCreator>();
             services.AddSingleton<ArmorCreator>();
             services.AddSingleton<PotionCreator>();

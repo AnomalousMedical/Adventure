@@ -29,6 +29,7 @@ namespace Adventure.Battle
         private readonly EventManager eventManager;
         private readonly IPersistenceWriter persistenceWriter;
         private readonly Persistence persistence;
+        private readonly TypedLightManager<BattleScene> typedLightManager;
         private readonly object saveBlock = new object();
         private IGameState gameOverState;
         private IGameState returnState;
@@ -44,7 +45,8 @@ namespace Adventure.Battle
             PotionCreator potionCreator,
             EventManager eventManager,
             IPersistenceWriter persistenceWriter,
-            Persistence persistence
+            Persistence persistence,
+            TypedLightManager<BattleScene> typedLightManager
         )
         {
             this.battleManager = battleManager;
@@ -54,6 +56,7 @@ namespace Adventure.Battle
             this.eventManager = eventManager;
             this.persistenceWriter = persistenceWriter;
             this.persistence = persistence;
+            this.typedLightManager = typedLightManager;
         }
 
         public RTInstances Instances => rtInstances;
@@ -130,6 +133,7 @@ namespace Adventure.Battle
                     saveOnExit = false;
                 }
             }
+            typedLightManager.SetActive(active);
             battleManager.SetActive(active);
         }
 

@@ -40,7 +40,7 @@ namespace Adventure
         private readonly IExplorationGameState explorationGameState;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Persistence persistence;
-        private readonly LightManager lightManager;
+        private readonly TypedLightManager<ZoneScene> lightManager;
         private readonly TextDialog textDialog;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
@@ -73,7 +73,7 @@ namespace Adventure
             IExplorationGameState explorationGameState,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             Persistence persistence,
-            LightManager lightManager,
+            TypedLightManager<ZoneScene> lightManager,
             TextDialog textDialog
         )
         {

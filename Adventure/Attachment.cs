@@ -30,7 +30,7 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly RTInstances<T> rtInstances;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
-        private readonly LightManager lightManager;
+        private readonly TypedLightManager<T> lightManager;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly Light light;
@@ -53,7 +53,7 @@ namespace Adventure
             SpriteInstanceFactory spriteInstanceFactory,
             IScopedCoroutine coroutine,
             Description attachmentDescription,
-            LightManager lightManager
+            TypedLightManager<T> lightManager
         )
         {
             this.orientation = attachmentDescription.Orientation;

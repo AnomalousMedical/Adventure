@@ -38,6 +38,7 @@ namespace Adventure.WorldMap
         private readonly IGcService gcService;
         private readonly RestManager restManager;
         private readonly BuffManager buffManager;
+        private readonly TypedLightManager<WorldMapScene> typedLightManager;
         private IExplorationGameState explorationState;
         private IGameState startExplorationGameState;
         private IGameState nextState;
@@ -60,7 +61,8 @@ namespace Adventure.WorldMap
             IBackgroundMusicPlayer backgroundMusicPlayer,
             IGcService gcService,
             RestManager restManager,
-            BuffManager buffManager
+            BuffManager buffManager,
+            TypedLightManager<WorldMapScene> typedLightManager
         )
         {
             this.rtInstances = rtInstances;
@@ -78,6 +80,7 @@ namespace Adventure.WorldMap
             this.gcService = gcService;
             this.restManager = restManager;
             this.buffManager = buffManager;
+            this.typedLightManager = typedLightManager;
         }
 
         public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
@@ -102,6 +105,7 @@ namespace Adventure.WorldMap
                 worldMapManager.CenterCamera();
                 backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
             }
+            typedLightManager.SetActive(active);
         }
 
         public void EnterZone(int zoneIndex)

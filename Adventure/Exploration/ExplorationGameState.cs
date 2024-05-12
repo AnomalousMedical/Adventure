@@ -44,6 +44,7 @@ namespace Adventure
         private readonly BuffManager buffManager;
         private readonly IGcService gcService;
         private readonly RestManager restManager;
+        private readonly TypedLightManager<ZoneScene> typedLightManager;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -67,7 +68,8 @@ namespace Adventure
             ILevelCalculator levelCalculator,
             BuffManager buffManager,
             IGcService gcService,
-            RestManager restManager
+            RestManager restManager,
+            TypedLightManager<ZoneScene> typedLightManager
         )
         {
             this.bepuScene = bepuScene;
@@ -84,6 +86,7 @@ namespace Adventure
             this.buffManager = buffManager;
             this.gcService = gcService;
             this.restManager = restManager;
+            this.typedLightManager = typedLightManager;
         }
 
         public void Dispose()
@@ -122,6 +125,7 @@ namespace Adventure
                 timeClock.DayStarted -= TimeClock_DayStarted;
                 timeClock.NightStarted -= TimeClock_NightStarted;
             }
+            typedLightManager.SetActive(active);
         }
 
         public bool AllowBattles { get; set; } = true;
