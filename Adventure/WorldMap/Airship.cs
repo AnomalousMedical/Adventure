@@ -25,13 +25,13 @@ namespace Adventure.WorldMap
 
             public EventLayers LandEventLayer { get; set; } = EventLayers.WorldMap;
 
-            public FrameEventSprite Sprite { get; set; } = AirshipSprite.CreateSprite();
+            public ISprite Sprite { get; set; } = AirshipSprite.CreateSprite();
 
             public SpriteMaterialDescription SpriteMaterial { get; set; } = AirshipSprite.CreateMaterial();
         }
 
         private SpriteInstance spriteInstance;
-        private readonly FrameEventSprite sprite;
+        private readonly ISprite sprite;
         private TLASInstanceData instanceData;
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly Persistence persistence;
@@ -449,7 +449,7 @@ namespace Adventure.WorldMap
             }
         }
 
-        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        private void Sprite_AnimationChanged(ISprite obj)
         {
             this.currentScale = AirshipSprite.GetScale(obj.CurrentAnimationName) * descriptionScale;
             SyncGraphics();

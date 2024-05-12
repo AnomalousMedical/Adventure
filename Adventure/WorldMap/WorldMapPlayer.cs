@@ -52,7 +52,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
 
-        private FrameEventSprite sprite;
+        private ISprite sprite;
         private SpriteInstance spriteInstance;
         private bool graphicsActive = false;
 
@@ -129,7 +129,7 @@ namespace Adventure.WorldMap
             this.secondaryHand = description.SecondaryHand;
             this.gamepadId = description.Gamepad;
 
-            sprite = new FrameEventSprite(playerSpriteInfo.Animations);
+            sprite = new Sprite(playerSpriteInfo.Animations);
 
             //Events
             eventManager.addEvent(moveForward);
@@ -470,7 +470,7 @@ namespace Adventure.WorldMap
             }
         }
 
-        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        private void Sprite_AnimationChanged(ISprite obj)
         {
             if (mainHandHand != null)
             {
@@ -499,7 +499,7 @@ namespace Adventure.WorldMap
             }
         }
 
-        private void Sprite_FrameChanged(FrameEventSprite obj)
+        private void Sprite_FrameChanged(ISprite obj)
         {
             var frame = obj.GetCurrentFrame();
 

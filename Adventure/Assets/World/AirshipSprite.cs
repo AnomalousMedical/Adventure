@@ -45,9 +45,9 @@ namespace Adventure.Assets.World
             },
         };
 
-        public static FrameEventSprite CreateSprite()
+        public static ISprite CreateSprite()
         {
-            return new FrameEventSprite(animations) { BaseScale = new Vector3(76f / 33f * 2.5f, 2.5f, 1) };
+            return new Sprite(animations) { BaseScale = new Vector3(76f / 33f * 2.5f, 2.5f, 1) };
         }
 
         public static Vector3 GetScale(string animation)

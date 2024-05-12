@@ -104,11 +104,7 @@ namespace Adventure
                 Length = 2.3f,
             };
 
-            var frameEventSprite = sprite as FrameEventSprite;
-            if (frameEventSprite != null)
-            {
-                frameEventSprite.FrameChanged += FrameEventSprite_FrameChanged;
-            }
+            sprite.FrameChanged += Sprite_FrameChanged;
 
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
@@ -177,11 +173,7 @@ namespace Adventure
             {
                 lightManager.RemoveLight(light);
             }
-            var frameEventSprite = sprite as FrameEventSprite;
-            if (frameEventSprite != null)
-            {
-                frameEventSprite.FrameChanged -= FrameEventSprite_FrameChanged;
-            }
+            sprite.FrameChanged -= Sprite_FrameChanged;
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
@@ -254,10 +246,10 @@ namespace Adventure
         {
             sprite.SetAnimation("lit");
             lightManager.AddLight(light);
-            FrameEventSprite_FrameChanged(null);
+            Sprite_FrameChanged(null);
         }
 
-        private void FrameEventSprite_FrameChanged(FrameEventSprite obj)
+        private void Sprite_FrameChanged(ISprite obj)
         {
             light.Position = (sprite.GetCurrentFrame().Attachments[0].translate + currentPosition).ToVector4();
         }

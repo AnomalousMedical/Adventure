@@ -60,6 +60,6 @@ class Torch : ISpriteAsset
 
     public ISprite CreateSprite()
     {
-        return new FrameEventSprite(animations) { BaseScale = new Vector3(9f / 24f * 0.65f, 0.65f, 0.1f) };
+        return new Sprite(animations) { BaseScale = new Vector3(9f / 24f * 0.65f, 0.65f, 0.1f) };
     }
 }

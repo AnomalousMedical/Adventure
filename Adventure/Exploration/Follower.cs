@@ -38,7 +38,7 @@ namespace Adventure
         private readonly FollowerManager followerManager;
         private readonly IObjectResolver objectResolver;
 
-        private FrameEventSprite sprite;
+        private ISprite sprite;
         private SpriteInstance spriteInstance;
 
         private Attachment<T> mainHandItem;
@@ -108,7 +108,7 @@ namespace Adventure
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
 
-            sprite = new FrameEventSprite(playerSpriteInfo.Animations);
+            sprite = new Sprite(playerSpriteInfo.Animations);
 
             //Sub objects
             objectResolver = objectResolverFactory.Create();
@@ -252,7 +252,7 @@ namespace Adventure
             }
         }
 
-        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        private void Sprite_AnimationChanged(ISprite obj)
         {
             if (mainHandHand != null)
             {
@@ -281,7 +281,7 @@ namespace Adventure
             }
         }
 
-        private void Sprite_FrameChanged(FrameEventSprite obj)
+        private void Sprite_FrameChanged(ISprite obj)
         {
             var frame = obj.GetCurrentFrame();
 

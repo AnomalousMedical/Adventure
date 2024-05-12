@@ -51,7 +51,7 @@ namespace Adventure.Exploration
         private readonly TextDialog textDialog;
         private readonly PartyMemberManager partyMemberManager;
         private SpriteInstance spriteInstance;
-        private readonly FrameEventSprite sprite;
+        private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
@@ -96,7 +96,7 @@ namespace Adventure.Exploration
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
-            this.sprite = new FrameEventSprite(playerSpriteInfo.Animations);
+            this.sprite = new Sprite(playerSpriteInfo.Animations);
             this.partyMember = description.PartyMember;
             this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
@@ -372,7 +372,7 @@ namespace Adventure.Exploration
             Sprite_FrameChanged(sprite);
         }
 
-        private void Sprite_AnimationChanged(FrameEventSprite obj)
+        private void Sprite_AnimationChanged(ISprite obj)
         {
             if (mainHandHand != null)
             {
@@ -401,7 +401,7 @@ namespace Adventure.Exploration
             }
         }
 
-        private void Sprite_FrameChanged(FrameEventSprite obj)
+        private void Sprite_FrameChanged(ISprite obj)
         {
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;

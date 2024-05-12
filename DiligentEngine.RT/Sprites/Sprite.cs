@@ -3,8 +3,6 @@ using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DiligentEngine.RT.Sprites
 {
@@ -81,97 +79,12 @@ namespace DiligentEngine.RT.Sprites
         private long duration;
         private int frame;
 
-        public Vector3 BaseScale { get; set; }
-
-        private static readonly Dictionary<String, SpriteAnimation> defaultAnimation = new Dictionary<string, SpriteAnimation>()
-        {
-            { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
-                {
-                    Left = 0f,
-                    Top = 0f,
-                    Right = 1f,
-                    Bottom = 1f,
-                    Attachments = new List<SpriteFrameAttachment>(){ new SpriteFrameAttachment() }
-                } })
-            }
-        };
-
-        public Sprite()
-            : this(defaultAnimation)
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor to supply an animation. The animations can be shared between multiple instances.
-        /// </summary>
-        /// <param name="animations"></param>
-        public Sprite(Dictionary<String, SpriteAnimation> animations)
-        {
-            this.animations = animations;
-            SetAnimation(animations.Keys.First());
-        }
-
-        public void RandomizeFrameTime()
-        {
-            //This is converted to int, but its still random
-            //Anything into the long territory will be a pretty long animation anyway
-            frameTime = Random.Shared.Next(0, (int)duration);
-        }
-
-        public void SetAnimation(String animationName)
-        {
-            if (animationName == currentName)
-            {
-                return;
-            }
-
-            currentName = animationName;
-
-            if (!animations.TryGetValue(animationName, out current))
-            {
-                var first = animations.First();
-                current = first.Value;
-                currentName = first.Key;
-            }
-            frameTime = 0;
-            duration = current.duration;
-        }
-
-        public void Update(Clock clock)
-        {
-            frameTime += clock.DeltaTimeMicro;
-            frameTime %= duration;
-            frame = (int)((float)frameTime / duration * current.frames.Length);
-        }
-
-        public SpriteFrame GetCurrentFrame()
-        {
-            return current.frames[frame];
-        }
-
-        public String CurrentAnimationName => currentName;
-
-        public int FrameIndex => frame;
-
-        public IReadOnlyDictionary<String, SpriteAnimation> Animations => animations;
-    }
-
-    public class FrameEventSprite : ISprite
-    {
-        private Dictionary<String, SpriteAnimation> animations;
-        private SpriteAnimation current;
-        private String currentName;
-        private long frameTime;
-        private long duration;
-        private int frame;
-
         public Vector3 BaseScale { get; set; } = Vector3.ScaleIdentity;
 
-        public event Action<FrameEventSprite> AnimationChanged;
-        public event Action<FrameEventSprite> FrameChanged;
+        public event Action<ISprite> AnimationChanged;
+        public event Action<ISprite> FrameChanged;
 
-        public FrameEventSprite()
+        public Sprite()
             : this(new Dictionary<string, SpriteAnimation>()
             {
                 { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
@@ -187,7 +100,7 @@ namespace DiligentEngine.RT.Sprites
 
         }
 
-        public FrameEventSprite(Dictionary<String, SpriteAnimation> animations)
+        public Sprite(Dictionary<String, SpriteAnimation> animations)
         {
             this.animations = animations;
             SetAnimation(animations.Keys.First());
@@ -259,6 +172,10 @@ namespace DiligentEngine.RT.Sprites
         private long frameTime;
         private long duration;
         private int frame;
+
+        public event Action<ISprite> AnimationChanged;
+
+        public event Action<ISprite> FrameChanged;
 
         public Vector3 BaseScale { get; set; }
 
