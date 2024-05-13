@@ -52,7 +52,7 @@ namespace Adventure.WorldMap
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
 
-        private ISprite sprite;
+        private EventSprite sprite;
         private SpriteInstance spriteInstance;
         private bool graphicsActive = false;
 
@@ -129,7 +129,7 @@ namespace Adventure.WorldMap
             this.secondaryHand = description.SecondaryHand;
             this.gamepadId = description.Gamepad;
 
-            sprite = new Sprite(playerSpriteInfo.Animations);
+            sprite = new EventSprite(new Sprite(playerSpriteInfo.Animations));
 
             //Events
             eventManager.addEvent(moveForward);

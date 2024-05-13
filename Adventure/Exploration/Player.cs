@@ -50,7 +50,7 @@ namespace Adventure
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
 
-        private ISprite sprite;
+        private EventSprite sprite;
         private SpriteInstance spriteInstance;
 
         private Attachment<ZoneScene> mainHandItem;
@@ -126,7 +126,7 @@ namespace Adventure
             this.secondaryHand = description.SecondaryHand;
             this.gamepadId = description.Gamepad;
 
-            sprite = new Sprite(playerSpriteInfo.Animations);
+            sprite = new EventSprite(new Sprite(playerSpriteInfo.Animations));
 
             //Events
             eventManager.addEvent(moveForward);

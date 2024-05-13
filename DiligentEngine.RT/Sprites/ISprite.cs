@@ -16,9 +16,5 @@ namespace DiligentEngine.RT.Sprites
         int FrameIndex { get; }
         String CurrentAnimationName { get; }
         IReadOnlyDictionary<String, SpriteAnimation> Animations { get; }
-
-        event Action<ISprite> AnimationChanged;
-
-        event Action<ISprite> FrameChanged;
     }
 }

@@ -39,7 +39,7 @@ namespace Adventure.Battle
         private int primaryHand;
         private int secondaryHand;
         private GamepadId gamepadId;
-        private ISprite sprite;
+        private EventSprite sprite;
 
         private Attachment<BattleScene> mainHandItem;
         private Attachment<BattleScene> offHandItem;
@@ -209,7 +209,7 @@ namespace Adventure.Battle
             characterTimer.TurnReady += CharacterTimer_TurnReady;
             characterTimer.TotalDex = () => characterSheet.TotalDexterity;
 
-            sprite = new Sprite(playerSpriteInfo.Animations);
+            sprite = new EventSprite(new Sprite(playerSpriteInfo.Animations));
             sprite.FrameChanged += Sprite_FrameChanged;
             sprite.AnimationChanged += Sprite_AnimationChanged;
             sprite.SetAnimation("stand-left");

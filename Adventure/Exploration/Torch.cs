@@ -43,7 +43,7 @@ namespace Adventure
         private readonly TypedLightManager<ZoneScene> lightManager;
         private readonly TextDialog textDialog;
         private SpriteInstance spriteInstance;
-        private readonly ISprite sprite;
+        private readonly EventSprite sprite;
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly Vector3 mapOffset;
@@ -77,7 +77,7 @@ namespace Adventure
             TextDialog textDialog
         )
         {
-            this.sprite = description.Sprite;
+            this.sprite = new EventSprite(description.Sprite);
             this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
             this.state = persistence.Current.Torches.GetData(zoneIndex, instanceId);

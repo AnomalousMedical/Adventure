@@ -31,7 +31,7 @@ namespace Adventure.WorldMap
         }
 
         private SpriteInstance spriteInstance;
-        private readonly ISprite sprite;
+        private readonly EventSprite sprite;
         private TLASInstanceData instanceData;
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly Persistence persistence;
@@ -92,7 +92,7 @@ namespace Adventure.WorldMap
             IWorldMapManager worldMapManager
         )
         {
-            this.sprite = description.Sprite;
+            this.sprite = new EventSprite(description.Sprite);
             this.worldMapManager = worldMapManager;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });

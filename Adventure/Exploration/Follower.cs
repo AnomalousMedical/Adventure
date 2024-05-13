@@ -38,7 +38,7 @@ namespace Adventure
         private readonly FollowerManager followerManager;
         private readonly IObjectResolver objectResolver;
 
-        private ISprite sprite;
+        private EventSprite sprite;
         private SpriteInstance spriteInstance;
 
         private Attachment<T> mainHandItem;
@@ -108,7 +108,7 @@ namespace Adventure
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
 
-            sprite = new Sprite(playerSpriteInfo.Animations);
+            sprite = new EventSprite(new Sprite(playerSpriteInfo.Animations));
 
             //Sub objects
             objectResolver = objectResolverFactory.Create();

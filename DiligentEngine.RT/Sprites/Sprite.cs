@@ -84,9 +84,6 @@ namespace DiligentEngine.RT.Sprites
 
         public bool KeepTime { get => keepTime; set => keepTime = value; }
 
-        public event Action<ISprite> AnimationChanged;
-        public event Action<ISprite> FrameChanged;
-
         public Sprite()
             : this(new Dictionary<string, SpriteAnimation>()
             {
@@ -136,20 +133,13 @@ namespace DiligentEngine.RT.Sprites
                 frameTime = 0;
                 frame = 0;
             }
-
-            AnimationChanged?.Invoke(this);
         }
 
         public void Update(Clock clock)
         {
-            var oldFrame = frame;
             frameTime += clock.DeltaTimeMicro;
             frameTime %= duration;
             frame = (int)((float)frameTime / duration * current.frames.Length);
-            if(FrameChanged != null && frame != oldFrame)
-            {
-                FrameChanged.Invoke(this);
-            }
         }
 
         public void RandomizeFrameTime()
@@ -158,10 +148,6 @@ namespace DiligentEngine.RT.Sprites
             //This is converted to int, but its still random
             //Anything into the long territory will be a pretty long animation anyway
             frameTime = Random.Shared.Next(0, (int)duration);
-            if (FrameChanged != null && frame != oldFrame)
-            {
-                FrameChanged.Invoke(this);
-            }
         }
 
         public SpriteFrame GetCurrentFrame()
@@ -174,5 +160,63 @@ namespace DiligentEngine.RT.Sprites
         public int FrameIndex => frame;
 
         public IReadOnlyDictionary<String, SpriteAnimation> Animations => animations;
+    }
+
+    public class EventSprite : ISprite
+    {
+        private readonly ISprite wrapped;
+
+        public Vector3 BaseScale => wrapped.BaseScale;
+
+        public int FrameIndex => wrapped.FrameIndex;
+
+        public string CurrentAnimationName => wrapped.CurrentAnimationName;
+
+        public IReadOnlyDictionary<string, SpriteAnimation> Animations => wrapped.Animations;
+
+        public event Action<ISprite> AnimationChanged;
+        public event Action<ISprite> FrameChanged;
+
+        public EventSprite(ISprite wrapped)
+        {
+            this.wrapped = wrapped;
+        }
+
+        public SpriteFrame GetCurrentFrame()
+        {
+            return wrapped.GetCurrentFrame();
+        }
+
+        public void RandomizeFrameTime()
+        {
+            var oldFrame = wrapped.FrameIndex;
+            wrapped.RandomizeFrameTime();
+            if (FrameChanged != null && wrapped.FrameIndex != oldFrame)
+            {
+                FrameChanged.Invoke(this);
+            }
+        }
+
+        public void SetAnimation(string animationName)
+        {
+            if (animationName == wrapped.CurrentAnimationName)
+            {
+                return;
+            }
+
+            wrapped.SetAnimation(animationName);
+
+            AnimationChanged?.Invoke(this);
+        }
+
+        public void Update(Clock clock)
+        {
+            var oldFrame = wrapped.FrameIndex;
+            wrapped.Update(clock);
+            if (FrameChanged != null && wrapped.FrameIndex != oldFrame)
+            {
+                FrameChanged.Invoke(this);
+            }
+        }
     }
 }
