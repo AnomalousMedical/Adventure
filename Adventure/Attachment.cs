@@ -49,6 +49,10 @@ namespace Adventure
         private bool makeGraphicsActive = true;
         private bool graphicsReady = false;
 
+        private Vector3 worldPosition;
+        private Quaternion worldOrientation;
+        private Vector3 worldScale;
+
         public Attachment
         (
             IDestructionRequest destructionRequest,
@@ -60,7 +64,6 @@ namespace Adventure
         )
         {
             this.orientation = attachmentDescription.Orientation;
-            this.sprite = attachmentDescription.Sprite;
             this.destructionRequest = destructionRequest;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
@@ -68,24 +71,29 @@ namespace Adventure
             this.lightOffset = attachmentDescription.LightOffset;
             this.lightAttachmentChannel = attachmentDescription.LightAttachmentChannel;
 
+            if (attachmentDescription.Light != null)
+            {
+                light = attachmentDescription.Light;
+                lightManager.AddLight(light);
+                dummyLight = false;
+                var eventSprite = new EventSprite(attachmentDescription.Sprite);
+                eventSprite.FrameChanged += EventSprite_FrameChanged;
+                eventSprite.AnimationChanged += EventSprite_AnimationChanged;
+                this.sprite = eventSprite;
+            }
+            else
+            {
+                light = new Light();
+                dummyLight = true;
+                this.sprite = attachmentDescription.Sprite;
+            }
+
             this.tlasData = new TLASInstanceData()
             {
                 InstanceName = RTId.CreateId("Attachment"),
                 Mask = attachmentDescription.RenderShadow ? RtStructures.OPAQUE_GEOM_MASK : RtStructures.TRANSPARENT_GEOM_MASK,
                 Transform = new InstanceMatrix(Vector3.Zero, attachmentDescription.Orientation, sprite.BaseScale) //It might be worth it to skip this line
             };
-
-            if (attachmentDescription.Light != null)
-            {
-                light = attachmentDescription.Light;
-                lightManager.AddLight(light);
-                dummyLight = false;
-            }
-            else
-            {
-                light = new Light();
-                dummyLight = true;
-            }
 
             coroutine.RunTask(async () =>
             {
@@ -175,6 +183,10 @@ namespace Adventure
 
         public void SetWorldPosition(in Vector3 finalPosition, in Quaternion finalOrientation, in Vector3 finalScale)
         {
+            this.worldPosition = finalPosition;
+            this.worldOrientation = finalOrientation;
+            this.worldScale = finalScale;
+
             this.tlasData.Transform = new InstanceMatrix(finalPosition, finalOrientation, finalScale);
 
             var lightPosition = lightOffset;
@@ -190,6 +202,16 @@ namespace Adventure
             lightPosition += finalPosition;
 
             light.Position = lightPosition.ToVector4();
+        }
+
+        private void EventSprite_FrameChanged(ISprite obj)
+        {
+            SetWorldPosition(worldPosition, worldOrientation, worldScale);
+        }
+
+        private void EventSprite_AnimationChanged(ISprite obj)
+        {
+            SetWorldPosition(worldPosition, worldOrientation, worldScale);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
