@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using Adventure.Services;
+using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using Microsoft.VisualBasic;
@@ -41,6 +42,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(5.5f, 43f, 0, 11, 55), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(5, 17, -0.1f, 11, 55), //Light position
                     }
                 },
                 new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
@@ -48,6 +50,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(5.5f, 43f, 0, 11, 55), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(5, 17, -0.1f, 11, 55), //Light position
                     }
                 },
                 new SpriteFrame(2f / 3f, 0f, 1, 1)
@@ -55,6 +58,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(5.5f, 43f, 0, 11, 55), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(5, 17, -0.1f, 11, 55), //Light position
                     }
                 })
             },
@@ -68,5 +72,16 @@ namespace Adventure.Assets.Equipment
                 KeepTime = true
             };
         }
+
+        public Light CreateLight()
+        {
+            return new Light()
+            {
+                Color = Color.FromRGB(0xffd800),
+                Length = 0.7f,
+            };
+        }
+
+        public int? LightAttachmentChannel => 1;
     }
 }
