@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using Adventure.Services;
+using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
@@ -38,28 +39,32 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Hand position
+                        SpriteFrameAttachment.FromFramePosition(11, 15, -0.1f, 23, 62), //Light position
                     }
                 },
                 new SpriteFrame(1f / 4f, 0, 2f / 4f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Hand position
+                        SpriteFrameAttachment.FromFramePosition(11, 16, -0.1f, 23, 62), //Light position
                     }
                 },
                 new SpriteFrame(2f / 4f, 0, 3f / 4f, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Hand position
+                        SpriteFrameAttachment.FromFramePosition(11, 16, -0.1f, 23, 62), //Light position
                     }
                 },
                 new SpriteFrame(3f / 4f, 0, 1, 1)
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(11, 51, 0, 23, 62), //Hand position
+                        SpriteFrameAttachment.FromFramePosition(11, 15, -0.1f, 23, 62), //Light position
                     }
                 }
                 )
@@ -74,5 +79,16 @@ namespace Adventure.Assets.Equipment
                 KeepTime = true
             };
         }
+
+        public Light CreateLight()
+        {
+            return new Light()
+            {
+                Color = Color.FromRGB(0x1b97c3),
+                Length = 0.7f,
+            };
+        }
+
+        public int? LightAttachmentChannel => 1;
     }
 }

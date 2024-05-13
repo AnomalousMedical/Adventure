@@ -68,7 +68,7 @@ namespace Adventure.Assets.Equipment
         {
             return new Light()
             {
-                Color = Color.FromRGB(0x1b57c3),
+                Color = Color.FromRGB(0x1b97c3),
                 Length = 0.7f,
             };
         }
