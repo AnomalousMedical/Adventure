@@ -57,8 +57,11 @@ namespace Adventure.Assets.Equipment
 
         public ISprite CreateSprite()
         {
-            return new KeepTimeSprite(animations)
-            { BaseScale = new Vector3(18f / 57f * 1.25f, 1.25f, 1.0f) };
+            return new Sprite(animations)
+            {
+                BaseScale = new Vector3(18f / 57f * 1.25f, 1.25f, 1.0f),
+                KeepTime = true
+            };
         }
 
         public Light CreateLight()
