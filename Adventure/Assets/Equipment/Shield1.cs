@@ -27,9 +27,22 @@ namespace Adventure.Assets.Equipment
             return defaultMaterial;
         }
 
+        private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation((int)(0.7f * Clock.SecondsToMicro),
+                new SpriteFrame(0, 0, 1, 1)
+                {
+                    Attachments = new List<SpriteFrameAttachment>()
+                    {
+                        SpriteFrameAttachment.FromFramePosition(8, 8, 0, 16, 16), //Center of grip
+                    }
+                } )
+            },
+        };
+
         public ISprite CreateSprite()
         {
-            return new Sprite() { BaseScale = new Vector3(0.45f, 0.45f, 1f) };
+            return new Sprite(animations) { BaseScale = new Vector3(0.45f, 0.45f, 1f) };
         }
     }
 }

@@ -72,6 +72,18 @@ namespace DiligentEngine.RT.Sprites
 
     public class Sprite : ISprite
     {
+        static Dictionary<string, SpriteAnimation> defaultAnimation = new Dictionary<string, SpriteAnimation>()
+        {
+            { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
+                {
+                    Left = 0f,
+                    Top = 0f,
+                    Right = 1f,
+                    Bottom = 1f
+                } })
+            }
+        };
+
         private Dictionary<String, SpriteAnimation> animations;
         private SpriteAnimation current;
         private String currentName;
@@ -85,17 +97,7 @@ namespace DiligentEngine.RT.Sprites
         public bool KeepTime { get => keepTime; set => keepTime = value; }
 
         public Sprite()
-            : this(new Dictionary<string, SpriteAnimation>()
-            {
-                { "default", new SpriteAnimation(1, new SpriteFrame[]{ new SpriteFrame()
-                    {
-                        Left = 0f,
-                        Top = 0f,
-                        Right = 1f,
-                        Bottom = 1f
-                    } })
-                }
-            })
+            : this(defaultAnimation)
         {
 
         }
