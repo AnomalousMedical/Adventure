@@ -49,7 +49,7 @@ namespace DiligentEngine
             this.SwapChainPtr.Dispose();
         }
 
-        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features, RenderApi renderApi)
+        internal void CreateDeviceAndSwapChain(IntPtr hwnd, SwapChainDesc swapChainDesc, FeatureFlags features, RenderApi renderApi, UInt32? deviceId)
         {
             var result = GenericEngineFactory_CreateDeviceAndSwapChain(
             hwnd
@@ -65,6 +65,7 @@ namespace DiligentEngine
             , swapChainDesc.DefaultDepthValue
             , swapChainDesc.DefaultStencilValue
             , swapChainDesc.IsPrimary
+            , deviceId.HasValue ? deviceId.Value + 1 : 0
             );
 
             if(result.m_pDevice == IntPtr.Zero)
@@ -103,6 +104,7 @@ namespace DiligentEngine
             , Float32 DefaultDepthValue          
             , Uint8 DefaultStencilValue          
             , [MarshalAs(UnmanagedType.I1)] bool IsPrimary
+            , UInt32 deviceId
             );
     }
 }

@@ -46,6 +46,7 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
 	, Float32 DefaultDepthValue
 	, Uint8 DefaultStencilValue
 	, bool IsPrimary
+    , Uint32 deviceId
 )
 {
 	CreateDeviceAndSwapChainResult result;
@@ -128,9 +129,24 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
                 return result;
             }
 
-            Uint32       m_AdapterId = 0;
-            ADAPTER_TYPE m_AdapterType = ADAPTER_TYPE_UNKNOWN;
-
+            //Use first discrete adapter, or the only adapter if there is only 1
+            Uint32 m_AdapterId = 0;
+            if (deviceId == 0) {
+                if (NumAdapters > 1)
+                {
+                    for (const Diligent::GraphicsAdapterInfo& i : Adapters) {
+                        if (i.Type == ADAPTER_TYPE_DISCRETE) {
+                            break;
+                        }
+                        else {
+                            ++m_AdapterId;
+                        }
+                    }
+                }
+            }
+            else {
+                m_AdapterId = deviceId - 1;
+            }
 
             EngineCI.AdapterId = m_AdapterId;
             EngineCI.GPUDescriptorHeapDynamicSize[0] = 32768;
@@ -139,6 +155,7 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
             EngineCI.DynamicDescriptorAllocationChunkSize[0] = 32;
             EngineCI.DynamicDescriptorAllocationChunkSize[1] = 8; // D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
 
+            //ADAPTER_TYPE m_AdapterType = ADAPTER_TYPE_UNKNOWN;
             //m_AdapterAttribs = Adapters[EngineCI.AdapterId];
             //if (m_AdapterType != ADAPTER_TYPE_SOFTWARE)
             //{

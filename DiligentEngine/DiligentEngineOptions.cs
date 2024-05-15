@@ -11,5 +11,10 @@ namespace DiligentEngine
         public GraphicsEngine.FeatureFlags Features { get; set; }
 
         public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.Vulkan;
+
+        /// <summary>
+        /// Set the device id to use. Leave null to autodetect the discrete graphics card.
+        /// </summary>
+        public UInt32? DeviceId { get; set; }
     }
 }

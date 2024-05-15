@@ -27,5 +27,7 @@ namespace Adventure.Services
         public float MusicVolume { get; set; } = 0.35f;
 
         public float SfxVolume { get; set; } = 1.0f;
+
+        public uint? DeviceId { get; set; }
     }
 }
