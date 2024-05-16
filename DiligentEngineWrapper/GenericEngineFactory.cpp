@@ -130,20 +130,30 @@ extern "C" _AnomalousExport CreateDeviceAndSwapChainResult GenericEngineFactory_
             }
 
             //Use first discrete adapter, or the only adapter if there is only 1
+            //Will fallback to device 0 if no discrete adapter is found
             Uint32 m_AdapterId = 0;
             if (deviceId == 0) {
                 if (NumAdapters > 1)
                 {
+                    Uint32 discreteAdapterId = 0;
+                    bool foundDiscreteAdapter = false;
+
                     for (const Diligent::GraphicsAdapterInfo& i : Adapters) {
                         if (i.Type == ADAPTER_TYPE_DISCRETE) {
+                            foundDiscreteAdapter = true;
                             break;
                         }
                         else {
-                            ++m_AdapterId;
+                            ++discreteAdapterId;
                         }
+                    }
+
+                    if (foundDiscreteAdapter) {
+                        m_AdapterId = discreteAdapterId;
                     }
                 }
             }
+            //User provided id
             else {
                 m_AdapterId = deviceId - 1;
             }
