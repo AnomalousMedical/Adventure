@@ -25,5 +25,7 @@ namespace Adventure.Assets
         Light CreateLight() => null;
 
         int? LightAttachmentChannel => null;
+
+        int? GroundAttachmentChannel => null;
     }
 }

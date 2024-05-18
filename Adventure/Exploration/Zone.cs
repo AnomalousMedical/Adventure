@@ -1247,33 +1247,40 @@ namespace Adventure
 
                         if (add != null)
                         {
-                            var mapLoc = mapMesh.PointToVector(x, y);
-                            mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
-                            var zOffsetBucket = bgItemsRandom.Next(9);
-                            if (mustBeEven)
-                            {
-                                if(zOffsetBucket % 2 != 0)
-                                {
-                                    zOffsetBucket += 1;
-                                }
-                            }
-                            else //Odd
-                            {
-                                if (zOffsetBucket % 2 != 1)
-                                {
-                                    zOffsetBucket += 1;
-                                }
-                            }
-                            mapLoc.z += zOffsetBucket * 0.1f * mapMesh.MapUnitZ - halfUnitZ;
-
                             var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
                             {
+                                var scale = Vector3.ScaleIdentity * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
+                                var mapLoc = mapMesh.PointToVector(x, y);
+                                var keyAsset = add.Asset;
+                                var sprite = keyAsset.CreateSprite();
+                                mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
+                                if(keyAsset.GroundAttachmentChannel.HasValue)
+                                {
+                                    var groundOffset = sprite.GetCurrentFrame().Attachments[keyAsset.GroundAttachmentChannel.Value].translate;
+                                    mapLoc += groundOffset * scale * sprite.BaseScale;
+                                }
+                                var zOffsetBucket = bgItemsRandom.Next(9);
+                                if (mustBeEven)
+                                {
+                                    if (zOffsetBucket % 2 != 0)
+                                    {
+                                        zOffsetBucket += 1;
+                                    }
+                                }
+                                else //Odd
+                                {
+                                    if (zOffsetBucket % 2 != 1)
+                                    {
+                                        zOffsetBucket += 1;
+                                    }
+                                }
+                                mapLoc.z += zOffsetBucket * 0.1f * mapMesh.MapUnitZ - halfUnitZ;
+
                                 o.MapOffset = mapLoc;
                                 o.Translation = currentPosition + o.MapOffset;
-                                var keyAsset = add.Asset;
-                                o.Sprite = keyAsset.CreateSprite();
+                                o.Sprite = sprite;
                                 o.SpriteMaterial = keyAsset.CreateMaterial();
-                                o.Scale = Vector3.ScaleIdentity * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
+                                o.Scale = scale;
                             });
                             this.placeables.Add(bgItem);
                         }
