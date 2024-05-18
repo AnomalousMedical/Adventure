@@ -128,21 +128,21 @@ namespace DiligentEngine.RT.Sprites
                     AutoPtr<ITexture> normalTexture = null;
                     if (ccoTextures.NormalMap != null)
                     {
-                        normalTexture = textureLoader.CreateTextureFromImage(ccoTextures.NormalMap, 1, "normalTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        normalTexture = textureLoader.CreateTextureFromImage(ccoTextures.NormalMap, 0, "normalTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         barriers.Add(new StateTransitionDesc { pResource = normalTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
 
                     AutoPtr<ITexture> physicalTexture = null;
                     if (ccoTextures.PhysicalDescriptorMap != null)
                     {
-                        physicalTexture = textureLoader.CreateTextureFromImage(ccoTextures.PhysicalDescriptorMap, 1, "physicalTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        physicalTexture = textureLoader.CreateTextureFromImage(ccoTextures.PhysicalDescriptorMap, 0, "physicalTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         barriers.Add(new StateTransitionDesc { pResource = physicalTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
 
                     AutoPtr<ITexture> aoTexture = null;
                     if (ccoTextures.AmbientOcclusionMap != null)
                     {
-                        aoTexture = textureLoader.CreateTextureFromImage(ccoTextures.AmbientOcclusionMap, 1, "aoTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        aoTexture = textureLoader.CreateTextureFromImage(ccoTextures.AmbientOcclusionMap, 0, "aoTextureSprite", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         barriers.Add(new StateTransitionDesc { pResource = aoTexture.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
 
