@@ -1221,9 +1221,16 @@ namespace Adventure
 
         private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome)
         {
+            //These scales might need to be configurable per item
+            var mapUnitX = mapMesh.MapUnitX * 0.5f;
+            var halfUnitX = mapUnitX / 2;
+            var mapUnitZ = mapMesh.MapUnitZ * 0.9f;
+            var halfUnitZ = mapUnitZ / 2;
             //var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
+            bool mustBeEven = false;
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
+                mustBeEven = !mustBeEven;
                 for (var y = mapMesh.MapBuilder.Map_Size.Height - 1; y > -1; --y)
                 {
                     if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell)
@@ -1246,6 +1253,24 @@ namespace Adventure
                         if (add != null)
                         {
                             var mapLoc = mapMesh.PointToVector(x, y);
+                            mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
+                            var zOffsetBucket = bgItemsRandom.Next(9);
+                            if (mustBeEven)
+                            {
+                                if(zOffsetBucket % 2 != 0)
+                                {
+                                    zOffsetBucket += 1;
+                                }
+                            }
+                            else //Odd
+                            {
+                                if (zOffsetBucket % 2 != 1)
+                                {
+                                    zOffsetBucket += 1;
+                                }
+                            }
+                            mapLoc.z += zOffsetBucket * 0.1f * mapMesh.MapUnitZ - halfUnitZ;
+
                             var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
                             {
                                 o.MapOffset = mapLoc;
@@ -1253,6 +1278,7 @@ namespace Adventure
                                 var keyAsset = add.Asset;
                                 o.Sprite = keyAsset.CreateSprite();
                                 o.SpriteMaterial = keyAsset.CreateMaterial();
+                                o.Scale = Vector3.ScaleIdentity * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
                             });
                             this.placeables.Add(bgItem);
                         }

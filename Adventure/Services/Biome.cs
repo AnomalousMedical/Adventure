@@ -95,5 +95,5 @@ namespace Adventure
         public Func<int, FastNoiseLite> CreateNoise { get; set; }
     }
 
-    record BiomeBackgroundItem(int Chance, ISpriteAsset Asset);
+    record BiomeBackgroundItem(int Chance, ISpriteAsset Asset, float ScaleMin = 1.0f, float ScaleRange = 0.0f);
 }

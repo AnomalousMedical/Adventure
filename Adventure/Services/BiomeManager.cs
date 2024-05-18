@@ -95,7 +95,7 @@ namespace Adventure
                 BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new PineTree())
+                    new BiomeBackgroundItem(10, new PineTree(), 0.8f, 0.4f)
                 }
             };
 
@@ -119,7 +119,7 @@ namespace Adventure
                 EntranceAsset = new DesertEntrance(),
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(2, new Cactus())
+                    new BiomeBackgroundItem(2, new Cactus(), 0.8f, 0.4f)
                 }
             };
 
@@ -142,7 +142,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new Tree())
+                    new BiomeBackgroundItem(10, new Tree(), 0.8f, 0.4f)
                 }
             };
 
@@ -164,7 +164,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new PalmTree())
+                    new BiomeBackgroundItem(10, new PalmTree(), 0.8f, 0.4f)
                 }
             };
 
@@ -187,7 +187,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new BanyanTree())
+                    new BiomeBackgroundItem(10, new BanyanTree(), 0.8f, 0.4f)
                 }
             };
 
@@ -211,7 +211,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(20, new TallTree())
+                    new BiomeBackgroundItem(20, new TallTree(), 0.9f, 0.2f)
                 }
             };
 
@@ -261,8 +261,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    //new BiomeBackgroundItem(1, new ComputerDesk()),
-                    //new BiomeBackgroundItem(3, new Tree())
+                    
                 },
                 MaxBackgroundItemRoll = 250,
                 CreateNoise = seed => terrainNoise.CreateLavaNoise(seed),
