@@ -1226,7 +1226,6 @@ namespace Adventure
             var halfUnitX = mapUnitX / 2;
             var mapUnitZ = mapMesh.MapUnitZ * 0.9f;
             var halfUnitZ = mapUnitZ / 2;
-            //var hitWalkablePath = new bool[mapMesh.MapBuilder.Map_Size.Width];
             bool mustBeEven = false;
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
@@ -1246,10 +1245,6 @@ namespace Adventure
                             }
                         }
 
-                        //if (!hitWalkablePath[x])
-                        //{
-                        //    add = true;
-                        //}
                         if (add != null)
                         {
                             var mapLoc = mapMesh.PointToVector(x, y);
@@ -1282,10 +1277,6 @@ namespace Adventure
                             });
                             this.placeables.Add(bgItem);
                         }
-                    }
-                    else
-                    {
-                        //hitWalkablePath[x] = true;
                     }
                 }
             }
