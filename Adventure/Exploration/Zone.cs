@@ -1221,11 +1221,6 @@ namespace Adventure
 
         private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome)
         {
-            //These scales might need to be configurable per item
-            var mapUnitX = mapMesh.MapUnitX * 0.5f;
-            var halfUnitX = mapUnitX / 2;
-            var mapUnitZ = mapMesh.MapUnitZ * 0.9f;
-            var halfUnitZ = mapUnitZ / 2;
             bool mustBeEven = false;
             for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
@@ -1249,6 +1244,11 @@ namespace Adventure
                         {
                             var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
                             {
+                                var mapUnitX = mapMesh.MapUnitX * add.XPlacementRange;
+                                var halfUnitX = mapUnitX * 0.5f;
+                                var mapUnitZ = mapMesh.MapUnitZ * add.ZPlacementRange;
+                                var halfUnitZ = mapUnitZ * 0.5f;
+
                                 var scale = Vector3.ScaleIdentity * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
                                 var mapLoc = mapMesh.PointToVector(x, y);
                                 var keyAsset = add.Asset;
@@ -1274,7 +1274,7 @@ namespace Adventure
                                         zOffsetBucket += 1;
                                     }
                                 }
-                                mapLoc.z += zOffsetBucket * 0.1f * mapMesh.MapUnitZ - halfUnitZ;
+                                mapLoc.z += zOffsetBucket * 0.1f * mapUnitZ - halfUnitZ;
 
                                 o.MapOffset = mapLoc;
                                 o.Translation = currentPosition + o.MapOffset;
