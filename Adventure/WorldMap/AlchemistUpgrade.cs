@@ -23,6 +23,12 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Check,
+            String GiveUpgrade
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -32,6 +38,7 @@ namespace Adventure.WorldMap
         private readonly IWorldDatabase worldDatabase;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly TextDialog textDialog;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -60,7 +67,8 @@ namespace Adventure.WorldMap
             Persistence persistence,
             IWorldDatabase worldDatabase,
             ICoroutineRunner coroutineRunner,
-            TextDialog textDialog)
+            TextDialog textDialog,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -74,6 +82,7 @@ namespace Adventure.WorldMap
             this.worldDatabase = worldDatabase;
             this.coroutineRunner = coroutineRunner;
             this.textDialog = textDialog;
+            this.languageService = languageService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -180,7 +189,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Talk", Talk, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.AlchemistUpgrade.Check, Talk, player.GamepadId);
             }
         }
 
@@ -200,7 +209,7 @@ namespace Adventure.WorldMap
             {
                 coroutineRunner.RunTask(async () =>
                 {
-                    await textDialog.ShowTextAndWait("The gargoyle shows you ancient alchemical techniques...", args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.AlchemistUpgrade.GiveUpgrade, args.GamepadId);
                     persistence.Current.PlotItems.Add(PlotItems.AlchemistUpgrade);
                     RequestDestruction();
                 });

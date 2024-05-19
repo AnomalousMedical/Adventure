@@ -23,6 +23,13 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Greeting,
+            String SalesPitch,
+            String AncientSalesPitch
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -34,6 +41,7 @@ namespace Adventure.WorldMap
         private readonly BuyMenu buyMenu;
         private readonly IExplorationMenu explorationMenu;
         private readonly Persistence persistence;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -64,7 +72,8 @@ namespace Adventure.WorldMap
             ICoroutineRunner coroutineRunner,
             BuyMenu buyMenu,
             IExplorationMenu explorationMenu,
-            Persistence persistence)
+            Persistence persistence,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -80,6 +89,7 @@ namespace Adventure.WorldMap
             this.buyMenu = buyMenu;
             this.explorationMenu = explorationMenu;
             this.persistence = persistence;
+            this.languageService = languageService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -94,7 +104,7 @@ namespace Adventure.WorldMap
             {
                 this.tlasData[i] = new TLASInstanceData()
                 {
-                    InstanceName = RTId.CreateId("Innkeeper"),
+                    InstanceName = RTId.CreateId("Blacksmith"),
                     Mask = RtStructures.OPAQUE_GEOM_MASK,
                     Transform = new InstanceMatrix(finalPosition + description.Transforms[i], currentOrientation, currentScale)
                 };
@@ -175,7 +185,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Greet", Talk, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.Blacksmith.Greeting, Talk, player.GamepadId);
             }
         }
 
@@ -189,10 +199,10 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                var message = "I have the best weapons around.";
+                var message = languageService.Current.Blacksmith.SalesPitch;
                 if(persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
                 {
-                    message = "With this knowledge I can make my weapons even better.";
+                    message = languageService.Current.Blacksmith.AncientSalesPitch;
                 }
                 await textDialog.ShowTextAndWait(message, args.GamepadId);
                 buyMenu.PreviousMenu = null;

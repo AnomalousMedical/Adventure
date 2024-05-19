@@ -31,12 +31,19 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Enter,
+            String EnterCompleted
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IWorldMapGameState worldMapGameState;
         private readonly Persistence persistence;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -62,7 +69,8 @@ namespace Adventure.WorldMap
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             IWorldMapGameState worldMapGameState,
-            Persistence persistence)
+            Persistence persistence,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
@@ -74,6 +82,7 @@ namespace Adventure.WorldMap
             this.contextMenu = contextMenu;
             this.worldMapGameState = worldMapGameState;
             this.persistence = persistence;
+            this.languageService = languageService;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -159,10 +168,10 @@ namespace Adventure.WorldMap
 
         private void HandleCollision(CollisionEvent evt)
         {
-            var entryText = "Enter";
+            var entryText = languageService.Current.ZoneEntrance.Enter;
             if (persistence.Current.IsBossDead(zoneIndex))
             {
-                entryText = "Enter - Completed";
+                entryText = languageService.Current.ZoneEntrance.EnterCompleted;
             }
 
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)

@@ -30,6 +30,13 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; } = AirshipSprite.CreateMaterial();
         }
 
+        public record Text
+        (
+            String Broken,
+            String TakeOff,
+            String Land
+        );
+
         private SpriteInstance spriteInstance;
         private readonly EventSprite sprite;
         private TLASInstanceData instanceData;
@@ -46,6 +53,7 @@ namespace Adventure.WorldMap
         private readonly EventLayer landEventLayer;
         private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly IWorldMapManager worldMapManager;
+        private readonly ILanguageService languageService;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
@@ -89,11 +97,13 @@ namespace Adventure.WorldMap
             IDestructionRequest destructionRequest,
             IBackgroundMusicPlayer backgroundMusicPlayer,
             SpriteInstanceFactory spriteInstanceFactory,
-            IWorldMapManager worldMapManager
+            IWorldMapManager worldMapManager,
+            ILanguageService languageService
         )
         {
             this.sprite = new EventSprite(description.Sprite);
             this.worldMapManager = worldMapManager;
+            this.languageService = languageService;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -271,11 +281,11 @@ namespace Adventure.WorldMap
                 if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0)
                 && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
                 {
-                    contextMenu.HandleContext("Take Off", TakeOff, player.GamepadId);
+                    contextMenu.HandleContext(languageService.Current.Airship.TakeOff, TakeOff, player.GamepadId);
                 }
                 else
                 {
-                    contextMenu.HandleContext("Broken", TakeOff, player.GamepadId);
+                    contextMenu.HandleContext(languageService.Current.Airship.Broken, TakeOff, player.GamepadId);
                 }
             }
         }
@@ -433,7 +443,7 @@ namespace Adventure.WorldMap
                 var cell = map.GetCellForLocation(currentPosition);
                 if (map.CanLand(cell))
                 {
-                    contextMenu.HandleContext("Land", Land, gamepadId);
+                    contextMenu.HandleContext(languageService.Current.Airship.Land, Land, gamepadId);
                 }
                 else
                 {

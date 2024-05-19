@@ -24,6 +24,15 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Greeting,
+            String StartShufflePitch,
+            String CardShuffleNarrator,
+            String ShowResultsNarrator,
+            String NoResultsNarrator
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -33,6 +42,7 @@ namespace Adventure.WorldMap
         private readonly TextDialog textDialog;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly Persistence persistence;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -61,7 +71,8 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             TextDialog textDialog,
             ICoroutineRunner coroutineRunner,
-            Persistence persistence)
+            Persistence persistence,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -75,6 +86,7 @@ namespace Adventure.WorldMap
             this.textDialog = textDialog;
             this.coroutineRunner = coroutineRunner;
             this.persistence = persistence;
+            this.languageService = languageService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -89,7 +101,7 @@ namespace Adventure.WorldMap
             {
                 this.tlasData[i] = new TLASInstanceData()
                 {
-                    InstanceName = RTId.CreateId("Innkeeper"),
+                    InstanceName = RTId.CreateId("FortuneTeller"),
                     Mask = RtStructures.OPAQUE_GEOM_MASK,
                     Transform = new InstanceMatrix(finalPosition + description.Transforms[i], currentOrientation, currentScale)
                 };
@@ -170,7 +182,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Greet", Talk, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.FortuneTeller.Greeting, Talk, player.GamepadId);
             }
         }
 
@@ -184,8 +196,8 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                await textDialog.ShowTextAndWait("Lets see what the cards say about your fate.", args.GamepadId);
-                await textDialog.ShowTextAndWait("The fortune teller shuffles her deck of cards...", args.GamepadId);
+                await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.StartShufflePitch, args.GamepadId);
+                await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.CardShuffleNarrator, args.GamepadId);
 
                 var completedLevels = persistence.Current.World.CompletedAreaLevels;
                 var zonesWithTreasure = worldDatabase.AreaBuilders.Where(i => i.UniqueStealTreasure?.Any() == true);
@@ -208,7 +220,7 @@ namespace Adventure.WorldMap
                     {
                         if(!showedCards)
                         {
-                            await textDialog.ShowTextAndWait("The cards are arranged before you on the table.", args.GamepadId);
+                            await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.ShowResultsNarrator, args.GamepadId);
                             showedCards = true;
                         }
                         string cardMessage;
@@ -226,7 +238,7 @@ namespace Adventure.WorldMap
 
                 if(!showedCards)
                 {
-                    await textDialog.ShowTextAndWait("The cards are quiet today.", args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.NoResultsNarrator, args.GamepadId);
                 }
             });
         }

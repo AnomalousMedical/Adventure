@@ -8,6 +8,7 @@ using Adventure.Items.Actions;
 using Adventure.Items.Creators;
 using Adventure.Menu;
 using Adventure.Services;
+using Adventure.Text;
 using Adventure.WorldMap;
 using Anomalous.OSPlatform;
 using DiligentEngine.RT;
@@ -224,6 +225,7 @@ namespace Adventure
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IContextMenu, ContextMenu>();
+            services.AddSingleton<ILanguageService>(s => new LanguageService(EnglishLanguage.Create()));
 #if !RELEASE
             services.AddSingleton<ISeedProvider>(s => new ConstantSeedProvider(0)); //Set to 0 for debugging
 #else

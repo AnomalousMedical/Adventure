@@ -23,6 +23,12 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Greeting,
+            String Sleep
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -32,6 +38,7 @@ namespace Adventure.WorldMap
         private readonly RestManager restManager;
         private readonly TextDialog textDialog;
         private readonly ICoroutineRunner coroutineRunner;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -60,7 +67,8 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             RestManager restManager,
             TextDialog textDialog,
-            ICoroutineRunner coroutineRunner)
+            ICoroutineRunner coroutineRunner,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -74,6 +82,7 @@ namespace Adventure.WorldMap
             this.restManager = restManager;
             this.textDialog = textDialog;
             this.coroutineRunner = coroutineRunner;
+            this.languageService = languageService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -169,7 +178,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Greet", Talk, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.Innkeeper.Greeting, Talk, player.GamepadId);
             }
         }
 
@@ -183,7 +192,7 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
-                await textDialog.ShowTextAndWait("Hope you sleep well.", args.GamepadId);
+                await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Sleep, args.GamepadId);
                 restManager.Rest();
             });
         }

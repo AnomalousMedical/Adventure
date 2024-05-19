@@ -24,6 +24,13 @@ namespace Adventure.WorldMap
             public SpriteMaterialDescription SpriteMaterial { get; set; }
         }
 
+        public record Text
+        (
+            String Check,
+            String ProveMastery,
+            String ProvenWorthy
+        );
+
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
@@ -36,6 +43,7 @@ namespace Adventure.WorldMap
         private readonly IExplorationMenu explorationMenu;
         private readonly TreasureMenu treasureMenu;
         private readonly AccessoryCreator accessoryCreator;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -67,7 +75,8 @@ namespace Adventure.WorldMap
             TextDialog textDialog,
             IExplorationMenu explorationMenu,
             TreasureMenu treasureMenu,
-            AccessoryCreator accessoryCreator)
+            AccessoryCreator accessoryCreator,
+            ILanguageService languageService)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -84,6 +93,7 @@ namespace Adventure.WorldMap
             this.explorationMenu = explorationMenu;
             this.treasureMenu = treasureMenu;
             this.accessoryCreator = accessoryCreator;
+            this.languageService = languageService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -190,7 +200,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("Check", Check, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.ElementalStone.Check, Check, player.GamepadId);
             }
         }
 
@@ -210,7 +220,7 @@ namespace Adventure.WorldMap
                 {
                     coroutineRunner.RunTask(async () =>
                     {
-                        await textDialog.ShowTextAndWait("A voice booms in your ear: \"You have proven worthy!\".", args.GamepadId);
+                        await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProvenWorthy, args.GamepadId);
                         persistence.Current.PlotItems.Add(PlotItems.ElementalStone);
                         var treasure = new Treasure(accessoryCreator.CreateDoublecast());
                         treasureMenu.GatherTreasures(new[] { treasure });
@@ -222,7 +232,7 @@ namespace Adventure.WorldMap
                 {
                     coroutineRunner.RunTask(async () =>
                     {
-                        await textDialog.ShowTextAndWait("The stone reads: \"Prove your mastery over the elements and you will be rewarded with great power.\"", args.GamepadId);
+                        await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProveMastery, args.GamepadId);
                     });
                 }
             }
