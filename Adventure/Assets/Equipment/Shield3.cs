@@ -1,4 +1,5 @@
-﻿using DiligentEngine.RT.Sprites;
+﻿using Adventure.Services;
+using DiligentEngine.RT.Sprites;
 using Engine;
 using Engine.Platform;
 using System.Collections.Generic;
@@ -42,6 +43,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(4, 9, -0.1f, width, height), //light
                     }
                 },
                 new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
@@ -49,6 +51,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 9, -0.1f, width, height), //light
                     }
                 },
                 new SpriteFrame(2f / 3f, 0f, 1, 1)
@@ -56,6 +59,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(14, 9, -0.1f, width, height), //light
                     }
                 },
                 new SpriteFrame(1f / 3f, 0, 2f / 3f, 1)
@@ -63,6 +67,7 @@ namespace Adventure.Assets.Equipment
                     Attachments = new List<SpriteFrameAttachment>()
                     {
                         SpriteFrameAttachment.FromFramePosition(9, 18, 0, width, height), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(9, 9, -0.1f, width, height), //light
                     }
                 })
             },
@@ -76,5 +81,16 @@ namespace Adventure.Assets.Equipment
                 KeepTime = true
             };
         }
+
+        public Light CreateLight()
+        {
+            return new Light()
+            {
+                Color = Color.FromRGB(0xef00ff),
+                Length = 0.6f,
+            };
+        }
+
+        public int? LightAttachmentChannel => 1;
     }
 }
