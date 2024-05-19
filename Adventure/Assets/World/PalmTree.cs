@@ -15,20 +15,47 @@ namespace Adventure.Assets.World
         private const int Height = 42;
         private const float WidthHeightRatio = (float)Width / (float)Height;
 
+        public const uint Leaves = 0xff288f31;
+        public const uint Trunk = 0xffb8793a;
+
+        private static readonly HslColor LeavesHsl = new IntColor(Leaves).ToHsl();
+
         public ISpriteAsset CreateAnotherInstance() => new PalmTree();
 
         private const string colorMap = "Graphics/Sprites/Anomalous/World/PalmTree.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff288f31, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xffb8793a, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+            new SpriteMaterialTextureItem(Leaves, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(Trunk, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
         };
 
-        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
-        (
-            colorMap: colorMap,
-            materials: materials
-        );
+        private readonly SpriteMaterialDescription defaultMaterial;
+
+        public PalmTree()
+        {
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials
+            );
+        }
+
+        public PalmTree(float h, float s, float l)
+        {
+            var baseH = LeavesHsl.H;
+
+            var palletSwap = new Dictionary<uint, uint>
+            {
+                { Leaves, IntColor.FromHslOffset(LeavesHsl, h, baseH).ARGB }
+            };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -54,5 +81,27 @@ namespace Adventure.Assets.World
         }
 
         public int? GroundAttachmentChannel => 0;
+
+        public class Swap1 : PalmTree
+        {
+            static float h = new IntColor(0xff288f3d).ToHsl().H;
+
+            public Swap1()
+                : base(h, 100, 50)
+            {
+
+            }
+        }
+
+        public class Swap2 : PalmTree
+        {
+            static float h = new IntColor(0xff498d00).ToHsl().H;
+
+            public Swap2()
+                : base(h, 100, 50)
+            {
+
+            }
+        }
     }
 }

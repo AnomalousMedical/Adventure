@@ -16,20 +16,48 @@ namespace Adventure.Assets.World
         private const int Height = 892;
         private const float WidthHeightRatio = (float)Width / (float)Height;
 
+        public const uint Leaves = 0xff008d00;
+        public const uint Trunk = 0xff834d36;
+
+        private static readonly HslColor LeavesHsl = new IntColor(Leaves).ToHsl();
+
         public ISpriteAsset CreateAnotherInstance() => new TallTree();
         private const string colorMap = "Graphics/Sprites/Anomalous/World/TallTree.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff008d00, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xff834d36, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+            new SpriteMaterialTextureItem(Leaves, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(Trunk, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
         };
 
-        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
-        (
-            colorMap: colorMap,
-            materials: materials,
-            textureScale: 16
-        );
+        private readonly SpriteMaterialDescription defaultMaterial;
+
+        public TallTree()
+        {
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                textureScale: 16
+            );
+        }
+
+        public TallTree(float h, float s, float l)
+        {
+            var baseH = LeavesHsl.H;
+
+            var palletSwap = new Dictionary<uint, uint>
+            {
+                { Leaves, IntColor.FromHslOffset(LeavesHsl, h, baseH).ARGB }
+            };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                textureScale: 16,
+                palletSwap: palletSwap
+            );
+        }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -55,5 +83,16 @@ namespace Adventure.Assets.World
         }
 
         public int? GroundAttachmentChannel => 0;
+
+        public class Swap1 : TallTree
+        {
+            static float h = new IntColor(0xff498d00).ToHsl().H;
+
+            public Swap1()
+                : base(h, 100, 50)
+            {
+
+            }
+        }
     }
 }

@@ -16,18 +16,45 @@ namespace Adventure.Assets.World
         private const float WidthHeightRatio = (float)Width / (float)Height;
         public ISpriteAsset CreateAnotherInstance() => new BanyanTree();
 
+        public const uint Leaves = 0xff306f30;
+        public const uint Trunk = 0xff87765e;
+
+        private static readonly HslColor LeavesHsl = new IntColor(Leaves).ToHsl();
+
         private const string colorMap = "Graphics/Sprites/Anomalous/World/BanyanTree.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff306f30, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xff87765e, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
+            new SpriteMaterialTextureItem(Leaves, "Graphics/Textures/AmbientCG/Fabric020_1K", "jpg"),
+            new SpriteMaterialTextureItem(Trunk, "Graphics/Textures/AmbientCG/Bark007_1K", "jpg"),
         };
 
-        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
-        (
-            colorMap: colorMap,
-            materials: materials
-        );
+        private readonly SpriteMaterialDescription defaultMaterial;
+
+        public BanyanTree()
+        {
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials
+            );
+        }
+
+        public BanyanTree(float h, float s, float l)
+        {
+            var baseH = LeavesHsl.H;
+
+            var palletSwap = new Dictionary<uint, uint>
+            {
+                { Leaves, IntColor.FromHslOffset(LeavesHsl, h, baseH).ARGB }
+            };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
 
         public SpriteMaterialDescription CreateMaterial()
         {
@@ -53,5 +80,27 @@ namespace Adventure.Assets.World
         }
 
         public int? GroundAttachmentChannel => 0;
+
+        public class Swap1 : BanyanTree
+        {
+            static float h = new IntColor(0xff476f30).ToHsl().H;
+
+            public Swap1()
+                : base(h, 100, 50)
+            {
+
+            }
+        }
+
+        public class Swap2 : BanyanTree
+        {
+            static float h = new IntColor(0xff306f3f).ToHsl().H;
+
+            public Swap2()
+                : base(h, 100, 50)
+            {
+
+            }
+        }
     }
 }

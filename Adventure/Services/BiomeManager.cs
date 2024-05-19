@@ -95,7 +95,9 @@ namespace Adventure
                 BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new PineTree(), 0.8f, 0.4f)
+                    new BiomeBackgroundItem(4, new PineTree(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(7, new PineTree.Swap1(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(10, new PineTree.Swap2(), 0.8f, 0.4f),
                 }
             };
 
@@ -142,7 +144,9 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new Tree(), 0.8f, 0.4f)
+                    new BiomeBackgroundItem(4, new Tree(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(7, new Tree.Swap1(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(10, new Tree.Swap2(), 0.8f, 0.4f),
                 }
             };
 
@@ -164,7 +168,9 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new PalmTree(), 0.8f, 0.4f)
+                    new BiomeBackgroundItem(4, new PalmTree(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(7, new PalmTree.Swap1(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(10, new PalmTree.Swap2(), 0.8f, 0.4f),
                 }
             };
 
@@ -187,7 +193,9 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new BanyanTree(), 0.8f, 0.4f)
+                    new BiomeBackgroundItem(4, new BanyanTree(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(7, new BanyanTree.Swap1(), 0.8f, 0.4f),
+                    new BiomeBackgroundItem(10, new BanyanTree.Swap2(), 0.8f, 0.4f),
                 }
             };
 
@@ -211,7 +219,8 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(20, new TallTree(), 0.9f, 0.2f, 0.5f)
+                    new BiomeBackgroundItem(10, new TallTree(), 0.9f, 0.2f, 0.5f),
+                    new BiomeBackgroundItem(20, new TallTree.Swap1(), 0.9f, 0.2f, 0.5f),
                 }
             };
 
