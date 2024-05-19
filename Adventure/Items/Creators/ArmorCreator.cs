@@ -18,11 +18,11 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreatePlate(int level, string adjective, EquipmentTier tier)
+        public InventoryItem CreatePlate(int level, string infoId, EquipmentTier tier)
         {
             var armor = new Equipment
             {
-                Name = $"{adjective} Plate Armor",
+                InfoId = infoId,
                 Defense = equipmentCurve.GetDefense(level),
                 MagicDefense = equipmentCurve.GetMDefense(level, 1f / 3f),
                 Tier = tier,
@@ -31,11 +31,11 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateLeather(int level, string adjective, EquipmentTier tier, int inventorySlots)
+        public InventoryItem CreateLeather(int level, string infoId, EquipmentTier tier, int inventorySlots)
         {
             var armor = new Equipment
             {
-                Name = $"{adjective} Leather Armor",
+                InfoId = infoId,
                 Defense = equipmentCurve.GetDefense(level, 2f / 3f),
                 MagicDefense = equipmentCurve.GetMDefense(level, 2f / 3f),
                 InventorySlots = inventorySlots,
@@ -45,11 +45,11 @@ namespace Adventure.Items.Creators
             return CreateInventoryItem(armor);
         }
 
-        public InventoryItem CreateCloth(int level, string adjective, EquipmentTier tier)
+        public InventoryItem CreateCloth(int level, string infoId, EquipmentTier tier)
         {
             var armor = new Equipment
             {
-                Name = $"{adjective} Cloth Armor",
+                InfoId = infoId,
                 Defense = equipmentCurve.GetDefense(level, 1f / 3f),
                 MagicDefense = equipmentCurve.GetMDefense(level),
                 MagicAttack = level / 10 + 1,

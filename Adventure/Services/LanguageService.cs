@@ -1,4 +1,5 @@
-﻿using Adventure.WorldMap;
+﻿using Adventure.Items;
+using Adventure.WorldMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace Adventure.Services
 
     record Language
     (
+        //World
         Airship.Text Airship,
         Alchemist.Text Alchemist,
         AlchemistUpgrade.Text AlchemistUpgrade,
@@ -32,6 +34,8 @@ namespace Adventure.Services
         ElementalStone.Text ElementalStone,
         FortuneTeller.Text FortuneTeller,
         Innkeeper.Text Innkeeper,
-        ZoneEntrance.Text ZoneEntrance
+        ZoneEntrance.Text ZoneEntrance,
+        //Items
+        ItemText Items
     );
 }

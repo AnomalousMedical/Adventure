@@ -15,11 +15,11 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(String spriteName, int level, string adjective, params String[] skills)
+        public InventoryItem CreateNormal(String spriteName, int level, string infoId, params String[] skills)
         {
             var sword = new Equipment
             {
-                Name = $"{adjective} Dagger",
+                InfoId = infoId,
                 Attack = equipmentCurve.GetAttack(level),
                 Sprite = spriteName,
                 Skills = skills.ToArray(),

@@ -226,11 +226,11 @@ namespace Adventure.WorldMap
                         string cardMessage;
                         if (Random.Shared.Next(0, 100) < 50)
                         {
-                            cardMessage = $"{zone.Biome} {treasure.FortuneText ?? treasure.InfoText}";
+                            cardMessage = $"{zone.Biome} {treasure.FortuneText ?? languageService.Current.Items.GetText(treasure.InfoId)}";
                         }
                         else
                         {
-                            cardMessage = $"{treasure.FortuneText ?? treasure.InfoText} {zone.Biome}";
+                            cardMessage = $"{treasure.FortuneText ?? languageService.Current.Items.GetText(treasure.InfoId)} {zone.Biome}";
                         }
                         await textDialog.ShowTextAndWait(cardMessage, args.GamepadId);
                     }

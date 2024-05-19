@@ -23,6 +23,7 @@ class PickUpTreasureMenu
     private readonly IScreenPositioner screenPositioner;
     private readonly IPersistenceWriter persistenceWriter;
     private readonly IInventoryFunctions inventoryFunctions;
+    private readonly ILanguageService languageService;
     private Stack<ITreasure> currentTreasure;
     SharpButton take = new SharpButton() { Text = "Take" };
     SharpButton use = new SharpButton() { Text = "Use" };
@@ -53,7 +54,8 @@ class PickUpTreasureMenu
         IScaleHelper scaleHelper,
         IScreenPositioner screenPositioner,
         IPersistenceWriter persistenceWriter,
-        IInventoryFunctions inventoryFunctions
+        IInventoryFunctions inventoryFunctions,
+        ILanguageService languageService
     )
     {
         this.persistence = persistence;
@@ -62,6 +64,7 @@ class PickUpTreasureMenu
         this.screenPositioner = screenPositioner;
         this.persistenceWriter = persistenceWriter;
         this.inventoryFunctions = inventoryFunctions;
+        this.languageService = languageService;
     }
 
     public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
@@ -128,7 +131,7 @@ class PickUpTreasureMenu
 
         take.Text = hasInventoryRoom ? "Take" : "Replace";
 
-        itemInfo.Text = treasure.InfoText;
+        itemInfo.Text = languageService.Current.Items.GetText(treasure.InfoId);
 
         if (equippingItem)
         {
@@ -265,7 +268,7 @@ class PickUpTreasureMenu
 
             if (replacingItem)
             {
-                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
                 if (removeItem != null)
                 {
                     replacingItem = false;

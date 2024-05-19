@@ -87,6 +87,7 @@ namespace Adventure.Menu
         private readonly IScreenPositioner screenPositioner;
         private readonly ConfirmBuyMenu confirmBuyMenu;
         private readonly IWorldDatabase worldDatabase;
+        private readonly ILanguageService languageService;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -102,7 +103,8 @@ namespace Adventure.Menu
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
             ConfirmBuyMenu confirmBuyMenu,
-            IWorldDatabase worldDatabase
+            IWorldDatabase worldDatabase,
+            ILanguageService languageService
         )
         {
             this.persistence = persistence;
@@ -111,6 +113,7 @@ namespace Adventure.Menu
             this.screenPositioner = screenPositioner;
             this.confirmBuyMenu = confirmBuyMenu;
             this.worldDatabase = worldDatabase;
+            this.languageService = languageService;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -157,7 +160,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             foreach (var item in characterData.CharacterSheet.EquippedItems())
             {
                 info.Text += $@"
-{item.Name}";
+{languageService.Current.Items.GetText(item.InfoId)}";
             }
 
             info2.Text = $@"Gold: {persistence.Current.Party.Gold}";
@@ -191,7 +194,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             confirmBuyMenu.Update(characterData, gamepadId);
 
             var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
-                .Select(i => new ButtonColumnItem<ShopEntry>($"{i.Text} - {i.Cost}", i))
+                .Select(i => new ButtonColumnItem<ShopEntry>($"{languageService.Current.Items.GetText(i.InfoId)} - {i.Cost}", i))
                 .ToArray();
             var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
             if (selectedItem != null)

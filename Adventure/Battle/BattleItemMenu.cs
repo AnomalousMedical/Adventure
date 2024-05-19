@@ -17,6 +17,7 @@ namespace Adventure.Battle
         private readonly IBattleManager battleManager;
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
+        private readonly ILanguageService languageService;
         private ButtonColumn itemButtons = new ButtonColumn(25);
 
         public BattleItemMenu
@@ -24,13 +25,15 @@ namespace Adventure.Battle
             IBattleScreenLayout battleScreenLayout, 
             IBattleManager battleManager, 
             IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner
+            IScreenPositioner screenPositioner,
+            ILanguageService languageService
         )
         {
             this.battleScreenLayout = battleScreenLayout;
             this.battleManager = battleManager;
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
+            this.languageService = languageService;
         }
 
         public bool UpdateGui(ISharpGui sharpGui, IBattleTarget user, Inventory inventory, IScopedCoroutine coroutine, ref BattlePlayer.MenuMode menuMode, Action<IBattleTarget, InventoryItem> itemSelectedCb, GamepadId gamepadId, SharpStyle style)
@@ -42,7 +45,7 @@ namespace Adventure.Battle
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
             var selectedItem = itemButtons.Show<InventoryItem>(sharpGui
-                , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i))
+                , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i))
                 , inventory.Items.Count
                 , s => screenPositioner.GetTopRightRect(s)
                 , gamepadId,

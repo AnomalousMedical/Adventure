@@ -11,7 +11,7 @@ namespace RpgMath
     {
         private static Equipment Unarmed = new Equipment
         {
-            Name = "Unarmed",
+            InfoId = "Unarmed",
             AttackPercent = 95
         };
 

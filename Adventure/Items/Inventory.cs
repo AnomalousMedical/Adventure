@@ -19,11 +19,11 @@ namespace Adventure.Items
         public InventoryItem(Equipment equipment, String action)
         {
             this.Equipment = equipment;
-            this.Name = equipment.Name;
+            this.InfoId = equipment.InfoId;
             this.Action = action;
         }
 
-        public String Name { get; set; }
+        public String InfoId { get; set; }
 
         public String Action { get; set; }
 

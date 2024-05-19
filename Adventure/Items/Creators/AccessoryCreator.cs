@@ -1,4 +1,5 @@
-﻿using Adventure.Items.Actions;
+﻿using Adventure.Battle.Skills;
+using Adventure.Items.Actions;
 using RpgMath;
 using System;
 
@@ -17,7 +18,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = $"Gauntlets of Revenge",
+                InfoId = nameof(ItemText.CounterAttack),
                 CounterPercent = 40L
             };
 
@@ -28,7 +29,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = $"Target Scope",
+                InfoId = nameof(ItemText.TargetScope),
                 ShowEnemyInfo = true
             };
 
@@ -39,7 +40,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = "Ring of Healing",
+                InfoId = nameof(ItemText.Healing),
                 HealingBonus = healingBonus,
                 CureAll = cureAll
             };
@@ -51,7 +52,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = "Elemental Amplifier",
+                InfoId = nameof(ItemText.Doublecast),
                 Doublecast = true,
             };
 
@@ -62,7 +63,7 @@ namespace Adventure.Items.Creators
         {
             var accessory = new Equipment
             {
-                Name = "Gloves of Handling",
+                InfoId = nameof(ItemText.ItemUsage),
                 ItemUsageBonus = itemUsageBonus
             };
 

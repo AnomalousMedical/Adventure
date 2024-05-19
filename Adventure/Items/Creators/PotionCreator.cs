@@ -15,17 +15,17 @@ namespace Adventure.Items.Creators
             if (level < SpellLevels.Regular)
             {
                 item.Number = 45;
-                item.Name = "Mana Potion";
+                item.InfoId = nameof(ItemText.Mana1);
             }
             else if (level < SpellLevels.Big)
             {
                 item.Number = 75;
-                item.Name = "Big Mana Potion";
+                item.InfoId = nameof(ItemText.Mana2);
             }
             else
             {
                 item.Number = 150;
-                item.Name = "Giant Mana Potion";
+                item.InfoId = nameof(ItemText.Mana3);
             }
 
             return item;
@@ -42,17 +42,17 @@ namespace Adventure.Items.Creators
             if (level < SpellLevels.Regular)
             {
                 item.Number = 50;
-                item.Name = "Health Potion";
+                item.InfoId = nameof(ItemText.Health1);
             }
             else if (level < SpellLevels.Big)
             {
                 item.Number = 300;
-                item.Name = "Big Health Potion";
+                item.InfoId = nameof(ItemText.Health2);
             }
             else
             {
                 item.Number = 1500;
-                item.Name = "Giant Health Potion";
+                item.InfoId = nameof(ItemText.Health3);
             }
 
             return item;
@@ -66,7 +66,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = 25;
-            item.Name = "Ferryman's Bribe";
+            item.InfoId = nameof(ItemText.FerrymansBribe);
 
             return item;
         }
@@ -80,7 +80,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Strength Boost +{amount}";
+            item.InfoId = nameof(ItemText.StrengthBoost);
 
             return item;
         }
@@ -94,7 +94,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Magic Boost +{amount}";
+            item.InfoId = nameof(ItemText.MagicBoost);
 
             return item;
         }
@@ -108,7 +108,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Spirit Boost +{amount}";
+            item.InfoId = nameof(ItemText.SpiritBoost);
 
             return item;
         }
@@ -122,7 +122,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Vitality Boost +{amount}";
+            item.InfoId = nameof(ItemText.VitalityBoost);
 
             return item;
         }
@@ -136,7 +136,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Dexterity Boost +{amount}";
+            item.InfoId = nameof(ItemText.DexterityBoost);
 
             return item;
         }
@@ -150,7 +150,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = amount;
-            item.Name = $"Luck Boost +{amount}";
+            item.InfoId = nameof(ItemText.LuckBoost);
 
             return item;
         }
@@ -164,7 +164,7 @@ namespace Adventure.Items.Creators
             };
 
             item.Number = 3;
-            item.Name = "Mysterious Bubbling Potion";
+            item.InfoId = nameof(ItemText.LevelBoost);
 
             return item;
         }

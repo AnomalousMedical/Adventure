@@ -8,7 +8,7 @@ namespace Adventure
 {
     interface ITreasure
     {
-        string InfoText { get; }
+        string InfoId { get; }
 
         bool CanUseOnPickup { get; }
 
@@ -31,7 +31,7 @@ namespace Adventure
     {
         private readonly InventoryItem inventoryItem;
 
-        public string InfoText => inventoryItem.Name;
+        public string InfoId => inventoryItem.InfoId;
 
         public bool CanUseOnPickup => inventoryItem.CanUseOnPickup;
 
@@ -68,7 +68,7 @@ namespace Adventure
     {
         private readonly PlotItems plotItem;
 
-        public string InfoText { get; init; }
+        public string InfoId { get; init; }
 
         public bool CanUseOnPickup => false;
 
@@ -80,9 +80,9 @@ namespace Adventure
 
         public string FortuneText { get; init; }
 
-        public PlotItemTreasure(PlotItems plotItem, string infoText)
+        public PlotItemTreasure(PlotItems plotItem, string infoId)
         {
-            this.InfoText = infoText;
+            this.InfoId = infoId;
             this.plotItem = plotItem;
         }
 

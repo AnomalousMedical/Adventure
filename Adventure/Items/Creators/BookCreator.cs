@@ -15,11 +15,11 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateRestoration(String sprite, int level, string adjective, params String[] spells)
+        public InventoryItem CreateRestoration(String sprite, int level, string infoId, params String[] spells)
         {
             var book = new Equipment
             {
-                Name = $"{adjective} Book of Restoration",
+                InfoId = infoId,
                 MagicAttack = equipmentCurve.GetAttack(level),
                 Sprite = sprite,
                 Skills = spells.ToArray(),

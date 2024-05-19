@@ -15,7 +15,7 @@ namespace RpgMath
 
     public class Equipment
     {
-        public String Name { get; set; }
+        public String InfoId { get; set; }
 
         public long Attack { get; set; }
 

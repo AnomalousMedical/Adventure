@@ -24,6 +24,7 @@ namespace Adventure.Menu
         private readonly IScreenPositioner screenPositioner;
         private readonly ISkillFactory skillFactory;
         private readonly IDamageCalculator damageCalculator;
+        private readonly ILanguageService languageService;
         private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -42,7 +43,8 @@ namespace Adventure.Menu
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
             ISkillFactory skillFactory,
-            IDamageCalculator damageCalculator
+            IDamageCalculator damageCalculator,
+            ILanguageService languageService
         )
         {
             this.persistence = persistence;
@@ -51,6 +53,7 @@ namespace Adventure.Menu
             this.screenPositioner = screenPositioner;
             this.skillFactory = skillFactory;
             this.damageCalculator = damageCalculator;
+            this.languageService = languageService;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
@@ -129,7 +132,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                 foreach(var item in characterData.CharacterSheet.EquippedItems())
                 {
                     info.Text += $@"
-{item.Name}";
+{languageService.Current.Items.GetText(item.InfoId)}";
                 }
 
                 foreach (var item in characterData.CharacterSheet.Buffs)

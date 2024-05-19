@@ -16,6 +16,7 @@ namespace Adventure.Menu
         private readonly IScaleHelper scaleHelper;
         private readonly IScreenPositioner screenPositioner;
         private readonly IInventoryFunctions inventoryFunctions;
+        private readonly ILanguageService languageService;
         SharpButton use = new SharpButton() { Text = "Use", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
@@ -34,7 +35,8 @@ namespace Adventure.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            IInventoryFunctions inventoryFunctions
+            IInventoryFunctions inventoryFunctions,
+            ILanguageService languageService
         )
         {
             this.persistence = persistence;
@@ -42,6 +44,7 @@ namespace Adventure.Menu
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.inventoryFunctions = inventoryFunctions;
+            this.languageService = languageService;
         }
 
         public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
@@ -159,7 +162,7 @@ namespace Adventure.Menu
                                 else
                                 {
                                     SwapTarget = i;
-                                    swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(swapTarget.Name, () =>
+                                    swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(languageService.Current.Items.GetText(swapTarget.InfoId), () =>
                                     {
                                         characterData.RemoveItem(SelectedItem);
                                         i.Inventory.Items.Add(SelectedItem);
@@ -218,6 +221,7 @@ namespace Adventure.Menu
         SharpText info = new SharpText() { Color = Color.White };
         private int currentSheet;
         private UseItemMenu useItemMenu;
+        private readonly ILanguageService languageService;
 
         public ItemMenu
         (
@@ -225,7 +229,8 @@ namespace Adventure.Menu
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
-            UseItemMenu useItemMenu
+            UseItemMenu useItemMenu,
+            ILanguageService languageService
         )
         {
             this.persistence = persistence;
@@ -233,6 +238,7 @@ namespace Adventure.Menu
             this.scaleHelper = scaleHelper;
             this.screenPositioner = screenPositioner;
             this.useItemMenu = useItemMenu;
+            this.languageService = languageService;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
@@ -309,7 +315,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                 foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
                 {
                     info.Text += $@"
-{item.Name}";
+{languageService.Current.Items.GetText(item.InfoId)}";
                 }
 
                 foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
@@ -352,7 +358,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
 
             useItemMenu.Update(characterData, gamepad);
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(i.Name, i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+            var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (allowChanges)
             {
                 useItemMenu.SelectedItem = newSelection;

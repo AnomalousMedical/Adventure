@@ -14,11 +14,11 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string adjective, float damageReduction, string sprite)
+        public InventoryItem CreateNormal(int level, string infoId, float damageReduction, string sprite)
         {
             var shield = new Equipment
             {
-                Name = $"{adjective} Shield",
+                InfoId = infoId,
                 Defense = equipmentCurve.GetDefense(level),
                 MagicDefense = equipmentCurve.GetMDefense(level),
                 Sprite = sprite,
