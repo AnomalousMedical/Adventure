@@ -211,7 +211,7 @@ namespace Adventure
                 },
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(20, new TallTree(), 0.9f, 0.2f, 0.7f)
+                    new BiomeBackgroundItem(20, new TallTree(), 0.9f, 0.2f, 0.5f)
                 }
             };
 
