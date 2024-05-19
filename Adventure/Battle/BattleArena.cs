@@ -242,9 +242,11 @@ namespace Adventure.Battle
             return loadingTask.Task;
         }
 
+        public int Step => 3;
+
         public IEnumerable<Vector3> BgItemLocations()
         {
-            var step = 3;
+            var step = Step;
             var xEnd = farbgSize;
             var zStart = -farbgSize + size + farbgSize + 2f;
             var zEnd = farbgSize + size + farbgSize;

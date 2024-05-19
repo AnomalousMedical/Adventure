@@ -500,8 +500,16 @@ namespace Adventure.Battle
 
             if (biome.BackgroundItems.Count > 0)
             {
+                var mustBeEven = false;
+                var lastX = 0.0f;
                 foreach(var location in battleArena.BgItemLocations())
                 {
+                    if(location.x != lastX)
+                    {
+                        lastX = location.x;
+                        mustBeEven = !mustBeEven;
+                    }
+
                     BiomeBackgroundItem add = null;
                     var roll = bgItemsRandom.Next(0, biome.MaxBackgroundItemRoll);
                     foreach (var item in biome.BackgroundItems)
@@ -517,11 +525,43 @@ namespace Adventure.Battle
                     {
                         var bgItem = objectResolver.Resolve<BattleBackgroundItem, BattleBackgroundItem.Description>(o =>
                         {
-                            o.MapOffset = Vector3.Zero;
-                            o.Translation = location + o.MapOffset;
+                            var mapUnitX = battleArena.Step * add.XPlacementRange;
+                            var halfUnitX = mapUnitX * 0.5f;
+                            var mapUnitZ = battleArena.Step * add.ZPlacementRange;
+                            var halfUnitZ = mapUnitZ * 0.5f;
+
+                            var scale = Vector3.ScaleIdentity * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
+                            var mapLoc = location;
                             var keyAsset = add.Asset;
+                            var sprite = keyAsset.CreateSprite();
+                            mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
+                            if (keyAsset.GroundAttachmentChannel.HasValue)
+                            {
+                                var groundOffset = sprite.GetCurrentFrame().Attachments[keyAsset.GroundAttachmentChannel.Value].translate;
+                                mapLoc += groundOffset * scale * sprite.BaseScale;
+                            }
+                            var zOffsetBucket = bgItemsRandom.Next(9);
+                            if (mustBeEven)
+                            {
+                                if (zOffsetBucket % 2 != 0)
+                                {
+                                    zOffsetBucket += 1;
+                                }
+                            }
+                            else //Odd
+                            {
+                                if (zOffsetBucket % 2 != 1)
+                                {
+                                    zOffsetBucket += 1;
+                                }
+                            }
+                            mapLoc.z += zOffsetBucket * 0.1f * mapUnitZ - halfUnitZ;
+
+                            o.MapOffset = mapLoc;
+                            o.Translation = o.MapOffset;
                             o.Sprite = keyAsset.CreateSprite();
                             o.SpriteMaterial = keyAsset.CreateMaterial();
+                            o.Scale = scale;
                         });
                         this.bgItems.Add(bgItem);
                     }
