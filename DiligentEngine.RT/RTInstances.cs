@@ -97,7 +97,15 @@ namespace DiligentEngine.RT
 
         public void AddSprite(ISprite sprite)
         {
-            sprites.Add(sprite);
+            //Only add a sprite to the animations list if there is an animation with more than 1 frame
+            foreach(var animation in sprite.Animations)
+            {
+                if(animation.Value.frames.Length > 1)
+                {
+                    sprites.Add(sprite);
+                    break;
+                }
+            }
         }
 
         public void RemoveSprite(ISprite sprite)
