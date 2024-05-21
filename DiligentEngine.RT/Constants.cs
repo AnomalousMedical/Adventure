@@ -128,8 +128,6 @@ namespace DiligentEngine.RT
                 Pallete_3 = new float4(0.41f, 0.79f, 1.00f, 0f),
                 Pallete_4 = new float4(0.78f, 1.00f, 1.00f, 0f),
                 Pallete_5 = new float4(1.00f, 1.00f, 1.00f, 0f),
-
-                mipBias = -0.5f,
             };
         }
     }

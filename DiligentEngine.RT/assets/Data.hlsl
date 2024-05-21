@@ -22,13 +22,15 @@ float2 GetUvAreaFromCone
 {
     float3 hitPosition = WorldRayOrigin() + RayTCurrent() * WorldRayDirection();
 
-    //TODO: This normal needs to be in world space. However, with the scenes in this game it is ok as is for now
-    //However, This is not right and this is technicly broken. It probably only needs rotation and very few objects
-    //(probably none) in this game are rotated. Scaling and translation don't make sense for a normal.
-    //From what I can tell, only the normals have to be in world space and are called worldSpaceNormal in the function.
+    //Derive normal
     float3 normal = posX.normal.xyz * barycentrics.x +
         posY.normal.xyz * barycentrics.y +
         posZ.normal.xyz * barycentrics.z;
+
+    const float3x3 matWorld = (float3x3)ObjectToWorld3x4();
+
+    //Convert normal to world space
+    normal = normalize(mul(matWorld, normal));
 
     const float3 aPos[3] = { posX.position.xyz, posY.position.xyz, posZ.position.xyz };
 	const float2 aUVs[3] = { posX.uv, posY.uv, posZ.uv };
@@ -42,9 +44,7 @@ float2 GetUvAreaFromCone
 		rayConeAtOrigin.y + g_ConstantsCB.eyeToPixelConeSpreadAngle
     );
 
-    const matrix matWorld = matrix(float4(1,0,0,0), float4(0,1,0,0), float4(0,0,1,0), float4(0,0,0,1));
-
-    return UVAreaFromRayCone(WorldRayDirection(), normal, rayConeAtHit.x, aUVs, aPos, (float3x3)matWorld);
+    return UVAreaFromRayCone(WorldRayDirection(), normal, rayConeAtHit.x, aUVs, aPos, matWorld);
 }
 
 void GetInstanceDataMesh
