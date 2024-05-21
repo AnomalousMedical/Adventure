@@ -2,7 +2,7 @@ float GetTexLOD(in float2 uvAreaFromCone, Texture2D texture)
 {
 	uint2 vTexSize;
 	texture.GetDimensions(vTexSize.x,vTexSize.y);
-    return UVAreaToTexLOD(vTexSize,uvAreaFromCone);
+    return UVAreaToTexLOD(vTexSize,uvAreaFromCone) + g_ConstantsCB.mipBias;
 }
 
 float3 GetSampledNormalRC(in float2 uvAreaFromCone, in float2 uv)

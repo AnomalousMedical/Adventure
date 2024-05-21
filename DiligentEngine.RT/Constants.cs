@@ -99,7 +99,10 @@ namespace DiligentEngine.RT
 
         //Mip info
         public float eyeToPixelConeSpreadAngle;
-        public int pad1;
+        /// <summary>
+        /// Bias the mip map. Negative values use larger mip maps.
+        /// </summary>
+        public float mipBias;
         public int pad2;
         public int pad3;
 
@@ -125,6 +128,8 @@ namespace DiligentEngine.RT
                 Pallete_3 = new float4(0.41f, 0.79f, 1.00f, 0f),
                 Pallete_4 = new float4(0.78f, 1.00f, 1.00f, 0f),
                 Pallete_5 = new float4(1.00f, 1.00f, 1.00f, 0f),
+
+                mipBias = -0.5f,
             };
         }
     }

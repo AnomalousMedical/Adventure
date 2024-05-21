@@ -95,7 +95,7 @@ struct Constants
 
     //Mip info
     float eyeToPixelConeSpreadAngle;
-    int pad1;
+    float mipBias;
     int pad2;
     int pad3;
 };
