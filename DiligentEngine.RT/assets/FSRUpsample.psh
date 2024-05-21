@@ -1,0 +1,45 @@
+Texture2D    g_Texture;
+SamplerState g_Texture_sampler;  // By convention, texture samplers must use the '_sampler' suffix
+
+#define A_GPU 1
+#define A_HLSL 1
+#include "ffx_a.h"
+#define FSR_EASU_F 1
+#define FSR_RCAS_F 1
+
+struct PSInput 
+{ 
+    float4 Pos : SV_POSITION; 
+    float2 UV : TEX_COORD; 
+};
+
+struct PSOutput
+{
+    float4 Color : SV_TARGET;
+};
+
+#include "ffx_fsr1.h"
+
+AF4 FsrEasuRF(AF2 p) { AF4 res = g_Texture.GatherRed(g_Texture_sampler, p, int2(0, 0)); return res; }
+AF4 FsrEasuGF(AF2 p) { AF4 res = g_Texture.GatherGreen(g_Texture_sampler, p, int2(0, 0)); return res; }
+AF4 FsrEasuBF(AF2 p) { AF4 res = g_Texture.GatherBlue(g_Texture_sampler, p, int2(0, 0)); return res; }
+
+void main(in  PSInput  PSIn,
+          out PSOutput PSOut)
+{
+    AF2 inputSize = AF2(1920.0, 1080.0); //Move to input/output
+    AF2 outSize = AF2(3840.0, 2160.0); //Move to input/output
+
+    AU4 con0,con1,con2,con3;
+
+    FsrEasuCon(con0, con1, con2, con3,
+        inputSize.x, inputSize.y,  // Viewport size (top left aligned) in the input image which is to be scaled.
+        inputSize.x, inputSize.y,  // The size of the input image.
+        outSize.x, outSize.y); // The output resolution.
+
+    AU2 gxy = AU2(PSIn.UV.xy * outSize.xy); // Integer pixel position in output.
+    AF3 Gamma2Color = AF3(0, 0, 0);
+    FsrEasuF(Gamma2Color, gxy, con0, con1, con2, con3);
+
+    PSOut.Color = float4(Gamma2Color, 1.0);
+}
