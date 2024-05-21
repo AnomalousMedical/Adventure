@@ -97,6 +97,12 @@ namespace DiligentEngine.RT
         public float4 Pallete_4;
         public float4 Pallete_5;
 
+        //Mip info
+        public float eyeToPixelConeSpreadAngle;
+        public int pad1;
+        public int pad2;
+        public int pad3;
+
         public static Constants CreateDefault(uint maxRecursionDepth)
         {
             return new Constants

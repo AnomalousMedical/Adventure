@@ -37,6 +37,7 @@ struct CubeAttribVertex {
   float4 tangent;
   float4 binormal;
   float4 normal;
+  float4 position;
   float tex;
   float tex2;
   int pad2;
@@ -77,7 +78,6 @@ struct Constants
     float4   FrustumRayRT;
     float4   FrustumRayRB;
 
-
     // The number of shadow PCF samples
     int      ShadowPCF; 
     // Maximum ray recursion depth
@@ -92,6 +92,12 @@ struct Constants
 
     //Sky properties
     float4 Pallete[6];
+
+    //Mip info
+    float eyeToPixelConeSpreadAngle;
+    int pad1;
+    int pad2;
+    int pad3;
 };
 
 struct SurfaceReflectanceInfo

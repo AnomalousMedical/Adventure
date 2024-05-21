@@ -30,6 +30,7 @@ namespace DiligentEngine.RT
         public float4 tangent;
         public float4 binormal;
         public float4 normal;
+        public float4 position;
         public float tex;
         public float tex2;
         public int pad2;

@@ -10,6 +10,40 @@ SamplerState g_SamLinearWrap;
 SamplerState g_SamPointWrap;
 
 #include "Textures.hlsl"
+#include "RayCones.hlsl"
+
+float2 GetUvAreaFromCone
+(
+    in float3 barycentrics,
+    in CubeAttribVertex posX,
+    in CubeAttribVertex posY,
+    in CubeAttribVertex posZ
+)
+{
+    float3 hitPosition = WorldRayOrigin() + RayTCurrent() * WorldRayDirection();
+
+    //TODO: This normal needs to be in world space. However, with the scenes in this game it is ok as is for now
+    float3 normal = posX.normal.xyz * barycentrics.x +
+        posY.normal.xyz * barycentrics.y +
+        posZ.normal.xyz * barycentrics.z;
+
+    //TODO: I assume these positions need to be in world space
+    const float3 aPos[3] = { posX.position.xyz, posY.position.xyz, posZ.position.xyz };
+	const float2 aUVs[3] = { posX.uv, posY.uv, posZ.uv };
+
+	const float2 rayConeAtOrigin = float2(0, g_ConstantsCB.eyeToPixelConeSpreadAngle);
+
+	// New cone width should increase by 2*RayLength*tan(SpreadAngle/2), but RayLength*SpreadAngle is a close approximation
+	const float2 rayConeAtHit = float2
+    (
+		rayConeAtOrigin.x + rayConeAtOrigin.y * length(hitPosition - g_ConstantsCB.CameraPos.xyz),
+		rayConeAtOrigin.y + g_ConstantsCB.eyeToPixelConeSpreadAngle
+    );
+
+    const matrix matWorld = matrix(float4(1,0,0,0), float4(0,1,0,0), float4(0,0,1,0), float4(0,0,0,1));
+
+    return UVAreaFromRayCone(WorldRayDirection(), normal, rayConeAtHit.x, aUVs, aPos, (float3x3)matWorld);
+}
 
 void GetInstanceDataMesh
 (
@@ -37,6 +71,22 @@ void GetInstanceDataMesh
     globalUv = posX.globalUv.xy * barycentrics.x +
         posY.globalUv.xy * barycentrics.y +
         posZ.globalUv.xy * barycentrics.z;
+}
+
+void GetInstanceDataMesh
+(
+    in BuiltInTriangleIntersectionAttributes attr,
+    out float3 barycentrics,
+    out CubeAttribVertex posX,
+    out CubeAttribVertex posY,
+    out CubeAttribVertex posZ,
+    out float2 uv,
+    out float2 globalUv,
+    out float2 uvAreaFromCone
+)
+{
+    GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ);
 }
 
 float2 GetTriUvs(uint vertId)
@@ -95,4 +145,19 @@ void GetInstanceDataSprite
     uv = frameVertX.xy * barycentrics.x +
         frameVertY.xy * barycentrics.y +
         frameVertZ.xy * barycentrics.z;
+}
+
+void GetInstanceDataSprite
+(
+    in BuiltInTriangleIntersectionAttributes attr,
+    out float3 barycentrics,
+    out CubeAttribVertex posX,
+    out CubeAttribVertex posY,
+    out CubeAttribVertex posZ,
+    out float2 uv,
+    out float2 uvAreaFromCone
+)
+{
+    GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
+    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ);
 }

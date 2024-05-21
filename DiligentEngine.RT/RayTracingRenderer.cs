@@ -420,6 +420,9 @@ namespace DiligentEngine.RT
 
                     m_Constants.CameraPos = new Vector4(CameraWorldPos.x, CameraWorldPos.y, CameraWorldPos.z, 1.0f);
 
+                    //TODO: Only change this when the camera size changes
+                    m_Constants.eyeToPixelConeSpreadAngle = MathF.Atan((2.0f * MathF.Tan(YFov * 0.5f)) / (float)imageBlitter.Height);
+
                     //Need to invert going into the shader
                     m_Constants.LightPos_0 = cameraAndLight.LightPos[0] * -1;
                     m_Constants.LightPos_1 = cameraAndLight.LightPos[1] * -1;

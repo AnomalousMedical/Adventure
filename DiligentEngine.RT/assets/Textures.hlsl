@@ -1,9 +1,9 @@
-int GetMip()
+float GetMip()
 {
 	//Lame mip calculation, but looks tons better than just mip0.
 	//Need to add screen size and some more info
 	float depth = RayTCurrent();
-	int mip = min(depth / 3 / 4, 4);
+	float mip = min(depth / 3 / 4, 4.0);
 	return mip;
 }
 
@@ -51,61 +51,61 @@ int GetTextureSet(in int texIdx)
 	return tex;
 }
 
-float3 GetSampledNormal(in int mip, in float2 uv)
+float3 GetSampledNormal(in float mip, in float2 uv)
 {
 	int tex = instanceData.tex0;
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
-float3 GetSampledNormal(in int mip, in float2 uv, in int texIdx)
+float3 GetSampledNormal(in float mip, in float2 uv, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
-float4 GetPhysical(in int mip, in float2 uv)
+float4 GetPhysical(in float mip, in float2 uv)
 {
 	int tex = instanceData.tex0;
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
 }
 
-float4 GetPhysical(in int mip, in float2 uv, in int texIdx)
+float4 GetPhysical(in float mip, in float2 uv, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
 }
 
-float3 GetBaseColor(in int mip, in float2 uv, SamplerState sState)
+float3 GetBaseColor(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).rgb;
 }
 
-float3 GetBaseColor(in int mip, in float2 uv, SamplerState sState, in int texIdx)
+float3 GetBaseColor(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).rgb;
 }
 
-float GetOpacity(in int mip, in float2 uv, SamplerState sState)
+float GetOpacity(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).a;
 }
 
-float GetOpacity(in int mip, in float2 uv, SamplerState sState, in int texIdx)
+float GetOpacity(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).a;
 }
 
-float3 GetEmissive(in int mip, in float2 uv, SamplerState sState)
+float3 GetEmissive(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].emissiveTexture].SampleLevel(sState, uv, mip).rgb;
 }
 
-float3 GetEmissive(in int mip, in float2 uv, SamplerState sState, in int texIdx)
+float3 GetEmissive(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
 	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].emissiveTexture].SampleLevel(sState, uv, mip).rgb;

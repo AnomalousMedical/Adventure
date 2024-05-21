@@ -17,7 +17,7 @@ void main(
     CubeAttribVertex posX, posY, posZ;
     float2 uv;
     float2 globalUv;
-    int mip = GetMip();
+    float mip = GetMip();
     float opacity;
 
     [forcecase] switch (instanceData.dispatchType & 0x1)

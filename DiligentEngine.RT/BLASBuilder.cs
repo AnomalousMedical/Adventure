@@ -197,6 +197,10 @@ namespace DiligentEngine.RT
 
                         CalculateTangentBitangent(pos1, pos2, pos3, ref vertex1, ref vertex2, ref vertex3);
 
+                        vertex1.position = pos1.ToVector4();
+                        vertex2.position = pos2.ToVector4();
+                        vertex3.position = pos3.ToVector4();
+
                         vertex1.tex = blasMeshDesc.Texture1[index1];
                         vertex2.tex = blasMeshDesc.Texture1[index2];
                         vertex3.tex = blasMeshDesc.Texture1[index3];
