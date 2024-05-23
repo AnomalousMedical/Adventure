@@ -3,11 +3,21 @@ using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DiligentEngine.RT
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    struct FSRConstants
+    {
+        public UInt32 inputSizeW;
+        public UInt32 inputSizeH;
+        public UInt32 outSizeW;
+        public UInt32 outSizeH;
+    };
+
     public class FSRImageBlitterImpl : IRTImageBlitterImpl
     {
         const TEXTURE_FORMAT ColorBufferFormat = TEXTURE_FORMAT.TEX_FORMAT_RGBA8_UNORM;
@@ -21,8 +31,23 @@ namespace DiligentEngine.RT
         AutoPtr<IPipelineState> upsamplePSO;
         AutoPtr<IShaderResourceBinding> upsampleSRB;
 
+        private AutoPtr<IBuffer> m_fsrConstants;
+        private FSRConstants fsrConstants;
+
         public void CreateBuffers(GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader)
         {
+            unsafe
+            {
+                var m_pDevice = graphicsEngine.RenderDevice;
+
+                BufferDesc CBDesc = new BufferDesc();
+                CBDesc.Name = "FSR Screen Size Buffer";
+                CBDesc.Size = (ulong)sizeof(FSRConstants);
+                CBDesc.Usage = USAGE.USAGE_DEFAULT;
+                CBDesc.BindFlags = BIND_FLAGS.BIND_UNIFORM_BUFFER;
+                m_fsrConstants = m_pDevice.CreateBuffer(CBDesc);
+            }
+
             CreateUpsamplePSO(graphicsEngine, shaderLoader);
             CreateImageBlitPSO(graphicsEngine, shaderLoader);
         }
@@ -75,6 +100,12 @@ namespace DiligentEngine.RT
                 AddressW = TEXTURE_ADDRESS_MODE.TEXTURE_ADDRESS_CLAMP
             };
 
+            var Vars = new List<ShaderResourceVariableDesc>
+            {
+                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
+            };
+            PSOCreateInfo.PSODesc.ResourceLayout.Variables = Vars;
+
             var ImmutableSamplers = new List<ImmutableSamplerDesc>
             {
                 new ImmutableSamplerDesc{ ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, SamplerOrTextureName = "g_Texture", Desc = SamLinearClampDesc }
@@ -84,6 +115,9 @@ namespace DiligentEngine.RT
             PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC;
 
             upsamplePSO = m_pDevice.CreateGraphicsPipelineState(PSOCreateInfo);
+
+            upsamplePSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "FSRConstants").Set(m_fsrConstants.Obj);
+
             upsampleSRB = upsamplePSO.Obj.CreateShaderResourceBinding(true);
         }
 
@@ -135,6 +169,12 @@ namespace DiligentEngine.RT
                 AddressW = TEXTURE_ADDRESS_MODE.TEXTURE_ADDRESS_CLAMP
             };
 
+            var Vars = new List<ShaderResourceVariableDesc>
+            {
+                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
+            };
+            PSOCreateInfo.PSODesc.ResourceLayout.Variables = Vars;
+
             var ImmutableSamplers = new List<ImmutableSamplerDesc>
             {
                 new ImmutableSamplerDesc{ ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, SamplerOrTextureName = "g_Texture", Desc = SamLinearClampDesc }
@@ -145,6 +185,8 @@ namespace DiligentEngine.RT
 
             imageBlitPSO = m_pDevice.CreateGraphicsPipelineState(PSOCreateInfo);
             //VERIFY_EXPR(m_pImageBlitPSO != nullptr);
+
+            imageBlitPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "FSRConstants").Set(m_fsrConstants.Obj);
 
             imageBlitSRB = imageBlitPSO.Obj.CreateShaderResourceBinding(true);
 
@@ -158,6 +200,7 @@ namespace DiligentEngine.RT
             imageBlitPSO.Dispose();
             upsampleSRB.Dispose();
             upsamplePSO.Dispose();
+            m_fsrConstants.Dispose();
         }
 
         public void Blit(GraphicsEngine graphicsEngine)
@@ -203,11 +246,6 @@ namespace DiligentEngine.RT
 
         public void WindowResize(GraphicsEngine graphicsEngine, UInt32 width, UInt32 height)
         {
-            UInt32 colorWidth = 1920;
-            UInt32 colorHeight = 1080;
-
-            var m_pDevice = graphicsEngine.RenderDevice;
-
             // Check if the image needs to be recreated.
             if (upsamplePassRT != null &&
                 upsamplePassRT.Obj.GetDesc_Width == width &&
@@ -215,6 +253,20 @@ namespace DiligentEngine.RT
             {
                 return;
             }
+
+
+            UInt32 colorWidth = (UInt32)(width * 0.75f);
+            UInt32 colorHeight = (UInt32)(height * 0.75f);
+
+            //Match scale if res will be too small
+            if(colorWidth == 0 || colorHeight == 0)
+            {
+                colorWidth = width;
+                colorHeight = height;
+            }
+
+            var m_pDevice = graphicsEngine.RenderDevice;
+            var immediateContext = graphicsEngine.ImmediateContext;
 
             if (colorWidth == 0 || colorHeight == 0)
             {
@@ -252,6 +304,21 @@ namespace DiligentEngine.RT
                 RTDesc.Format = ColorBufferFormat;
 
                 upsamplePassRT = m_pDevice.CreateTexture(RTDesc, null);
+            }
+
+            fsrConstants.inputSizeW = colorRT.Obj.GetDesc_Width;
+            fsrConstants.inputSizeH = colorRT.Obj.GetDesc_Height;
+            fsrConstants.outSizeW = upsamplePassRT.Obj.GetDesc_Width;
+            fsrConstants.outSizeH = upsamplePassRT.Obj.GetDesc_Height;
+            unsafe
+            {
+                fixed (FSRConstants* constantsPtr = &fsrConstants)
+                {
+                    var barriers = new List<StateTransitionDesc>(1); //TODO: Persist this and don't make it every frame
+                    barriers.Add(new StateTransitionDesc { pResource = m_fsrConstants.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_COPY_DEST, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+                    immediateContext.TransitionResourceStates(barriers);
+                    immediateContext.UpdateBuffer(m_fsrConstants.Obj, 0, (uint)sizeof(FSRConstants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                }
             }
         }
     }

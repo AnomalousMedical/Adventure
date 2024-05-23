@@ -1,6 +1,12 @@
 Texture2D    g_Texture;
 SamplerState g_Texture_sampler;  // By convention, texture samplers must use the '_sampler' suffix
 
+cbuffer FSRConstants
+{
+    uint2 inputSize;
+    uint2 outSize;
+};
+
 struct PSInput 
 { 
     float4 Pos : SV_POSITION; 
@@ -27,8 +33,6 @@ void FsrRcasInputF(inout AF1 r, inout AF1 g, inout AF1 b) {}
 void main(in  PSInput  PSIn,
           out PSOutput PSOut)
 {
-    AF2 outSize = AF2(3840.0, 2160.0); //Move to input/output
-
     AU4 con0;
 
     float fsrSharpening = 0.0;

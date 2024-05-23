@@ -1,6 +1,12 @@
 Texture2D    g_Texture;
 SamplerState g_Texture_sampler;  // By convention, texture samplers must use the '_sampler' suffix
 
+cbuffer FSRConstants
+{
+    uint2 inputSize;
+    uint2 outSize;
+};
+
 #define A_GPU 1
 #define A_HLSL 1
 #include "ffx_a.h"
@@ -27,9 +33,6 @@ AF4 FsrEasuBF(AF2 p) { AF4 res = g_Texture.GatherBlue(g_Texture_sampler, p, int2
 void main(in  PSInput  PSIn,
           out PSOutput PSOut)
 {
-    AF2 inputSize = AF2(1920.0, 1080.0); //Move to input/output
-    AF2 outSize = AF2(3840.0, 2160.0); //Move to input/output
-
     AU4 con0,con1,con2,con3;
 
     FsrEasuCon(con0, con1, con2, con3,
