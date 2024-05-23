@@ -63,6 +63,8 @@ namespace Adventure
                 o.Features = DiligentEngine.GraphicsEngine.FeatureFlags.RayTracing;
                 o.RenderApi = options.RenderApi;
                 o.DeviceId = options.DeviceId;
+                o.UpsamplingMethod = options.UpsamplingMethod;
+                o.FSR1RenderPercentage = options.FSR1RenderPercentage;
             })
             .AddDiligentEngineRt();
 

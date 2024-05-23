@@ -34,6 +34,13 @@ namespace DiligentEngine.RT
         private AutoPtr<IBuffer> m_fsrConstants;
         private FSRConstants fsrConstants;
 
+        private float renderPercent;
+
+        public FSRImageBlitterImpl(DiligentEngineOptions options)
+        {
+            renderPercent = options.FSR1RenderPercentage;
+        }
+
         public void CreateBuffers(GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader)
         {
             unsafe
@@ -257,8 +264,8 @@ namespace DiligentEngine.RT
             }
 
 
-            UInt32 colorWidth = (UInt32)(width * 0.75f);
-            UInt32 colorHeight = (UInt32)(height * 0.75f);
+            UInt32 colorWidth = (UInt32)(width * renderPercent);
+            UInt32 colorHeight = (UInt32)(height * renderPercent);
 
             //Match scale if res will be too small
             if(colorWidth == 0 || colorHeight == 0)

@@ -1,5 +1,6 @@
 ﻿using DiligentEngine;
 using Engine.Platform;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,13 +28,23 @@ namespace DiligentEngine.RT
 
         IRTImageBlitterImpl blitterImpl;
 
-        public RTImageBlitter(ShaderLoader<RTShaders> shaderLoader, GraphicsEngine graphicsEngine, OSWindow window)
+        public RTImageBlitter(ShaderLoader<RTShaders> shaderLoader, GraphicsEngine graphicsEngine, OSWindow window, DiligentEngineOptions options, ILogger<RTImageBlitter> logger)
         {
             this.graphicsEngine = graphicsEngine;
             this.window = window;
 
-            //blitterImpl = new FSRImageBlitterImpl();
-            blitterImpl = new DirectImageBlitter();
+            switch (options.UpsamplingMethod)
+            {
+                case UpsamplingMethod.FSR1:
+                    logger.LogInformation($"Creating FSR1 blitter upsampling from {options.FSR1RenderPercentage}.");
+                    blitterImpl = new FSRImageBlitterImpl(options);
+                    break;
+                case UpsamplingMethod.None:
+                default:
+                    logger.LogInformation($"Creating direct blitter.");
+                    blitterImpl = new DirectImageBlitter();
+                    break;
+            }
             blitterImpl.CreateBuffers(graphicsEngine, shaderLoader);
 
             WindowResize((uint)window.WindowWidth, (uint)window.WindowHeight);

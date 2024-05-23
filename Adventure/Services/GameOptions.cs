@@ -29,5 +29,9 @@ namespace Adventure.Services
         public float SfxVolume { get; set; } = 1.0f;
 
         public uint? DeviceId { get; set; }
+
+        public UpsamplingMethod UpsamplingMethod { get; set; } = UpsamplingMethod.None;
+
+        public float FSR1RenderPercentage { get; set; } = 0.75f;
     }
 }
