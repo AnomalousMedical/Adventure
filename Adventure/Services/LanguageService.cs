@@ -25,6 +25,7 @@ namespace Adventure.Services
 
     record Language
     (
+        WorldDatabase.Text WorldDatabase,
         //World
         Airship.Text Airship,
         Alchemist.Text Alchemist,

@@ -54,12 +54,25 @@ namespace Adventure.Services
 
     class WorldDatabase : IWorldDatabase
     {
+        public record Text
+        (
+            String FighterName,
+            String FighterGreeting,
+            String MageName,
+            String MageGreeting,
+            String ThiefName,
+            String ThiefGreeting,
+            String ClericName,
+            String ClericGreeting
+        );
+
         private List<IAreaBuilder> areaBuilders;
         private List<int> createdZoneSeeds;
         private int currentSeed;
         private FIRandom zoneRandom;
         private readonly Persistence persistence;
         private readonly IInventoryFunctions inventoryFunctions;
+        private readonly ILanguageService languageService;
         private IntVector2 airshipStartSquare;
 
         public IBiomeManager BiomeManager { get; }
@@ -145,7 +158,8 @@ namespace Adventure.Services
             PotionCreator potionCreator,
             DaggerCreator daggerCreator,
             BookCreator bookCreator,
-            IInventoryFunctions inventoryFunctions
+            IInventoryFunctions inventoryFunctions,
+            ILanguageService languageService
         )
         {
             this.persistence = persistence;
@@ -162,6 +176,7 @@ namespace Adventure.Services
             DaggerCreator = daggerCreator;
             BookCreator = bookCreator;
             this.inventoryFunctions = inventoryFunctions;
+            this.languageService = languageService;
         }
 
         public int GetZoneSeed(int zoneIndex)
@@ -236,7 +251,7 @@ namespace Adventure.Services
 
             {
                 var sheet = CharacterSheet.CreateStartingFighter(characterRandom);
-                sheet.Name = "Bob";
+                sheet.Name = languageService.Current.WorldDatabase.FighterName;
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Players.FighterPlayerSprite),
@@ -249,13 +264,13 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = "My shield will guard us.",
+                    Greeting = languageService.Current.WorldDatabase.FighterGreeting,
                 };
             }
 
             {
                 var sheet = CharacterSheet.CreateStartingMage(characterRandom);
-                sheet.Name = "Magic Joe";
+                sheet.Name = languageService.Current.WorldDatabase.MageName;
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Players.MagePlayerSprite),
@@ -267,13 +282,13 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = "Let's get moving.",
+                    Greeting = languageService.Current.WorldDatabase.MageGreeting,
                 };
             }
 
             {
                 var sheet = CharacterSheet.CreateStartingThief(characterRandom);
-                sheet.Name = "Stabby McStabface";
+                sheet.Name = languageService.Current.WorldDatabase.ThiefName;
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Players.ThiefPlayerSprite),
@@ -286,13 +301,13 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = "I hope we find lots of great treasure!",
+                    Greeting = languageService.Current.WorldDatabase.ThiefGreeting,
                 };
             }
 
             {
                 var sheet = CharacterSheet.CreateStartingSage(characterRandom);
-                sheet.Name = "Wendy";
+                sheet.Name = languageService.Current.WorldDatabase.ClericName;
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Players.ClericPlayerSprite),
@@ -305,7 +320,7 @@ namespace Adventure.Services
                 yield return new PartyMember
                 {
                     CharacterData = hero,
-                    Greeting = "I wonder what's made everything so agressive?",
+                    Greeting = languageService.Current.WorldDatabase.ClericGreeting,
                 };
             }
         }

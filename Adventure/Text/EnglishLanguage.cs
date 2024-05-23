@@ -16,6 +16,17 @@ namespace Adventure.Text
         {
             return new Language
             (
+                WorldDatabase: new WorldDatabase.Text
+                (
+                    FighterName: "Bob",
+                    FighterGreeting: "My shield will guard us.",
+                    MageName: "Magic Joe",
+                    MageGreeting: "Let's get moving.",
+                    ThiefName: "Stabby McStabface",
+                    ThiefGreeting: "I hope we find lots of great treasure!",
+                    ClericName: "Wendy",
+                    ClericGreeting: "I wonder what's made everything so agressive?"
+                ),
                 //World Map
                 Airship: new Airship.Text
                 (
