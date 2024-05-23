@@ -55,7 +55,11 @@ namespace Adventure
 
             services.AddLogging(o =>
             {
-                o.AddConsole();
+                o.AddSimpleConsole(o =>
+                {
+                    o.SingleLine = true;
+                    o.TimestampFormat = "HH:mm:ss:fffff ";
+                });
             });
 
             services.AddDiligentEngine(pluginManager, o =>
