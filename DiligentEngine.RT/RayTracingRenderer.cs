@@ -497,7 +497,7 @@ namespace DiligentEngine.RT
 
                     fixed (Constants* constantsPtr = &m_Constants)
                     {
-                        var barriers = new List<StateTransitionDesc>(); //TODO: Persist this and don't make it every frame
+                        var barriers = new List<StateTransitionDesc>(1); //TODO: Persist this and don't make it every frame
                         barriers.Add(new StateTransitionDesc { pResource = m_ConstantsCB.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_COPY_DEST, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                         m_pImmediateContext.TransitionResourceStates(barriers);
                         m_pImmediateContext.UpdateBuffer(m_ConstantsCB.Obj, 0, (uint)sizeof(Constants), new IntPtr(constantsPtr), RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
