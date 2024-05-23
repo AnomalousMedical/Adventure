@@ -18,13 +18,13 @@ namespace Adventure.Text
             (
                 WorldDatabase: new WorldDatabase.Text
                 (
-                    FighterName: "Bob",
+                    FighterName: "Bolar",
                     FighterGreeting: "My shield will guard us.",
-                    MageName: "Magic Joe",
+                    MageName: "Rabras",
                     MageGreeting: "Let's get moving.",
-                    ThiefName: "Stabby McStabface",
+                    ThiefName: "Malissa",
                     ThiefGreeting: "I hope we find lots of great treasure!",
-                    ClericName: "Wendy",
+                    ClericName: "Adali",
                     ClericGreeting: "I wonder what's made everything so agressive?"
                 ),
                 //World Map
