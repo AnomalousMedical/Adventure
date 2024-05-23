@@ -383,7 +383,7 @@ namespace DiligentEngine.RT
 
                     //= new Vector3(0f, 0f, -15f);
                     var preTransformMatrix = CameraHelpers.GetSurfacePretransformMatrix(new Vector3(0, 0, 1), preTransform);
-                    var cameraProj = CameraHelpers.GetAdjustedProjectionMatrix(YFov, ZNear, ZFar, imageBlitter.Width, imageBlitter.Height, preTransform);
+                    var cameraProj = CameraHelpers.GetAdjustedProjectionMatrix(YFov, ZNear, ZFar, imageBlitter.RTBufferWidth, imageBlitter.RTBufferHeight, preTransform);
                     cameraAndLight.GetCameraPosition(cameraPos, cameraRot, preTransformMatrix, cameraProj, out var CameraWorldPos, out var CameraViewProj);
 
                     var Frustum = new ViewFrustum();
@@ -421,7 +421,7 @@ namespace DiligentEngine.RT
                     m_Constants.CameraPos = new Vector4(CameraWorldPos.x, CameraWorldPos.y, CameraWorldPos.z, 1.0f);
 
                     //TODO: Only change this when the camera size changes
-                    m_Constants.eyeToPixelConeSpreadAngle = MathF.Atan((2.0f * MathF.Tan(YFov * 0.5f)) / (float)imageBlitter.Height);
+                    m_Constants.eyeToPixelConeSpreadAngle = MathF.Atan((2.0f * MathF.Tan(YFov * 0.5f)) / (float)imageBlitter.FullBufferHeight); //Use the full buffer here to make the mips adjust
 
                     //Need to invert going into the shader
                     m_Constants.LightPos_0 = cameraAndLight.LightPos[0] * -1;
@@ -512,14 +512,14 @@ namespace DiligentEngine.RT
                     imageBlitter.SetupUnorderedAccess(barriers);
                     m_pImmediateContext.TransitionResourceStates(barriers);
 
-                    m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ColorBuffer").Set(imageBlitter.TextureView);
+                    m_pRayTracingSRB.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_GEN, "g_ColorBuffer").Set(imageBlitter.RTTextureView);
 
                     m_pImmediateContext.SetPipelineState(m_pRayTracingPSO.Obj);
                     m_pImmediateContext.CommitShaderResources(m_pRayTracingSRB.Obj, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 
                     var Attribs = new TraceRaysAttribs();
-                    Attribs.DimensionX = imageBlitter.Width;
-                    Attribs.DimensionY = imageBlitter.Height;
+                    Attribs.DimensionX = imageBlitter.RTBufferWidth;
+                    Attribs.DimensionY = imageBlitter.RTBufferHeight;
                     Attribs.pSBT = m_pSBT.Obj;
 
                     m_pImmediateContext.TraceRays(Attribs);

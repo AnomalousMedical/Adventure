@@ -238,7 +238,9 @@ namespace DiligentEngine.RT
             }
         }
 
-        public ITexture Texture => colorRT.Obj;
+        public ITexture RTTexture => colorRT.Obj;
+
+        public ITexture FullBufferTexture => upsamplePassRT.Obj;
 
         public uint Width => colorRT.Obj.GetDesc_Width;
 

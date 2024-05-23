@@ -11,7 +11,8 @@ namespace DiligentEngine.RT
     public interface IRTImageBlitterImpl : IDisposable
     {
         uint Height { get; }
-        ITexture Texture { get; }
+        ITexture RTTexture { get; }
+        ITexture FullBufferTexture { get; }
         uint Width { get; }
 
         void Blit(GraphicsEngine graphicsEngine);
@@ -47,7 +48,7 @@ namespace DiligentEngine.RT
 
         public void SetupUnorderedAccess(List<StateTransitionDesc> barriers)
         {
-            barriers.Add(new StateTransitionDesc { pResource = blitterImpl.Texture, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_UNORDERED_ACCESS, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+            barriers.Add(new StateTransitionDesc { pResource = blitterImpl.RTTexture, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_UNORDERED_ACCESS, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
         }
 
         public void Blit()
@@ -60,11 +61,15 @@ namespace DiligentEngine.RT
             WindowResize((uint)window.WindowWidth, (uint)window.WindowHeight);
         }
 
-        public IDeviceObject TextureView => blitterImpl.Texture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_UNORDERED_ACCESS);
+        public IDeviceObject RTTextureView => blitterImpl.RTTexture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_UNORDERED_ACCESS);
 
-        public uint Width => blitterImpl.Texture.GetDesc_Width;
+        public uint RTBufferWidth => blitterImpl.RTTexture.GetDesc_Width;
 
-        public uint Height => blitterImpl.Texture.GetDesc_Height;
+        public uint RTBufferHeight => blitterImpl.RTTexture.GetDesc_Height;
+
+        public uint FullBufferWidth => blitterImpl.FullBufferTexture.GetDesc_Width;
+
+        public uint FullBufferHeight => blitterImpl.FullBufferTexture.GetDesc_Height;
 
         public void WindowResize(UInt32 width, UInt32 height)
         {
