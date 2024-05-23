@@ -109,7 +109,7 @@ namespace DiligentEngine.RT
 
             var Vars = new List<ShaderResourceVariableDesc>
             {
-                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
+                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL | SHADER_TYPE.SHADER_TYPE_VERTEX, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
             };
             PSOCreateInfo.PSODesc.ResourceLayout.Variables = Vars;
 
@@ -123,6 +123,7 @@ namespace DiligentEngine.RT
 
             upsamplePSO = m_pDevice.CreateGraphicsPipelineState(PSOCreateInfo);
 
+            upsamplePSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_VERTEX, "FSRConstants").Set(m_fsrConstants.Obj);
             upsamplePSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "FSRConstants").Set(m_fsrConstants.Obj);
 
             upsampleSRB = upsamplePSO.Obj.CreateShaderResourceBinding(true);
@@ -178,7 +179,7 @@ namespace DiligentEngine.RT
 
             var Vars = new List<ShaderResourceVariableDesc>
             {
-                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
+                new ShaderResourceVariableDesc { ShaderStages = SHADER_TYPE.SHADER_TYPE_PIXEL | SHADER_TYPE.SHADER_TYPE_VERTEX, Name = "FSRConstants", Type = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
             };
             PSOCreateInfo.PSODesc.ResourceLayout.Variables = Vars;
 
@@ -193,6 +194,7 @@ namespace DiligentEngine.RT
             imageBlitPSO = m_pDevice.CreateGraphicsPipelineState(PSOCreateInfo);
             //VERIFY_EXPR(m_pImageBlitPSO != nullptr);
 
+            imageBlitPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_VERTEX, "FSRConstants").Set(m_fsrConstants.Obj);
             imageBlitPSO.Obj.GetStaticVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "FSRConstants").Set(m_fsrConstants.Obj);
 
             imageBlitSRB = imageBlitPSO.Obj.CreateShaderResourceBinding(true);
