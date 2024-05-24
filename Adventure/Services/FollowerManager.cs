@@ -94,6 +94,7 @@ namespace Adventure.Services
                 args.Moving = false;
                 entry.Node.UpdateLocation(args);
                 entry.EndPosition = entry.StartPosition = offsetLoc;
+                entry.LastPosition = offsetLoc;
                 entry.DistancePercent = 0.0f;
                 entry.MovementDirection = new Vector3(0f, 0f, -1f);
             }
