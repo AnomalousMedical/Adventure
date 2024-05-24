@@ -390,6 +390,8 @@ namespace Adventure.WorldMap
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
             cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
+            this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
+            Sprite_FrameChanged(sprite);
         }
 
         public void RequestDestruction()
