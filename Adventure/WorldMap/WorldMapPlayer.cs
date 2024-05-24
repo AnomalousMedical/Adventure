@@ -382,19 +382,14 @@ namespace Adventure.WorldMap
 
         public void SetLocation(in Vector3 location)
         {
-            var finalLoc = location + new Vector3(0f, sprite.BaseScale.y * currentScale.y / 2f, 0f);
+            var finalLoc = location + new Vector3(0f, currentScale.y / 2f, 0f);
 
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
-            this.currentPosition = location;
+            this.currentPosition = finalLoc;
             cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
-        }
-
-        public Vector3 GetLocation()
-        {
-            return this.currentPosition - new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
         }
 
         public void RequestDestruction()
@@ -507,7 +502,7 @@ namespace Adventure.WorldMap
             var frame = obj.GetCurrentFrame();
 
             Vector3 offset;
-            var scale = sprite.BaseScale * this.currentScale;
+            var scale = this.currentScale;
 
             var primaryAttach = frame.Attachments[this.primaryHand];
             offset = scale * primaryAttach.translate;
