@@ -102,6 +102,7 @@ namespace Adventure.WorldMap
                 {
                     worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
                 }
+                worldMapManager.MakePlayerIdle();
                 worldMapManager.CenterCamera();
                 backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
             }

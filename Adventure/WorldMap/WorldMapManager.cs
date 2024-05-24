@@ -20,6 +20,7 @@ namespace Adventure.WorldMap
         void SetPlayerVisible(bool visible);
         void CenterCamera();
         Vector3 GetCellCenterpoint(in IntVector2 cell);
+        void MakePlayerIdle();
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -77,6 +78,11 @@ namespace Adventure.WorldMap
         public void MovePlayer(in Vector3 loc)
         {
             player.SetLocation(loc);
+            MakePlayerIdle();
+        }
+
+        public void MakePlayerIdle()
+        {
             player.MakeIdle();
         }
 

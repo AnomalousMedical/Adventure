@@ -287,6 +287,8 @@ namespace Adventure.WorldMap
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
             this.sprite.SetAnimation("down");
+            this.followerManager.LineUpBehindLeader();
+            this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
         }
 
         public void CenterCamera()
@@ -384,6 +386,7 @@ namespace Adventure.WorldMap
 
             bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
             this.characterMover.SetLocation(finalLoc.ToSystemNumerics());
+            this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = location;
             cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
