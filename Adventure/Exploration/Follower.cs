@@ -214,11 +214,6 @@ namespace Adventure
             Sprite_FrameChanged(sprite);
         }
 
-        public Vector3 GetLocation()
-        {
-            return this.currentPosition - new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
-        }
-
         public void RequestDestruction()
         {
             destructionRequest.RequestDestruction();
