@@ -80,8 +80,9 @@ namespace Adventure.Services
             }
         }
 
-        public void LineUpBehindLeader()
+        public void LineUpBehindLeader(in Vector3 location)
         {
+            leaderStartLocation = location;
             const float zOffset = 0.15f;
             var offset = new Vector3(0, 0, zOffset);
             foreach (var entry in followers)
@@ -104,8 +105,7 @@ namespace Adventure.Services
             var distancePercent = leaderLocDiff.length() / (characterDistance);
             if (distancePercent > 2.0f) //More than 2x distance, move to leader position
             {
-                leaderStartLocation = location;
-                LineUpBehindLeader();
+                LineUpBehindLeader(location);
             }
             else
             {

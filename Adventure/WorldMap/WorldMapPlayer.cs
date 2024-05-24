@@ -287,7 +287,7 @@ namespace Adventure.WorldMap
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
             this.sprite.SetAnimation("down");
-            this.followerManager.LineUpBehindLeader();
+            this.followerManager.LineUpBehindLeader(this.currentPosition);
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
         }
 
