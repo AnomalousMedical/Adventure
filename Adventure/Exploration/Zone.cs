@@ -595,6 +595,14 @@ namespace Adventure
             }
         }
 
+        public async Task WaitForFullLoad()
+        {
+            if (zoneFullyLoadedTask != null)
+            {
+                await zoneFullyLoadedTask.Task;
+            }
+        }
+
         public void SetPosition(in Vector3 position)
         {
             this.currentPosition = position;

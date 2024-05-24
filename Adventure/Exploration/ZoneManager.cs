@@ -131,7 +131,7 @@ namespace Adventure
 
         public Task WaitForCurrent()
         {
-            return currentZone?.WaitForGeneration() ?? Task.CompletedTask;
+            return currentZone?.WaitForFullLoad() ?? Task.CompletedTask;
         }
 
         private Zone CreateZone(Vector3 translation, int zoneIndex)
