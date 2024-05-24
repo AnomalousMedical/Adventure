@@ -102,7 +102,6 @@ namespace Adventure.WorldMap
                 {
                     worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
                 }
-                worldMapManager.MakePlayerIdle();
                 worldMapManager.CenterCamera();
                 backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
             }
@@ -116,6 +115,8 @@ namespace Adventure.WorldMap
             persistence.Current.Player.RespawnZone = zoneIndex;
             persistence.Current.Player.RespawnPosition = null;
             persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
+            worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
+            worldMapManager.MakePlayerIdle();
             coroutineRunner.RunTask(zoneManager.Restart());
             nextState = this.startExplorationGameState;
         }
