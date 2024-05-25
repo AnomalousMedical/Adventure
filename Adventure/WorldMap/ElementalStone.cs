@@ -44,6 +44,7 @@ namespace Adventure.WorldMap
         private readonly TreasureMenu treasureMenu;
         private readonly AccessoryCreator accessoryCreator;
         private readonly ILanguageService languageService;
+        private readonly CameraMover cameraMover;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -58,6 +59,9 @@ namespace Adventure.WorldMap
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
+
+        private Vector3 cameraOffset = new Vector3(0, 1, -2);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         public ElementalStone(
             RTInstances<WorldMapScene> rtInstances,
@@ -76,7 +80,8 @@ namespace Adventure.WorldMap
             IExplorationMenu explorationMenu,
             TreasureMenu treasureMenu,
             AccessoryCreator accessoryCreator,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            CameraMover cameraMover)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -94,6 +99,7 @@ namespace Adventure.WorldMap
             this.treasureMenu = treasureMenu;
             this.accessoryCreator = accessoryCreator;
             this.languageService = languageService;
+            this.cameraMover = cameraMover;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -220,6 +226,7 @@ namespace Adventure.WorldMap
                 {
                     coroutineRunner.RunTask(async () =>
                     {
+                        cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                         await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProvenWorthy, args.GamepadId);
                         persistence.Current.PlotItems.Add(PlotItems.ElementalStone);
                         var treasure = new Treasure(accessoryCreator.CreateDoublecast());
@@ -232,6 +239,7 @@ namespace Adventure.WorldMap
                 {
                     coroutineRunner.RunTask(async () =>
                     {
+                        cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                         await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProveMastery, args.GamepadId);
                     });
                 }

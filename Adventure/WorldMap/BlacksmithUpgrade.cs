@@ -39,6 +39,7 @@ namespace Adventure.WorldMap
         private readonly ICoroutineRunner coroutineRunner;
         private readonly TextDialog textDialog;
         private readonly ILanguageService languageService;
+        private readonly CameraMover cameraMover;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -54,6 +55,9 @@ namespace Adventure.WorldMap
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
+        private Vector3 cameraOffset = new Vector3(0, 1, -2);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
+
         public BlacksmithUpgrade(
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
@@ -68,7 +72,8 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             ICoroutineRunner coroutineRunner,
             TextDialog textDialog,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            CameraMover cameraMover)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -83,6 +88,7 @@ namespace Adventure.WorldMap
             this.coroutineRunner = coroutineRunner;
             this.textDialog = textDialog;
             this.languageService = languageService;
+            this.cameraMover = cameraMover;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -209,6 +215,7 @@ namespace Adventure.WorldMap
             {
                 coroutineRunner.RunTask(async () =>
                 {
+                    cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                     await textDialog.ShowTextAndWait(languageService.Current.BlacksmithUpgrade.GiveUpgrade, args.GamepadId);
                     persistence.Current.PlotItems.Add(PlotItems.BlacksmithUpgrade);
                     RequestDestruction();

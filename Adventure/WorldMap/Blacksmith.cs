@@ -43,6 +43,7 @@ namespace Adventure.WorldMap
         private readonly IExplorationMenu explorationMenu;
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
+        private readonly CameraMover cameraMover;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -57,6 +58,9 @@ namespace Adventure.WorldMap
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
+
+        private Vector3 cameraOffset = new Vector3(0, 1, -2);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         public Blacksmith(
             RTInstances<WorldMapScene> rtInstances,
@@ -74,7 +78,8 @@ namespace Adventure.WorldMap
             BuyMenu buyMenu,
             IExplorationMenu explorationMenu,
             Persistence persistence,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            CameraMover cameraMover)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -91,6 +96,7 @@ namespace Adventure.WorldMap
             this.explorationMenu = explorationMenu;
             this.persistence = persistence;
             this.languageService = languageService;
+            this.cameraMover = cameraMover;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -200,8 +206,9 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
+                cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                 var message = languageService.Current.Blacksmith.SalesPitch;
-                if(persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
+                if (persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
                 {
                     message = languageService.Current.Blacksmith.AncientSalesPitch;
                 }
