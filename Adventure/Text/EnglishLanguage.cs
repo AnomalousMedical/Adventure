@@ -49,7 +49,8 @@ namespace Adventure.Text
                 (
                     Greeting: "Hello",
                     SalesPitch: "I have the best weapons around.",
-                    AncientSalesPitch: "With this knowledge I can make my weapons even better."
+                    AncientSalesPitch: "With this knowledge I can make my weapons even better.",
+                    Goodbye: "Goodbye now."
                 ),
                 BlacksmithUpgrade: new BlacksmithUpgrade.Text
                 (

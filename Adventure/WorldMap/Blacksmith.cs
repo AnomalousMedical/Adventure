@@ -27,7 +27,8 @@ namespace Adventure.WorldMap
         (
             String Greeting,
             String SalesPitch,
-            String AncientSalesPitch
+            String AncientSalesPitch,
+            String Goodbye
         );
 
         private readonly RTInstances<WorldMapScene> rtInstances;
@@ -208,6 +209,8 @@ namespace Adventure.WorldMap
                 buyMenu.PreviousMenu = null;
                 buyMenu.CurrentShopType = ShopType.Blacksmith;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
+                await buyMenu.WaitForClose();
+                await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Goodbye, args.GamepadId);
             });
         }
 

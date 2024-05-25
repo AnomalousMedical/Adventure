@@ -3,6 +3,7 @@ using Engine;
 using Engine.Platform;
 using SharpGui;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Adventure.Menu
 {
@@ -96,6 +97,8 @@ namespace Adventure.Menu
         SharpText info2 = new SharpText() { Color = Color.White };
         private int currentSheet;
 
+        private TaskCompletionSource menuClosedTask;
+
         public BuyMenu
         (
             Persistence persistence,
@@ -119,6 +122,15 @@ namespace Adventure.Menu
         public IExplorationSubMenu PreviousMenu { get; set; }
 
         public ShopType CurrentShopType { get; set; }
+
+        public Task WaitForClose()
+        {
+            if(menuClosedTask == null)
+            {
+                menuClosedTask = new TaskCompletionSource();
+            }
+            return menuClosedTask.Task;
+        }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
         {
@@ -232,7 +244,11 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             {
                 if (allowChanges)
                 {
+                    //This order with the task is very important
+                    var tempTask = menuClosedTask;
+                    menuClosedTask = null;
                     menu.RequestSubMenu(PreviousMenu, gamepadId);
+                    tempTask?.SetResult();
                 }
             }
         }
