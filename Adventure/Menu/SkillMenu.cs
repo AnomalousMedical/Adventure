@@ -34,7 +34,8 @@ namespace Adventure.Menu
 
         private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
         private List<ButtonColumnItem<Action>> characterChoices = null;
-        private String selectedSkill;
+        private ISkill selectedSkill;
+        private IEnumerable<ButtonColumnItem<ISkill>> currentPlayerSkills = null;
 
         public SkillMenu
         (
@@ -173,8 +174,16 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             skillButtons.MaxWidth = scaleHelper.Scaled(900);
             skillButtons.Bottom = screenPositioner.ScreenSize.Height;
 
+            if (currentPlayerSkills == null)
+            {
+                currentPlayerSkills = characterData.CharacterSheet.Skills.Select(i =>
+                {
+                    var skill = skillFactory.CreateSkill(i);
+                    return new ButtonColumnItem<ISkill>(skill.Name, skill);
+                });
+            }
             var skillCount = characterData.CharacterSheet.Skills.Count();
-            var newSelection = skillButtons.Show(sharpGui, characterData.CharacterSheet.Skills.Select(i => new ButtonColumnItem<String>(i, i)), skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+            var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (!choosingCharacter && newSelection != null)
             {
                 if(characterData.CharacterSheet.CurrentHp > 0)
@@ -182,8 +191,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                     selectedSkill = newSelection;
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
-                        var skill = skillFactory.CreateSkill(selectedSkill);
-                        skill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                        selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
                     }))
                     .ToList();
                 }
@@ -200,6 +208,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                     {
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
+                    currentPlayerSkills = null;
                 }
             }
             if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
@@ -211,12 +220,14 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                     {
                         currentSheet = 0;
                     }
+                    currentPlayerSkills = null;
                 }
             }
             if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (!choosingCharacter)
                 {
+                    currentPlayerSkills = null;
                     menu.RequestSubMenu(menu.RootMenu, gamepad);
                 }
             }
