@@ -38,7 +38,8 @@ namespace Adventure.Text
                 (
                     Greeting: "Hello",
                     SalesPitch: "My potions will keep you going.",
-                    AncientSalesPitch: "My potions will really pack a punch now."
+                    AncientSalesPitch: "My potions will really pack a punch now.",
+                    Goodbye: "See you next time."
                 ),
                 AlchemistUpgrade: new AlchemistUpgrade.Text
                 (
