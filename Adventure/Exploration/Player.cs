@@ -253,8 +253,6 @@ namespace Adventure
         {
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
-            this.sprite.SetAnimation("down");
-            this.followerManager.LineUpBehindLeader(this.currentPosition);
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
         }
 
@@ -350,7 +348,8 @@ namespace Adventure
             this.currentPosition = finalLoc;
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-            this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
+            this.followerManager.LineUpBehindLeader(this.currentPosition);
+            this.sprite.SetAnimation("down");
             Sprite_FrameChanged(sprite);
         }
 
