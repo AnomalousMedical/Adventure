@@ -26,13 +26,18 @@ namespace SharpGui
             }
         }
 
-        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
+        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null)
         {
-            var layout =
+            ILayoutItem layout =
                new MarginLayout(new IntPad(Margin),
                new MaxWidthLayout(MaxWidth,
                new ColumnLayout(buttons) { Margin = new IntPad(Margin) }
             ));
+
+            if(wrapLayout != null)
+            {
+                layout = wrapLayout(layout);
+            }
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(GetLayoutPosition(desiredSize));
