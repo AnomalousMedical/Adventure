@@ -222,6 +222,7 @@ namespace Adventure.Menu
         private int currentSheet;
         private UseItemMenu useItemMenu;
         private readonly ILanguageService languageService;
+        private List<ButtonColumnItem<InventoryItem>> currentItems;
 
         public ItemMenu
         (
@@ -358,7 +359,12 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
 
             useItemMenu.Update(characterData, gamepad);
 
-            var newSelection = itemButtons.Show(sharpGui, characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)), characterData.Inventory.Items.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+            if(currentItems == null)
+            {
+                currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
+            }
+
+            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (allowChanges)
             {
                 useItemMenu.SelectedItem = newSelection;
@@ -376,6 +382,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                     {
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
+                    currentItems = null;
                 }
             }
             if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
@@ -388,12 +395,14 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                     {
                         currentSheet = 0;
                     }
+                    currentItems = null;
                 }
             }
             if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {
+                    currentItems = null;
                     menu.RequestSubMenu(menu.RootMenu, gamepad);
                 }
             }
