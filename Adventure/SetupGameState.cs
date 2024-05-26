@@ -35,7 +35,6 @@ namespace Adventure
         private readonly PartyMemberManager partyMemberManager;
         private IGameState nextState;
         private bool finished = false;
-        private readonly object shopBlock = new object();
 
         public RTInstances Instances => rtInstances;
 
