@@ -35,6 +35,8 @@ namespace SharpGui
 
         GamepadButtonCode[] GamepadButtonEntered { get; }
 
+        public bool ShowHover { get; set; }
+
         /// <summary>
         /// Draw a slider. Returns true if the passed in value changed.
         /// </summary>

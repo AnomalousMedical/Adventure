@@ -26,6 +26,7 @@ namespace SharpGui
         public bool IsCtrl { get; private set; }
         public Guid LastWidget { get; private set; }
         public uint LastKeyChar { get; private set; }
+        public bool ShowHover { get; set; } = true;
 
         public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
         {
@@ -226,7 +227,7 @@ namespace SharpGui
 
         public SharpLook GetLookForId(Guid id, SharpStyle style)
         {
-            if (HoverItem == id)
+            if (ShowHover && HoverItem == id)
             {
                 if (ActiveItem == id)
                 {

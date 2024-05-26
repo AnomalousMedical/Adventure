@@ -75,22 +75,6 @@ namespace Adventure
             services.AddOSPlatform(pluginManager, o =>
             {
                 o.LayerKeys = Enum.GetValues<EventLayers>();
-                o.EventManagerCreated = em =>
-                {
-                    em.InputModeSwitched += ems =>
-                    {
-                        Console.WriteLine(ems.CurrentInputMode);
-                        switch (ems.CurrentInputMode)
-                        {
-                            case InputMode.Gamepad:
-                                mainWindow.setCursor(CursorType.Hidden);
-                                break;
-                            default:
-                                mainWindow.setCursor(CursorType.Arrow);
-                                break;
-                        }
-                    };
-                };
             });
             services.AddSoundPlugin(pluginManager, o =>
             {
@@ -107,6 +91,7 @@ namespace Adventure
             services.AddRpgMath();
 
             //Add this app's services
+            services.AddSingleton<EventManagerTracker>();
             services.AddSingleton<GameOptions>(options);
             services.AddSingleton<FlyCameraManager>();
             services.AddSingleton<SceneTestUpdateListener>();
@@ -317,6 +302,8 @@ namespace Adventure
             mainTimer.addUpdateListener(updateListener);
 
             PerformanceMonitor.setupEnabledState(serviceProvider.GetRequiredService<SystemTimer>());
+
+            serviceProvider.GetRequiredService<EventManagerTracker>();
 
             return true;
         }
