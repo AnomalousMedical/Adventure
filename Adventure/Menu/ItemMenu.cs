@@ -219,6 +219,7 @@ namespace Adventure.Menu
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
         SharpText info = new SharpText() { Color = Color.White };
+        SharpText description = new SharpText() { Color = Color.White };
         private int currentSheet;
         private UseItemMenu useItemMenu;
         private readonly ILanguageService languageService;
@@ -332,6 +333,19 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                 }
             }
 
+            if (description.Text == null)
+            {
+                if (currentItems != null)
+                {
+                    var descriptionIndex = itemButtons.FocusedIndex(sharpGui);
+                    if(descriptionIndex < currentItems.Count)
+                    {
+                        var item = currentItems[descriptionIndex];
+                        description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
+                    }
+                }
+            }
+
             ILayoutItem layout;
 
             layout =
@@ -344,7 +358,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(next) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(next, description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
@@ -352,6 +366,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
             layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
             sharpGui.Text(info);
+            sharpGui.Text(description);
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
@@ -359,12 +374,16 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
 
             useItemMenu.Update(characterData, gamepad);
 
-            if(currentItems == null)
+            if (currentItems == null)
             {
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
-
+            var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
             var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+            if(lastItemIndex != itemButtons.FocusedIndex(sharpGui))
+            {
+                description.Text = null;
+            }
             if (allowChanges)
             {
                 useItemMenu.SelectedItem = newSelection;
@@ -383,6 +402,8 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
                     currentItems = null;
+                    description.Text = null;
+                    itemButtons.FocusTop(sharpGui);
                 }
             }
             if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
@@ -396,6 +417,8 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                         currentSheet = 0;
                     }
                     currentItems = null;
+                    description.Text = null;
+                    itemButtons.FocusTop(sharpGui);
                 }
             }
             if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
@@ -403,6 +426,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                 if (allowChanges)
                 {
                     currentItems = null;
+                    description.Text = null;
                     menu.RequestSubMenu(menu.RootMenu, gamepad);
                 }
             }

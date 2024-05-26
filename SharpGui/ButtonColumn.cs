@@ -59,7 +59,7 @@ namespace SharpGui
                     }
 
                     Guid navUpId = buttons[previous].Id;
-                    if(i == 0)
+                    if (i == 0)
                     {
                         navUpId = ScrollUp;
                     }
@@ -67,7 +67,7 @@ namespace SharpGui
                     Guid navDownId = buttons[next].Id;
                     var nextIndex = i + 1;
                     var nextButton = nextIndex < buttons.Count ? buttons[nextIndex] : null;
-                    if(nextButton == null || nextButton.Rect.Bottom > Bottom || nextIndex + ListIndex >= itemCount)
+                    if (nextButton == null || nextButton.Rect.Bottom > Bottom || nextIndex + ListIndex >= itemCount)
                     {
                         navDownId = ScrollDown;
                     }
@@ -79,11 +79,11 @@ namespace SharpGui
                         return item.Item;
                     }
 
-                    if(sharpGui.FocusedItem == ScrollUp)
+                    if (sharpGui.FocusedItem == ScrollUp)
                     {
                         sharpGui.StealFocus(button.Id);
                         --ListIndex;
-                        if(ListIndex < 0)
+                        if (ListIndex < 0)
                         {
                             ListIndex = 0;
                         }
@@ -92,7 +92,7 @@ namespace SharpGui
                     {
                         sharpGui.StealFocus(button.Id);
                         ++ListIndex;
-                        if(ListIndex + i >= itemCount)
+                        if (ListIndex + i >= itemCount)
                         {
                             ListIndex = itemCount - i - 1;
                         }
@@ -110,10 +110,15 @@ namespace SharpGui
 
         public void StealFocus(ISharpGui sharpGui)
         {
-            if(!HasFocus(sharpGui))
+            if (!HasFocus(sharpGui))
             {
-                sharpGui.StealFocus(buttons[0].Id);
+                FocusTop(sharpGui);
             }
+        }
+
+        public void FocusTop(ISharpGui sharpGui)
+        {
+            sharpGui.StealFocus(buttons[0].Id);
         }
 
         public bool HasFocus(ISharpGui sharpGui)
@@ -128,6 +133,16 @@ namespace SharpGui
         public int Bottom { get; set; } = int.MaxValue;
 
         public int ListIndex { get; set; }
+
+        public int FocusedIndex(ISharpGui sharpGui)
+        {
+            return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.FocusedItem), 0);
+        }
+
+        public int HoverIndex(ISharpGui sharpGui)
+        {
+            return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.HoverItem), 0);
+        }
 
         public Guid TopButton => buttons[0].Id;
     }
