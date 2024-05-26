@@ -134,6 +134,14 @@ namespace Adventure
                 explorationGameState.LevelUpWorld();
             }
 
+            foreach (var sheet in persistence.Current.Party.Members)
+            {
+                if(sheet.CharacterSheet.CurrentHp == 0)
+                {
+                    sheet.CharacterSheet.CurrentHp = 1;
+                }
+            }
+
             state.Dead = true;
             SetState(description, persistence, state);
             DestroyPhysics();
