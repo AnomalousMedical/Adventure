@@ -5,12 +5,12 @@ using System.Text;
 
 namespace SharpGui
 {
-    public class KeepSizeLeftLayout : ILayoutItem
+    public class KeepWidthLeftLayout : ILayoutItem
     {
         public ILayoutItem Child;
         private IntSize2 lastCalculatedSize;
 
-        public KeepSizeLeftLayout(ILayoutItem child)
+        public KeepWidthLeftLayout(ILayoutItem child)
         {
             this.Child = child;
         }
@@ -18,7 +18,7 @@ namespace SharpGui
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             lastCalculatedSize = Child.GetDesiredSize(sharpGui);
-            return lastCalculatedSize;
+            return new IntSize2(0, lastCalculatedSize.Height);
         }
 
         public void SetRect(in IntRect rect)
@@ -28,17 +28,17 @@ namespace SharpGui
                 rect.Top,
                 lastCalculatedSize.Width,
                 lastCalculatedSize.Height
-                ));
+            ));
         }
     }
 
-    public class KeepSizeRightLayout : ILayoutItem
+    public class KeepWidthRightLayout : ILayoutItem
     {
         public ILayoutItem Child;
         public IntPad Margin;
         private IntSize2 lastCalculatedSize;
 
-        public KeepSizeRightLayout(ILayoutItem child)
+        public KeepWidthRightLayout(ILayoutItem child)
         {
             this.Child = child;
         }
@@ -46,7 +46,7 @@ namespace SharpGui
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             lastCalculatedSize = Child.GetDesiredSize(sharpGui);
-            return lastCalculatedSize;
+            return new IntSize2(0, lastCalculatedSize.Height);
         }
 
         public void SetRect(in IntRect rect)
@@ -56,7 +56,35 @@ namespace SharpGui
                 rect.Top,
                 lastCalculatedSize.Width,
                 lastCalculatedSize.Height
-                ));
+            ));
+        }
+    }
+
+    public class KeepWidthCenterLayout : ILayoutItem
+    {
+        public ILayoutItem Child;
+        public IntPad Margin;
+        private IntSize2 lastCalculatedSize;
+
+        public KeepWidthCenterLayout(ILayoutItem child)
+        {
+            this.Child = child;
+        }
+
+        public IntSize2 GetDesiredSize(ISharpGui sharpGui)
+        {
+            lastCalculatedSize = Child.GetDesiredSize(sharpGui);
+            return new IntSize2(0, lastCalculatedSize.Height);
+        }
+
+        public void SetRect(in IntRect rect)
+        {
+            Child.SetRect(new IntRect(
+                rect.Left + rect.Width / 2 - lastCalculatedSize.Width / 2,
+                rect.Top,
+                lastCalculatedSize.Width,
+                lastCalculatedSize.Height
+            ));
         }
     }
 }

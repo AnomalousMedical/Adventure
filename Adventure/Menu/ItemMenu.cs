@@ -125,7 +125,7 @@ namespace Adventure.Menu
                 var layout =
                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                    new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(itemName, use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                   new ColumnLayout(new KeepWidthCenterLayout(itemName), use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
                 ));
 
                 var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -375,14 +375,14 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new KeepSizeLeftLayout(previous), info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new KeepWidthLeftLayout(previous), info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new KeepSizeRightLayout(next), description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new KeepWidthRightLayout(next), description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
