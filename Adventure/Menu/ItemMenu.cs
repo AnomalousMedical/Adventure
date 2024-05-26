@@ -21,11 +21,12 @@ namespace Adventure.Menu
         SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
-        SharpText itemName = new SharpText() { Color = Color.White };
+        SharpText itemPrompt = new SharpText() { Color = Color.White };
+        SharpText transferPrompt = new SharpText() { Color = Color.White };
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private List<ButtonColumnItem<Action>> swapItemChoices = null;
 
-        private ButtonColumn characterButtons = new ButtonColumn(4, ItemMenu.ChooseTargetLayer);
+        private ButtonColumn characterButtons = new ButtonColumn(5, ItemMenu.ChooseTargetLayer);
         private ButtonColumn replaceButtons = new ButtonColumn(25, ItemMenu.ReplaceButtonsLayer);
 
         public InventoryItem SelectedItem { get; set; }
@@ -54,9 +55,11 @@ namespace Adventure.Menu
         {
             if (SelectedItem == null) { return; }
 
-            if(itemName.Text == null)
+            if(itemPrompt.Text == null)
             {
-                itemName.Text = "What will you do with your " + languageService.Current.Items.GetText(SelectedItem.InfoId) + "?";
+                var itemName = languageService.Current.Items.GetText(SelectedItem.InfoId);
+                itemPrompt.Text = "What will you do with your " + itemName + "?";
+                transferPrompt.Text = "Who will get the " + itemName + "?";
             }
 
             var choosingCharacter = characterChoices != null;
@@ -95,110 +98,114 @@ namespace Adventure.Menu
                     characterChoices = null;
                 }
             }
-
-            if (replacingItem)
+            else
             {
-                replaceButtons.StealFocus(sharpGui);
 
-                replaceButtons.Margin = scaleHelper.Scaled(10);
-                replaceButtons.MaxWidth = scaleHelper.Scaled(900);
-                replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
-
-                var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId);
-                if (swapItem != null)
+                if (replacingItem)
                 {
-                    swapItem.Invoke();
-                    swapItemChoices = null;
-                    Close();
-                    SwapTarget = null;
-                    return;
-                }
+                    replaceButtons.StealFocus(sharpGui);
 
-                if (sharpGui.IsStandardBackPressed(gamepadId))
-                {
-                    swapItemChoices = null;
-                }
-            }
+                    replaceButtons.Margin = scaleHelper.Scaled(10);
+                    replaceButtons.MaxWidth = scaleHelper.Scaled(900);
+                    replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            if (!replacingItem)
-            {
-                var layout =
-                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                   new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(new KeepWidthCenterLayout(itemName), use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
-                ));
-
-                var desiredSize = layout.GetDesiredSize(sharpGui);
-                layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
-
-                use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
-
-                sharpGui.Text(itemName);
-
-                if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
-                {
-                    if (!choosingCharacter)
+                    var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId);
+                    if (swapItem != null)
                     {
-                        IsTransfer = false;
-                        if (SelectedItem.Equipment != null)
-                        {
-                            inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
-                            Close();
-                        }
-                        else
-                        {
-                            characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
-                            {
-                                inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet);
-                            }))
-                            .ToList();
-                        }
+                        swapItem.Invoke();
+                        swapItemChoices = null;
+                        Close();
+                        SwapTarget = null;
+                        return;
+                    }
+
+                    if (sharpGui.IsStandardBackPressed(gamepadId))
+                    {
+                        swapItemChoices = null;
                     }
                 }
-                if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
+                else
                 {
-                    if (!choosingCharacter)
+                    var layout =
+                       new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                       new MaxWidthLayout(scaleHelper.Scaled(600),
+                       new ColumnLayout(new KeepWidthCenterLayout(itemPrompt), use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                    ));
+
+                    var desiredSize = layout.GetDesiredSize(sharpGui);
+                    layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
+
+                    use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
+
+                    sharpGui.Text(itemPrompt);
+
+                    if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
                     {
-                        IsTransfer = true;
-                        characterChoices = persistence.Current.Party.Members
-                            .Where(i => i != characterData)
-                            .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                        if (!choosingCharacter)
+                        {
+                            IsTransfer = false;
+                            if (SelectedItem.Equipment != null)
                             {
-                                if (i.HasRoom)
+                                inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
+                                Close();
+                            }
+                            else
+                            {
+                                characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                                 {
-                                    characterData.RemoveItem(SelectedItem);
-                                    i.Inventory.Items.Add(SelectedItem);
-                                }
-                                else
+                                    inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet);
+                                }))
+                                .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
+                                .ToList();
+                            }
+                        }
+                    }
+                    if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
+                    {
+                        if (!choosingCharacter)
+                        {
+                            IsTransfer = true;
+                            characterChoices = persistence.Current.Party.Members
+                                .Where(i => i != characterData)
+                                .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                                 {
-                                    SwapTarget = i;
-                                    swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(languageService.Current.Items.GetText(swapTarget.InfoId), () =>
+                                    if (i.HasRoom)
                                     {
                                         characterData.RemoveItem(SelectedItem);
                                         i.Inventory.Items.Add(SelectedItem);
+                                    }
+                                    else
+                                    {
+                                        SwapTarget = i;
+                                        swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(languageService.Current.Items.GetText(swapTarget.InfoId), () =>
+                                        {
+                                            characterData.RemoveItem(SelectedItem);
+                                            i.Inventory.Items.Add(SelectedItem);
 
-                                        i.RemoveItem(swapTarget);
-                                        characterData.Inventory.Items.Add(swapTarget);
-                                    })).Append(new ButtonColumnItem<Action>("Cancel", () => { })).ToList();
-                                }
-                            }))
-                        .ToList();
+                                            i.RemoveItem(swapTarget);
+                                            characterData.Inventory.Items.Add(swapTarget);
+                                        })).Append(new ButtonColumnItem<Action>("Cancel", () => { })).ToList();
+                                    }
+                                }))
+                                .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
+                            .ToList();
+                        }
                     }
-                }
-                if (sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id))
-                {
-                    if (!choosingCharacter)
+                    if (sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id))
                     {
-                        //TODO: Add confirmation for this
-                        characterData.RemoveItem(SelectedItem);
-                        Close();
+                        if (!choosingCharacter)
+                        {
+                            //TODO: Add confirmation for this
+                            characterData.RemoveItem(SelectedItem);
+                            Close();
+                        }
                     }
-                }
-                if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed(gamepadId))
-                {
-                    if (!choosingCharacter)
+                    if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed(gamepadId))
                     {
-                        Close();
+                        if (!choosingCharacter)
+                        {
+                            Close();
+                        }
                     }
                 }
             }
@@ -215,7 +222,7 @@ namespace Adventure.Menu
         private void Close()
         {
             this.SelectedItem = null;
-            itemName.Text = null;
+            itemPrompt.Text = null;
             Closed?.Invoke();
         }
     }
