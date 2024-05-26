@@ -22,7 +22,7 @@ namespace Adventure.Menu
         SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
         SharpText itemPrompt = new SharpText() { Color = Color.White };
-        SharpText transferPrompt = new SharpText() { Color = Color.White };
+        SharpText characterChooserPrompt = new SharpText() { Color = Color.White };
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private List<ButtonColumnItem<Action>> swapItemChoices = null;
 
@@ -30,6 +30,7 @@ namespace Adventure.Menu
         private ButtonColumn replaceButtons = new ButtonColumn(25, ItemMenu.ReplaceButtonsLayer);
 
         public InventoryItem SelectedItem { get; set; }
+        private String itemName;
 
         public event Action Closed;
 
@@ -57,9 +58,8 @@ namespace Adventure.Menu
 
             if(itemPrompt.Text == null)
             {
-                var itemName = languageService.Current.Items.GetText(SelectedItem.InfoId);
+                itemName = languageService.Current.Items.GetText(SelectedItem.InfoId);
                 itemPrompt.Text = "What will you do with your " + itemName + "?";
-                transferPrompt.Text = "Who will get the " + itemName + "?";
             }
 
             var choosingCharacter = characterChoices != null;
@@ -81,7 +81,7 @@ namespace Adventure.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId);
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l));
                 if (action != null)
                 {
                     action.Invoke();
@@ -97,6 +97,8 @@ namespace Adventure.Menu
                 {
                     characterChoices = null;
                 }
+
+                sharpGui.Text(characterChooserPrompt);
             }
             else
             {
@@ -151,6 +153,7 @@ namespace Adventure.Menu
                             }
                             else
                             {
+                                characterChooserPrompt.Text = "Use the " + itemName + " on...";
                                 characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                                 {
                                     inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet);
@@ -165,6 +168,7 @@ namespace Adventure.Menu
                         if (!choosingCharacter)
                         {
                             IsTransfer = true;
+                            characterChooserPrompt.Text = "Transfer the " + itemName + " to...";
                             characterChoices = persistence.Current.Party.Members
                                 .Where(i => i != characterData)
                                 .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
