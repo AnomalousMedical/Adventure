@@ -21,6 +21,7 @@ namespace Adventure.Menu
         SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
+        SharpText itemName = new SharpText() { Color = Color.White };
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private List<ButtonColumnItem<Action>> swapItemChoices = null;
 
@@ -53,6 +54,11 @@ namespace Adventure.Menu
         {
             if (SelectedItem == null) { return; }
 
+            if(itemName.Text == null)
+            {
+                itemName.Text = "What will you do with your " + languageService.Current.Items.GetText(SelectedItem.InfoId) + "?";
+            }
+
             var choosingCharacter = characterChoices != null;
             var replacingItem = swapItemChoices != null;
 
@@ -79,7 +85,7 @@ namespace Adventure.Menu
                     characterChoices = null;
                     if (swapItemChoices == null)
                     {
-                        SelectedItem = null;
+                        Close();
                         return;
                     }
                 }
@@ -103,7 +109,7 @@ namespace Adventure.Menu
                 {
                     swapItem.Invoke();
                     swapItemChoices = null;
-                    SelectedItem = null;
+                    Close();
                     SwapTarget = null;
                     return;
                 }
@@ -119,13 +125,15 @@ namespace Adventure.Menu
                 var layout =
                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                    new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+                   new ColumnLayout(itemName, use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
                 ));
 
                 var desiredSize = layout.GetDesiredSize(sharpGui);
                 layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
 
                 use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
+
+                sharpGui.Text(itemName);
 
                 if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
                 {
@@ -135,7 +143,7 @@ namespace Adventure.Menu
                         if (SelectedItem.Equipment != null)
                         {
                             inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
-                            SelectedItem = null;
+                            Close();
                         }
                         else
                         {
@@ -183,15 +191,14 @@ namespace Adventure.Menu
                     {
                         //TODO: Add confirmation for this
                         characterData.RemoveItem(SelectedItem);
-                        this.SelectedItem = null;
+                        Close();
                     }
                 }
                 if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     if (!choosingCharacter)
                     {
-                        this.SelectedItem = null;
-                        Closed?.Invoke();
+                        Close();
                     }
                 }
             }
@@ -204,6 +211,13 @@ namespace Adventure.Menu
         public Persistence.CharacterData SwapTarget { get; set; }
 
         public bool IsTransfer { get; set; }
+
+        private void Close()
+        {
+            this.SelectedItem = null;
+            itemName.Text = null;
+            Closed?.Invoke();
+        }
     }
 
     class ItemMenu : IExplorationSubMenu, IDisposable
@@ -445,6 +459,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
         private void UseItemMenu_Closed()
         {
             description.Text = null;
+            currentItems = null;
         }
     }
 }
