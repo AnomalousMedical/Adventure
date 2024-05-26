@@ -23,6 +23,7 @@ namespace Adventure.Menu
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
         SharpText itemPrompt = new SharpText() { Color = Color.White };
         SharpText characterChooserPrompt = new SharpText() { Color = Color.White };
+        SharpText swapItemPrompt = new SharpText() { Color = Color.White };
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private List<ButtonColumnItem<Action>> swapItemChoices = null;
 
@@ -60,6 +61,7 @@ namespace Adventure.Menu
             {
                 itemName = languageService.Current.Items.GetText(SelectedItem.InfoId);
                 itemPrompt.Text = "What will you do with your " + itemName + "?";
+                swapItemPrompt.Text = "Trade " + itemName + " with...";
             }
 
             var choosingCharacter = characterChoices != null;
@@ -81,7 +83,7 @@ namespace Adventure.Menu
                 characterButtons.Margin = scaleHelper.Scaled(10);
                 characterButtons.MaxWidth = scaleHelper.Scaled(900);
                 characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l));
+                var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
                 if (action != null)
                 {
                     action.Invoke();
@@ -111,7 +113,7 @@ namespace Adventure.Menu
                     replaceButtons.MaxWidth = scaleHelper.Scaled(900);
                     replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-                    var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId);
+                    var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(swapItemPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
                     if (swapItem != null)
                     {
                         swapItem.Invoke();
@@ -125,6 +127,8 @@ namespace Adventure.Menu
                     {
                         swapItemChoices = null;
                     }
+
+                    sharpGui.Text(swapItemPrompt);
                 }
                 else
                 {
@@ -135,7 +139,7 @@ namespace Adventure.Menu
                     ));
 
                     var desiredSize = layout.GetDesiredSize(sharpGui);
-                    layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
+                    layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
 
                     use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
 
