@@ -35,7 +35,7 @@ namespace Adventure.Menu
         private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
         private List<ButtonColumnItem<Action>> characterChoices = null;
         private ISkill selectedSkill;
-        private IEnumerable<ButtonColumnItem<ISkill>> currentPlayerSkills = null;
+        private List<ButtonColumnItem<ISkill>> currentPlayerSkills = null;
 
         public SkillMenu
         (
@@ -180,9 +180,9 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                 {
                     var skill = skillFactory.CreateSkill(i);
                     return new ButtonColumnItem<ISkill>(skill.Name, skill);
-                });
+                }).ToList();
             }
-            var skillCount = characterData.CharacterSheet.Skills.Count();
+            var skillCount = currentPlayerSkills.Count;
             var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
             if (!choosingCharacter && newSelection != null)
             {
