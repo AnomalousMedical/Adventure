@@ -250,6 +250,10 @@ namespace Adventure
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();
 
+            services.AddSingleton<CharacterMenuPositionTracker<ZoneScene>>();
+            services.AddSingleton<CharacterMenuPositionTracker<WorldMapScene>>();
+            services.AddSingleton<CharacterMenuPositionService>();
+
             //Add Item Actions
             services.AddTransient<EquipMainHand>();
             services.AddTransient<EquipOffHand>();

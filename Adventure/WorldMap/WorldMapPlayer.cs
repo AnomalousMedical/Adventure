@@ -48,6 +48,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
+        private readonly CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
@@ -79,6 +80,7 @@ namespace Adventure.WorldMap
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 5, -12);
+        private Vector3 zoomedCameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         private Vector3 currentPosition;
@@ -97,6 +99,8 @@ namespace Adventure.WorldMap
             public Vector3? Location { get; set; }
         }
 
+        private CharacterMenuPositionEntry characterMenuPositionEntry;
+
         public WorldMapPlayer
         (
             RTInstances<WorldMapScene> rtInstances,
@@ -111,13 +115,15 @@ namespace Adventure.WorldMap
             ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory,
-            FollowerManager followerManager
+            FollowerManager followerManager,
+            CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
             this.followerManager = followerManager;
+            this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.followerManager.CharacterDistance = this.followerManager.CharacterDistance * description.Scale.x;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
@@ -204,6 +210,9 @@ namespace Adventure.WorldMap
                 cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
             }
 
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
+            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -247,6 +256,7 @@ namespace Adventure.WorldMap
             sprite.AnimationChanged -= Sprite_AnimationChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             SetGraphicsActive(false);
+            characterMenuPositionTracker.Remove(characterSheet);
             objectResolver.Dispose();
         }
 

@@ -255,6 +255,8 @@ namespace Adventure.Menu
         private int currentSheet;
         private UseItemMenu useItemMenu;
         private readonly ILanguageService languageService;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly CameraMover cameraMover;
         private List<ButtonColumnItem<InventoryItem>> currentItems;
 
         public ItemMenu
@@ -264,7 +266,9 @@ namespace Adventure.Menu
             IScaleHelper scaleHelper,
             IScreenPositioner screenPositioner,
             UseItemMenu useItemMenu,
-            ILanguageService languageService
+            ILanguageService languageService,
+            CharacterMenuPositionService characterMenuPositionService,
+            CameraMover cameraMover
         )
         {
             this.persistence = persistence;
@@ -273,7 +277,8 @@ namespace Adventure.Menu
             this.screenPositioner = screenPositioner;
             this.useItemMenu = useItemMenu;
             this.languageService = languageService;
-
+            this.characterMenuPositionService = characterMenuPositionService;
+            this.cameraMover = cameraMover;
             useItemMenu.Closed += UseItemMenu_Closed;
         }
 
@@ -286,11 +291,16 @@ namespace Adventure.Menu
         {
             bool allowChanges = useItemMenu.SelectedItem == null;
 
-            if (currentSheet > persistence.Current.Party.Members.Count)
+            if (currentSheet >= persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
+
+            if(characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+            }
 
             if (useItemMenu.IsChoosingCharacters)
             {

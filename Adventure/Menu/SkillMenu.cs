@@ -25,6 +25,8 @@ namespace Adventure.Menu
         private readonly ISkillFactory skillFactory;
         private readonly IDamageCalculator damageCalculator;
         private readonly ILanguageService languageService;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly CameraMover cameraMover;
         private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -45,7 +47,9 @@ namespace Adventure.Menu
             IScreenPositioner screenPositioner,
             ISkillFactory skillFactory,
             IDamageCalculator damageCalculator,
-            ILanguageService languageService
+            ILanguageService languageService,
+            CharacterMenuPositionService characterMenuPositionService,
+            CameraMover cameraMover
         )
         {
             this.persistence = persistence;
@@ -55,6 +59,8 @@ namespace Adventure.Menu
             this.skillFactory = skillFactory;
             this.damageCalculator = damageCalculator;
             this.languageService = languageService;
+            this.characterMenuPositionService = characterMenuPositionService;
+            this.cameraMover = cameraMover;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
@@ -82,11 +88,16 @@ namespace Adventure.Menu
                 }
             }
 
-            if (currentSheet > persistence.Current.Party.Members.Count)
+            if (currentSheet >= persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
+
+            if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+            }
 
             if (choosingCharacter)
             {

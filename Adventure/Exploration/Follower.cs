@@ -25,6 +25,10 @@ namespace Adventure
         public FollowerManager FollowerManager { get; set; }
 
         public bool StartVisible { get; set; } = true;
+
+        public Vector3 ZoomedCameraOffset { get; set; } = new Vector3(0, 1, -2);
+
+        public Quaternion CameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
     }
 
     class Follower<T> : IDisposable
@@ -35,8 +39,11 @@ namespace Adventure
         private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IAssetFactory assetFactory;
+        private readonly CharacterMenuPositionTracker<T> characterMenuPositionTracker;
         private readonly FollowerManager followerManager;
         private readonly IObjectResolver objectResolver;
+        private readonly Vector3 zoomedCameraOffset;
+        private Quaternion cameraAngle;
 
         private EventSprite sprite;
         private SpriteInstance spriteInstance;
@@ -83,6 +90,8 @@ namespace Adventure
         }
         private FollowerNode followerNode;
 
+        private CharacterMenuPositionEntry characterMenuPositionEntry;
+
         public Follower
         (
             RTInstances<T> rtInstances,
@@ -92,7 +101,8 @@ namespace Adventure
             IObjectResolverFactory objectResolverFactory,
             FollowerDescription description,
             Persistence persistence,
-            IAssetFactory assetFactory
+            IAssetFactory assetFactory,
+            CharacterMenuPositionTracker<T> characterMenuPositionTracker
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -101,8 +111,11 @@ namespace Adventure
             this.followerManager = description.FollowerManager;
             this.followerNode = new FollowerNode(this);
             this.followerManager.AddFollower(followerNode);
+            this.cameraAngle = description.CameraAngle;
+            this.zoomedCameraOffset = description.ZoomedCameraOffset;
 
             this.assetFactory = assetFactory;
+            this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.characterSheet = description.CharacterSheet;
 
             this.primaryHand = description.PrimaryHand;
@@ -140,6 +153,9 @@ namespace Adventure
                 Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
             };
 
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
+            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -174,6 +190,7 @@ namespace Adventure
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             SetGraphicsActive(false);
             objectResolver.Dispose();
+            characterMenuPositionTracker.Remove(characterSheet);
         }
 
         public void SetLocationAndMovement(in Vector3 location, in Vector3 movementDir, bool moving)
@@ -216,6 +233,8 @@ namespace Adventure
 
         public void RequestDestruction()
         {
+            //Do this as soon as destruction is requested, since this item is remade right away and it messed up the tracker.
+            characterMenuPositionTracker.Remove(characterSheet);
             destructionRequest.RequestDestruction();
         }
 

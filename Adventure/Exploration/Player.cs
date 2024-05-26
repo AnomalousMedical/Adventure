@@ -46,6 +46,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
+        private readonly CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
@@ -77,6 +78,7 @@ namespace Adventure
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 5, -12);
+        private Vector3 zoomedCameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         private Vector3 currentPosition;
@@ -95,6 +97,8 @@ namespace Adventure
             public Vector3? Location { get; set; }
         }
 
+        private CharacterMenuPositionEntry characterMenuPositionEntry;
+
         public Player
         (
             RTInstances<ZoneScene> rtInstances,
@@ -109,13 +113,15 @@ namespace Adventure
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory,
-            FollowerManager followerManager
+            FollowerManager followerManager,
+            CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
 
             this.assetFactory = assetFactory;
             this.followerManager = followerManager;
+            this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -199,6 +205,9 @@ namespace Adventure
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
 
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
+            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -247,6 +256,7 @@ namespace Adventure
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
             objectResolver.Dispose();
+            characterMenuPositionTracker.Remove(characterSheet);
         }
 
         public void StopMovement()

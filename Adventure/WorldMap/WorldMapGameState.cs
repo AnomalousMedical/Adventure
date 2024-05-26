@@ -39,6 +39,7 @@ namespace Adventure.WorldMap
         private readonly RestManager restManager;
         private readonly BuffManager buffManager;
         private readonly TypedLightManager<WorldMapScene> typedLightManager;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
         private IExplorationGameState explorationState;
         private IGameState startExplorationGameState;
         private IGameState nextState;
@@ -62,7 +63,8 @@ namespace Adventure.WorldMap
             IGcService gcService,
             RestManager restManager,
             BuffManager buffManager,
-            TypedLightManager<WorldMapScene> typedLightManager
+            TypedLightManager<WorldMapScene> typedLightManager,
+            CharacterMenuPositionService characterMenuPositionService
         )
         {
             this.rtInstances = rtInstances;
@@ -81,6 +83,7 @@ namespace Adventure.WorldMap
             this.restManager = restManager;
             this.buffManager = buffManager;
             this.typedLightManager = typedLightManager;
+            this.characterMenuPositionService = characterMenuPositionService;
         }
 
         public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
@@ -94,6 +97,7 @@ namespace Adventure.WorldMap
             persistence.Current.Player.InWorld = active;
             if (active)
             {
+                characterMenuPositionService.SetTrackerActive(typeof(WorldMapScene));
                 gcService.Collect();
                 eventManager[EventLayers.WorldMap].makeFocusLayer();
                 nextState = this;

@@ -45,6 +45,7 @@ namespace Adventure
         private readonly IGcService gcService;
         private readonly RestManager restManager;
         private readonly TypedLightManager<ZoneScene> typedLightManager;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -69,7 +70,8 @@ namespace Adventure
             BuffManager buffManager,
             IGcService gcService,
             RestManager restManager,
-            TypedLightManager<ZoneScene> typedLightManager
+            TypedLightManager<ZoneScene> typedLightManager,
+            CharacterMenuPositionService characterMenuPositionService
         )
         {
             this.bepuScene = bepuScene;
@@ -87,6 +89,7 @@ namespace Adventure
             this.gcService = gcService;
             this.restManager = restManager;
             this.typedLightManager = typedLightManager;
+            this.characterMenuPositionService = characterMenuPositionService;
         }
 
         public void Dispose()
@@ -118,6 +121,7 @@ namespace Adventure
                 timeClock.NightStarted += TimeClock_NightStarted;
                 ZoneManager_ZoneChanged(null);
                 zoneManager.CenterCamera();
+                characterMenuPositionService.SetTrackerActive(typeof(ZoneScene));
             }
             else
             {

@@ -30,6 +30,7 @@ namespace Adventure.Battle
         private readonly IPersistenceWriter persistenceWriter;
         private readonly Persistence persistence;
         private readonly TypedLightManager<BattleScene> typedLightManager;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly object saveBlock = new object();
         private IGameState gameOverState;
         private IGameState returnState;
@@ -46,7 +47,8 @@ namespace Adventure.Battle
             EventManager eventManager,
             IPersistenceWriter persistenceWriter,
             Persistence persistence,
-            TypedLightManager<BattleScene> typedLightManager
+            TypedLightManager<BattleScene> typedLightManager,
+            CharacterMenuPositionService characterMenuPositionService
         )
         {
             this.battleManager = battleManager;
@@ -57,6 +59,7 @@ namespace Adventure.Battle
             this.persistenceWriter = persistenceWriter;
             this.persistence = persistence;
             this.typedLightManager = typedLightManager;
+            this.characterMenuPositionService = characterMenuPositionService;
         }
 
         public RTInstances Instances => rtInstances;
@@ -81,6 +84,7 @@ namespace Adventure.Battle
         {
             if (active)
             {
+                characterMenuPositionService.SetTrackerActive(typeof(BattleScene));
                 persistence.Current.Player.InBattle = true;
                 persistenceWriter.Save();
                 persistenceWriter.AddSaveBlock(saveBlock);
