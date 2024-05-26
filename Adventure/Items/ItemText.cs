@@ -6,83 +6,89 @@ using System.Threading.Tasks;
 
 namespace Adventure.Items
 {
+    record ItemTextEntry
+    (
+        String Text,
+        String Description
+    );
+
     record ItemText
     (
         //Required
-        String Unarmed
+        ItemTextEntry Unarmed
         //Accessories
-        , String CounterAttack
-        , String TargetScope
-        , String Healing
-        , String Doublecast
-        , String ItemUsage
+        , ItemTextEntry CounterAttack
+        , ItemTextEntry TargetScope
+        , ItemTextEntry Healing
+        , ItemTextEntry Doublecast
+        , ItemTextEntry ItemUsage
         //Dagger
-        , String Dagger1
-        , String Dagger2
-        , String Dagger3
+        , ItemTextEntry Dagger1
+        , ItemTextEntry Dagger2
+        , ItemTextEntry Dagger3
         //Staff
-        , String Staff1
-        , String Staff2
-        , String Staff3
+        , ItemTextEntry Staff1
+        , ItemTextEntry Staff2
+        , ItemTextEntry Staff3
         //Shield
-        , String Shield1
-        , String Shield2
-        , String Shield3
+        , ItemTextEntry Shield1
+        , ItemTextEntry Shield2
+        , ItemTextEntry Shield3
         //Spear
-        , String Spear1
-        , String Spear2
-        , String Spear3
-        , String StoreSpear1
-        , String StoreSpear2
+        , ItemTextEntry Spear1
+        , ItemTextEntry Spear2
+        , ItemTextEntry Spear3
+        , ItemTextEntry StoreSpear1
+        , ItemTextEntry StoreSpear2
         //Book
-        , String Book1
-        , String Book2
-        , String Book3
+        , ItemTextEntry Book1
+        , ItemTextEntry Book2
+        , ItemTextEntry Book3
         //Hammers
-        , String Hammer1
-        , String Hammer2
-        , String Hammer3
-        , String StoreHammer1
-        , String StoreHammer2
+        , ItemTextEntry Hammer1
+        , ItemTextEntry Hammer2
+        , ItemTextEntry Hammer3
+        , ItemTextEntry StoreHammer1
+        , ItemTextEntry StoreHammer2
         //Swords
-        , String Sword1
-        , String Sword2
-        , String Sword3
-        , String StoreSword1
-        , String StoreSword2
+        , ItemTextEntry Sword1
+        , ItemTextEntry Sword2
+        , ItemTextEntry Sword3
+        , ItemTextEntry StoreSword1
+        , ItemTextEntry StoreSword2
         //Plate
-        , String Plate1
-        , String Plate2
-        , String Plate3
+        , ItemTextEntry Plate1
+        , ItemTextEntry Plate2
+        , ItemTextEntry Plate3
         //Leather
-        , String Leather1
-        , String Leather2
-        , String Leather3
+        , ItemTextEntry Leather1
+        , ItemTextEntry Leather2
+        , ItemTextEntry Leather3
         //Cloth
-        , String Cloth1
-        , String Cloth2
-        , String Cloth3
+        , ItemTextEntry Cloth1
+        , ItemTextEntry Cloth2
+        , ItemTextEntry Cloth3
         //Plot
-        , String RuneOfIce
-        , String RuneOfElectricity
+        , ItemTextEntry RuneOfIce
+        , ItemTextEntry RuneOfElectricity
         //Potions
-        , String Mana1
-        , String Mana2
-        , String Mana3
-        , String Health1
-        , String Health2
-        , String Health3
-        , String FerrymansBribe
-        , String StrengthBoost
-        , String MagicBoost
-        , String VitalityBoost
-        , String SpiritBoost
-        , String DexterityBoost
-        , String LuckBoost
-        , String LevelBoost
+        , ItemTextEntry Mana1
+        , ItemTextEntry Mana2
+        , ItemTextEntry Mana3
+        , ItemTextEntry Health1
+        , ItemTextEntry Health2
+        , ItemTextEntry Health3
+        , ItemTextEntry FerrymansBribe
+        , ItemTextEntry StrengthBoost
+        , ItemTextEntry MagicBoost
+        , ItemTextEntry VitalityBoost
+        , ItemTextEntry SpiritBoost
+        , ItemTextEntry DexterityBoost
+        , ItemTextEntry LuckBoost
+        , ItemTextEntry LevelBoost
     )
     {
-        private Dictionary<String, String> itemNames = new Dictionary<String, String>()
+        private Dictionary<String, ItemTextEntry> itemNames = new Dictionary<String, ItemTextEntry>()
         {
             { nameof(Unarmed), Unarmed },
             { nameof(CounterAttack), CounterAttack },
@@ -146,9 +152,21 @@ namespace Adventure.Items
 
         public String GetText(String itemId)
         {
-            if (itemNames.TryGetValue(itemId, out var text))
+            if (itemNames.TryGetValue(itemId, out var entry))
             {
-                return text;
+                return entry.Text;
+            }
+            else
+            {
+                return itemId + "_MissingID";
+            }
+        }
+
+        public String GetDescription(String itemId)
+        {
+            if (itemNames.TryGetValue(itemId, out var entry))
+            {
+                return entry.Description;
             }
             else
             {

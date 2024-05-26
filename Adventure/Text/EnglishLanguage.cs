@@ -85,64 +85,64 @@ namespace Adventure.Text
                 //Items
                 Items: new ItemText
                 (
-                      Unarmed: "Unarmed"
-                    , CounterAttack: "Gauntlets of Revenge"
-                    , TargetScope: "Target Scope"
-                    , Healing: "Ring of Healing"
-                    , Doublecast: "Elemental Amplifier"
-                    , ItemUsage: "Gloves of Handling"
-                    , Dagger1: "Dagger"
-                    , Dagger2: "Assassin's Blade"
-                    , Dagger3: "Dagger of Shifting Sands"
-                    , Staff1: "Cracked Staff"
-                    , Staff2: "Mage's Staff"
-                    , Staff3: "Arch Mage's Staff"
-                    , Shield1: "Buckler"
-                    , Shield2: "Common Shield"
-                    , Shield3: "Glowing Shield"
-                    , Spear1: "Rusty Spear"
-                    , Spear2: "Common Spear"
-                    , Spear3: "Runic Spear"
-                    , StoreSpear1: "Smithed Spear"
-                    , StoreSpear2: "Ancient Spear"
-                    , Book1: "Torn Book of Healing"
-                    , Book2: "Book of Healing"
-                    , Book3: "Book of Forbidden Healing"
-                    , Hammer1: "Tiny Hammer"
-                    , Hammer2: "Giant's Hammer"
-                    , Hammer3: "Hammer of the Gods"
-                    , StoreHammer1: "Smithed Hammer"
-                    , StoreHammer2: "Ancient Hammer"
-                    , Sword1: "Busted Sword"
-                    , Sword2: "Common Sword"
-                    , Sword3: "Ultimate Sword"
-                    , StoreSword1: "Smithed Sword"
-                    , StoreSword2: "Ancient Sword"
-                    , Plate1: "Tarnished Plate Armor"
-                    , Plate2: "Iron Plate Armor"
-                    , Plate3: "Steel Plate Armor"
-                    , Leather1: "Cracked Leather Armor"
-                    , Leather2: "Common Leather Armor"
-                    , Leather3: "Fine Leather Armor"
-                    , Cloth1: "Linen Cloth Armor"
-                    , Cloth2: "Common Cloth Armor"
-                    , Cloth3: "Silk Cloth Armor"
-                    , RuneOfIce: "Rune of Ice"
-                    , RuneOfElectricity: "Rune of Electricity"
-                    , Mana1: "Mana Potion"
-                    , Mana2: "Big Mana Potion"
-                    , Mana3: "Giant Mana Potion"
-                    , Health1: "Health Potion"
-                    , Health2: "Big Health Potion"
-                    , Health3: "Giant Health Potion"
-                    , FerrymansBribe: "Ferryman's Bribe"
-                    , StrengthBoost: "Strength Boost"
-                    , MagicBoost: "Magic Boost"
-                    , VitalityBoost: "Vitality Boost"
-                    , SpiritBoost: "Spirit Boost"
-                    , DexterityBoost: "Dexterity Boost"
-                    , LuckBoost: "Luck Boost"
-                    , LevelBoost: "Mysterious Bubbling Potion"
+                      Unarmed: new(Text: "Unarmed", Description: "The ol one two punch")
+                    , CounterAttack: new(Text: "Gauntlets of Revenge", Description: "Hit your foes back when they hit you. Nothing beats a good counter attack.")
+                    , TargetScope: new(Text: "Target Scope", Description: "Get a leg up on the competition. Good for the mage who wants to hit em where it hurts.")
+                    , Healing: new(Text: "Ring of Healing", Description: "Why heal one person when you could heal them all? Use your active ability to help the whole group. Packs more healing punch as an added bonus.")
+                    , Doublecast: new(Text: "Elemental Amplifier", Description: "Pure power. Your enemies will crumble before you.")
+                    , ItemUsage: new(Text: "Gloves of Handling", Description: "With these gloves you can use items like a pro. Get every last drop from those expensive potions.")
+                    , Dagger1: new(Text: "Dagger", Description: "Hit em extra hard with this cutpurse classic. Comes with the active ability to do even more damage.")
+                    , Dagger2: new(Text: "Assassin's Blade", Description: "Your enemies won't know what hit them. Use your active ability to do even more damage.")
+                    , Dagger3: new(Text: "Dagger of Shifting Sands", Description: "Alter the fabric of reality itself and grant immense speed to yourself and your allies. Still includes your favorites like bonus damage and even more damage on your active ability.")
+                    , Staff1: new(Text: "Cracked Staff", Description: "This staff has seen better days, but you can still exploit your foes elemental weakness. Use your active ability for even more damage.")
+                    , Staff2: new(Text: "Mage's Staff", Description: "A time tested classic. Your active ability will now hit all the enemies. You can also use elemental magic on your own party to enhance their attacks with an elemental multiplier.")
+                    , Staff3: new(Text: "Arch Mage's Staff", Description: "True power. This staff has the new non-elemental spell Ionic Shread. Be sure to use your active ability when casting it or it will drain your resources. Use your active ability with the elemental spells to hit all your enemies and don't forget to buff your party with elemental multiplier buffs.")
+                    , Shield1: new(Text: "Buckler", Description: "A basic shield. Use your active ability once during and enemy attack to reduce damage taken by 15% and to guard your allies.")
+                    , Shield2: new(Text: "Knights Shield", Description: "A shield that helps a brave knight stand guard. Use your active ability once during and enemy attack to reduce damage taken by 35% and to guard your allies.")
+                    , Shield3: new(Text: "Glowing Shield", Description: "The ultimate in damage reduction technology. Use your active ability once during and enemy attack to reduce damage taken by 45% and to guard your allies.")
+                    , Spear1: new(Text: "Rusty Spear", Description: "This spear has seen better days, but still does good enough piercing damage to your enemies.")
+                    , Spear2: new(Text: "Common Spear", Description: "A mid-tier spear you find everywhere to deliver piercing damage do your enemies.")
+                    , Spear3: new(Text: "Runic Spear", Description: "A one of a kind spear dealing the most piercing damage to your enemies of anything in the world.")
+                    , StoreSpear1: new(Text: "Smithed Spear", Description: "A hand made spear for piercing your enemies.")
+                    , StoreSpear2: new(Text: "Ancient Spear", Description: "A hand made spear created with ancient techniques. Delivers piercing damage to your enemies better than most.")
+                    , Book1: new(Text: "Torn Book of Healing", Description: "A book of healing, but most of the pages are missing. Allows you to cast a basic cure spell. Restorative magic can only be used with weapons that do bludgeoning damage.")
+                    , Book2: new(Text: "Book of Healing", Description: "A book of healing with all its pages. Mega Cure is a mid-tier healing spell. Battle Cry improves strength and vitality. Focus improves magic and spirit. Restorative magic can only be used with weapons that do bludgeoning damage.")
+                    , Book3: new(Text: "Book of Forbidden Healing", Description: "A book of healing containing powerful, forbidden healing magic. Reanimate will raise your fallen allies in battle. Ultra Cure provides the most powerful healing in the world. War Cry improves strength and vitality. Intense Focus improves magic and spirit. Restorative magic can only be used with weapons that do bludgeoning damage.")
+                    , Hammer1: new(Text: "Tiny Hammer", Description: "A very small hammer, but can still deliver some bludgeoning damage to your foes. Does not restrict using restorative magic.")
+                    , Hammer2: new(Text: "Giant's Hammer", Description: "A large hammer almost too heavy to wield. Delivers mid-tier bludgeoning damage to your foes. Does not restrict using restorative magic.")
+                    , Hammer3: new(Text: "Hammer of the Gods", Description: "A unique hammer suitable for divine use. Delivers the most bludgeoning damage to your foes out of anything in the world. Does not restrict using restorative magic.")
+                    , StoreHammer1: new(Text: "Smithed Hammer", Description: "A hand made hammer for bludgeoning your foes.")
+                    , StoreHammer2: new(Text: "Ancient Hammer", Description: "A hand made hammer created with ancient techniques. It will deliver bludgeoning damage to your foes better than most.")
+                    , Sword1: new(Text: "Busted Sword", Description: "A soldier's blade, inevitably replaced by something better. Still does an ok amount of slashing damage to your opponents.")
+                    , Sword2: new(Text: "Common Sword", Description: "The most common type of blade found through the land. Many rely on its slashing damage to defeat their opponents.")
+                    , Sword3: new(Text: "Ultimate Sword", Description: "A blade of legend. Nothing delivers more slashing damage to your opponents in the entire world.")
+                    , StoreSword1: new(Text: "Smithed Sword", Description: "A hand made sword for slashing your opponents.")
+                    , StoreSword2: new(Text: "Ancient Sword", Description: "A hand made sword creted with ancient techniques. Will slash your opponents better than most.")
+                    , Plate1: new(Text: "Tarnished Plate Armor", Description: "Once fine plate mail. This suit is worn out, but still offers decent protection.")
+                    , Plate2: new(Text: "Iron Plate Armor", Description: "Solid plate mail, but a bit too heavy to offer full protection.")
+                    , Plate3: new(Text: "Steel Plate Armor", Description: "A suit of the finest plate mail. Delivers the ultimate protection that can be found.")
+                    , Leather1: new(Text: "Cracked Leather Armor", Description: "Leather armor that needs some care. Still offers an extra pocket compared to most armor.")
+                    , Leather2: new(Text: "Thief's Leather Armor", Description: "Leather armor suitable for infiltration. Has two extra pockets compared to most armor.")
+                    , Leather3: new(Text: "Fine Leather Armor", Description: "The finest suit of leather armor in the world. Its immense quality allows it to carry three more items than most armor")
+                    , Cloth1: new(Text: "Linen Cloth Armor", Description: "Basic cloth wear. Offers some protection, but not a lot. Its light weight enhances the wearer's magic and is required to hit effectively with attack spells.")
+                    , Cloth2: new(Text: "Common Cloth Armor", Description: "Solid cloth armor that offers more protection that what is normally found. Its light weight enhances the wearer's magic and is required to hit effectively with attack spells.")
+                    , Cloth3: new(Text: "Silk Cloth Armor", Description: "Cloth armor made of the finest silk. Its light weight enhances the wearer's magic and is required to hit effectively with attack spells.")
+                    , RuneOfIce: new(Text: "Rune of Ice", Description: "Part of a greater mystery...")
+                    , RuneOfElectricity: new(Text: "Rune of Electricity", Description: "Part of a greater mystery...")
+                    , Mana1: new(Text: "Small Mana Potion", Description: "A small potion that restores 45 mp.")
+                    , Mana2: new(Text: "Mana Potion", Description: "A medium potion that restores 75 mp.")
+                    , Mana3: new(Text: "Giant Mana Potion", Description: "A large potion that restores 150 mp.")
+                    , Health1: new(Text: "Small Health Potion", Description: "A small potion that restores 50 hp.")
+                    , Health2: new(Text: "Health Potion", Description: "A potion that restores 300 hp.")
+                    , Health3: new(Text: "Giant Health Potion", Description: "A large potion that restores 1500 hp.")
+                    , FerrymansBribe: new(Text: "Ferryman's Bribe", Description: "Call back an ally from the brink of death.")
+                    , StrengthBoost: new(Text: "Strength Boost", Description: "Permanently increase the target's strength.")
+                    , MagicBoost: new(Text: "Magic Boost", Description: "Permanently increase the target's magic.")
+                    , VitalityBoost: new(Text: "Vitality Boost", Description: "Permanently increase the target's vitality.")
+                    , SpiritBoost: new(Text: "Spirit Boost", Description: "Permanently increase the target's spirit.")
+                    , DexterityBoost: new(Text: "Dexterity Boost", Description: "Permanently increase the target's dexterity.")
+                    , LuckBoost: new(Text: "Luck Boost", Description: "Permanently increase the target's luck.")
+                    , LevelBoost: new(Text: "Mysterious Bubbling Potion", Description: "Its sure to be safe...")
                 )
             );
         }
