@@ -11,6 +11,17 @@ using System.Linq;
 namespace Adventure.Menu;
 
 class PickUpTreasureMenu
+(
+    Persistence persistence,
+    ISharpGui sharpGui,
+    IScaleHelper scaleHelper,
+    IScreenPositioner screenPositioner,
+    IPersistenceWriter persistenceWriter,
+    IInventoryFunctions inventoryFunctions,
+    ILanguageService languageService,
+    EquipmentTextService equipmentTextService,
+    CharacterStatsTextService characterStatsTextService
+)
 {
     public const float ChooseTargetLayer = 0.15f;
     public const float ReplaceButtonsLayer = 0.45f;
@@ -18,14 +29,6 @@ class PickUpTreasureMenu
 
     private enum SaveBlocker { Treasure }
 
-    private readonly Persistence persistence;
-    private readonly ISharpGui sharpGui;
-    private readonly IScaleHelper scaleHelper;
-    private readonly IScreenPositioner screenPositioner;
-    private readonly IPersistenceWriter persistenceWriter;
-    private readonly IInventoryFunctions inventoryFunctions;
-    private readonly ILanguageService languageService;
-    private readonly EquipmentTextService equipmentTextService;
     private Stack<ITreasure> currentTreasure;
     SharpButton take = new SharpButton() { Text = "Take" };
     SharpButton use = new SharpButton() { Text = "Use" };
@@ -37,7 +40,7 @@ class PickUpTreasureMenu
     SharpText itemInfo = new SharpText() { Color = Color.White };
     SharpText currentCharacter = new SharpText() { Color = Color.White };
     SharpText inventoryInfo = new SharpText() { Color = Color.White };
-    SharpText info = new SharpText() { Color = Color.White };
+    List<SharpText> infos;
     List<SharpText> descriptions;
     SharpText promptText = new SharpText() { Color = Color.White };
     private int currentSheet;
@@ -51,28 +54,6 @@ class PickUpTreasureMenu
 
     public delegate void UseCallback(ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
     private UseCallback useCallback;
-
-    public PickUpTreasureMenu
-    (
-        Persistence persistence,
-        ISharpGui sharpGui,
-        IScaleHelper scaleHelper,
-        IScreenPositioner screenPositioner,
-        IPersistenceWriter persistenceWriter,
-        IInventoryFunctions inventoryFunctions,
-        ILanguageService languageService,
-        EquipmentTextService equipmentTextService
-    )
-    {
-        this.persistence = persistence;
-        this.sharpGui = sharpGui;
-        this.scaleHelper = scaleHelper;
-        this.screenPositioner = screenPositioner;
-        this.persistenceWriter = persistenceWriter;
-        this.inventoryFunctions = inventoryFunctions;
-        this.languageService = languageService;
-        this.equipmentTextService = equipmentTextService;
-    }
 
     public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
     {
@@ -126,13 +107,16 @@ class PickUpTreasureMenu
 
         var treasure = currentTreasure.Peek();
 
-        if (choosingCharacter)
+        if(infos == null)
         {
-            ShowVitalStats();
-        }
-        else
-        {
-            ShowFullStats(sheet);
+            if (choosingCharacter)
+            {
+                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList();
+            }
+            else
+            {
+                infos = characterStatsTextService.GetFullStats(sheet).ToList();
+            }
         }
 
         if (descriptions == null)
@@ -158,7 +142,7 @@ class PickUpTreasureMenu
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
-           new ColumnLayout(new KeepWidthLeftLayout(previous), info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+           new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
@@ -238,7 +222,11 @@ class PickUpTreasureMenu
         {
             sharpGui.Text(description);
         }
-        sharpGui.Text(info);
+
+        foreach (var info in infos)
+        {
+            sharpGui.Text(info);
+        }
 
         if (DateTime.Now < allowPickupTime)
         {
@@ -315,6 +303,7 @@ class PickUpTreasureMenu
                 {
                     if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
                     {
+                        infos = null;
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
                             NextTreasure();
@@ -339,6 +328,7 @@ class PickUpTreasureMenu
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
                     descriptions = null;
+                    infos = null;
                 }
                 if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
@@ -349,6 +339,7 @@ class PickUpTreasureMenu
                         currentSheet = 0;
                     }
                     descriptions = null;
+                    infos = null;
                 }
             }
         }
@@ -360,71 +351,6 @@ class PickUpTreasureMenu
     {
         currentTreasure.Pop();
         descriptions = null;
-    }
-
-    private void ShowVitalStats()
-    {
-        var text = "";
-        foreach (var character in persistence.Current.Party.Members)
-        {
-            text += $@"{character.CharacterSheet.Name}
-HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
-MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
-  
-";
-        }
-        info.Text = text;
-    }
-
-    private void ShowFullStats(Persistence.CharacterData characterData)
-    {
-        var characterSheetDisplay = characterData;
-
-        info.Text =
-$@"{characterSheetDisplay.CharacterSheet.Name}
- 
-Lvl: {characterSheetDisplay.CharacterSheet.Level}
-
-Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
-
-HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
-MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
- 
-Att:   {characterSheetDisplay.CharacterSheet.Attack}
-Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
-MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
-MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
-Def:   {characterSheetDisplay.CharacterSheet.Defense}
-Def%:  {characterSheetDisplay.CharacterSheet.DefensePercent}
-MDef:  {characterSheetDisplay.CharacterSheet.MagicDefense}
-MDef%: {characterSheetDisplay.CharacterSheet.MagicDefensePercent}
-Item%: {characterSheetDisplay.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
-Heal%: {characterSheetDisplay.CharacterSheet.TotalHealingBonus * 100f + 100f}
- 
-Str: {characterSheetDisplay.CharacterSheet.TotalStrength}
-Mag: {characterSheetDisplay.CharacterSheet.TotalMagic}
-Vit: {characterSheetDisplay.CharacterSheet.TotalVitality}
-Spr: {characterSheetDisplay.CharacterSheet.TotalSpirit}
-Dex: {characterSheetDisplay.CharacterSheet.TotalDexterity}
-Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
- ";
-
-        foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
-        {
-            info.Text += $@"
-{languageService.Current.Items.GetText(item.InfoId)}";
-        }
-
-        foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
-        {
-            info.Text += $@"
-{item.Name}";
-        }
-
-        foreach (var item in characterSheetDisplay.CharacterSheet.Effects)
-        {
-            info.Text += $@"
-{item.StatusEffect}";
-        }
+        infos = null;
     }
 }
