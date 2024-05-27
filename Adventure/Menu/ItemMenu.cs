@@ -305,82 +305,11 @@ namespace Adventure.Menu
 
             if (useItemMenu.IsChoosingCharacters)
             {
-                var text = "";
-                foreach (var character in persistence.Current.Party.Members)
-                {
-                    text += $"{character.CharacterSheet.Name}";
-                    if (useItemMenu.IsTransfer)
-                    {
-                        text += $@"
-Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventorySize}
-  
-";
-                    }
-                    else
-                    {
-                        text += $@"
-HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
-MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
-  
-";
-                    }
-                }
-                info.Text = text;
+                ShowVitalStats();
             }
             else
             {
-                var characterSheetDisplay = characterData;
-                if (useItemMenu.IsSwappingItems)
-                {
-                    characterSheetDisplay = useItemMenu.SwapTarget;
-                }
-
-                info.Text =
-    $@"{characterSheetDisplay.CharacterSheet.Name}
- 
-Lvl: {characterSheetDisplay.CharacterSheet.Level}
-
-Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
-
-HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
-MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
- 
-Att:   {characterSheetDisplay.CharacterSheet.Attack}
-Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
-MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
-MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
-Def:   {characterSheetDisplay.CharacterSheet.Defense}
-Def%:  {characterSheetDisplay.CharacterSheet.DefensePercent}
-MDef:  {characterSheetDisplay.CharacterSheet.MagicDefense}
-MDef%: {characterSheetDisplay.CharacterSheet.MagicDefensePercent}
-Item%: {characterSheetDisplay.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
-Heal%: {characterSheetDisplay.CharacterSheet.TotalHealingBonus * 100f + 100f}
- 
-Str: {characterSheetDisplay.CharacterSheet.TotalStrength}
-Mag: {characterSheetDisplay.CharacterSheet.TotalMagic}
-Vit: {characterSheetDisplay.CharacterSheet.TotalVitality}
-Spr: {characterSheetDisplay.CharacterSheet.TotalSpirit}
-Dex: {characterSheetDisplay.CharacterSheet.TotalDexterity}
-Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
- ";
-
-                foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
-                {
-                    info.Text += $@"
-{languageService.Current.Items.GetText(item.InfoId)}";
-                }
-
-                foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
-                {
-                    info.Text += $@"
-{item.Name}";
-                }
-
-                foreach (var item in characterSheetDisplay.CharacterSheet.Effects)
-                {
-                    info.Text += $@"
-{item.StatusEffect}";
-                }
+                ShowFullStats(characterData);
             }
 
             if (description.Text == null)
@@ -479,6 +408,87 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
                         menu.RequestSubMenu(menu.RootMenu, gamepad);
                     }
                 }
+            }
+        }
+
+        private void ShowVitalStats()
+        {
+            var text = "";
+            foreach (var character in persistence.Current.Party.Members)
+            {
+                text += $"{character.CharacterSheet.Name}";
+                if (useItemMenu.IsTransfer)
+                {
+                    text += $@"
+Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventorySize}
+  
+";
+                }
+                else
+                {
+                    text += $@"
+HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
+MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
+  
+";
+                }
+            }
+            info.Text = text;
+        }
+
+        private void ShowFullStats(Persistence.CharacterData characterData)
+        {
+            var characterSheetDisplay = characterData;
+            if (useItemMenu.IsSwappingItems)
+            {
+                characterSheetDisplay = useItemMenu.SwapTarget;
+            }
+
+            info.Text =
+$@"{characterSheetDisplay.CharacterSheet.Name}
+ 
+Lvl: {characterSheetDisplay.CharacterSheet.Level}
+
+Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
+
+HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
+MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
+ 
+Att:   {characterSheetDisplay.CharacterSheet.Attack}
+Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
+MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
+MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
+Def:   {characterSheetDisplay.CharacterSheet.Defense}
+Def%:  {characterSheetDisplay.CharacterSheet.DefensePercent}
+MDef:  {characterSheetDisplay.CharacterSheet.MagicDefense}
+MDef%: {characterSheetDisplay.CharacterSheet.MagicDefensePercent}
+Item%: {characterSheetDisplay.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
+Heal%: {characterSheetDisplay.CharacterSheet.TotalHealingBonus * 100f + 100f}
+ 
+Str: {characterSheetDisplay.CharacterSheet.TotalStrength}
+Mag: {characterSheetDisplay.CharacterSheet.TotalMagic}
+Vit: {characterSheetDisplay.CharacterSheet.TotalVitality}
+Spr: {characterSheetDisplay.CharacterSheet.TotalSpirit}
+Dex: {characterSheetDisplay.CharacterSheet.TotalDexterity}
+Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
+ ";
+
+            foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
+            {
+                info.Text += $@"
+{languageService.Current.Items.GetText(item.InfoId)}";
+            }
+
+            foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
+            {
+                info.Text += $@"
+{item.Name}";
+            }
+
+            foreach (var item in characterSheetDisplay.CharacterSheet.Effects)
+            {
+                info.Text += $@"
+{item.StatusEffect}";
             }
         }
 
