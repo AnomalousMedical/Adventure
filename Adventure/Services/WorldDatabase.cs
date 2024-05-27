@@ -298,6 +298,8 @@ namespace Adventure.Services
                 GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Sword1), nameof(Sword1))));
                 GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(nameof(Dagger1), phase0TreasureLevel, nameof(ItemText.Dagger1), nameof(Steal))));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, nameof(ItemText.Leather1), EquipmentTier.Tier1, 1)));
+                new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)).GiveTo(hero.Inventory, null);
+                new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel)).GiveTo(hero.Inventory, null);
                 yield return new PartyMember
                 {
                     CharacterData = hero,
