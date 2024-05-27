@@ -13,8 +13,30 @@ namespace Adventure.Services
 {
     class EquipmentTextService
     {
-        private bool CompareStat(String label, long currentStat, long newStat, out SharpText sharpText)
+        private bool CompareStat(String label, long? currentStat, long? newStat, out SharpText sharpText)
         {
+            if (currentStat == null && newStat != null)
+            {
+                if (newStat > 0)
+                {
+                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.Green };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
+            if (currentStat != null && newStat == null)
+            {
+                if (currentStat > 0)
+                {
+                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.Red };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
             var difference = newStat - currentStat;
             if (difference != 0)
             {
@@ -38,10 +60,32 @@ namespace Adventure.Services
             }
         }
 
-        private bool CompareStat(String label, float currentStat, float newStat, out SharpText sharpText)
+        private bool CompareStat(String label, float? currentStat, float? newStat, out SharpText sharpText)
         {
+            if (currentStat == null && newStat != null)
+            {
+                if (newStat > 0)
+                {
+                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.Green };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
+            if (currentStat != null && newStat == null)
+            {
+                if (currentStat > 0)
+                {
+                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.Red };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
             var difference = newStat - currentStat;
-            if (Math.Abs(difference) > 0.001f)
+            if (MathF.Abs(difference.Value) > 0.001f)
             {
                 sharpText = new SharpText();
                 if (difference > 0)
@@ -67,57 +111,57 @@ namespace Adventure.Services
         {
             bool returnedStat = false;
             SharpText sharpText;
-            if (CompareStat("Att:   ", currentItem.Attack, newItem.Attack, out sharpText))
+            if (CompareStat("Att:   ", currentItem?.Attack, newItem?.Attack, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Att%:  ", currentItem.AttackPercent, newItem.AttackPercent, out sharpText))
+            if (CompareStat("Att%:  ", currentItem?.AttackPercent, newItem?.AttackPercent, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("MAtt:  ", currentItem.MagicAttack, newItem.MagicAttack, out sharpText))
+            if (CompareStat("MAtt:  ", currentItem?.MagicAttack, newItem?.MagicAttack, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("MAtt%: ", currentItem.MagicAttackPercent, newItem.MagicAttackPercent, out sharpText))
+            if (CompareStat("MAtt%: ", currentItem?.MagicAttackPercent, newItem?.MagicAttackPercent, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Def:   ", currentItem.Defense, newItem.Defense, out sharpText))
+            if (CompareStat("Def:   ", currentItem?.Defense, newItem?.Defense, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Def%:  ", currentItem.DefensePercent, newItem.DefensePercent, out sharpText))
+            if (CompareStat("Def%:  ", currentItem?.DefensePercent, newItem?.DefensePercent, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("MDef:  ", currentItem.MagicDefense, newItem.MagicDefense, out sharpText))
+            if (CompareStat("MDef:  ", currentItem?.MagicDefense, newItem?.MagicDefense, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("MDef%: ", currentItem.MagicDefensePercent, newItem.MagicDefensePercent, out sharpText))
+            if (CompareStat("MDef%: ", currentItem?.MagicDefensePercent, newItem?.MagicDefensePercent, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Item%: ", currentItem.ItemUsageBonus, newItem.ItemUsageBonus, out sharpText))
+            if (CompareStat("Item%: ", currentItem?.ItemUsageBonus, newItem?.ItemUsageBonus, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Heal%: ", currentItem.HealingBonus, newItem.HealingBonus, out sharpText))
+            if (CompareStat("Heal%: ", currentItem?.HealingBonus, newItem?.HealingBonus, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
             }
-            if (CompareStat("Blck%: ", currentItem.BlockDamageReduction, newItem.BlockDamageReduction, out sharpText))
+            if (CompareStat("Blck%: ", currentItem?.BlockDamageReduction, newItem?.BlockDamageReduction, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
@@ -125,7 +169,7 @@ namespace Adventure.Services
 
             if (!returnedStat)
             {
-                if (currentItem.Id != null && currentItem.Id == newItem.Id)
+                if (currentItem?.Id != null && currentItem.Id == newItem?.Id)
                 {
                     yield return new SharpText("Unequip") { Color = Color.White };
                 }
