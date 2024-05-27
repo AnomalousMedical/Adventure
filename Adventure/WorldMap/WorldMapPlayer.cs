@@ -211,7 +211,7 @@ namespace Adventure.WorldMap
             }
 
             characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
-            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+            characterMenuPositionTracker.Set(characterSheet, characterMenuPositionEntry);
 
             coroutine.RunTask(async () =>
             {
@@ -256,7 +256,7 @@ namespace Adventure.WorldMap
             sprite.AnimationChanged -= Sprite_AnimationChanged;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             SetGraphicsActive(false);
-            characterMenuPositionTracker.Remove(characterSheet);
+            characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
             objectResolver.Dispose();
         }
 

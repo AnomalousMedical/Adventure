@@ -26,14 +26,20 @@ namespace Adventure.Services
     {
         private Dictionary<CharacterSheet, ICharacterMenuPositionEntry> entries = new Dictionary<CharacterSheet, ICharacterMenuPositionEntry>();
 
-        public void Add(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
+        public void Set(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
         {
-            entries.Add(sheet, entry);
+            entries[sheet] = entry;
         }
 
-        public void Remove(CharacterSheet sheet)
+        public void Remove(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
         {
-            entries.Remove(sheet);
+            if(entries.TryGetValue(sheet, out var lookup))
+            {
+                if (entry == lookup)
+                {
+                    entries.Remove(sheet);
+                }
+            }
         }
 
         internal bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry)

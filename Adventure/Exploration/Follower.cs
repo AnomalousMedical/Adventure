@@ -154,7 +154,7 @@ namespace Adventure
             };
 
             characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
-            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+            characterMenuPositionTracker.Set(characterSheet, characterMenuPositionEntry);
 
             coroutine.RunTask(async () =>
             {
@@ -190,7 +190,7 @@ namespace Adventure
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             SetGraphicsActive(false);
             objectResolver.Dispose();
-            characterMenuPositionTracker.Remove(characterSheet);
+            characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
         }
 
         public void SetLocationAndMovement(in Vector3 location, in Vector3 movementDir, bool moving)
@@ -233,8 +233,6 @@ namespace Adventure
 
         public void RequestDestruction()
         {
-            //Do this as soon as destruction is requested, since this item is remade right away and it messed up the tracker.
-            characterMenuPositionTracker.Remove(characterSheet);
             destructionRequest.RequestDestruction();
         }
 

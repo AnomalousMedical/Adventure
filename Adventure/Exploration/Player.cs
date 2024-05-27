@@ -206,7 +206,7 @@ namespace Adventure
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
 
             characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
-            characterMenuPositionTracker.Add(characterSheet, characterMenuPositionEntry);
+            characterMenuPositionTracker.Set(characterSheet, characterMenuPositionEntry);
 
             coroutine.RunTask(async () =>
             {
@@ -256,7 +256,7 @@ namespace Adventure
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(tlasData);
             objectResolver.Dispose();
-            characterMenuPositionTracker.Remove(characterSheet);
+            characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
         }
 
         public void StopMovement()
