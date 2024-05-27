@@ -223,12 +223,12 @@ class PickUpTreasureMenu
             if (sharpGui.Button(equip, gamepadId, navUp: continueButton.Id, navDown: continueButton.Id))
             {
                 treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions, persistence.Current);
-                currentTreasure.Pop();
+                NextTreasure();
                 equippingItem = false;
             }
             if (sharpGui.Button(continueButton, gamepadId, navUp: equip.Id, navDown: equip.Id))
             {
-                currentTreasure.Pop();
+                NextTreasure();
                 equippingItem = false;
             }
         }
@@ -241,7 +241,7 @@ class PickUpTreasureMenu
                     equippingItem = treasure.CanEquipOnPickup;
                     if (!equippingItem)
                     {
-                        currentTreasure.Pop();
+                        NextTreasure();
                     }
                     treasure.GiveTo(sheet.Inventory, persistence.Current);
                 }
@@ -258,7 +258,7 @@ class PickUpTreasureMenu
                 {
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
-                        currentTreasure.Pop();
+                        NextTreasure();
                         useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
                     }))
                     .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
@@ -268,7 +268,7 @@ class PickUpTreasureMenu
 
             if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
             {
-                currentTreasure.Pop();
+                NextTreasure();
             }
 
             if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
@@ -305,7 +305,7 @@ class PickUpTreasureMenu
                         equippingItem = treasure.CanEquipOnPickup;
                         if (!equippingItem)
                         {
-                            currentTreasure.Pop();
+                            NextTreasure();
                         }
                         sheet.RemoveItem(removeItem);
                         treasure.GiveTo(sheet.Inventory, persistence.Current);
@@ -320,6 +320,12 @@ class PickUpTreasureMenu
         }
 
         return false;
+    }
+
+    private void NextTreasure()
+    {
+        currentTreasure.Pop();
+        description.Text = null;
     }
 
     private void ShowVitalStats()
