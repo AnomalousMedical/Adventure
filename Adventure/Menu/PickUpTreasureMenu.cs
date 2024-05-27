@@ -36,6 +36,8 @@ class PickUpTreasureMenu
     SharpText itemInfo = new SharpText() { Color = Color.White };
     SharpText currentCharacter = new SharpText() { Color = Color.White };
     SharpText inventoryInfo = new SharpText() { Color = Color.White };
+    SharpText info = new SharpText() { Color = Color.White };
+    SharpText description = new SharpText() { Color = Color.White };
     private int currentSheet;
     private bool replacingItem = false;
     private bool equippingItem = false;
@@ -118,15 +120,37 @@ class PickUpTreasureMenu
         currentCharacter.Text = sheet.CharacterSheet.Name;
         inventoryInfo.Text = equippingItem ? "Equip" : $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
 
+        var treasure = currentTreasure.Peek();
+
+        if (choosingCharacter)
+        {
+            ShowVitalStats();
+        }
+        else
+        {
+            ShowFullStats(sheet);
+        }
+
+        if (description.Text == null)
+        {
+            description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);
+        }
+
         ILayoutItem layout;
 
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), next);
-        layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
-
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), previous);
+        layout =
+           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new ColumnLayout(new KeepWidthLeftLayout(previous), info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+        ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
-        var treasure = currentTreasure.Peek();
+        layout =
+            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+            new MaxWidthLayout(scaleHelper.Scaled(600),
+            new ColumnLayout(new KeepWidthRightLayout(next), description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+        ));
+        layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
         var hasInventoryRoom = treasure.IsPlotItem || sheet.HasRoom;
 
@@ -186,6 +210,8 @@ class PickUpTreasureMenu
         sharpGui.Text(currentCharacter);
         sharpGui.Text(inventoryInfo);
         sharpGui.Text(itemInfo);
+        sharpGui.Text(description);
+        sharpGui.Text(info);
 
         if (DateTime.Now < allowPickupTime)
         {
@@ -293,5 +319,71 @@ class PickUpTreasureMenu
         }
 
         return false;
+    }
+
+    private void ShowVitalStats()
+    {
+        var text = "";
+        foreach (var character in persistence.Current.Party.Members)
+        {
+            text += $@"{character.CharacterSheet.Name}
+HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
+MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
+  
+";
+        }
+        info.Text = text;
+    }
+
+    private void ShowFullStats(Persistence.CharacterData characterData)
+    {
+        var characterSheetDisplay = characterData;
+
+        info.Text =
+$@"{characterSheetDisplay.CharacterSheet.Name}
+ 
+Lvl: {characterSheetDisplay.CharacterSheet.Level}
+
+Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
+
+HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
+MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
+ 
+Att:   {characterSheetDisplay.CharacterSheet.Attack}
+Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
+MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
+MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
+Def:   {characterSheetDisplay.CharacterSheet.Defense}
+Def%:  {characterSheetDisplay.CharacterSheet.DefensePercent}
+MDef:  {characterSheetDisplay.CharacterSheet.MagicDefense}
+MDef%: {characterSheetDisplay.CharacterSheet.MagicDefensePercent}
+Item%: {characterSheetDisplay.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
+Heal%: {characterSheetDisplay.CharacterSheet.TotalHealingBonus * 100f + 100f}
+ 
+Str: {characterSheetDisplay.CharacterSheet.TotalStrength}
+Mag: {characterSheetDisplay.CharacterSheet.TotalMagic}
+Vit: {characterSheetDisplay.CharacterSheet.TotalVitality}
+Spr: {characterSheetDisplay.CharacterSheet.TotalSpirit}
+Dex: {characterSheetDisplay.CharacterSheet.TotalDexterity}
+Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
+ ";
+
+        foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
+        {
+            info.Text += $@"
+{languageService.Current.Items.GetText(item.InfoId)}";
+        }
+
+        foreach (var item in characterSheetDisplay.CharacterSheet.Buffs)
+        {
+            info.Text += $@"
+{item.Name}";
+        }
+
+        foreach (var item in characterSheetDisplay.CharacterSheet.Effects)
+        {
+            info.Text += $@"
+{item.StatusEffect}";
+        }
     }
 }
