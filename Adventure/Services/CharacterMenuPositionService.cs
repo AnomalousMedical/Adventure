@@ -13,13 +13,17 @@ namespace Adventure.Services
         Vector3 Position { get; }
 
         Quaternion CameraRotation { get; }
+
+        void FaceCamera();
     }
 
-    public class CharacterMenuPositionEntry(Func<Vector3> GetPosition, Func<Quaternion> GetCameraRotation) : ICharacterMenuPositionEntry
+    public class CharacterMenuPositionEntry(Func<Vector3> GetPosition, Func<Quaternion> GetCameraRotation, Action FaceCameraCb) : ICharacterMenuPositionEntry
     {
         public Vector3 Position => GetPosition();
 
         public Quaternion CameraRotation => GetCameraRotation();
+
+        public void FaceCamera() => FaceCameraCb();
     }
 
     class CharacterMenuPositionTracker

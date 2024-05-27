@@ -153,7 +153,11 @@ namespace Adventure
                 Transform = new InstanceMatrix(currentPosition, currentOrientation, currentScale)
             };
 
-            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle);
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle, () =>
+            {
+                sprite.SetAnimation("stand-down");
+                Sprite_FrameChanged(sprite);
+            });
             characterMenuPositionTracker.Set(characterSheet, characterMenuPositionEntry);
 
             coroutine.RunTask(async () =>
