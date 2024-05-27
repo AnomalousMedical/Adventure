@@ -29,6 +29,7 @@ namespace Adventure.Menu
         SharpButton items = new SharpButton() { Text = "Items" };
         SharpButton options = new SharpButton() { Text = "Options" };
         SharpButton debug = new SharpButton() { Text = "Debug" };
+        SharpButton close = new SharpButton() { Text = "Close" };
 
         SharpText undefeated = new SharpText() { Text = "Undefeated", Color = Color.White };
         SharpText oldSchool = new SharpText() { Text = "Old School", Color = Color.White };
@@ -59,6 +60,7 @@ namespace Adventure.Menu
             yield return items;
             yield return options;
             yield return debug;
+            yield return close;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
@@ -106,11 +108,11 @@ namespace Adventure.Menu
                 optionsMenu.PreviousMenu = this;
                 explorationMenu.RequestSubMenu(optionsMenu, gamepad);
             }
-            else if (sharpGui.Button(debug, gamepad, navDown: skills.Id, navUp: options.Id))
+            else if (sharpGui.Button(debug, gamepad, navDown: close.Id, navUp: options.Id))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
             }
-            else if (sharpGui.IsStandardBackPressed(gamepad))
+            else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: debug.Id) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
