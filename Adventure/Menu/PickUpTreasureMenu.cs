@@ -38,6 +38,7 @@ class PickUpTreasureMenu
     SharpText inventoryInfo = new SharpText() { Color = Color.White };
     SharpText info = new SharpText() { Color = Color.White };
     SharpText description = new SharpText() { Color = Color.White };
+    SharpText promptText = new SharpText() { Color = Color.White };
     private int currentSheet;
     private bool replacingItem = false;
     private bool equippingItem = false;
@@ -243,7 +244,8 @@ class PickUpTreasureMenu
 
             if (replacingItem)
             {
-                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+                sharpGui.Text(promptText);
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(promptText), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
                 if (removeItem != null)
                 {
                     replacingItem = false;
@@ -280,6 +282,8 @@ class PickUpTreasureMenu
                     else
                     {
                         replacingItem = true;
+                        replaceButtons.ListIndex = 0;
+                        promptText.Text = $"Take {languageService.Current.Items.GetText(treasure.InfoId)} and discard...";
                         sharpGui.StealFocus(replaceButtons.TopButton);
                     }
                 }
