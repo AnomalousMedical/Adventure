@@ -207,9 +207,12 @@ class PickUpTreasureMenu
 
         layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
 
-        sharpGui.Text(currentCharacter);
-        sharpGui.Text(inventoryInfo);
-        sharpGui.Text(itemInfo);
+        if (!replacingItem)
+        {
+            sharpGui.Text(currentCharacter);
+            sharpGui.Text(inventoryInfo);
+            sharpGui.Text(itemInfo);
+        }
         sharpGui.Text(description);
         sharpGui.Text(info);
 
@@ -232,64 +235,8 @@ class PickUpTreasureMenu
                 equippingItem = false;
             }
         }
-        else
+        else if(!choosingCharacter)
         {
-            if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
-            {
-                if (hasInventoryRoom)
-                {
-                    equippingItem = treasure.CanEquipOnPickup;
-                    if (!equippingItem)
-                    {
-                        NextTreasure();
-                    }
-                    treasure.GiveTo(sheet.Inventory, persistence.Current);
-                }
-                else
-                {
-                    replacingItem = true;
-                    sharpGui.StealFocus(replaceButtons.TopButton);
-                }
-            }
-
-            if (treasure.CanUseOnPickup)
-            {
-                if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
-                {
-                    characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
-                    {
-                        NextTreasure();
-                        useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
-                    }))
-                    .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
-                    .ToList();
-                }
-            }
-
-            if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
-            {
-                NextTreasure();
-            }
-
-            if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
-            {
-                replacingItem = false;
-                --currentSheet;
-                if (currentSheet < 0)
-                {
-                    currentSheet = persistence.Current.Party.Members.Count - 1;
-                }
-            }
-            if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
-            {
-                replacingItem = false;
-                ++currentSheet;
-                if (currentSheet >= persistence.Current.Party.Members.Count)
-                {
-                    currentSheet = 0;
-                }
-            }
-
             replaceButtons.Margin = scaleHelper.Scaled(10);
             replaceButtons.MaxWidth = scaleHelper.Scaled(900);
             replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
@@ -315,6 +262,64 @@ class PickUpTreasureMenu
                 if (sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     replacingItem = false;
+                }
+            }
+            else
+            {
+                if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
+                {
+                    if (hasInventoryRoom)
+                    {
+                        equippingItem = treasure.CanEquipOnPickup;
+                        if (!equippingItem)
+                        {
+                            NextTreasure();
+                        }
+                        treasure.GiveTo(sheet.Inventory, persistence.Current);
+                    }
+                    else
+                    {
+                        replacingItem = true;
+                        sharpGui.StealFocus(replaceButtons.TopButton);
+                    }
+                }
+
+                if (treasure.CanUseOnPickup)
+                {
+                    if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+                    {
+                        characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                        {
+                            NextTreasure();
+                            useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
+                        }))
+                        .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
+                        .ToList();
+                    }
+                }
+
+                if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
+                {
+                    NextTreasure();
+                }
+
+                if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
+                {
+                    replacingItem = false;
+                    --currentSheet;
+                    if (currentSheet < 0)
+                    {
+                        currentSheet = persistence.Current.Party.Members.Count - 1;
+                    }
+                }
+                if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
+                {
+                    replacingItem = false;
+                    ++currentSheet;
+                    if (currentSheet >= persistence.Current.Party.Members.Count)
+                    {
+                        currentSheet = 0;
+                    }
                 }
             }
         }
