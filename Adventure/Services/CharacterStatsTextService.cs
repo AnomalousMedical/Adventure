@@ -5,6 +5,7 @@ using Engine;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RpgMath;
 
 namespace Adventure.Services
 {
@@ -24,6 +25,16 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
             yield return new SharpText(text) { Color = Color.White };
         }
 
+        private Color GetHpColor(CharacterSheet characterSheet)
+        {
+            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.White;
+        }
+
+        private Color GetMpColor(CharacterSheet characterSheet)
+        {
+            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.White;
+        }
+
         public IEnumerable<SharpText> GetVitalStats(IEnumerable<Persistence.CharacterData> members)
         {
             foreach (var character in members)
@@ -31,11 +42,11 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
                 yield return new SharpText(character.CharacterSheet.Name) { Color = Color.White };
                 yield return new SharpText($"HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}") 
                 {
-                    Color = character.CharacterSheet.CurrentHp > 0 && (float)character.CharacterSheet.CurrentHp / character.CharacterSheet.Hp < 0.35f ? Color.Yellow : Color.White
+                    Color = GetHpColor(character.CharacterSheet)
                 };
                 yield return new SharpText($"MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}\n ")
                 {
-                    Color = character.CharacterSheet.CurrentHp > 0 && character.CharacterSheet.CurrentMp > 0 && (float)character.CharacterSheet.CurrentMp / character.CharacterSheet.Mp < 0.35f ? Color.Yellow : Color.White
+                    Color = GetMpColor(character.CharacterSheet)
                 };
             }
         }
@@ -50,11 +61,22 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
 Lvl: {characterSheetDisplay.CharacterSheet.Level}
 
 Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
-
-HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}
-MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}
  
-Att:   {characterSheetDisplay.CharacterSheet.Attack}
+";
+
+            yield return new SharpText(text) { Color = Color.White };
+
+            yield return new SharpText($"HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}")
+            {
+                Color = GetHpColor(characterSheetDisplay.CharacterSheet)
+            };
+            yield return new SharpText($"MP:  {characterSheetDisplay.CharacterSheet.CurrentMp} / {characterSheetDisplay.CharacterSheet.Mp}\n ")
+            {
+                Color = GetMpColor(characterSheetDisplay.CharacterSheet)
+            };
+
+            text = 
+$@"Att:   {characterSheetDisplay.CharacterSheet.Attack}
 Att%:  {characterSheetDisplay.CharacterSheet.AttackPercent}
 MAtt:  {characterSheetDisplay.CharacterSheet.MagicAttack}
 MAtt%: {characterSheetDisplay.CharacterSheet.MagicAttackPercent}
