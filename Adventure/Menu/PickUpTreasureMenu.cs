@@ -45,7 +45,7 @@ class PickUpTreasureMenu
     private List<ButtonColumnItem<Action>> characterChoices = null;
 
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
-    private ButtonColumn characterButtons = new ButtonColumn(4, ChooseTargetLayer);
+    private ButtonColumn characterButtons = new ButtonColumn(5, ChooseTargetLayer);
 
     public delegate void UseCallback(ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
     private UseCallback useCallback;
@@ -261,6 +261,7 @@ class PickUpTreasureMenu
                         currentTreasure.Pop();
                         useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
                     }))
+                    .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
                     .ToList();
                 }
             }
