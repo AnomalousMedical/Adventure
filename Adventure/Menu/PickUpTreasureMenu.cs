@@ -109,13 +109,13 @@ class PickUpTreasureMenu
 
         if(infos == null)
         {
-            if (choosingCharacter)
+            if (treasure.CanEquipOnPickup && treasure.Item != null)
             {
-                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList();
+                infos = characterStatsTextService.GetFullStats(sheet).ToList();
             }
             else
             {
-                infos = characterStatsTextService.GetFullStats(sheet).ToList();
+                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList(); 
             }
         }
 
