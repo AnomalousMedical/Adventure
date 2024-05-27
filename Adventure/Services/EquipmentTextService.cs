@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine;
+using Adventure.Battle;
 
 namespace Adventure.Services
 {
-    class EquipmentTextService
+    class EquipmentTextService(ISkillFactory skillFactory)
     {
         private bool CompareStat(String label, long? currentStat, long? newStat, out SharpText sharpText)
         {
@@ -33,6 +34,12 @@ namespace Adventure.Services
                     sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.Red };
                     return true;
                 }
+                sharpText = null;
+                return false;
+            }
+
+            if (currentStat == null && newStat == null)
+            {
                 sharpText = null;
                 return false;
             }
@@ -84,6 +91,12 @@ namespace Adventure.Services
                 return false;
             }
 
+            if (currentStat == null && newStat == null)
+            {
+                sharpText = null;
+                return false;
+            }
+
             var difference = newStat - currentStat;
             if (MathF.Abs(difference.Value) > 0.001f)
             {
@@ -131,7 +144,13 @@ namespace Adventure.Services
                 return false;
             }
 
-            if(!currentStat.Value && newStat.Value)
+            if (currentStat == null && newStat == null)
+            {
+                sharpText = null;
+                return false;
+            }
+
+            if (!currentStat.Value && newStat.Value)
             {
                 sharpText = new SharpText($"+{label}") { Color = Color.Green };
                 return true;
@@ -283,6 +302,42 @@ namespace Adventure.Services
                 yield return sharpText;
             }
 
+            if (currentItem?.Skills != null && newItem?.Skills == null)
+            {
+                returnedStat = true;
+                foreach (var skill in currentItem.Skills)
+                {
+                    var skillInstance = skillFactory.CreateSkill(skill);
+                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.Red };
+                }
+            }
+
+            if (currentItem?.Skills == null && newItem?.Skills != null)
+            {
+                returnedStat = true;
+                foreach (var skill in newItem.Skills)
+                {
+                    var skillInstance = skillFactory.CreateSkill(skill);
+                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.Green };
+                }
+            }
+
+            if (currentItem?.Skills != null && newItem?.Skills != null)
+            {
+                returnedStat = true;
+                foreach (var skill in newItem.Skills.Where(i => !currentItem.Skills.Contains(i)))
+                {
+                    var skillInstance = skillFactory.CreateSkill(skill);
+                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.Green };
+                }
+
+                foreach (var skill in currentItem.Skills.Where(i => !newItem.Skills.Contains(i)))
+                {
+                    var skillInstance = skillFactory.CreateSkill(skill);
+                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.Red };
+                }
+            }
+
             if (!returnedStat)
             {
                 yield return new SharpText("No Change") { Color = Color.White };
@@ -291,12 +346,31 @@ namespace Adventure.Services
 
         public IEnumerable<SharpText> GetComparisonText(InventoryItem item, Persistence.CharacterData characterData)
         {
+            IEnumerable<SharpText> results;
             switch (item.Action)
             {
                 case nameof(EquipMainHand):
-                    return CompareEquipment(characterData.CharacterSheet.MainHand, item.Equipment);
+                    results = CompareEquipment(characterData.CharacterSheet.MainHand, item.Equipment);
+                    if (item.Equipment.TwoHanded && characterData.CharacterSheet.OffHand != null)
+                    {
+                        results = results.Concat(new[] { 
+                            new SharpText("Off Hand") { Color = Color.White },
+                            new SharpText("Unequip") { Color = Color.Red }
+                        });
+                        results = results.Concat(CompareEquipment(characterData.CharacterSheet.OffHand, null));
+                    }
+                    return results;
                 case nameof(EquipOffHand):
-                    return CompareEquipment(characterData.CharacterSheet.OffHand, item.Equipment);
+                    results = CompareEquipment(characterData.CharacterSheet.OffHand, item.Equipment);
+                    if (characterData.CharacterSheet.MainHand?.TwoHanded == true)
+                    {
+                        results = results.Concat(new[] {
+                            new SharpText("Main Hand") { Color = Color.White },
+                            new SharpText("Unequip") { Color = Color.Red }
+                        });
+                        results = results.Concat(CompareEquipment(characterData.CharacterSheet.MainHand, null));
+                    }
+                    return results;
                 case nameof(EquipBody):
                     return CompareEquipment(characterData.CharacterSheet.Body, item.Equipment);
                 case nameof(EquipAccessory):
@@ -466,6 +540,15 @@ namespace Adventure.Services
             if (ShowStat("Enemy Scope", item.Equipment.ShowEnemyInfo, out sharpText))
             {
                 yield return sharpText;
+            }
+
+            if (item.Equipment.Skills != null)
+            {
+                foreach (var skill in item.Equipment.Skills)
+                {
+                    var skillInstance = skillFactory.CreateSkill(skill);
+                    yield return new SharpText(skillInstance.Name) { Color = Color.White };
+                }
             }
         }
     }
