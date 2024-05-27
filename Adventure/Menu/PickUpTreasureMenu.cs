@@ -1,4 +1,5 @@
 ﻿using Adventure.Items;
+using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
@@ -7,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Services;
+namespace Adventure.Menu;
 
 class PickUpTreasureMenu
 {
@@ -70,7 +71,7 @@ class PickUpTreasureMenu
     public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
     {
         this.useCallback = useCallback;
-        this.currentTreasure = new Stack<ITreasure>(treasure);
+        currentTreasure = new Stack<ITreasure>(treasure);
         persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
         replacingItem = false;
         allowPickupTime = DateTime.Now + pickupDelay;
@@ -186,12 +187,12 @@ class PickUpTreasureMenu
         sharpGui.Text(inventoryInfo);
         sharpGui.Text(itemInfo);
 
-        if(DateTime.Now < allowPickupTime)
+        if (DateTime.Now < allowPickupTime)
         {
             return false;
         }
 
-        if(equippingItem)
+        if (equippingItem)
         {
             if (sharpGui.Button(equip, gamepadId, navUp: continueButton.Id, navDown: continueButton.Id))
             {
