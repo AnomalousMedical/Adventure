@@ -10,6 +10,20 @@ namespace Adventure.Services
 {
     internal class CharacterStatsTextService(ILanguageService languageService)
     {
+        public IEnumerable<SharpText> GetInventorySpace(IEnumerable<Persistence.CharacterData> members)
+        {
+            var text = "";
+            foreach (var character in members)
+            {
+                text += $@"{character.CharacterSheet.Name}
+Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventorySize}
+  
+";
+            }
+
+            yield return new SharpText(text) { Color = Color.White };
+        }
+
         public IEnumerable<SharpText> GetVitalStats(IEnumerable<Persistence.CharacterData> members)
         {
             var text = "";
