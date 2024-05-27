@@ -142,7 +142,7 @@ class PickUpTreasureMenu
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
-           new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+           new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
@@ -152,7 +152,10 @@ class PickUpTreasureMenu
         layout =
             new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
             new MaxWidthLayout(scaleHelper.Scaled(600),
-            new ColumnLayout(columnItems) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            new ColumnLayout(columnItems) 
+            { 
+                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) 
+            }
         ));
         layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 

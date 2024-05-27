@@ -26,17 +26,18 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
 
         public IEnumerable<SharpText> GetVitalStats(IEnumerable<Persistence.CharacterData> members)
         {
-            var text = "";
             foreach (var character in members)
             {
-                text += $@"{character.CharacterSheet.Name}
-HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
-MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
-  
-";
+                yield return new SharpText(character.CharacterSheet.Name) { Color = Color.White };
+                yield return new SharpText($"HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}") 
+                {
+                    Color = character.CharacterSheet.CurrentHp > 0 && (float)character.CharacterSheet.CurrentHp / character.CharacterSheet.Hp < 0.35f ? Color.Yellow : Color.White
+                };
+                yield return new SharpText($"MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}\n ")
+                {
+                    Color = character.CharacterSheet.CurrentHp > 0 && character.CharacterSheet.CurrentMp > 0 && (float)character.CharacterSheet.CurrentMp / character.CharacterSheet.Mp < 0.35f ? Color.Yellow : Color.White
+                };
             }
-
-            yield return new SharpText(text) { Color = Color.White };
         }
 
         public IEnumerable<SharpText> GetFullStats(Persistence.CharacterData characterData)
