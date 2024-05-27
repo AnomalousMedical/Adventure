@@ -107,8 +107,54 @@ namespace Adventure.Services
             }
         }
 
+        private bool CompareStat(String label, bool? currentStat, bool? newStat, out SharpText sharpText)
+        {
+            if (currentStat == null && newStat != null)
+            {
+                if (newStat.Value)
+                {
+                    sharpText = new SharpText($"+{label}") { Color = Color.Green };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
+            if (currentStat != null && newStat == null)
+            {
+                if (currentStat.Value)
+                {
+                    sharpText = new SharpText($"-{label}") { Color = Color.Red };
+                    return true;
+                }
+                sharpText = null;
+                return false;
+            }
+
+            if(!currentStat.Value && newStat.Value)
+            {
+                sharpText = new SharpText($"+{label}") { Color = Color.Green };
+                return true;
+            }
+
+            if (currentStat.Value && !newStat.Value)
+            {
+                sharpText = new SharpText($"-{label}") { Color = Color.Red };
+                return true;
+            }
+
+            sharpText = null;
+            return false;
+        }
+
         private IEnumerable<SharpText> CompareEquipment(Equipment currentItem, Equipment newItem)
         {
+            if (currentItem?.Id != null && currentItem.Id == newItem?.Id)
+            {
+                yield return new SharpText("Unequip") { Color = Color.Red };
+                newItem = null; //Same item, effect will be to unequip
+            }
+
             bool returnedStat = false;
             SharpText sharpText;
             if (CompareStat("Att:   ", currentItem?.Attack, newItem?.Attack, out sharpText))
@@ -151,6 +197,11 @@ namespace Adventure.Services
                 returnedStat = true;
                 yield return sharpText;
             }
+            if (CompareStat("Crit%: ", currentItem?.CritChance, newItem?.CritChance, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
             if (CompareStat("Item%: ", currentItem?.ItemUsageBonus, newItem?.ItemUsageBonus, out sharpText))
             {
                 returnedStat = true;
@@ -161,7 +212,72 @@ namespace Adventure.Services
                 returnedStat = true;
                 yield return sharpText;
             }
+            if (CompareStat("Cntr%: ", currentItem?.CounterPercent, newItem?.CounterPercent, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Slots: ", currentItem?.InventorySlots, newItem?.InventorySlots, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Str: ", currentItem?.Strength, newItem?.Strength, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Mag: ", currentItem?.Magic, newItem?.Magic, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Vit: ", currentItem?.Vitality, newItem?.Vitality, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Spr: ", currentItem?.Spirit, newItem?.Spirit, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Dex: ", currentItem?.Dexterity, newItem?.Dexterity, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Lck: ", currentItem?.Luck, newItem?.Luck, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Active Attack", currentItem?.AllowTriggerAttack, newItem?.AllowTriggerAttack, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Active Block", currentItem?.AllowActiveBlock, newItem?.AllowActiveBlock, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
             if (CompareStat("Blck%: ", currentItem?.BlockDamageReduction, newItem?.BlockDamageReduction, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Cure All", currentItem?.CureAll, newItem?.CureAll, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Doublecast", currentItem?.Doublecast, newItem?.Doublecast, out sharpText))
+            {
+                returnedStat = true;
+                yield return sharpText;
+            }
+            if (CompareStat("Enemy Scope", currentItem?.ShowEnemyInfo, newItem?.ShowEnemyInfo, out sharpText))
             {
                 returnedStat = true;
                 yield return sharpText;
@@ -169,14 +285,7 @@ namespace Adventure.Services
 
             if (!returnedStat)
             {
-                if (currentItem?.Id != null && currentItem.Id == newItem?.Id)
-                {
-                    yield return new SharpText("Unequip") { Color = Color.White };
-                }
-                else
-                {
-                    yield return new SharpText("No Change") { Color = Color.White };
-                }
+                yield return new SharpText("No Change") { Color = Color.White };
             }
         }
 
@@ -216,6 +325,20 @@ namespace Adventure.Services
             if (stat > 0.0f)
             {
                 sharpText = new SharpText($"{label} {stat:n2}") { Color = Color.White };
+                return true;
+            }
+            else
+            {
+                sharpText = null;
+                return false;
+            }
+        }
+
+        private bool ShowStat(String label, bool stat, out SharpText sharpText)
+        {
+            if (stat)
+            {
+                sharpText = new SharpText(label) { Color = Color.White };
                 return true;
             }
             else
@@ -276,6 +399,10 @@ namespace Adventure.Services
             {
                 yield return sharpText;
             }
+            if (ShowStat("Crit%: ", item.Equipment.CritChance, out sharpText))
+            {
+                yield return sharpText;
+            }
             if (ShowStat("Item%: ", item.Equipment.ItemUsageBonus * 100.0f, out sharpText))
             {
                 yield return sharpText;
@@ -284,7 +411,59 @@ namespace Adventure.Services
             {
                 yield return sharpText;
             }
+            if (ShowStat("Cntr%: ", item.Equipment.CounterPercent, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Slots: ", item.Equipment.InventorySlots, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Str: ", item.Equipment.Strength, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Mag: ", item.Equipment.Magic, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Vit: ", item.Equipment.Vitality, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Spr: ", item.Equipment.Spirit, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Dex: ", item.Equipment.Dexterity, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Lck: ", item.Equipment.Luck, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Active Attack", item.Equipment.AllowTriggerAttack, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Active Block", item.Equipment.AllowActiveBlock, out sharpText))
+            {
+                yield return sharpText;
+            }
             if (ShowStat("Blck%: ", item.Equipment.BlockDamageReduction * 100.0f, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Cure All", item.Equipment.CureAll, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Doublecast", item.Equipment.Doublecast, out sharpText))
+            {
+                yield return sharpText;
+            }
+            if (ShowStat("Enemy Scope", item.Equipment.ShowEnemyInfo, out sharpText))
             {
                 yield return sharpText;
             }

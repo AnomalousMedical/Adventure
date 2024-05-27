@@ -330,9 +330,9 @@ namespace Adventure.Menu
                         descriptions.Add(description);
                         if (item.Item.Equipment != null)
                         {
-                            descriptions.Add(new SharpText("Item Stats") { Color = Color.White });
+                            descriptions.Add(new SharpText(" \n") { Color = Color.White });
                             descriptions.AddRange(equipmentTextService.BuildEquipmentText(item.Item));
-                            descriptions.Add(new SharpText("Stat Changes") { Color = Color.White });
+                            descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
                             descriptions.AddRange(equipmentTextService.GetComparisonText(item.Item, characterData));
                         }
                     }
