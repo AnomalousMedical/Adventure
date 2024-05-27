@@ -25,6 +25,7 @@ class PickUpTreasureMenu
     private readonly IPersistenceWriter persistenceWriter;
     private readonly IInventoryFunctions inventoryFunctions;
     private readonly ILanguageService languageService;
+    private readonly EquipmentTextService equipmentTextService;
     private Stack<ITreasure> currentTreasure;
     SharpButton take = new SharpButton() { Text = "Take" };
     SharpButton use = new SharpButton() { Text = "Use" };
@@ -37,7 +38,7 @@ class PickUpTreasureMenu
     SharpText currentCharacter = new SharpText() { Color = Color.White };
     SharpText inventoryInfo = new SharpText() { Color = Color.White };
     SharpText info = new SharpText() { Color = Color.White };
-    SharpText description = new SharpText() { Color = Color.White };
+    List<SharpText> descriptions;
     SharpText promptText = new SharpText() { Color = Color.White };
     private int currentSheet;
     private bool replacingItem = false;
@@ -59,7 +60,8 @@ class PickUpTreasureMenu
         IScreenPositioner screenPositioner,
         IPersistenceWriter persistenceWriter,
         IInventoryFunctions inventoryFunctions,
-        ILanguageService languageService
+        ILanguageService languageService,
+        EquipmentTextService equipmentTextService
     )
     {
         this.persistence = persistence;
@@ -69,6 +71,7 @@ class PickUpTreasureMenu
         this.persistenceWriter = persistenceWriter;
         this.inventoryFunctions = inventoryFunctions;
         this.languageService = languageService;
+        this.equipmentTextService = equipmentTextService;
     }
 
     public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
@@ -132,8 +135,21 @@ class PickUpTreasureMenu
             ShowFullStats(sheet);
         }
 
-        if (description.Text == null)
+        if (descriptions == null)
         {
+            descriptions = new List<SharpText>();
+
+            var description = new SharpText() { Color = Color.White };
+            description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);
+            descriptions.Add(description);
+            
+            if (treasure.CanEquipOnPickup && treasure.Item != null)
+            {
+                descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                descriptions.AddRange(equipmentTextService.BuildEquipmentText(treasure.Item));
+                descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
+                descriptions.AddRange(equipmentTextService.GetComparisonText(treasure.Item, sheet));
+            }
             description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);
         }
 
@@ -146,10 +162,13 @@ class PickUpTreasureMenu
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
+        IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) }
+            .Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
+
         layout =
             new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
             new MaxWidthLayout(scaleHelper.Scaled(600),
-            new ColumnLayout(new KeepWidthRightLayout(next), description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+            new ColumnLayout(columnItems) { Margin = new IntPad(scaleHelper.Scaled(10)) }
         ));
         layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
@@ -214,7 +233,11 @@ class PickUpTreasureMenu
             sharpGui.Text(inventoryInfo);
             sharpGui.Text(itemInfo);
         }
-        sharpGui.Text(description);
+
+        foreach (var description in descriptions)
+        {
+            sharpGui.Text(description);
+        }
         sharpGui.Text(info);
 
         if (DateTime.Now < allowPickupTime)
@@ -315,6 +338,7 @@ class PickUpTreasureMenu
                     {
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
+                    descriptions = null;
                 }
                 if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
@@ -324,6 +348,7 @@ class PickUpTreasureMenu
                     {
                         currentSheet = 0;
                     }
+                    descriptions = null;
                 }
             }
         }
@@ -334,7 +359,7 @@ class PickUpTreasureMenu
     private void NextTreasure()
     {
         currentTreasure.Pop();
-        description.Text = null;
+        descriptions = null;
     }
 
     private void ShowVitalStats()

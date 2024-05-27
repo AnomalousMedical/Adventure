@@ -25,6 +25,8 @@ namespace Adventure
         int? Id { get; }
 
         string FortuneText { get; }
+
+        InventoryItem Item { get; }
     }
 
     class Treasure : ITreasure
@@ -42,6 +44,8 @@ namespace Adventure
         public int? Id { get; init; }
 
         public string FortuneText { get; init; }
+
+        public InventoryItem Item => inventoryItem;
 
         public Treasure(InventoryItem inventoryItem)
         {
@@ -79,6 +83,8 @@ namespace Adventure
         public int? Id { get; init; }
 
         public string FortuneText { get; init; }
+
+        public InventoryItem Item => null;
 
         public PlotItemTreasure(PlotItems plotItem, string infoId)
         {
