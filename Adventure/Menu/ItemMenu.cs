@@ -57,7 +57,7 @@ namespace Adventure.Menu
         {
             if (SelectedItem == null) { return; }
 
-            if(itemPrompt.Text == null)
+            if (itemPrompt.Text == null)
             {
                 itemName = languageService.Current.Items.GetText(SelectedItem.InfoId);
                 itemPrompt.Text = "What will you do with your " + itemName + "?";
@@ -251,12 +251,13 @@ namespace Adventure.Menu
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
         SharpText info = new SharpText() { Color = Color.White };
-        SharpText description = new SharpText() { Color = Color.White };
+        List<SharpText> descriptions = null;
         private int currentSheet;
         private UseItemMenu useItemMenu;
         private readonly ILanguageService languageService;
         private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly CameraMover cameraMover;
+        private readonly EquipmentTextService equipmentTextService;
         private List<ButtonColumnItem<InventoryItem>> currentItems;
 
         public ItemMenu
@@ -268,7 +269,8 @@ namespace Adventure.Menu
             UseItemMenu useItemMenu,
             ILanguageService languageService,
             CharacterMenuPositionService characterMenuPositionService,
-            CameraMover cameraMover
+            CameraMover cameraMover,
+            EquipmentTextService equipmentTextService
         )
         {
             this.persistence = persistence;
@@ -279,6 +281,7 @@ namespace Adventure.Menu
             this.languageService = languageService;
             this.characterMenuPositionService = characterMenuPositionService;
             this.cameraMover = cameraMover;
+            this.equipmentTextService = equipmentTextService;
             useItemMenu.Closed += UseItemMenu_Closed;
         }
 
@@ -297,7 +300,7 @@ namespace Adventure.Menu
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
 
-            if(characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
+            if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
             {
                 cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
                 characterMenuPosition.FaceCamera();
@@ -312,7 +315,7 @@ namespace Adventure.Menu
                 ShowFullStats(characterData);
             }
 
-            if (description.Text == null)
+            if (descriptions == null)
             {
                 if (currentItems != null)
                 {
@@ -320,7 +323,18 @@ namespace Adventure.Menu
                     if (descriptionIndex < currentItems.Count)
                     {
                         var item = currentItems[descriptionIndex];
+                        var description = new SharpText() { Color = Color.White };
                         description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
+
+                        descriptions = new List<SharpText>();
+                        descriptions.Add(description);
+                        if (item.Item.Equipment != null)
+                        {
+                            descriptions.Add(new SharpText("Item Stats") { Color = Color.White });
+                            descriptions.AddRange(equipmentTextService.BuildEquipmentText(item.Item));
+                            descriptions.Add(new SharpText("Stat Changes") { Color = Color.White });
+                            descriptions.AddRange(equipmentTextService.GetComparisonText(item.Item, characterData));
+                        }
                     }
                 }
             }
@@ -334,10 +348,19 @@ namespace Adventure.Menu
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
+            IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) };
+            if (descriptions != null)
+            {
+                columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
+            }
+
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new KeepWidthRightLayout(next), description) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(columnItems)
+               {
+                   Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
+               }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
@@ -345,7 +368,13 @@ namespace Adventure.Menu
             layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
             sharpGui.Text(info);
-            sharpGui.Text(description);
+            if (descriptions != null)
+            {
+                foreach (var description in descriptions)
+                {
+                    sharpGui.Text(description);
+                }
+            }
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
@@ -363,7 +392,7 @@ namespace Adventure.Menu
                 var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
                 if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
                 {
-                    description.Text = null;
+                    descriptions = null;
                 }
                 useItemMenu.SelectedItem = newSelection;
 
@@ -380,7 +409,7 @@ namespace Adventure.Menu
                             currentSheet = persistence.Current.Party.Members.Count - 1;
                         }
                         currentItems = null;
-                        description.Text = null;
+                        descriptions = null;
                         itemButtons.FocusTop(sharpGui);
                     }
                 }
@@ -395,7 +424,7 @@ namespace Adventure.Menu
                             currentSheet = 0;
                         }
                         currentItems = null;
-                        description.Text = null;
+                        descriptions = null;
                         itemButtons.FocusTop(sharpGui);
                     }
                 }
@@ -404,7 +433,7 @@ namespace Adventure.Menu
                     if (allowChanges)
                     {
                         currentItems = null;
-                        description.Text = null;
+                        descriptions = null;
                         menu.RequestSubMenu(menu.RootMenu, gamepad);
                     }
                 }
@@ -494,7 +523,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
 
         private void UseItemMenu_Closed()
         {
-            description.Text = null;
+            descriptions = null;
             currentItems = null;
         }
     }
