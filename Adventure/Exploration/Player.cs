@@ -78,7 +78,7 @@ namespace Adventure
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 5, -12);
-        private Vector3 zoomedCameraOffset = new Vector3(0, 1, -2);
+        private Vector3 zoomedCameraOffset = new Vector3(0, 2, -2.8f);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
         private Vector3 currentPosition;
@@ -668,6 +668,8 @@ namespace Adventure
                     c.PlayerSprite = follower.PlayerSprite;
                     c.CharacterSheet = follower.CharacterSheet;
                     c.FollowerManager = followerManager;
+                    c.ZoomedCameraOffset = this.zoomedCameraOffset;
+                    c.CameraAngle = this.cameraAngle;
                 });
                 this.followers.Add(followerInstance);
             }
