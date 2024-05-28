@@ -93,6 +93,8 @@ namespace Adventure.Menu
         private readonly ILanguageService languageService;
         private readonly CharacterStatsTextService characterStatsTextService;
         private readonly EquipmentTextService equipmentTextService;
+        private readonly CameraMover cameraMover;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -113,7 +115,9 @@ namespace Adventure.Menu
             IWorldDatabase worldDatabase,
             ILanguageService languageService,
             CharacterStatsTextService characterStatsTextService,
-            EquipmentTextService equipmentTextService
+            EquipmentTextService equipmentTextService,
+            CameraMover cameraMover,
+            CharacterMenuPositionService characterMenuPositionService
         )
         {
             this.persistence = persistence;
@@ -125,6 +129,8 @@ namespace Adventure.Menu
             this.languageService = languageService;
             this.characterStatsTextService = characterStatsTextService;
             this.equipmentTextService = equipmentTextService;
+            this.cameraMover = cameraMover;
+            this.characterMenuPositionService = characterMenuPositionService;
             this.confirmBuyMenu.Closed += ConfirmBuyMenu_Closed;
         }
 
@@ -156,6 +162,12 @@ namespace Adventure.Menu
                 currentSheet = 0;
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
+
+            if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+                characterMenuPosition.FaceCamera();
+            }
 
             if (infos == null)
             {

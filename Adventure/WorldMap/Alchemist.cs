@@ -217,6 +217,7 @@ namespace Adventure.WorldMap
                 buyMenu.CurrentShopType = ShopType.Alchemist;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
                 await buyMenu.WaitForClose();
+                cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                 await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Goodbye, args.GamepadId);
             });
         }
