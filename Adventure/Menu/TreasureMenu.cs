@@ -1,45 +1,45 @@
 ﻿using Adventure.Items;
 using Adventure.Services;
-using Engine;
 using Engine.Platform;
 using RpgMath;
-using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Menu
+namespace Adventure.Menu;
+
+class TreasureMenu
+(
+    PickUpTreasureMenu pickUpTreasureMenu,
+    CharacterMenuPositionService characterMenuPositionService,
+    CameraMover cameraMover
+) : IExplorationSubMenu
 {
-    class TreasureMenu : IExplorationSubMenu
+    public void GatherTreasures(IEnumerable<ITreasure> treasure)
     {
-        private readonly PickUpTreasureMenu pickUpTreasureMenu;
-
-        public TreasureMenu
-        (
-            PickUpTreasureMenu pickUpTreasureMenu
-        )
+        pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500),
+        (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
         {
-            this.pickUpTreasureMenu = pickUpTreasureMenu;
-        }
-
-        public void GatherTreasures(IEnumerable<ITreasure> treasure)
+            treasure.Use(inventory, user, inventoryFunctions, gameState);
+        },
+        cd =>
         {
-            pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500),
-            (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
+            if(characterMenuPositionService.TryGetEntry(cd.CharacterSheet, out var characterMenuPosition))
             {
-                treasure.Use(inventory, user, inventoryFunctions, gameState);
-            });
-        }
-
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
-        {
-            if (pickUpTreasureMenu.Update(gamepad))
-            {
-                menu.RequestSubMenu(null, gamepad);
-                return;
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+                characterMenuPosition.FaceCamera();
             }
+        });
+    }
+
+    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
+    {
+        if (pickUpTreasureMenu.Update(gamepad))
+        {
+            menu.RequestSubMenu(null, gamepad);
+            return;
         }
     }
 }

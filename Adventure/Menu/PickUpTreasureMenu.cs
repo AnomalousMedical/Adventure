@@ -54,14 +54,18 @@ class PickUpTreasureMenu
 
     public delegate void UseCallback(ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
     private UseCallback useCallback;
+    private Action<Persistence.CharacterData> activeCharacterChanged;
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback)
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback, Action<Persistence.CharacterData> activeCharacterChanged = null)
     {
         this.useCallback = useCallback;
+        this.activeCharacterChanged = activeCharacterChanged;
         currentTreasure = new Stack<ITreasure>(treasure);
         persistenceWriter.AddSaveBlock(SaveBlocker.Treasure);
         replacingItem = false;
         allowPickupTime = DateTime.Now + pickupDelay;
+
+        FireActiveCharacterChanged();
     }
 
     public bool Update(GamepadId gamepadId)
@@ -332,6 +336,7 @@ class PickUpTreasureMenu
                     }
                     descriptions = null;
                     infos = null;
+                    FireActiveCharacterChanged();
                 }
                 if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
@@ -343,6 +348,7 @@ class PickUpTreasureMenu
                     }
                     descriptions = null;
                     infos = null;
+                    FireActiveCharacterChanged();
                 }
             }
         }
@@ -355,5 +361,18 @@ class PickUpTreasureMenu
         currentTreasure.Pop();
         descriptions = null;
         infos = null;
+    }
+
+    private void FireActiveCharacterChanged()
+    {
+        if (activeCharacterChanged != null)
+        {
+            if (currentSheet > persistence.Current.Party.Members.Count)
+            {
+                currentSheet = 0;
+            }
+            var sheet = persistence.Current.Party.Members[currentSheet];
+            this.activeCharacterChanged.Invoke(sheet);
+        }
     }
 }
