@@ -27,11 +27,12 @@ namespace Adventure.Menu
         private readonly ILanguageService languageService;
         private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly CameraMover cameraMover;
+        private readonly CharacterStatsTextService characterStatsTextService;
         private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText() { Color = Color.White };
+        List<SharpText> infos;
         private int currentSheet;
 
         private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
@@ -49,7 +50,8 @@ namespace Adventure.Menu
             IDamageCalculator damageCalculator,
             ILanguageService languageService,
             CharacterMenuPositionService characterMenuPositionService,
-            CameraMover cameraMover
+            CameraMover cameraMover,
+            CharacterStatsTextService characterStatsTextService
         )
         {
             this.persistence = persistence;
@@ -61,6 +63,7 @@ namespace Adventure.Menu
             this.languageService = languageService;
             this.characterMenuPositionService = characterMenuPositionService;
             this.cameraMover = cameraMover;
+            this.characterStatsTextService = characterStatsTextService;
         }
 
         public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
@@ -100,65 +103,9 @@ namespace Adventure.Menu
                 characterMenuPosition.FaceCamera();
             }
 
-            if (choosingCharacter)
+            if (infos == null)
             {
-                var text = "";
-                foreach (var character in persistence.Current.Party.Members)
-                {
-                    text += @$"{character.CharacterSheet.Name}
-HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}
-MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}
-  
-";
-                }
-                info.Text = text;
-            }
-            else
-            {
-                info.Text =
-    $@"{characterData.CharacterSheet.Name}
- 
-Lvl: {characterData.CharacterSheet.Level}
-
-HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
-MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
- 
-Att:   {characterData.CharacterSheet.Attack}
-Att%:  {characterData.CharacterSheet.AttackPercent}
-MAtt:  {characterData.CharacterSheet.MagicAttack}
-MAtt%: {characterData.CharacterSheet.MagicAttackPercent}
-Def:   {characterData.CharacterSheet.Defense}
-Def%:  {characterData.CharacterSheet.DefensePercent}
-MDef:  {characterData.CharacterSheet.MagicDefense}
-MDef%: {characterData.CharacterSheet.MagicDefensePercent}
-Item%: {characterData.CharacterSheet.TotalItemUsageBonus * 100f + 100f}
-Heal%: {characterData.CharacterSheet.TotalHealingBonus * 100f + 100f}
- 
-Str: {characterData.CharacterSheet.TotalStrength}
-Mag: {characterData.CharacterSheet.TotalMagic}
-Vit: {characterData.CharacterSheet.TotalVitality}
-Spr: {characterData.CharacterSheet.TotalSpirit}
-Dex: {characterData.CharacterSheet.TotalDexterity}
-Lck: {characterData.CharacterSheet.TotalLuck}
- ";
-
-                foreach(var item in characterData.CharacterSheet.EquippedItems())
-                {
-                    info.Text += $@"
-{languageService.Current.Items.GetText(item.InfoId)}";
-                }
-
-                foreach (var item in characterData.CharacterSheet.Buffs)
-                {
-                    info.Text += $@"
-{item.Name}";
-                }
-
-                foreach (var item in characterData.CharacterSheet.Effects)
-                {
-                    info.Text += $@"
-{item.StatusEffect}";
-                }
+                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList();
             }
 
             ILayoutItem layout;
@@ -166,7 +113,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(previous, info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
@@ -180,7 +127,10 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
             layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
-            sharpGui.Text(info);
+            foreach (var info in infos)
+            {
+                sharpGui.Text(info);
+            }
 
             skillButtons.Margin = scaleHelper.Scaled(10);
             skillButtons.MaxWidth = scaleHelper.Scaled(900);
@@ -204,6 +154,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                     characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                     {
                         selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                        infos = null;
                     }))
                     .ToList();
                 }
@@ -221,6 +172,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                         currentSheet = persistence.Current.Party.Members.Count - 1;
                     }
                     currentPlayerSkills = null;
+                    infos = null;
                 }
             }
             if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
@@ -233,6 +185,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                         currentSheet = 0;
                     }
                     currentPlayerSkills = null;
+                    infos = null;
                 }
             }
             if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
@@ -241,6 +194,7 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                 {
                     currentPlayerSkills = null;
                     menu.RequestSubMenu(menu.RootMenu, gamepad);
+                    infos = null;
                 }
             }
         }
