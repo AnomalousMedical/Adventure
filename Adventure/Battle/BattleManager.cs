@@ -117,6 +117,7 @@ namespace Adventure.Battle
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
         bool allowBattleFinish = false;
         bool showEndBattleButton = false;
+        long startBattleDelay;
 
 
         class TurnQueueEntry
@@ -199,6 +200,7 @@ namespace Adventure.Battle
 
         public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy)
         {
+            startBattleDelay = 1 * Clock.SecondsToMicro;
             this.stealCb = stealCb;
             var currentZ = 3;
             var styleIndex = 0;
@@ -315,6 +317,13 @@ namespace Adventure.Battle
 
         public IBattleManager.Result Update(Clock clock)
         {
+            if(startBattleDelay > 0)
+            {
+                cursor.Visible = false;
+                startBattleDelay -= clock.DeltaTimeMicro;
+                return IBattleManager.Result.ContinueBattle;
+            }
+
             buffManager.Update(clock);
 
             var result = IBattleManager.Result.ContinueBattle;
