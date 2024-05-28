@@ -50,7 +50,7 @@ namespace Adventure.Services
         IntVector2 ElementalStonePosition { get; }
     }
 
-    record ShopEntry(String InfoId, long Cost, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
+    record ShopEntry(String InfoId, long Cost, bool IsEquipment, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
 
     class WorldDatabase : IWorldDatabase
     {
@@ -830,15 +830,15 @@ namespace Adventure.Services
                 case ShopType.Alchemist:
                     if (plotItems.Contains(PlotItems.AlchemistUpgrade))
                     {
-                        yield return new ShopEntry(nameof(ItemText.Mana3), 135, () => PotionCreator.CreateManaPotion(55));
+                        yield return new ShopEntry(nameof(ItemText.Mana3), 135, false, () => PotionCreator.CreateManaPotion(55));
                     }
 
-                    yield return new ShopEntry(nameof(ItemText.Mana2), 70, () => PotionCreator.CreateManaPotion(35));
-                    yield return new ShopEntry(nameof(ItemText.FerrymansBribe), 350, () => PotionCreator.CreateFerrymansBribe());
+                    yield return new ShopEntry(nameof(ItemText.Mana2), 70, false, () => PotionCreator.CreateManaPotion(35));
+                    yield return new ShopEntry(nameof(ItemText.FerrymansBribe), 350, false, () => PotionCreator.CreateFerrymansBribe());
 
                     if(!plotItems.Contains(PlotItems.RuneOfElectricity))
                     {
-                        yield return new ShopEntry(nameof(ItemText.RuneOfElectricity), 1500, null, PlotItems.RuneOfElectricity);
+                        yield return new ShopEntry(nameof(ItemText.RuneOfElectricity), 1500, false, null, PlotItems.RuneOfElectricity);
                     }
 
                     break;
@@ -847,16 +847,16 @@ namespace Adventure.Services
                     if (plotItems.Contains(PlotItems.BlacksmithUpgrade))
                     {
                         var treasureLevel = 40;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Sword1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreSpear2), 350, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear2), nameof(Spear1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreHammer2), 350, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer2), nameof(Hammer1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Sword1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSpear2), 350, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear2), nameof(Spear1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreHammer2), 350, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer2), nameof(Hammer1)));
                     }
 
                     {
                         var treasureLevel = 15;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(Sword1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(Spear1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(Hammer1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(Sword1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(Spear1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(Hammer1)));
                     }
                     break;
             }

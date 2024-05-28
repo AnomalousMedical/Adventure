@@ -2,6 +2,8 @@
 using Engine;
 using Engine.Platform;
 using SharpGui;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +17,8 @@ namespace Adventure.Menu
         private readonly IScreenPositioner screenPositioner;
         SharpButton buy = new SharpButton() { Text = "Buy", Layer = BuyMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = BuyMenu.UseItemMenuLayer };
+
+        public event Action Closed;
 
         public ShopEntry SelectedItem { get; set; }
 
@@ -68,16 +72,22 @@ namespace Adventure.Menu
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
                     }
                 }
-                this.SelectedItem = null;
+                FireClosed();
             }
             if (sharpGui.Button(cancel, gamepadId, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
-                this.SelectedItem = null;
+                FireClosed();
             }
+        }
+
+        private void FireClosed()
+        {
+            this.SelectedItem = null;
+            Closed?.Invoke();
         }
     }
 
-    class BuyMenu : IExplorationSubMenu
+    class BuyMenu : IExplorationSubMenu, IDisposable
     {
         public const float ItemButtonsLayer = 0.15f;
         public const float UseItemMenuLayer = 0.25f;
@@ -89,12 +99,14 @@ namespace Adventure.Menu
         private readonly ConfirmBuyMenu confirmBuyMenu;
         private readonly IWorldDatabase worldDatabase;
         private readonly ILanguageService languageService;
+        private readonly CharacterStatsTextService characterStatsTextService;
+        private readonly EquipmentTextService equipmentTextService;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
-        SharpText info = new SharpText() { Color = Color.White };
-        SharpText info2 = new SharpText() { Color = Color.White };
+        List<SharpText> infos;
+        List<SharpText> descriptions;
         private int currentSheet;
 
         private TaskCompletionSource menuClosedTask;
@@ -107,7 +119,9 @@ namespace Adventure.Menu
             IScreenPositioner screenPositioner,
             ConfirmBuyMenu confirmBuyMenu,
             IWorldDatabase worldDatabase,
-            ILanguageService languageService
+            ILanguageService languageService,
+            CharacterStatsTextService characterStatsTextService,
+            EquipmentTextService equipmentTextService
         )
         {
             this.persistence = persistence;
@@ -117,6 +131,15 @@ namespace Adventure.Menu
             this.confirmBuyMenu = confirmBuyMenu;
             this.worldDatabase = worldDatabase;
             this.languageService = languageService;
+            this.characterStatsTextService = characterStatsTextService;
+            this.equipmentTextService = equipmentTextService;
+            this.confirmBuyMenu.Closed += ConfirmBuyMenu_Closed;
+        }
+
+        public void Dispose()
+        {
+
+            this.confirmBuyMenu.Closed -= ConfirmBuyMenu_Closed;
         }
 
         public IExplorationSubMenu PreviousMenu { get; set; }
@@ -142,54 +165,64 @@ namespace Adventure.Menu
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
 
-            info.Text =
-$@"{characterData.CharacterSheet.Name}
- 
-Lvl: {characterData.CharacterSheet.Level}
- 
-Items:  {characterData.Inventory.Items.Count} / {characterData.CharacterSheet.InventorySize}
- 
-HP:  {characterData.CharacterSheet.CurrentHp} / {characterData.CharacterSheet.Hp}
-MP:  {characterData.CharacterSheet.CurrentMp} / {characterData.CharacterSheet.Mp}
- 
-Att:   {characterData.CharacterSheet.Attack}
-Att%:  {characterData.CharacterSheet.AttackPercent}
-MAtt:  {characterData.CharacterSheet.MagicAttack}
-MAtt%: {characterData.CharacterSheet.MagicAttackPercent}
-Def:   {characterData.CharacterSheet.Defense}
-Def%:  {characterData.CharacterSheet.DefensePercent}
-MDef:  {characterData.CharacterSheet.MagicDefense}
-MDef%: {characterData.CharacterSheet.MagicDefensePercent}
- 
-Str: {characterData.CharacterSheet.TotalStrength}
-Mag: {characterData.CharacterSheet.TotalMagic}
-Vit: {characterData.CharacterSheet.TotalVitality}
-Spr: {characterData.CharacterSheet.TotalSpirit}
-Dex: {characterData.CharacterSheet.TotalDexterity}
-Lck: {characterData.CharacterSheet.TotalLuck}
-";
-
-            foreach (var item in characterData.CharacterSheet.EquippedItems())
+            if (infos == null)
             {
-                info.Text += $@"
-{languageService.Current.Items.GetText(item.InfoId)}";
+                infos = characterStatsTextService.GetFullStats(characterData).ToList();
             }
 
-            info2.Text = $@"Gold: {persistence.Current.Party.Gold}";
+            var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
+                .Select(i => new ButtonColumnItem<ShopEntry>($"{languageService.Current.Items.GetText(i.InfoId)} - {i.Cost}", i))
+                .ToList();
+
+            if (descriptions == null)
+            {
+                var descriptionIndex = itemButtons.FocusedIndex(sharpGui);
+                if (descriptionIndex < shopItems.Count)
+                {
+                    var item = shopItems[descriptionIndex];
+                    var description = new SharpText() { Color = Color.White };
+                    description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
+
+                    descriptions = new List<SharpText>();
+                    descriptions.Add(description);
+                    descriptions.Add(new SharpText($@"Gold: {persistence.Current.Party.Gold}") { Color = Color.White});
+                    descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.Red : Color.White });
+                    if (item.Item.IsEquipment)
+                    {
+                        var equipment = item.Item.CreateItem?.Invoke();
+                        if (equipment != null)
+                        {
+                            descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                            descriptions.AddRange(equipmentTextService.BuildEquipmentText(equipment));
+                            descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
+                            descriptions.AddRange(equipmentTextService.GetComparisonText(equipment, characterData));
+                        }
+                    }
+                }
+            }
 
             ILayoutItem layout;
 
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(previous, info) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+
+            IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) };
+            if (descriptions != null)
+            {
+                columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
+            }
 
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(next, info2) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(columnItems)
+               {
+                   Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
+               }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
@@ -200,15 +233,24 @@ Lck: {characterData.CharacterSheet.TotalLuck}
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            sharpGui.Text(info);
-            sharpGui.Text(info2);
+            foreach (var info in infos)
+            {
+                sharpGui.Text(info);
+            }
+            foreach(var description in descriptions)
+            {
+                sharpGui.Text(description);
+            }
 
             confirmBuyMenu.Update(characterData, gamepadId);
 
-            var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
-                .Select(i => new ButtonColumnItem<ShopEntry>($"{languageService.Current.Items.GetText(i.InfoId)} - {i.Cost}", i))
-                .ToArray();
-            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Length, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+            var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
+            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+            if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
+            {
+                descriptions = null;
+                infos = null;
+            }
             if (selectedItem != null)
             {
                 var canBuy = selectedItem.CreateItem == null || characterData.HasRoom;
@@ -218,39 +260,54 @@ Lck: {characterData.CharacterSheet.TotalLuck}
                 }
             }
 
-            if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
+            if (allowChanges)
             {
-                if (allowChanges)
+                if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
-                    --currentSheet;
-                    if (currentSheet < 0)
+                    if (allowChanges)
                     {
-                        currentSheet = persistence.Current.Party.Members.Count - 1;
+                        --currentSheet;
+                        if (currentSheet < 0)
+                        {
+                            currentSheet = persistence.Current.Party.Members.Count - 1;
+                        }
+                        descriptions = null;
+                        infos = null;
+                    }
+                }
+                if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
+                {
+                    if (allowChanges)
+                    {
+                        ++currentSheet;
+                        if (currentSheet >= persistence.Current.Party.Members.Count)
+                        {
+                            currentSheet = 0;
+                        }
+                        descriptions = null;
+                        infos = null;
+                    }
+                }
+                if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+                {
+                    if (allowChanges)
+                    {
+                        //This order with the task is very important
+                        var tempTask = menuClosedTask;
+                        menuClosedTask = null;
+                        menu.RequestSubMenu(PreviousMenu, gamepadId);
+                        tempTask?.SetResult();
+                        descriptions = null;
+                        infos = null;
                     }
                 }
             }
-            if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
-            {
-                if (allowChanges)
-                {
-                    ++currentSheet;
-                    if (currentSheet >= persistence.Current.Party.Members.Count)
-                    {
-                        currentSheet = 0;
-                    }
-                }
-            }
-            if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepadId))
-            {
-                if (allowChanges)
-                {
-                    //This order with the task is very important
-                    var tempTask = menuClosedTask;
-                    menuClosedTask = null;
-                    menu.RequestSubMenu(PreviousMenu, gamepadId);
-                    tempTask?.SetResult();
-                }
-            }
+        }
+
+        private void ConfirmBuyMenu_Closed()
+        {
+            descriptions = null;
+            infos = null;
         }
     }
 }
