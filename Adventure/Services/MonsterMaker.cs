@@ -192,37 +192,35 @@ namespace Adventure.Services
                 var elementColor = ElementColors.GetElementalHue(absorbElement.Value);
                 enemy.Asset.SetupSwap(elementColor, 100, 50);
 
-                const int weakStart = 0;
-                const int medStart = 40;
-                const int strongStart = 55;
+                const int weakStart = 35;
+                const int medStart = 50;
+                const int strongStart = 60;
                 const int strongEnd = 99;
-
-                const float castChance = 50f / 100f;
 
                 switch (absorbElement)
                 {
                     case Element.Ice:
                         enemy.Skills = new[]
                         {
-                            new BattleStats.SkillInfo(nameof(Ice), weakStart, medStart, castChance),
-                            new BattleStats.SkillInfo(nameof(StrongIce), medStart, strongStart, castChance),
-                            new BattleStats.SkillInfo(nameof(ArchIce), strongStart, strongEnd, castChance),
+                            new BattleStats.SkillInfo(nameof(Ice), weakStart, medStart, 0.25f),
+                            new BattleStats.SkillInfo(nameof(StrongIce), medStart, strongStart, 0.25f),
+                            new BattleStats.SkillInfo(nameof(ArchIce), strongStart, strongEnd, 0.25f),
                         };
                         break;
                     case Element.Fire:
                         enemy.Skills = new[]
                         {
-                            new BattleStats.SkillInfo(nameof(Fire), weakStart, medStart, castChance),
-                            new BattleStats.SkillInfo(nameof(StrongFire), medStart, strongStart, castChance),
-                            new BattleStats.SkillInfo(nameof(ArchFire), strongStart, strongEnd, castChance),
+                            new BattleStats.SkillInfo(nameof(Fire), weakStart, medStart, 0.35f),
+                            new BattleStats.SkillInfo(nameof(StrongFire), medStart, strongStart, 0.35f),
+                            new BattleStats.SkillInfo(nameof(ArchFire), strongStart, strongEnd, 0.35f),
                         };
                         break;
                     case Element.Electricity:
                         enemy.Skills = new[]
                         {
-                            new BattleStats.SkillInfo(nameof(Lightning), weakStart, medStart, castChance),
-                            new BattleStats.SkillInfo(nameof(StrongLightning), medStart, strongStart, castChance),
-                            new BattleStats.SkillInfo(nameof(ArchLightning), strongStart, strongEnd, castChance),
+                            new BattleStats.SkillInfo(nameof(Lightning), weakStart, medStart, 0.45f),
+                            new BattleStats.SkillInfo(nameof(StrongLightning), medStart, strongStart, 0.45f),
+                            new BattleStats.SkillInfo(nameof(ArchLightning), strongStart, strongEnd, 0.45f),
                         };
                         break;
                 }
