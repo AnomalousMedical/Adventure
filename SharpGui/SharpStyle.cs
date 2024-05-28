@@ -122,7 +122,7 @@ namespace SharpGui
                 BorderColor = Color.FromARGB(0xff000000).ToSrgb(),
                 ShadowColor = Color.FromARGB(0x80000000).ToSrgb(),
                 ShadowOffset = scaleHelper.Scaled(new IntVector2(6, 6)),
-                Padding = scaleHelper.Scaled(new IntPad(28)),
+                Padding = scaleHelper.Scaled(new IntPad(22)),
                 Border = scaleHelper.Scaled(new IntPad(5)),
                 Hover =
                 {
