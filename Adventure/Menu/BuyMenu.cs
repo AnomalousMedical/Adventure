@@ -10,31 +10,21 @@ using System.Threading.Tasks;
 namespace Adventure.Menu
 {
     class ConfirmBuyMenu
+    (
+        Persistence persistence,
+        ISharpGui sharpGui,
+        IScaleHelper scaleHelper,
+        IScreenPositioner screenPositioner,
+        ILanguageService languageService
+    )
     {
-        private readonly Persistence persistence;
-        private readonly ISharpGui sharpGui;
-        private readonly IScaleHelper scaleHelper;
-        private readonly IScreenPositioner screenPositioner;
-        SharpButton buy = new SharpButton() { Text = "Buy", Layer = BuyMenu.UseItemMenuLayer };
-        SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = BuyMenu.UseItemMenuLayer };
+        SharpText prompt = new SharpText() { Color = Color.White, Layer = BuyMenu.UseItemMenuLayer };
+        SharpButton buy = new SharpButton() { Text = "Yes", Layer = BuyMenu.UseItemMenuLayer };
+        SharpButton cancel = new SharpButton() { Text = "No", Layer = BuyMenu.UseItemMenuLayer };
 
         public event Action Closed;
 
         public ShopEntry SelectedItem { get; set; }
-
-        public ConfirmBuyMenu
-        (
-            Persistence persistence,
-            ISharpGui sharpGui,
-            IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner
-        )
-        {
-            this.persistence = persistence;
-            this.sharpGui = sharpGui;
-            this.scaleHelper = scaleHelper;
-            this.screenPositioner = screenPositioner;
-        }
 
         public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
         {
@@ -46,16 +36,18 @@ namespace Adventure.Menu
                 sharpGui.StealFocus(buy.Id);
             }
 
-            buy.Text = $"Buy {SelectedItem.Cost} gold";
+            prompt.Text = $"Should {characterData.CharacterSheet.Name} buy {languageService.Current.Items.GetText(SelectedItem.InfoId)} for {SelectedItem.Cost} gold?";
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(buy, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new KeepWidthCenterLayout(prompt), buy, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
+            layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
+
+            sharpGui.Text(prompt);
 
             if (sharpGui.Button(buy, gamepadId, navUp: cancel.Id, navDown: cancel.Id))
             {
@@ -244,24 +236,24 @@ namespace Adventure.Menu
 
             confirmBuyMenu.Update(characterData, gamepadId);
 
-            var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
-            if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
-            {
-                descriptions = null;
-                infos = null;
-            }
-            if (selectedItem != null)
-            {
-                var canBuy = selectedItem.CreateItem == null || characterData.HasRoom;
-                if (canBuy)
-                {
-                    confirmBuyMenu.SelectedItem = selectedItem;
-                }
-            }
-
             if (allowChanges)
             {
+                var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
+                var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+                if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
+                {
+                    descriptions = null;
+                    infos = null;
+                }
+                if (selectedItem != null)
+                {
+                    var canBuy = (selectedItem.CreateItem == null || characterData.HasRoom) && persistence.Current.Party.Gold - selectedItem.Cost > 0;
+                    if (canBuy)
+                    {
+                        confirmBuyMenu.SelectedItem = selectedItem;
+                    }
+                }
+
                 if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
                     if (allowChanges)
