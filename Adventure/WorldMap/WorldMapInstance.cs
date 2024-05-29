@@ -439,7 +439,7 @@ namespace Adventure.WorldMap
                     var sprite = new Assets.NPC.Innkeeper();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                    o.Scale = new Vector3(0.35f, 0.35f, 1.0f);
                 });
 
                 placeables.Add(innkeeper);
@@ -452,7 +452,7 @@ namespace Adventure.WorldMap
                     var sprite = new Assets.NPC.Blacksmith();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                    o.Scale = new Vector3(0.35f, 0.35f, 1.0f);
                 });
 
                 placeables.Add(blacksmith);
@@ -465,7 +465,7 @@ namespace Adventure.WorldMap
                     var sprite = new Assets.NPC.Alchemist();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                    o.Scale = new Vector3(0.35f, 0.35f, 1.0f);
                 });
 
                 placeables.Add(alchemist);
@@ -478,7 +478,7 @@ namespace Adventure.WorldMap
                     var sprite = new Assets.NPC.FortuneTeller();
                     o.Sprite = sprite.CreateSprite();
                     o.SpriteMaterial = sprite.CreateMaterial();
-                    o.Scale = new Vector3(0.3f, 0.3f, 1.0f);
+                    o.Scale = new Vector3(0.35f, 0.35f, 1.0f);
                 });
 
                 placeables.Add(fortuneTeller);
