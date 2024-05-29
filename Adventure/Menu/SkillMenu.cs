@@ -100,6 +100,12 @@ class SkillMenu
                 var item = currentPlayerSkills[descriptionIndex];
                 var description = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Skills.GetDescription(item.Item), scaleHelper.Scaled(520), sharpGui);
                 descriptions.Add(new SharpText(description) { Color = Color.White });
+                var skill = skillFactory.CreateSkill(item.Item);
+                var mpCost = skill.GetMpCost(false, false);
+                if (mpCost != 0)
+                {
+                    descriptions.Add(new SharpText($"MP: {mpCost}") { Color = mpCost > characterData.CharacterSheet.CurrentMp ? Color.Red : Color.White });
+                }
             }
         }
 
@@ -161,6 +167,7 @@ class SkillMenu
                 {
                     selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
                     infos = null;
+                    descriptions = null;
                 }))
                 .ToList();
             }
