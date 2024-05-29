@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle.Skills;
+using Adventure.Items;
 using Adventure.Items.Creators;
 using Adventure.Services;
 using Adventure.WorldMap;
@@ -143,6 +144,29 @@ namespace Adventure.Text
                     , DexterityBoost: new(Text: "Dexterity Boost", Description: "Permanently increase the target's dexterity.")
                     , LuckBoost: new(Text: "Luck Boost", Description: "Permanently increase the target's luck.")
                     , LevelBoost: new(Text: "Mysterious Bubbling Potion", Description: "Its sure to be safe...")
+                ),
+                Skills: new SkillText
+                (
+                    Cure: new(Text: "Cure", Description: "Restore a small amount of hp. Use your active ability to restore more hp.")
+                    , MegaCure: new(Text: "Mega Cure", Description: "Restore a medium amount of hp. Use your active ability to restore more hp.")
+                    , UltraCure: new(Text: "Ultra Cure", Description: "Restore a large amount of hp. Use your active ability to restore more hp.")
+                    , Reanimate: new(Text: "Reanimate", Description: "Revive an ally from the brink of death. Use your active ability to heal all hp.")
+                    , Steal: new(Text: "Steal", Description: "Steal an item from a group of enemies. If the enemies have an item it will always be stolen.")
+                    , Fire: new(Text: "Fire", Description: "A basic fire spell. Use your active ability to do more damage.")
+                    , StrongFire: new(Text: "Strong Fire", Description: "A strong fire spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , ArchFire: new(Text: "Arch Fire", Description: "The ultimate fire spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , Ice: new(Text: "Ice", Description: "A basic ice spell. Use your active ability to do more damage.")
+                    , StrongIce: new(Text: "Strong Ice", Description: "A strong ice spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , ArchIce: new(Text: "Arch Ice", Description: "The ultimate ice spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , Lightning: new(Text: "Lightning", Description: "A basic electrical spell. Use your active ability to do more damage.")
+                    , StrongLightning: new(Text: "Strong Lightning", Description: "A strong electrical spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , ArchLightning: new(Text: "Arch Lightning", Description: "The ultimate electrical spell. Use your active ability to do more damage and hit all enemies. Cast this on your allies to add elemental multipliers to their attack.")
+                    , IonShread: new(Text: "Ion Shread", Description: "The ultimate magical attack. Be sure to use your active ability or it will drain your mana.")
+                    , BattleCry: new(Text: "Battle Cry", Description: "Raise an ally's strength and vitality by 30.")
+                    , WarCry: new(Text: "War Cry", Description: "Raise an ally's strength and vitality by 45.")
+                    , Focus: new(Text: "Focus", Description: "Raise an ally's magic and spirit by 30.")
+                    , IntenseFocus: new(Text: "Intense Focus", Description: "Raise an ally's magic and spirit by 45.")
+                    , Haste: new(Text: "Haste", Description: "Raise an ally's dexterity by 100 and give their turns priority in battle.")
                 )
             );
         }

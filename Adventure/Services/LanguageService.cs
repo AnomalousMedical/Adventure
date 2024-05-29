@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle.Skills;
+using Adventure.Items;
 using Adventure.WorldMap;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ namespace Adventure.Services
         Innkeeper.Text Innkeeper,
         ZoneEntrance.Text ZoneEntrance,
         //Items
-        ItemText Items
+        ItemText Items,
+        SkillText Skills
     );
 }
