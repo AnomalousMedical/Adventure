@@ -212,7 +212,7 @@ namespace Adventure.Battle
             sprite = new EventSprite(new Sprite(playerSpriteInfo.Animations));
             sprite.FrameChanged += Sprite_FrameChanged;
             sprite.AnimationChanged += Sprite_AnimationChanged;
-            sprite.SetAnimation("stand-left");
+            sprite.SetAnimation(IsDead ? "dead" : "stand-left");
 
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
@@ -299,7 +299,7 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    sprite.SetAnimation("stand-left");
+                    sprite.SetAnimation(IsDead ? "dead" : "stand-left");
                     if (IsDefending)
                     {
                         this.currentPosition = DefendPosition;
@@ -960,6 +960,8 @@ namespace Adventure.Battle
             {
                 characterSheet.PowerGauge = 0;
                 battleManager.PlayerDead(this);
+                sprite.SetAnimation("dead");
+                Sprite_FrameChanged(sprite);
                 characterTimer.TurnTimerActive = false;
                 characterTimer.Reset();
             }
@@ -1029,11 +1031,15 @@ namespace Adventure.Battle
             if (IsDead)
             {
                 battleManager.PlayerDead(this);
+                sprite.SetAnimation("dead");
+                Sprite_FrameChanged(sprite);
                 characterTimer.TurnTimerActive = false;
             }
             else
             {
                 characterTimer.TurnTimerActive = true;
+                sprite.SetAnimation("stand-left");
+                Sprite_FrameChanged(sprite);
             }
 
             characterTimer.Reset();
@@ -1066,15 +1072,23 @@ namespace Adventure.Battle
 
         public void MoveToStart()
         {
-            if (battleManager.GetActivePlayer() == this)
+            if (IsDead)
             {
-                this.currentPosition = this.ActivePosition;
-                sprite.SetAnimation("stand-down");
+                this.currentPosition = this.startPosition;
+                sprite.SetAnimation("dead");
             }
             else
             {
-                this.currentPosition = this.startPosition;
-                sprite.SetAnimation("stand-left");
+                if (battleManager.GetActivePlayer() == this)
+                {
+                    this.currentPosition = this.ActivePosition;
+                    sprite.SetAnimation("stand-down");
+                }
+                else
+                {
+                    this.currentPosition = this.startPosition;
+                    sprite.SetAnimation("stand-left");
+                }
             }
             Sprite_FrameChanged(sprite);
         }

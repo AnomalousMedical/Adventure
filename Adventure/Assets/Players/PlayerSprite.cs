@@ -8,7 +8,7 @@ namespace Adventure.Assets.Players;
 
 public abstract class PlayerSprite : IPlayerSprite
 {
-    const float SpriteWidth = 128f;
+    const float SpriteWidth = 160f;
     const float SpriteHeight = 70f;
     const float SpriteStepX = 32f / SpriteWidth;
     const float SpriteStepY = 32f / SpriteHeight;
@@ -409,6 +409,16 @@ public abstract class PlayerSprite : IPlayerSprite
                     SpriteFrameAttachment.FromFramePosition(3, 2, -0.02f, 6, 6), //Center of hand, aligns to above hand centers
                 }
             } )
+        },
+        { "dead", new SpriteAnimation(spriteWalkFrameSpeed,
+            new SpriteFrame(SpriteStepX * 4, SpriteStepY * 0, SpriteStepX * 5, SpriteStepY * 1)
+            {
+                Attachments = new List<SpriteFrameAttachment>()
+                {
+                    SpriteFrameAttachment.FromFramePosition(16, -230, +0.01f, 32, 32), //Right Hand
+                    SpriteFrameAttachment.FromFramePosition(16, -230, -0.01f, 32, 32), //Left Hand
+                }
+            })
         },
     };
 }
