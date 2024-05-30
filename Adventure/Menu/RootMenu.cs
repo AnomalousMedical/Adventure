@@ -95,7 +95,7 @@ namespace Adventure.Menu
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-            if (sharpGui.Button(skills, gamepad, navDown: items.Id, navUp: debug.Id))
+            if (sharpGui.Button(skills, gamepad, navDown: items.Id, navUp: close.Id))
             {
                 explorationMenu.RequestSubMenu(skillMenu, gamepad);
             }
