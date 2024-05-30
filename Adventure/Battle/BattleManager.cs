@@ -139,8 +139,6 @@ namespace Adventure.Battle
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
-        private List<SharpStyle> characterStyles;
-
         public BattleManager(EventManager eventManager,
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
@@ -182,14 +180,6 @@ namespace Adventure.Battle
             cursor = this.objectResolver.Resolve<TargetCursor>();
 
             zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
-
-            characterStyles = new List<SharpStyle>()
-            {
-                SharpStyle.CreateComplete(scaleHelper, OpenColor.Blue),
-                SharpStyle.CreateComplete(scaleHelper, OpenColor.Grape),
-                SharpStyle.CreateComplete(scaleHelper, OpenColor.Green),
-                SharpStyle.CreateComplete(scaleHelper, OpenColor.Orange),
-            };
         }
 
         public void Dispose()
@@ -213,7 +203,7 @@ namespace Adventure.Battle
                     c.Inventory = character.Inventory;
                     c.PlayerSprite = character.PlayerSprite;
                     c.Gamepad = (GamepadId)character.Player;
-                    c.UiStyle = characterStyles[styleIndex++ % characterStyles.Count];
+                    c.CharacterStyleIndex = character.StyleIndex;
                 }));
 
                 currentZ -= 2;

@@ -176,6 +176,8 @@ namespace Adventure.Services
 
             public int Player { get; set; }
 
+            public int StyleIndex { get; set; }
+
             public void RemoveItem(InventoryItem item)
             {
                 if (item.Equipment != null)

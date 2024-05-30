@@ -256,6 +256,7 @@ namespace Adventure.Services
                 {
                     PlayerSprite = nameof(Assets.Players.FighterPlayerSprite),
                     CharacterSheet = sheet,
+                    StyleIndex = 0,
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Spear1), nameof(Spear1))));
@@ -275,6 +276,7 @@ namespace Adventure.Services
                 {
                     PlayerSprite = nameof(Assets.Players.MagePlayerSprite),
                     CharacterSheet = sheet,
+                    StyleIndex = 1,
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, nameof(ItemText.Cloth1), EquipmentTier.Tier1)));
@@ -293,6 +295,7 @@ namespace Adventure.Services
                 {
                     PlayerSprite = nameof(Assets.Players.ThiefPlayerSprite),
                     CharacterSheet = sheet,
+                    StyleIndex = 2,
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Sword1), nameof(Sword1))));
@@ -313,7 +316,8 @@ namespace Adventure.Services
                 var hero = new Persistence.CharacterData()
                 {
                     PlayerSprite = nameof(Assets.Players.ClericPlayerSprite),
-                    CharacterSheet = sheet
+                    CharacterSheet = sheet,
+                    StyleIndex = 3,
                 };
                 hero.CharacterSheet.Rest();
                 GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Hammer1), nameof(Hammer1))));

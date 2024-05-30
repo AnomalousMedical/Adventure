@@ -123,6 +123,7 @@ namespace Adventure.Battle
         ButtonEvent contextTriggerKeyboard;
         ButtonEvent contextTriggerJoystick;
         SharpStyle uiStyle;
+        Color nameHighlightColor;
 
         public class Description : SceneObjectDesc
         {
@@ -132,8 +133,8 @@ namespace Adventure.Battle
             public GamepadId Gamepad = GamepadId.Pad1;
             public CharacterSheet CharacterSheet;
             public Inventory Inventory;
-            public String PlayerSprite { get; set; }
-            public SharpStyle UiStyle { get; set; }
+            public String PlayerSprite;
+            public int CharacterStyleIndex;
         }
 
         public SharpStyle UiStyle => uiStyle;
@@ -156,7 +157,8 @@ namespace Adventure.Battle
             IAssetFactory assetFactory,
             ISkillFactory skillFactory,
             EventManager eventManager,
-            IInventoryFunctions inventoryFunctions)
+            IInventoryFunctions inventoryFunctions,
+            CharacterStyleService characterStyleService)
         {
             this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
             this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger });
@@ -166,7 +168,8 @@ namespace Adventure.Battle
             this.inventory = description.Inventory ?? throw new InvalidOperationException("You must include a inventory in the description");
             this.characterSheet = description.CharacterSheet ?? throw new InvalidOperationException("You must include a character sheet in the description");
             this.playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
-            this.uiStyle = description.UiStyle;
+            this.uiStyle = characterStyleService.GetCharacterStyle(description.CharacterStyleIndex);
+            this.nameHighlightColor = characterStyleService.GetNameHighlightColor(description.CharacterStyleIndex);
             this.skills = skills;
             this.itemMenu = itemMenu;
             this.assetFactory = assetFactory;
@@ -295,7 +298,7 @@ namespace Adventure.Battle
                 if (guiActive)
                 {
                     this.currentPosition = ActivePosition;
-                    name.Color = Color.LightBlue;
+                    name.Color = nameHighlightColor;
                     IsDefending = false;
                     sprite.SetAnimation("stand-down");
                 }
@@ -348,7 +351,7 @@ namespace Adventure.Battle
             {
                 if (guiActive)
                 {
-                    name.Color = Color.LightBlue;
+                    name.Color = nameHighlightColor;
                 }
                 else
                 {
