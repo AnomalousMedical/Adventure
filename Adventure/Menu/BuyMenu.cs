@@ -95,6 +95,7 @@ namespace Adventure.Menu
         private readonly EquipmentTextService equipmentTextService;
         private readonly CameraMover cameraMover;
         private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly CharacterStyleService characterStyleService;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -117,7 +118,8 @@ namespace Adventure.Menu
             CharacterStatsTextService characterStatsTextService,
             EquipmentTextService equipmentTextService,
             CameraMover cameraMover,
-            CharacterMenuPositionService characterMenuPositionService
+            CharacterMenuPositionService characterMenuPositionService,
+            CharacterStyleService characterStyleService
         )
         {
             this.persistence = persistence;
@@ -131,6 +133,7 @@ namespace Adventure.Menu
             this.equipmentTextService = equipmentTextService;
             this.cameraMover = cameraMover;
             this.characterMenuPositionService = characterMenuPositionService;
+            this.characterStyleService = characterStyleService;
             this.confirmBuyMenu.Closed += ConfirmBuyMenu_Closed;
         }
 
@@ -162,6 +165,7 @@ namespace Adventure.Menu
                 currentSheet = 0;
             }
             var characterData = persistence.Current.Party.Members[currentSheet];
+            var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
             if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
             {
@@ -251,7 +255,7 @@ namespace Adventure.Menu
             if (allowChanges)
             {
                 var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-                var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id);
+                var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
                 if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
                 {
                     descriptions = null;
@@ -266,7 +270,7 @@ namespace Adventure.Menu
                     }
                 }
 
-                if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton) || sharpGui.IsStandardPreviousPressed(gamepadId))
+                if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
                     if (allowChanges)
                     {
@@ -279,7 +283,7 @@ namespace Adventure.Menu
                         infos = null;
                     }
                 }
-                if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
+                if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
                     if (allowChanges)
                     {
@@ -292,7 +296,7 @@ namespace Adventure.Menu
                         infos = null;
                     }
                 }
-                if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+                if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     if (allowChanges)
                     {

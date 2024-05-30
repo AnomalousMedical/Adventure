@@ -38,7 +38,7 @@ class UseItemMenu
     public event Action Closed;
     public event Action IsTransferStatusChanged;
 
-    public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
+    public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style)
     {
         if (SelectedItem == null) { return; }
 
@@ -68,7 +68,7 @@ class UseItemMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
             if (action != null)
             {
                 action.Invoke();
@@ -98,7 +98,7 @@ class UseItemMenu
                 replaceButtons.MaxWidth = scaleHelper.Scaled(900);
                 replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-                var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(swapItemPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+                var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(swapItemPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
                 if (swapItem != null)
                 {
                     swapItem.Invoke();
@@ -130,7 +130,7 @@ class UseItemMenu
 
                 sharpGui.Text(itemPrompt);
 
-                if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id))
+                if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id, style: style))
                 {
                     if (!choosingCharacter)
                     {
@@ -153,7 +153,7 @@ class UseItemMenu
                         }
                     }
                 }
-                if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id))
+                if (sharpGui.Button(transfer, gamepadId, navUp: use.Id, navDown: discard.Id, style: style))
                 {
                     if (!choosingCharacter)
                     {
@@ -186,7 +186,7 @@ class UseItemMenu
                         .ToList();
                     }
                 }
-                if (sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id))
+                if (sharpGui.Button(discard, gamepadId, navUp: transfer.Id, navDown: cancel.Id, style: style))
                 {
                     if (!choosingCharacter)
                     {
@@ -195,7 +195,7 @@ class UseItemMenu
                         Close();
                     }
                 }
-                if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+                if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id, style: style) || sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     if (!choosingCharacter)
                     {
@@ -246,6 +246,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private readonly CameraMover cameraMover;
     private readonly EquipmentTextService equipmentTextService;
     private readonly CharacterStatsTextService characterStatsTextService;
+    private readonly CharacterStyleService characterStyleService;
     private List<ButtonColumnItem<InventoryItem>> currentItems;
 
     public ItemMenu
@@ -259,7 +260,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         CharacterMenuPositionService characterMenuPositionService,
         CameraMover cameraMover,
         EquipmentTextService equipmentTextService,
-        CharacterStatsTextService characterStatsTextService
+        CharacterStatsTextService characterStatsTextService,
+        CharacterStyleService characterStyleService
     )
     {
         this.persistence = persistence;
@@ -272,6 +274,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         this.cameraMover = cameraMover;
         this.equipmentTextService = equipmentTextService;
         this.characterStatsTextService = characterStatsTextService;
+        this.characterStyleService = characterStyleService;
         useItemMenu.Closed += UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged += UseItemMenu_IsTransferStatusChanged;
     }
@@ -291,6 +294,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             currentSheet = 0;
         }
         var characterData = persistence.Current.Party.Members[currentSheet];
+        var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
         if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
         {
@@ -385,7 +389,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
         itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-        useItemMenu.Update(characterData, gamepad);
+        useItemMenu.Update(characterData, gamepad, currentCharacterStyle);
 
         if (allowChanges)
         {
@@ -394,7 +398,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
             var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
             if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
             {
                 descriptions = null;
@@ -404,7 +408,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasItems ? itemButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed(gamepad))
+            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasItems ? itemButtons.TopButton : next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -420,7 +424,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -436,7 +440,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {

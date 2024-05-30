@@ -20,7 +20,8 @@ class PickUpTreasureMenu
     IInventoryFunctions inventoryFunctions,
     ILanguageService languageService,
     EquipmentTextService equipmentTextService,
-    CharacterStatsTextService characterStatsTextService
+    CharacterStatsTextService characterStatsTextService,
+    CharacterStyleService characterStyleService
 )
 {
     public const float ChooseTargetLayer = 0.15f;
@@ -105,6 +106,7 @@ class PickUpTreasureMenu
             currentSheet = 0;
         }
         var sheet = persistence.Current.Party.Members[currentSheet];
+        var currentCharacterStyle = characterStyleService.GetCharacterStyle(sheet.StyleIndex);
 
         currentCharacter.Text = sheet.CharacterSheet.Name;
         inventoryInfo.Text = equippingItem ? "Equip" : $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
@@ -242,13 +244,13 @@ class PickUpTreasureMenu
 
         if (equippingItem)
         {
-            if (sharpGui.Button(equip, gamepadId, navUp: continueButton.Id, navDown: continueButton.Id))
+            if (sharpGui.Button(equip, gamepadId, navUp: continueButton.Id, navDown: continueButton.Id, style: currentCharacterStyle))
             {
                 treasure.Use(sheet.Inventory, sheet.CharacterSheet, inventoryFunctions, persistence.Current);
                 NextTreasure();
                 equippingItem = false;
             }
-            if (sharpGui.Button(continueButton, gamepadId, navUp: equip.Id, navDown: equip.Id))
+            if (sharpGui.Button(continueButton, gamepadId, navUp: equip.Id, navDown: equip.Id, style: currentCharacterStyle))
             {
                 NextTreasure();
                 equippingItem = false;
@@ -263,7 +265,7 @@ class PickUpTreasureMenu
             if (replacingItem)
             {
                 sharpGui.Text(promptText);
-                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(promptText), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(promptText), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: currentCharacterStyle);
                 if (removeItem != null)
                 {
                     replacingItem = false;
@@ -286,7 +288,7 @@ class PickUpTreasureMenu
             }
             else
             {
-                if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: previous.Id, navRight: next.Id))
+                if (sharpGui.Button(take, gamepadId, navUp: discard.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle))
                 {
                     if (hasInventoryRoom)
                     {
@@ -308,7 +310,7 @@ class PickUpTreasureMenu
 
                 if (treasure.CanUseOnPickup)
                 {
-                    if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id))
+                    if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle))
                     {
                         infos = null;
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
@@ -321,12 +323,12 @@ class PickUpTreasureMenu
                     }
                 }
 
-                if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id))
+                if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: take.Id, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle))
                 {
                     NextTreasure();
                 }
 
-                if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
+                if (sharpGui.Button(previous, gamepadId, navLeft: next.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
                     replacingItem = false;
                     --currentSheet;
@@ -338,7 +340,7 @@ class PickUpTreasureMenu
                     infos = null;
                     FireActiveCharacterChanged();
                 }
-                if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepadId))
+                if (sharpGui.Button(next, gamepadId, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
                     replacingItem = false;
                     ++currentSheet;

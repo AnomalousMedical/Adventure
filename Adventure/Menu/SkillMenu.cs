@@ -24,7 +24,8 @@ class SkillMenu
     ILanguageService languageService,
     CharacterMenuPositionService characterMenuPositionService,
     CameraMover cameraMover,
-    CharacterStatsTextService characterStatsTextService
+    CharacterStatsTextService characterStatsTextService,
+    CharacterStyleService characterStyleService
 ) : IExplorationSubMenu
 {
     public const float SkillButtonsLayer = 0.15f;
@@ -71,6 +72,7 @@ class SkillMenu
             currentSheet = 0;
         }
         var characterData = persistence.Current.Party.Members[currentSheet];
+        var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
         if (currentPlayerSkills == null)
         {
@@ -153,7 +155,7 @@ class SkillMenu
 
         var skillCount = currentPlayerSkills.Count;
         var lastSkillIndex = skillButtons.FocusedIndex(sharpGui);
-        var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id);
+        var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
         if (lastSkillIndex != skillButtons.FocusedIndex(sharpGui))
         {
             descriptions = null;
@@ -175,7 +177,7 @@ class SkillMenu
 
         var hasSkills = skillCount > 0;
 
-        if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id) || sharpGui.IsStandardPreviousPressed(gamepad))
+        if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
         {
             if (!choosingCharacter)
             {
@@ -189,7 +191,7 @@ class SkillMenu
                 skillButtons.FocusTop(sharpGui);
             }
         }
-        if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardNextPressed(gamepad))
+        if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
         {
             if (!choosingCharacter)
             {
@@ -203,7 +205,7 @@ class SkillMenu
                 skillButtons.FocusTop(sharpGui);
             }
         }
-        if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id) || sharpGui.IsStandardBackPressed(gamepad))
+        if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
         {
             if (!choosingCharacter)
             {
