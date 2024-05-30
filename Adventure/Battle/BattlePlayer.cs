@@ -136,6 +136,8 @@ namespace Adventure.Battle
             public SharpStyle UiStyle { get; set; }
         }
 
+        public SharpStyle UiStyle => uiStyle;
+
         public BattlePlayer(
             RTInstances<BattleScene> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,

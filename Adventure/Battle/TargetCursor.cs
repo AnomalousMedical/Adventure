@@ -238,15 +238,15 @@ namespace Adventure.Battle
                 sharpGui.Text(statText);
             }
 
-            if (sharpGui.Button(selectTargetButton, activePlayer.GamepadId))
+            if (sharpGui.Button(selectTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 SetTarget(target);
             }
-            else if (sharpGui.Button(nextTargetButton, activePlayer.GamepadId))
+            else if (sharpGui.Button(nextTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 NextTarget();
             }
-            else if (sharpGui.Button(previousTargetButton, activePlayer.GamepadId))
+            else if (sharpGui.Button(previousTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 PreviousTarget();
             }
