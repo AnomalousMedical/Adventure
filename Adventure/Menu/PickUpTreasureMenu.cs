@@ -71,6 +71,13 @@ class PickUpTreasureMenu
 
     public bool Update(GamepadId gamepadId)
     {
+        if (currentSheet > persistence.Current.Party.Members.Count)
+        {
+            currentSheet = 0;
+        }
+        var sheet = persistence.Current.Party.Members[currentSheet];
+        var currentCharacterStyle = characterStyleService.GetCharacterStyle(sheet.StyleIndex);
+
         //Keep this block first so it exits in the section below
         var choosingCharacter = characterChoices != null;
         if (choosingCharacter)
@@ -80,7 +87,7 @@ class PickUpTreasureMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId);
+            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId, style: currentCharacterStyle);
             if (action != null)
             {
                 action.Invoke();
@@ -100,13 +107,6 @@ class PickUpTreasureMenu
             useCallback = null;
             return true;
         }
-
-        if (currentSheet > persistence.Current.Party.Members.Count)
-        {
-            currentSheet = 0;
-        }
-        var sheet = persistence.Current.Party.Members[currentSheet];
-        var currentCharacterStyle = characterStyleService.GetCharacterStyle(sheet.StyleIndex);
 
         currentCharacter.Text = sheet.CharacterSheet.Name;
         inventoryInfo.Text = equippingItem ? "Equip" : $"Items: {sheet.Inventory.Items.Count} / {sheet.CharacterSheet.InventorySize}";
