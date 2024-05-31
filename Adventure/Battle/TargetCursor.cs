@@ -32,8 +32,8 @@ namespace Adventure.Battle
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
         private SharpText statText = new SharpText() { Color = Color.White };
 
-        public uint EnemyTargetIndex { get; private set; }
-        public uint PlayerTargetIndex { get; private set; }
+        public uint EnemyTargetIndex { get; set; }
+        public uint PlayerTargetIndex { get; set; }
 
         private bool __targetPlayers;
         public bool TargetPlayers

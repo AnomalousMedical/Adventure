@@ -867,7 +867,12 @@ namespace Adventure.Battle
                 if (enemies.Contains(target))
                 {
                     var enemy = target as Enemy;
-                    enemies.Remove(enemy);
+                    var enemyIndex = enemies.IndexOf(enemy);
+                    if (cursor.EnemyTargetIndex > enemyIndex)
+                    {
+                        --cursor.EnemyTargetIndex;
+                    }
+                    enemies.RemoveAt(enemyIndex);
 
                     var fanfareDone = false; //This does nothing unless the enemies are all dead, but it must be declared here for scope
                     if (enemies.Count == 0)
