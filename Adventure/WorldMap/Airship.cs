@@ -319,6 +319,7 @@ namespace Adventure.WorldMap
                 persistence.Current.Player.InAirship = false;
                 var cell = map.GetCellForLocation(currentPosition);
                 var center = map.GetCellCenterpoint(cell);
+                center.z += 0.01f; //Offset behind nearby items, which will be centered
                 currentPosition = center;
                 currentPosition.y += currentScale.y / 2.0f;
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
