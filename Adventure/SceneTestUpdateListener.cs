@@ -27,10 +27,10 @@ namespace Adventure
         private readonly Sky sky;
         private readonly FlyCameraManager flyCameraManager;
         private readonly CameraMover cameraMover;
-        private readonly RTCameraAndLight cameraAndLight;
         private readonly LightManager lightManager;
         private readonly PlayedTimeService playedTimeService;
         private readonly IGameStateRequestor gameStateRequestor;
+        private readonly GameOptions gameOptions;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -44,10 +44,10 @@ namespace Adventure
             IFirstGameStateBuilder startState,
             FlyCameraManager flyCameraManager,
             CameraMover cameraMover,
-            RTCameraAndLight cameraAndLight,
             LightManager lightManager,
             PlayedTimeService playedTimeService,
-            IGameStateRequestor gameStateRequestor
+            IGameStateRequestor gameStateRequestor,
+            GameOptions gameOptions
         )
         {
 
@@ -60,10 +60,10 @@ namespace Adventure
             this.sky = sky;
             this.flyCameraManager = flyCameraManager;
             this.cameraMover = cameraMover;
-            this.cameraAndLight = cameraAndLight;
             this.lightManager = lightManager;
             this.playedTimeService = playedTimeService;
             this.gameStateRequestor = gameStateRequestor;
+            this.gameOptions = gameOptions;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -119,7 +119,7 @@ namespace Adventure
             immediateContext.ClearDepthStencil(pDSV, CLEAR_DEPTH_STENCIL_FLAGS.CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             sharpGui.Render(immediateContext);
 
-            this.swapChain.Present(1);
+            this.swapChain.Present(gameOptions.PresentInterval);
 
             objectResolverFactory.Flush();
         }

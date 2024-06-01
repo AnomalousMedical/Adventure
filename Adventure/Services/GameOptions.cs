@@ -33,5 +33,7 @@ namespace Adventure.Services
         public UpsamplingMethod UpsamplingMethod { get; set; } = UpsamplingMethod.None;
 
         public float FSR1RenderPercentage { get; set; } = 0.75f;
+
+        public uint PresentInterval { get; set; } = 1;
     }
 }
