@@ -73,8 +73,7 @@ namespace Adventure.Battle.Skills
                         Name = Name,
                         AttackElements = new[] { element },
                         TimeRemaining = 2 * 60 * Clock.SecondsToMicro,
-                        BuffTypeId = BuffTypeId,
-                        QueueTurnsFront = true
+                        BuffTypeId = BuffTypeId
                     };
                     target.Stats.UpdateBuffs(buff);
                 }
