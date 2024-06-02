@@ -126,7 +126,7 @@ class SkillMenu
             columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
         }
 
-        layout =
+        var descriptionLayout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
            new ColumnLayout(columnItems)
@@ -134,66 +134,47 @@ class SkillMenu
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
            }
         ));
-        layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+        var descriptionNeedsLayout = true;
 
         layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
-        layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
+        var backButtonLayoutRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
+        layout.SetRect(backButtonLayoutRect);
 
-        foreach (var info in infos)
+        if (!choosingCharacter)
         {
-            sharpGui.Text(info);
-        }
+            var skillCount = currentPlayerSkills.Count;
+            var hasSkills = skillCount > 0;
 
-        foreach(var description in descriptions)
-        {
-            sharpGui.Text(description);
-        }
-
-        skillButtons.Margin = scaleHelper.Scaled(10);
-        skillButtons.MaxWidth = scaleHelper.Scaled(900);
-        skillButtons.Bottom = screenPositioner.ScreenSize.Height;
-
-        var skillCount = currentPlayerSkills.Count;
-        var lastSkillIndex = skillButtons.FocusedIndex(sharpGui);
-        var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
-        if (lastSkillIndex != skillButtons.FocusedIndex(sharpGui))
-        {
-            descriptions = null;
-        }
-        if (!choosingCharacter && newSelection != null)
-        {
-            if(characterData.CharacterSheet.CurrentHp > 0)
+            if (hasSkills)
             {
-                var selectedSkill = skillFactory.CreateSkill(newSelection);
-                characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                skillButtons.Margin = scaleHelper.Scaled(10);
+                skillButtons.MaxWidth = scaleHelper.Scaled(900);
+                skillButtons.Bottom = backButtonLayoutRect.Top;
+
+                var lastSkillIndex = skillButtons.FocusedIndex(sharpGui);
+                var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: back.Id, navDown: back.Id);
+                descriptionNeedsLayout = false; //Layout happens as part of showing the skill buttons
+                if (lastSkillIndex != skillButtons.FocusedIndex(sharpGui))
                 {
-                    selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
-                    infos = null;
                     descriptions = null;
-                }))
-                .ToList();
-            }
-        }
-
-        var hasSkills = skillCount > 0;
-
-        if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasSkills ? skillButtons.TopButton : next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
-        {
-            if (!choosingCharacter)
-            {
-                --currentSheet;
-                if (currentSheet < 0)
-                {
-                    currentSheet = persistence.Current.Party.Members.Count - 1;
                 }
-                currentPlayerSkills = null;
-                infos = null;
-                skillButtons.FocusTop(sharpGui);
+                if (newSelection != null)
+                {
+                    if (characterData.CharacterSheet.CurrentHp > 0)
+                    {
+                        var selectedSkill = skillFactory.CreateSkill(newSelection);
+                        characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                        {
+                            selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                            infos = null;
+                            descriptions = null;
+                        }))
+                        .ToList();
+                    }
+                }
             }
-        }
-        if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
-        {
-            if (!choosingCharacter)
+
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasSkills ? skillButtons.TopButton : previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -204,14 +185,43 @@ class SkillMenu
                 infos = null;
                 skillButtons.FocusTop(sharpGui);
             }
-        }
-        if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasSkills ? skillButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
-        {
-            if (!choosingCharacter)
+            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : next.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
+            {
+                --currentSheet;
+                if (currentSheet < 0)
+                {
+                    currentSheet = persistence.Current.Party.Members.Count - 1;
+                }
+                currentPlayerSkills = null;
+                infos = null;
+                skillButtons.FocusTop(sharpGui);
+            }
+            if (sharpGui.Button(back, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 currentPlayerSkills = null;
                 menu.RequestSubMenu(menu.RootMenu, gamepad);
                 infos = null;
+            }
+        }
+
+        if(descriptionNeedsLayout)
+        {
+            descriptionLayout.SetRect(screenPositioner.GetTopRightRect(descriptionLayout.GetDesiredSize(sharpGui)));
+        }
+
+        if (infos != null)
+        {
+            foreach (var info in infos)
+            {
+                sharpGui.Text(info);
+            }
+        }
+
+        if (descriptions != null)
+        {
+            foreach (var description in descriptions)
+            {
+                sharpGui.Text(description);
             }
         }
     }
