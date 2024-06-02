@@ -193,7 +193,6 @@ namespace Adventure.Battle
             startBattleDelay = 1 * Clock.SecondsToMicro;
             this.stealCb = stealCb;
             var currentZ = 3;
-            var styleIndex = 0;
             foreach (var character in party.ActiveCharacters)
             {
                 players.Add(this.objectResolver.Resolve<BattlePlayer, BattlePlayer.Description>(c =>
