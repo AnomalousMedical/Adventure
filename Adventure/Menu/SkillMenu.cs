@@ -47,6 +47,13 @@ class SkillMenu
     {
         var choosingCharacter = characterChoices != null;
 
+        if (currentSheet >= persistence.Current.Party.Members.Count)
+        {
+            currentSheet = 0;
+        }
+        var characterData = persistence.Current.Party.Members[currentSheet];
+        var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
+
         if (choosingCharacter)
         {
             characterButtons.StealFocus(sharpGui);
@@ -54,7 +61,7 @@ class SkillMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-            var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s), gamepad);
+            var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s), gamepad, style: currentCharacterStyle);
             if (action != null)
             {
                 action.Invoke();
@@ -66,13 +73,6 @@ class SkillMenu
                 characterChoices = null;
             }
         }
-
-        if (currentSheet >= persistence.Current.Party.Members.Count)
-        {
-            currentSheet = 0;
-        }
-        var characterData = persistence.Current.Party.Members[currentSheet];
-        var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
         if (currentPlayerSkills == null)
         {
