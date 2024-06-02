@@ -360,7 +360,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
         }
 
-        layout =
+        var descriptionLayout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
            new ColumnLayout(columnItems)
@@ -368,26 +368,14 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
            }
         ));
-        layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
         layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
-        layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
-
-        foreach (var info in infos)
-        {
-            sharpGui.Text(info);
-        }
-        if (descriptions != null)
-        {
-            foreach (var description in descriptions)
-            {
-                sharpGui.Text(description);
-            }
-        }
+        var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
+        layout.SetRect(backButtonRect);
 
         itemButtons.Margin = scaleHelper.Scaled(10);
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
-        itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+        itemButtons.Bottom = backButtonRect.Top;
 
         useItemMenu.Update(characterData, gamepad, currentCharacterStyle);
 
@@ -398,7 +386,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
             var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepad, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
+            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: back.Id, navDown: back.Id);
             if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
             {
                 descriptions = null;
@@ -408,7 +396,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: hasItems ? itemButtons.TopButton : next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
+            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : next.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -424,7 +412,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasItems ? itemButtons.TopButton : previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -440,7 +428,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(back, gamepad, navUp: next.Id, navDown: next.Id, navLeft: hasItems ? itemButtons.TopButton : previous.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(back, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -449,6 +437,26 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     infos = null;
                     menu.RequestSubMenu(menu.RootMenu, gamepad);
                 }
+            }
+        }
+        else
+        {
+            descriptionLayout.SetRect(screenPositioner.GetTopRightRect(descriptionLayout.GetDesiredSize(sharpGui)));
+        }
+
+        if (infos != null)
+        {
+            foreach (var info in infos)
+            {
+                sharpGui.Text(info);
+            }
+        }
+
+        if (descriptions != null)
+        {
+            foreach (var description in descriptions)
+            {
+                sharpGui.Text(description);
             }
         }
     }

@@ -15,6 +15,8 @@ namespace SharpGui
         private static Guid ScrollUp = Guid.NewGuid();
         private static Guid ScrollDown = Guid.NewGuid();
 
+        private static Guid currentBottomButton;
+
         private List<SharpButton> buttons;
 
         public ButtonColumn(int numButtons, float layer = 0f)
@@ -26,7 +28,7 @@ namespace SharpGui
             }
         }
 
-        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null)
+        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null, Guid? navUp = null, Guid? navDown = null)
         {
             ILayoutItem layout =
                new MarginLayout(new IntPad(Margin),
@@ -63,6 +65,8 @@ namespace SharpGui
                         break;
                     }
 
+                    currentBottomButton = button.Id;
+
                     Guid navUpId = buttons[previous].Id;
                     if (i == 0)
                     {
@@ -91,6 +95,10 @@ namespace SharpGui
                         if (ListIndex < 0)
                         {
                             ListIndex = 0;
+                            if(navUp != null)
+                            {
+                                sharpGui.StealFocus(navUp.Value);
+                            }
                         }
                     }
                     else if (sharpGui.FocusedItem == ScrollDown)
@@ -100,6 +108,10 @@ namespace SharpGui
                         if (ListIndex + i >= itemCount)
                         {
                             ListIndex = itemCount - i - 1;
+                            if(navDown != null)
+                            {
+                                sharpGui.StealFocus(navDown.Value);
+                            }
                         }
                     }
 
@@ -150,5 +162,7 @@ namespace SharpGui
         }
 
         public Guid TopButton => buttons[0].Id;
+
+        public Guid BottomButton => currentBottomButton;
     }
 }
