@@ -68,7 +68,7 @@ namespace Adventure.Battle.Skills
             IEnumerable<IBattleTarget> targets;
             if (MultiTarget && triggered)
             {
-                targets = battleManager.GetTargetsInGroup(target).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+                targets = battleManager.GetTargetsInGroup(target).Where(i => !i.IsDead).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
             }
             else
             {
