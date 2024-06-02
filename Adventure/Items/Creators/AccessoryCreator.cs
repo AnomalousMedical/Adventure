@@ -19,7 +19,7 @@ namespace Adventure.Items.Creators
             var accessory = new Equipment
             {
                 InfoId = nameof(ItemText.CounterAttack),
-                CounterPercent = 40L
+                CounterPercent = 70L
             };
 
             return CreateInventoryItem(accessory);
