@@ -33,7 +33,7 @@ namespace Adventure.Battle.Skills
             target = battleManager.ValidateTarget(attacker, target);
 
             var applyEffects = new List<Attachment<BattleScene>>();
-            ApplyDamage(battleManager, objectResolver, attacker, target, triggerSpammed, applyEffects);
+            ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggerSpammed, applyEffects);
 
             var effect = new SkillEffect();
             IEnumerator<YieldAction> run()
@@ -46,7 +46,7 @@ namespace Adventure.Battle.Skills
                     if (target != null)
                     {
                         applyEffects.Clear();
-                        ApplyDamage(battleManager, objectResolver, attacker, target, triggerSpammed, applyEffects);
+                        ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggerSpammed, applyEffects);
                         yield return coroutine.WaitSeconds(0.5);
                         CleanupAndHandleDeath(battleManager, target, applyEffects);
                     }
@@ -67,7 +67,7 @@ namespace Adventure.Battle.Skills
             }
         }
 
-        private void ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
+        private void ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, IScopedCoroutine coroutine, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
         {
             var resistance = Resistance.Normal;
 
@@ -101,6 +101,26 @@ namespace Adventure.Battle.Skills
                 });
                 applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
                 applyEffects.Add(applyEffect);
+
+                IEnumerator<YieldAction> run()
+                {
+                    const int numShakes = 5;
+                    const double waitTime = 0.075f;
+                    var totalSeconds = 0.55;
+                    var shook = true;
+                    for (var i = 0; i < numShakes; ++i)
+                    {
+                        target.SetShakePosition(shook);
+                        shook = !shook;
+                        totalSeconds -= waitTime;
+                        yield return coroutine.WaitSeconds(waitTime);
+                    }
+                    if (numShakes > 0)
+                    {
+                        target.SetShakePosition(false);
+                    }
+                }
+                coroutine.Run(run());
             }
             else
             {

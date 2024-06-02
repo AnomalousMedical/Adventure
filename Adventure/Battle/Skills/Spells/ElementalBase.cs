@@ -80,7 +80,7 @@ namespace Adventure.Battle.Skills
             }
             else
             {
-                groupTargets = ApplyDamage(battleManager, objectResolver, attacker, target, triggered, triggerSpammed, applyEffects);
+                groupTargets = ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggered, triggerSpammed, applyEffects);
             }
 
             var effect = new SkillEffect();
@@ -96,7 +96,7 @@ namespace Adventure.Battle.Skills
                         if (target != null)
                         {
                             applyEffects.Clear();
-                            groupTargets = ApplyDamage(battleManager, objectResolver, attacker, target, triggered, triggerSpammed, applyEffects);
+                            groupTargets = ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggered, triggerSpammed, applyEffects);
                             if (groupTargets.Any())
                             {
                                 yield return coroutine.WaitSeconds(0.5);
@@ -124,7 +124,7 @@ namespace Adventure.Battle.Skills
             }
         }
 
-        private IEnumerable<IBattleTarget> ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
+        private IEnumerable<IBattleTarget> ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, IScopedCoroutine coroutine, bool triggered, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
         {
             IEnumerable<IBattleTarget> groupTargets;
             //Cause Damage
@@ -153,13 +153,16 @@ namespace Adventure.Battle.Skills
                     var originalDamage = damage;
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                     var effectScale = Vector3.ScaleIdentity;
+                    var numShakes = 1;
                     if(damage < originalDamage)
                     {
                         effectScale *= 0.75f;
+                        numShakes = 0;
                     }
                     else if(damage > originalDamage)
                     {
                         effectScale *= 1.25f;
+                        numShakes = 5;
                     }
                     //Intentionally unaltered if the same
 
@@ -173,6 +176,7 @@ namespace Adventure.Battle.Skills
                     if (triggerSpammed)
                     {
                         damage /= 2;
+                        numShakes = 0;
                     }
 
                     battleManager.AddDamageNumber(currentTarget, damage);
@@ -193,6 +197,25 @@ namespace Adventure.Battle.Skills
                     });
                     applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, effectScale);
                     applyEffects.Add(applyEffect);
+
+                    IEnumerator<YieldAction> run()
+                    {
+                        const double waitTime = 0.075f;
+                        var totalSeconds = 0.55;
+                        var shook = true;
+                        for (var i = 0; i < numShakes; ++i)
+                        {
+                            currentTarget.SetShakePosition(shook);
+                            shook = !shook;
+                            totalSeconds -= waitTime;
+                            yield return coroutine.WaitSeconds(waitTime);
+                        }
+                        if (numShakes > 0)
+                        {
+                            currentTarget.SetShakePosition(false);
+                        }
+                    }
+                    coroutine.Run(run());
                 }
                 else
                 {
