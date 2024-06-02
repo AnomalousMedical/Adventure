@@ -45,8 +45,15 @@ namespace Adventure.Battle.Skills
 
             if (isBuff)
             {
-                //Buff allies if supported and targeting allies
-                groupTargets = new[] { target }; //For now just 1 target, but might change
+                //Buff allies if supported
+                if (attacker.Stats.CanDoublecast && triggered && !triggerSpammed)
+                {
+                    groupTargets = battleManager.GetTargetsInGroup(target).Where(i => !i.IsDead).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
+                }
+                else
+                {
+                    groupTargets = new[] { target };
+                }
 
                 foreach (var currentTarget in groupTargets)
                 {
@@ -75,7 +82,7 @@ namespace Adventure.Battle.Skills
                         TimeRemaining = 2 * 60 * Clock.SecondsToMicro,
                         BuffTypeId = BuffTypeId
                     };
-                    target.Stats.UpdateBuffs(buff);
+                    currentTarget.Stats.UpdateBuffs(buff);
                 }
             }
             else
