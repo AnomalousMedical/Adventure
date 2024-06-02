@@ -236,7 +236,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
-    SharpButton back = new SharpButton() { Text = "Back" };
+    SharpButton close = new SharpButton() { Text = "Close" };
     List<SharpText> infos = null;
     List<SharpText> descriptions = null;
     private int currentSheet;
@@ -369,7 +369,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
            }
         ));
 
-        layout = new RowLayout(previous, next, back) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        layout = new RowLayout(previous, next, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -386,7 +386,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
             var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: back.Id, navDown: back.Id);
+            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
             if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
             {
                 descriptions = null;
@@ -396,7 +396,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(next, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: previous.Id, navRight: back.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: previous.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -412,7 +412,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(previous, gamepad, navUp: hasItems ? itemButtons.BottomButton : previous.Id, navDown: hasItems ? itemButtons.TopButton : previous.Id, navLeft: back.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
+            if (sharpGui.Button(previous, gamepad, navUp: hasItems ? itemButtons.BottomButton : previous.Id, navDown: hasItems ? itemButtons.TopButton : previous.Id, navLeft: close.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -428,7 +428,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(back, gamepad, navUp: hasItems ? itemButtons.BottomButton : back.Id, navDown: hasItems ? itemButtons.TopButton : back.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(close, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {
