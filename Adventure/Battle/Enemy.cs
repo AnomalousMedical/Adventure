@@ -527,6 +527,17 @@ namespace Adventure.Battle
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
         }
 
+        public void SetShakePosition(bool shook)
+        {
+            MoveToStart();
+            if (shook && !IsDead)
+            {
+                this.currentPosition += new Vector3(-0.065f, 0.0f, 0.0f);
+                this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
+            }
+            //Sprite_FrameChanged(sprite); //Intentionally not calling this, since the visual of the base sprite shaking separately from the weapons looks cool
+        }
+
         public Vector3 DamageDisplayLocation => currentPosition + new Vector3(0.5f * currentScale.x, 0.5f * currentScale.y, 0f);
 
         public IBattleStats Stats => battleStats;

@@ -660,6 +660,7 @@ namespace Adventure.Battle
                 var hitEffect = battleAssetLoader.NormalHit;
                 var damage = damageCalculator.Physical(attacker.Stats, target.Stats, 16);
                 var randomizeDamage = true;
+                var numShakes = 1;
 
                 foreach (var attackElement in attacker.Stats.AttackElements)
                 {
@@ -683,10 +684,12 @@ namespace Adventure.Battle
                         case Resistance.Resist:
                             hitEffect = battleAssetLoader.BlockedHit;
                             soundEffect = soundEffect ?? weaponSet.Blocked;
+                            numShakes = 0;
                             break;
                         case Resistance.Weak:
                             hitEffect = battleAssetLoader.StrongHit;
                             soundEffect = soundEffect ?? weaponSet.Heavy;
+                            numShakes = 5;
                             break;
                         case Resistance.Death:
                         case Resistance.Recovery:
@@ -731,12 +734,14 @@ namespace Adventure.Battle
                         color = Color.Grey;
                         hitEffect = battleAssetLoader.BlockedHit;
                         blockedSound = BlockedSoundEffect.Instance;
+                        numShakes = 0;
                     }
                     if (fumbleBlock)
                     {
                         damage += (long)(damage * 0.25f);
                         color = Color.Red;
                         hitEffect = battleAssetLoader.StrongHit;
+                        numShakes = 5;
                     }
 
                     if (triggered)
@@ -745,11 +750,13 @@ namespace Adventure.Battle
                         {
                             damage += (long)(damage * 0.5f);
                             dualHit = true;
+                            numShakes += 2;
                         }
                         else //Penalized if you can't trigger
                         {
                             damage -= (long)(damage * 0.5f);
                             color = Color.Grey;
+                            numShakes = 0;
                         }
                     }
 
@@ -757,17 +764,25 @@ namespace Adventure.Battle
                     {
                         damage -= (long)(damage * 0.5f);
                         color = Color.Grey;
+                        numShakes = 0;
                     }
 
                     if (target.IsDefending)
                     {
                         damage -= (long)(damage * 0.5f);
                         color = Color.LightBlue;
+                        numShakes = 0;
                     }
                 }
 
+                //With the way enemy positions are tracked, we can't shake during a counter attack
+                if (isCounter)
+                {
+                    numShakes = 0;
+                }
+
                 AddDamageNumber(target, damage, color);
-                ShowHit(target, hitEffect, soundEffect, blockedSound, dualHit);
+                ShowHit(target, hitEffect, soundEffect, blockedSound, dualHit, numShakes);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -787,7 +802,7 @@ namespace Adventure.Battle
         private readonly Vector3 HitScale = Vector3.ScaleIdentity * 0.5f;
         private readonly Vector3 SecondaryHitScale = Vector3.ScaleIdentity * 0.4f;
 
-        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, bool dualHit)
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, bool dualHit, int numShakes)
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -825,7 +840,21 @@ namespace Adventure.Battle
 
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(0.5);
+                const double waitTime = 0.075f;
+                var totalSeconds = 0.55;
+                var shook = true;
+                for(var i = 0; i < numShakes; ++i)
+                {
+                    target.SetShakePosition(shook);
+                    shook = !shook;
+                    totalSeconds -= waitTime;
+                    yield return coroutine.WaitSeconds(waitTime);
+                }
+                if (numShakes > 0)
+                {
+                    target.SetShakePosition(false);
+                }
+                yield return coroutine.WaitSeconds(totalSeconds);
                 foreach (var effect in applyEffects)
                 {
                     effect.RequestDestruction();

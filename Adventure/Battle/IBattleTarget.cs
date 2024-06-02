@@ -46,6 +46,8 @@ namespace Adventure.Battle
 
         void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter);
 
+        void SetShakePosition(bool shook);
+
         ISoundEffect DefaultAttackSoundEffect { get; }
 
         bool OffHandRaised { get; set; }
