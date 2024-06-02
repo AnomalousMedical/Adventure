@@ -157,7 +157,7 @@ namespace Adventure.Battle.Skills
                     var createExtraSpellHits = false;
                     if(damage < originalDamage)
                     {
-                        effectScale *= 0.5f;
+                        effectScale *= 0.75f;
                         numShakes = 0;
                     }
                     else if(damage > originalDamage)
