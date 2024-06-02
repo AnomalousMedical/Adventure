@@ -654,6 +654,7 @@ namespace Adventure.Battle
                 var weaponSet = HammerSoundEffects.Instance;
                 ISoundEffect soundEffect = null;
                 ISoundEffect blockedSound = null;
+                Element? magicElement = null;
                 var dualHit = false;
 
                 var hitEffect = battleAssetLoader.NormalHit;
@@ -705,6 +706,12 @@ namespace Adventure.Battle
                         case Element.Slashing:
                         case Element.Bludgeoning:
                             soundEffect = soundEffect ?? weaponSet.Normal;
+                            break;
+
+                        case Element.Fire:
+                        case Element.Ice:
+                        case Element.Electricity:
+                            magicElement = attackElement;
                             break;
                     }
                 }
@@ -781,7 +788,7 @@ namespace Adventure.Battle
                 }
 
                 AddDamageNumber(target, damage, color);
-                ShowHit(target, hitEffect, soundEffect, blockedSound, dualHit, numShakes);
+                ShowHit(target, hitEffect, soundEffect, blockedSound, magicElement, dualHit, numShakes);
                 target.ApplyDamage(attacker, damageCalculator, damage);
                 var attackerIsPlayer = players.Contains(attacker);
                 var targetIsPlayer = players.Contains(target);
@@ -801,7 +808,7 @@ namespace Adventure.Battle
         private readonly Vector3 HitScale = Vector3.ScaleIdentity * 0.5f;
         private readonly Vector3 SecondaryHitScale = Vector3.ScaleIdentity * 0.4f;
 
-        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, bool dualHit, int numShakes)
+        private void ShowHit(IBattleTarget target, ISpriteAsset asset, ISoundEffect soundEffect, ISoundEffect blockedSound, Element? magicElement, bool dualHit, int numShakes)
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
@@ -835,6 +842,51 @@ namespace Adventure.Battle
             if(blockedSound != null)
             {
                 soundEffectPlayer.PlaySound(blockedSound);
+            }
+
+            ISoundEffect elementalSound = null;
+            ISpriteAsset elementalEffect = null;
+
+            if (magicElement != null)
+            {
+                switch (magicElement)
+                {
+                    case Element.Fire:
+                        elementalSound = FireSpellSoundEffect.Instance;
+                        elementalEffect = new FireEffect();
+                        break;
+                    case Element.Ice:
+                        elementalSound = IceSpellSoundEffect.Instance;
+                        elementalEffect = new IceEffect();
+                        break;
+                    case Element.Electricity:
+                        elementalSound = LightningSpellSoundEffect.Instance;
+                        elementalEffect = new ElectricEffect();
+                        break;
+                }
+            }
+
+            if(elementalSound != null)
+            {
+                soundEffectPlayer.PlaySound(elementalSound);
+            }
+
+            if(elementalEffect != null)
+            {
+                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                {
+                    o.RenderShadow = false;
+                    o.Sprite = elementalEffect.CreateSprite();
+                    o.SpriteMaterial = elementalEffect.CreateMaterial();
+                    o.Light = new Light
+                    {
+                        Color = ElementColors.GetElementalColor(magicElement.Value),
+                        Length = 2.3f,
+                    };
+                    o.LightOffset = new Vector3(0, 0, -0.1f);
+                });
+                applyEffect.SetPosition(target.MagicHitLocation + new Vector3(-0.1f, 0.2f, 0f), Quaternion.Identity, SecondaryHitScale);
+                applyEffects.Add(applyEffect);
             }
 
             IEnumerator<YieldAction> run()
