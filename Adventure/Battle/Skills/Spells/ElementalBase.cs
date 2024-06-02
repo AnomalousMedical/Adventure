@@ -4,6 +4,7 @@ using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -154,15 +155,16 @@ namespace Adventure.Battle.Skills
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
                     var effectScale = Vector3.ScaleIdentity;
                     var numShakes = 1;
+                    var createExtraSpellHits = false;
                     if(damage < originalDamage)
                     {
-                        effectScale *= 0.75f;
+                        effectScale *= 0.5f;
                         numShakes = 0;
                     }
                     else if(damage > originalDamage)
                     {
-                        effectScale *= 1.25f;
                         numShakes = 5;
+                        createExtraSpellHits = true;
                     }
                     //Intentionally unaltered if the same
 
@@ -197,6 +199,45 @@ namespace Adventure.Battle.Skills
                     });
                     applyEffect.SetPosition(currentTarget.MagicHitLocation, Quaternion.Identity, effectScale);
                     applyEffects.Add(applyEffect);
+
+                    if (createExtraSpellHits)
+                    {
+                        Vector3 randomOffset;
+
+                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                        {
+                            ISpriteAsset asset = this.asset;
+                            o.RenderShadow = false;
+                            o.Sprite = asset.CreateSprite();
+                            o.SpriteMaterial = asset.CreateMaterial();
+                            o.Light = new Light
+                            {
+                                Color = CastColor,
+                                Length = 2.3f,
+                            };
+                            o.LightOffset = new Vector3(0, 0, -0.1f);
+                        });
+                        randomOffset = new Vector3(((float)Random.Shared.NextDouble() - 0.5f) * 2.0f, (float)Random.Shared.NextDouble(), (float)Random.Shared.NextDouble() * -0.2f - 0.1f);
+                        applyEffect.SetPosition(currentTarget.MagicHitLocation + randomOffset, Quaternion.Identity, effectScale);
+                        applyEffects.Add(applyEffect);
+
+                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                        {
+                            ISpriteAsset asset = this.asset;
+                            o.RenderShadow = false;
+                            o.Sprite = asset.CreateSprite();
+                            o.SpriteMaterial = asset.CreateMaterial();
+                            o.Light = new Light
+                            {
+                                Color = CastColor,
+                                Length = 2.3f,
+                            };
+                            o.LightOffset = new Vector3(0, 0, -0.1f);
+                        });
+                        randomOffset = new Vector3(((float)Random.Shared.NextDouble() - 0.5f) * 2.0f, (float)Random.Shared.NextDouble(), (float)Random.Shared.NextDouble() * 0.2f + 0.1f);
+                        applyEffect.SetPosition(currentTarget.MagicHitLocation + randomOffset, Quaternion.Identity, effectScale);
+                        applyEffects.Add(applyEffect);
+                    }
 
                     IEnumerator<YieldAction> run()
                     {
