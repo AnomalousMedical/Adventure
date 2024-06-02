@@ -116,11 +116,11 @@ class SkillMenu
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
-           new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
+           new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
-        IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) };
+        IEnumerable<ILayoutItem> columnItems = Enumerable.Empty<ILayoutItem>();
         if (descriptions != null)
         {
             columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
@@ -136,7 +136,7 @@ class SkillMenu
         ));
         var descriptionNeedsLayout = true;
 
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+        layout = new RowLayout(previous, next, back) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonLayoutRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonLayoutRect);
 
@@ -174,7 +174,7 @@ class SkillMenu
                 }
             }
 
-            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasSkills ? skillButtons.TopButton : previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: previous.Id, navRight: back.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 ++currentSheet;
                 if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -185,7 +185,7 @@ class SkillMenu
                 infos = null;
                 skillButtons.FocusTop(sharpGui);
             }
-            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasSkills ? skillButtons.TopButton : next.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
+            if (sharpGui.Button(previous, gamepad, navUp: hasSkills ? skillButtons.BottomButton : previous.Id, navDown: hasSkills ? skillButtons.TopButton : previous.Id, navLeft: back.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 --currentSheet;
                 if (currentSheet < 0)
@@ -196,7 +196,7 @@ class SkillMenu
                 infos = null;
                 skillButtons.FocusTop(sharpGui);
             }
-            if (sharpGui.Button(back, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(back, gamepad, navUp: hasSkills ? skillButtons.BottomButton : back.Id, navDown: hasSkills ? skillButtons.TopButton : back.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 currentPlayerSkills = null;
                 menu.RequestSubMenu(menu.RootMenu, gamepad);

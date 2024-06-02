@@ -350,11 +350,11 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(600),
-           new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
+           new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
-        IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) };
+        IEnumerable<ILayoutItem> columnItems = Enumerable.Empty<ILayoutItem>();
         if (descriptions != null)
         {
             columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
@@ -369,7 +369,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
            }
         ));
 
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+        layout = new RowLayout(previous, next, back) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -396,23 +396,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(previous, gamepad, navUp: back.Id, navDown: back.Id, navLeft: hasItems ? itemButtons.TopButton : next.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
-            {
-                if (allowChanges)
-                {
-                    itemButtons.ListIndex = 0;
-                    --currentSheet;
-                    if (currentSheet < 0)
-                    {
-                        currentSheet = persistence.Current.Party.Members.Count - 1;
-                    }
-                    currentItems = null;
-                    descriptions = null;
-                    infos = null;
-                    itemButtons.FocusTop(sharpGui);
-                }
-            }
-            if (sharpGui.Button(next, gamepad, navUp: back.Id, navDown: back.Id, navLeft: previous.Id, navRight: hasItems ? itemButtons.TopButton : previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: previous.Id, navRight: back.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -428,7 +412,23 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(back, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(previous, gamepad, navUp: hasItems ? itemButtons.BottomButton : previous.Id, navDown: hasItems ? itemButtons.TopButton : previous.Id, navLeft: back.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
+            {
+                if (allowChanges)
+                {
+                    itemButtons.ListIndex = 0;
+                    --currentSheet;
+                    if (currentSheet < 0)
+                    {
+                        currentSheet = persistence.Current.Party.Members.Count - 1;
+                    }
+                    currentItems = null;
+                    descriptions = null;
+                    infos = null;
+                    itemButtons.FocusTop(sharpGui);
+                }
+            }
+            if (sharpGui.Button(back, gamepad, navUp: hasItems ? itemButtons.BottomButton : back.Id, navDown: hasItems ? itemButtons.TopButton : back.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {
