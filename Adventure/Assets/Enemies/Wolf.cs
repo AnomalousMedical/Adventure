@@ -9,13 +9,13 @@ namespace Adventure.Assets.Enemies
     {
         public ISpriteAsset CreateAnotherInstance() => new Wolf();
 
-        const float SpriteWidth = 102f;
+        const float SpriteWidth = 104f;
         const float SpriteHeight = 54f;
-        const float SpriteStepX = 51f / SpriteWidth;
+        const float SpriteStepX = 52f / SpriteWidth;
         const float SpriteStepY = 54f / SpriteHeight;
 
         public const uint Fur1 = 0xff5e7096;//Fur 1 (blue)
-        public const uint Fur2 = 0xffe3e4e5;//Fur 2 (white)
+        public const uint Fur2 = 0xffebdec0;//Fur 2 (white)
         public const uint Fur3 = 0xffaaa8a3;//Fur 2 (grey)
         public const uint Eyes = 0xffd31033;//Eye (red)
 
@@ -69,7 +69,7 @@ namespace Adventure.Assets.Enemies
             {
                 { "default", new SpriteAnimation((long)(0.87f * Clock.SecondsToMicro), new SpriteFrame(0, 0, SpriteStepX, SpriteStepY), new SpriteFrame(SpriteStepX, 0, SpriteStepX * 2, SpriteStepY)) }
             }) 
-            { BaseScale = new Vector3(24f / 29f, 1, 1) };
+            { BaseScale = new Vector3(52f / 54f, 1, 1) };
         }
     }
 }
