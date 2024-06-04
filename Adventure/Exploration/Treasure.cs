@@ -6,6 +6,17 @@ using RpgMath;
 
 namespace Adventure
 {
+    enum TreasureType
+    {
+        Weapon = 0,
+        OffHand = 1,
+        Accessory = 2,
+        Armor = 3,
+        PlotItem = 4,
+        StatBoost = 5,
+        Potion = 6,
+    }
+
     interface ITreasure
     {
         string InfoId { get; }
@@ -27,6 +38,8 @@ namespace Adventure
         string FortuneText { get; }
 
         InventoryItem Item { get; }
+
+        TreasureType TreasureType { get; }
     }
 
     class Treasure : ITreasure
@@ -47,9 +60,12 @@ namespace Adventure
 
         public InventoryItem Item => inventoryItem;
 
-        public Treasure(InventoryItem inventoryItem)
+        public TreasureType TreasureType { get; init; }
+
+        public Treasure(InventoryItem inventoryItem, TreasureType treasureType)
         {
             this.inventoryItem = inventoryItem;
+            this.TreasureType = treasureType;
         }
 
         public void GiveTo(Inventory inventory, Persistence.GameState gameState)
@@ -85,6 +101,8 @@ namespace Adventure
         public string FortuneText { get; init; }
 
         public InventoryItem Item => null;
+
+        public TreasureType TreasureType { get; init; }
 
         public PlotItemTreasure(PlotItems plotItem, string infoId)
         {

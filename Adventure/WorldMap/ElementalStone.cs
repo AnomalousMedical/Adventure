@@ -229,7 +229,7 @@ namespace Adventure.WorldMap
                         cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                         await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProvenWorthy, args.GamepadId);
                         persistence.Current.PlotItems.Add(PlotItems.ElementalStone);
-                        var treasure = new Treasure(accessoryCreator.CreateDoublecast());
+                        var treasure = new Treasure(accessoryCreator.CreateDoublecast(), TreasureType.Accessory);
                         treasureMenu.GatherTreasures(new[] { treasure });
                         explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
                         RequestDestruction();

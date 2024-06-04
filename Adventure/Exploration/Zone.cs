@@ -1081,10 +1081,10 @@ namespace Adventure
                         o.ZoneIndex = index;
                         o.MapOffset = mapLoc;
                         o.Translation = currentPosition + o.MapOffset;
-                        var treasure = biome.Treasure;
-                        o.Sprite = treasure.Asset.CreateSprite();
-                        o.SpriteMaterial = treasure.Asset.CreateMaterial();
                         o.Treasure = treasureStack.Pop();
+                        var treasureAsset = biome.Treasure.GetTreasureAsset(o.Treasure.TreasureType);
+                        o.Sprite = treasureAsset.CreateSprite();
+                        o.SpriteMaterial = treasureAsset.CreateMaterial();
                     });
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);

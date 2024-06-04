@@ -94,7 +94,7 @@ namespace Adventure.Battle
                 bool boss = false;
                 Func<IEnumerable<ITreasure>> stealCb;
                 BiomeEnemy triggerEnemy = null;
-                if(battleTrigger == null)
+                if(battleTrigger == null) //This is the test battle setup
                 {
                     level = party.GetAverageLevel() * 4 / 5;
                     if (level < 1)
@@ -109,7 +109,7 @@ namespace Adventure.Battle
                         if (hasTreasure)
                         {
                             hasTreasure = false;
-                            return new[] { new Treasure(potionCreator.CreateManaPotion(level)) };
+                            return new[] { new Treasure(potionCreator.CreateManaPotion(level), TreasureType.Potion) };
                         }
                         else
                         {
