@@ -482,6 +482,16 @@ namespace Adventure.WorldMap
                 });
 
                 placeables.Add(fortuneTeller);
+
+                var fortuneTellerTent = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
+                {
+                    o.Transforms = transforms;
+                    var sprite = new Assets.World.FortuneTellerTent();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                });
+
+                placeables.Add(fortuneTellerTent);
             }
 
             {
