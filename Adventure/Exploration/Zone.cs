@@ -862,7 +862,7 @@ namespace Adventure
 
             bossBattleTrigger = null;
             var treasureChests = new List<TreasureTrigger>();
-            treasureStack = new Stack<ITreasure>(this.treasure);
+            treasureStack = new Stack<ITreasure>(this.treasure.Reverse());
 
             var rooms = mapMesh.MapBuilder.GetDesiredRooms().ToList();
             var skipRooms = 0;
