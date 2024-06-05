@@ -40,6 +40,7 @@ namespace Adventure.WorldMap
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly IBiomeManager biomeManager;
         private readonly NoiseTextureManager noiseTextureManager;
+        private readonly IWorldDatabase worldDatabase;
         private readonly csIslandMaze map;
         private readonly IObjectResolver objectResolver;
         private PrimaryHitShader shader;
@@ -83,7 +84,8 @@ namespace Adventure.WorldMap
             IBepuScene<WorldMapScene> bepuScene,
             IBiomeManager biomeManager,
             NoiseTextureManager noiseTextureManager,
-            TerrainNoise terrainNoise
+            TerrainNoise terrainNoise,
+            IWorldDatabase worldDatabase
         )
         {
             this.mapScale = description.MapScale;
@@ -101,6 +103,7 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.biomeManager = biomeManager;
             this.noiseTextureManager = noiseTextureManager;
+            this.worldDatabase = worldDatabase;
             this.map = description.csIslandMaze;
 
             transforms = new[]
@@ -469,6 +472,17 @@ namespace Adventure.WorldMap
                 });
 
                 placeables.Add(alchemist);
+
+                var alchemistShop = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
+                {
+                    o.Translation = GetCellCenterpoint(worldDatabase.AlchemistPosition) + new Vector3(0f, 0f, 0.2f);
+                    o.Transforms = transforms;
+                    var sprite = new Assets.World.AlchemistShop();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                });
+
+                placeables.Add(alchemistShop);
             }
 
             {
@@ -485,6 +499,7 @@ namespace Adventure.WorldMap
 
                 var fortuneTellerTent = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
                 {
+                    o.Translation = GetCellCenterpoint(worldDatabase.FortuneTellerPosition) + new Vector3(0f, 0f, 0.2f);
                     o.Transforms = transforms;
                     var sprite = new Assets.World.FortuneTellerTent();
                     o.Sprite = sprite.CreateSprite();

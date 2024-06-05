@@ -147,10 +147,6 @@ namespace Adventure.WorldMap
 
         private void MoveToPosition()
         {
-            IntVector2 targetCell = worldDatabase.FortuneTellerPosition;
-
-            currentPosition = worldMapManager.GetCellCenterpoint(targetCell);
-            currentPosition.z += 0.2f;
             var finalPosition = currentPosition;
             finalPosition.y += currentScale.y / 2.0f;
 
