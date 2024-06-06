@@ -470,6 +470,17 @@ namespace Adventure.WorldMap
                 });
 
                 placeables.Add(blacksmith);
+
+                var blacksmithShop = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
+                {
+                    o.Translation = GetCellCenterpoint(worldDatabase.BlacksmithPosition) + new Vector3(0f, 0f, 0.2f);
+                    o.Transforms = transforms;
+                    var sprite = new Assets.World.BlacksmithShop();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                });
+
+                placeables.Add(blacksmithShop);
             }
 
             {

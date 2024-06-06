@@ -27,21 +27,6 @@ namespace Adventure.Assets.World
             new SpriteMaterialTextureItem(0xff81797a, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
             new SpriteMaterialTextureItem(0xff7e6a5a, "Graphics/Textures/AmbientCG/Bricks056_1K-JPG", "jpg"),
             new SpriteMaterialTextureItem(0xff7d787a, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-
-
-
-
-            new SpriteMaterialTextureItem(0xff811531, "Graphics/Textures/AmbientCG/RoofingTiles012A_1K-JPG", "jpg"),
-            
-            
-            new SpriteMaterialTextureItem(0xffbf9f70, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
-            
-            new SpriteMaterialTextureItem(0xff7aa73c, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xffc7c3c1, "Graphics/Textures/AmbientCG/Carpet008_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xff155e9f, "Graphics/Textures/AmbientCG/Fabric012_1K", "jpg"),
-            
-            new SpriteMaterialTextureItem(0xffa411c8, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xff2983c2, "Graphics/Textures/AmbientCG/Fabric045_1K", "jpg"),
         };
 
         private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
