@@ -41,7 +41,7 @@ namespace Adventure.Services
         int CurrentSeed { get; }
         IntVector2 AirshipStartSquare { get; }
         BookCreator BookCreator { get; }
-        IntVector2 InkeeperPosition { get; }
+        IntVector2 InnkeeperPosition { get; }
         IntVector2 BlacksmithPosition { get; }
         IntVector2 AlchemistPosition { get; }
         IntVector2 BlacksmithUpgradePosition { get; }
@@ -88,7 +88,7 @@ namespace Adventure.Services
         public BookCreator BookCreator { get; }
         public IMonsterMaker MonsterMaker { get; }
         public IntVector2 AirshipStartSquare => airshipStartSquare;
-        public IntVector2 InkeeperPosition { get; private set; }
+        public IntVector2 InnkeeperPosition { get; private set; }
         public IntVector2 BlacksmithPosition { get; private set; }
         public IntVector2 AlchemistPosition { get; private set; }
         public IntVector2 BlacksmithUpgradePosition { get; private set; }
@@ -737,7 +737,7 @@ namespace Adventure.Services
                 yield return areaBuilder;
             }
             
-            InkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            InnkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             FortuneTellerPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);

@@ -199,7 +199,7 @@ namespace Adventure.WorldMap
 
         private void MoveToPosition()
         {
-            IntVector2 targetCell = worldDatabase.InkeeperPosition;
+            IntVector2 targetCell = worldDatabase.InnkeeperPosition;
 
             currentPosition = worldMapManager.GetCellCenterpoint(targetCell);
             var finalPosition = currentPosition;

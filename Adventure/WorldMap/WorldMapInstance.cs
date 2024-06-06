@@ -446,6 +446,17 @@ namespace Adventure.WorldMap
                 });
 
                 placeables.Add(innkeeper);
+
+                var inn = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
+                {
+                    o.Translation = GetCellCenterpoint(worldDatabase.InnkeeperPosition) + new Vector3(0f, 0f, 0.2f);
+                    o.Transforms = transforms;
+                    var sprite = new Assets.World.Inn();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                });
+
+                placeables.Add(inn);
             }
 
             {
