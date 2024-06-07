@@ -26,8 +26,16 @@ class Signpost : ISpriteAsset
         return defaultMaterial;
     }
 
-    public ISprite CreateSprite()
+    public virtual ISprite CreateSprite()
     {
         return new Sprite() { BaseScale = new Vector3(1f, 1f, 1f) };
+    }
+}
+
+class WorldMapSignpost : Signpost
+{
+    public override ISprite CreateSprite()
+    {
+        return new Sprite() { BaseScale = new Vector3(4.5f, 4.5f, 1f) };
     }
 }

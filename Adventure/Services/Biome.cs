@@ -86,7 +86,7 @@ namespace Adventure
 
         public ISpriteAsset TorchAsset { get; set; } = new Assets.World.Torch();
 
-        public ISpriteAsset EntranceAsset { get; set; } = new Assets.World.CountryEntrance();
+        public ISpriteAsset EntranceAsset { get; set; } = new Assets.World.WorldMapSignpost();
 
         public List<BiomeBackgroundItem> BackgroundItems { get; set; }
 

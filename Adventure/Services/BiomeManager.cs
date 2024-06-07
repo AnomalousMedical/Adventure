@@ -129,7 +129,6 @@ namespace Adventure
                 WallTexture = "Graphics/Textures/AmbientCG/Snow004_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Snow003_1K",
                 ReflectFloor = false,
-                EntranceAsset = new SnowyEntrance(),
                 Treasure = MakeDefaultTreasure(),
                 BgMusic = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
                 BgMusicNight = "Music/opengameart/Kistol - Snowfall (Looped ver.).ogg",
@@ -155,7 +154,6 @@ namespace Adventure
                 Treasure = MakeDefaultTreasure(),
                 BgMusic = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
                 BgMusicNight = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
-                EntranceAsset = new DesertEntrance(),
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
                     new BiomeBackgroundItem(2, new Cactus(), 0.8f, 0.4f)
@@ -261,7 +259,6 @@ namespace Adventure
                 WallTexture2 = "Graphics/Textures/AmbientCG/Rock026_1K",
                 BgMusic = "Music/freepd/Rafael Krux - Lonely Mountain.ogg",
                 BgMusicNight = "Music/freepd/Rafael Krux - Lonely Mountain.ogg",
-                EntranceAsset = new ForestEntrance(),
                 MapUnitY = 0.8f,
                 RandomizeMapUnitYDirection = false,
                 Treasure = MakeDefaultTreasure(),
