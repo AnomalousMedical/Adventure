@@ -37,6 +37,7 @@ namespace Adventure.WorldMap
             String Land
         );
 
+        private const float AirshipOffset = 0.05f; //Other props work of the tenths place, so they won't intersect with this offset
         private SpriteInstance spriteInstance;
         private readonly EventSprite sprite;
         private TLASInstanceData instanceData;
@@ -113,7 +114,7 @@ namespace Adventure.WorldMap
             var scale = descriptionScale = description.Scale;
             var halfScale = scale.y / 2f;
 
-            this.currentPosition = persistence.Current.Player.AirshipPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            this.currentPosition = persistence.Current.Player.AirshipPosition ?? description.Translation + new Vector3(0f, halfScale, AirshipOffset);
             this.currentOrientation = description.Orientation;
             this.currentScale = sprite.BaseScale * scale;
 
@@ -319,7 +320,7 @@ namespace Adventure.WorldMap
                 persistence.Current.Player.InAirship = false;
                 var cell = map.GetCellForLocation(currentPosition);
                 var center = map.GetCellCenterpoint(cell);
-                center.z += 0.01f; //Offset behind nearby items, which will be centered
+                center.z += AirshipOffset;
                 currentPosition = center;
                 currentPosition.y += currentScale.y / 2.0f;
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
