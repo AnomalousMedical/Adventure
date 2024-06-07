@@ -121,6 +121,7 @@ namespace Adventure.WorldMap
                 o.csIslandMaze = worldDatabase.WorldMap.Map;
                 o.Areas = worldDatabase.AreaBuilders;
                 o.AirshipSquare = worldDatabase.AirshipStartSquare;
+                o.BiomePropLocations = worldDatabase.BiomePropLocations;
             });
 
             await worldMapInstance.WaitForLoad();

@@ -27,6 +27,8 @@ namespace Adventure.WorldMap
 
             public IntVector2 AirshipSquare { get; set; }
 
+            public IEnumerable<IntVector2> BiomePropLocations { get; set; }
+
             public float MapScale { get; set; } = 1.0f;
         }
 
@@ -119,7 +121,7 @@ namespace Adventure.WorldMap
                 new Vector3(-mapWidth, 0, -mapHeight),
             };
             this.floorInstanceData = new TLASInstanceData[transforms.Length];
-            for(var i = 0; i < floorInstanceData.Length; i++)
+            for (var i = 0; i < floorInstanceData.Length; i++)
             {
                 this.floorInstanceData[i] = new TLASInstanceData()
                 {
@@ -223,7 +225,7 @@ namespace Adventure.WorldMap
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
-                    SetupAreas(description.Areas, description.AirshipSquare);
+                    SetupAreas(description.Areas, description.AirshipSquare, description.BiomePropLocations);
 
                     loadingTask.SetResult();
                 }
@@ -257,7 +259,7 @@ namespace Adventure.WorldMap
             }
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(shader);
-            foreach(var data in floorInstanceData)
+            foreach (var data in floorInstanceData)
             {
                 rtInstances.RemoveTlasBuild(data);
             }
@@ -405,7 +407,7 @@ namespace Adventure.WorldMap
             Console.WriteLine("--------------------------------------------------");
         }
 
-        private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare)
+        private void SetupAreas(List<IAreaBuilder> areaBuilders, in IntVector2 airshipSquare, IEnumerable<IntVector2> biomeProps)
         {
             areaLocations = new IntVector2[areaBuilders.Count];
 
@@ -577,6 +579,62 @@ namespace Adventure.WorldMap
                 placeables.Add(entrance);
             }
 
+            var bgItemsRandom = new FIRandom(worldDatabase.CurrentSeed);
+
+            foreach (var prop in biomeProps)
+            {
+                var biomeType = WorldDatabase.GetBiomeForSquare(map, prop);
+                var biome = biomeManager.GetBiome(biomeType);
+                var add = biome.BackgroundItems.FirstOrDefault();
+
+                if (add != null)
+                {
+                    var biomeProp = objectResolver.Resolve<WorldMapProp, WorldMapProp.Description>(o =>
+                    {
+                        var mustBeEven = prop.x % 2 == 0;
+
+                        var mapUnitX = mapMesh.MapUnitX * add.XPlacementRange;
+                        var halfUnitX = mapUnitX * 0.5f;
+                        var mapUnitZ = mapMesh.MapUnitZ * add.ZPlacementRange;
+                        var halfUnitZ = mapUnitZ * 0.5f;
+
+                        var scale = new Vector3(0.35f, 0.35f, 1.0f) * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
+                        var mapLoc = mapMesh.PointToVector(prop.x, prop.y);
+                        var keyAsset = add.Asset;
+                        var sprite = keyAsset.CreateSprite();
+                        mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
+                        if (keyAsset.GroundAttachmentChannel.HasValue)
+                        {
+                            var groundOffset = sprite.GetCurrentFrame().Attachments[keyAsset.GroundAttachmentChannel.Value].translate;
+                            mapLoc += groundOffset * scale * sprite.BaseScale;
+                        }
+                        var zOffsetBucket = bgItemsRandom.Next(9);
+                        if (mustBeEven)
+                        {
+                            if (zOffsetBucket % 2 != 0)
+                            {
+                                zOffsetBucket += 1;
+                            }
+                        }
+                        else //Odd
+                        {
+                            if (zOffsetBucket % 2 != 1)
+                            {
+                                zOffsetBucket += 1;
+                            }
+                        }
+                        mapLoc.z += zOffsetBucket * 0.1f * mapUnitZ - halfUnitZ;
+
+                        o.Translation = currentPosition + mapLoc;
+                        o.Sprite = sprite;
+                        o.SpriteMaterial = keyAsset.CreateMaterial();
+                        o.Scale = scale;
+                        o.Transforms = transforms;
+                    });
+
+                    placeables.Add(biomeProp);
+                }
+            }
         }
 
         public IntVector2 GetCellForLocation(Vector3 currentPosition)

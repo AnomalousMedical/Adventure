@@ -48,6 +48,7 @@ namespace Adventure.Services
         IntVector2 AlchemistUpgradePosition { get; }
         IntVector2 FortuneTellerPosition { get; }
         IntVector2 ElementalStonePosition { get; }
+        IEnumerable<IntVector2> BiomePropLocations { get; }
     }
 
     record ShopEntry(String InfoId, long Cost, bool IsEquipment, Func<InventoryItem> CreateItem, PlotItems? UniqueSalePlotItem = null) { }
@@ -95,6 +96,7 @@ namespace Adventure.Services
         public IntVector2 AlchemistUpgradePosition { get; private set; }
         public IntVector2 FortuneTellerPosition { get; private set; }
         public IntVector2 ElementalStonePosition { get; private set; }
+        public IEnumerable<IntVector2> BiomePropLocations { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
         {
@@ -745,6 +747,17 @@ namespace Adventure.Services
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
             AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);
             ElementalStonePosition = GetUnusedSquare(usedSquares, elementalStoneIsland, placementRandom);
+
+            var biomePropLocations = new List<IntVector2>();
+            foreach(var island in map.IslandInfo)
+            {
+                var islandPropLocationCount = island.islandPoints.Count / 5;
+                for(int i = 0; i < islandPropLocationCount; i++)
+                {
+                    biomePropLocations.Add(GetUnusedSquare(usedSquares, island, placementRandom));
+                }
+            }
+            this.BiomePropLocations = biomePropLocations;
         }
 
         /// <summary>
@@ -958,11 +971,30 @@ namespace Adventure.Services
             throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
         }
 
+        /// <summary>
+        /// This function is the opposite of the one below it.
+        /// </summary>
+        public static BiomeType GetBiomeForSquare(csIslandMaze map, IntVector2 mapPoint)
+        {
+            var biome = BiomeType.Mountain;
+            var textureIndex = map.TextureOffsets[mapPoint.x, mapPoint.y];
+            switch (textureIndex)
+            {
+                case 8:
+                    biome = BiomeType.Mountain;
+                    break;
+                default:
+                    biome = (BiomeType)textureIndex;
+                    break;
+            }
+            return biome;
+        }
+
         private static int GetBiomeIndex(BiomeType biome)
         {
             switch (biome)
             {
-                case BiomeType.Mountain: //temp, give mountain its own thing
+                case BiomeType.Mountain:
                 case BiomeType.Volcano:
                     return 8;
                 default:
