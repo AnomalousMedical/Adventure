@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class SceneTestUpdateListener : UpdateListener
+    class GameUpdateListener : UpdateListener
     {
         private static readonly Color ClearColor = new Color(0f, 0f, 0f, 1.0f);
 
@@ -34,7 +34,7 @@ namespace Adventure
         private readonly IClockService clockService;
         private IGameState gameState;
 
-        public unsafe SceneTestUpdateListener
+        public unsafe GameUpdateListener
         (
             GraphicsEngine graphicsEngine,
             RayTracingRenderer rayTracingRenderer,

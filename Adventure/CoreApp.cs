@@ -94,7 +94,7 @@ namespace Adventure
             services.AddSingleton<EventManagerTracker>();
             services.AddSingleton<GameOptions>(options);
             services.AddSingleton<FlyCameraManager>();
-            services.AddSingleton<SceneTestUpdateListener>();
+            services.AddSingleton<GameUpdateListener>();
             services.AddSingleton<ITimeClock, TimeClock>();
             services.AddSingleton<PlayedTimeService>();
             services.AddSingleton<BuffManager>();
@@ -306,7 +306,7 @@ namespace Adventure
             mainTimer = serviceProvider.GetRequiredService<UpdateTimer>();
 
             var linker = serviceProvider.GetRequiredService<IGameStateLinker>(); //This links the game states together.
-            var updateListener = serviceProvider.GetRequiredService<SceneTestUpdateListener>();
+            var updateListener = serviceProvider.GetRequiredService<GameUpdateListener>();
             mainTimer.addUpdateListener(updateListener);
 
             PerformanceMonitor.setupEnabledState(serviceProvider.GetRequiredService<SystemTimer>());
