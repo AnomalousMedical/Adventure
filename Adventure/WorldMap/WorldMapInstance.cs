@@ -163,7 +163,7 @@ namespace Adventure.WorldMap
                         mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale)
                         {
                             WallTextureIndex = 6,
-                            LowerGroundTextureIndex = 7,
+                            LowerGroundTextureIndex = 6,
                         };
                         mapMesh.Build();
                     });
