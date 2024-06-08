@@ -31,7 +31,7 @@ namespace Adventure
 
         void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
 
-        void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer);
+        ISkillEffect Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer);
 
         void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState);
 
@@ -80,9 +80,9 @@ namespace Adventure
             inventoryFunctions.Use(this.inventoryItem, inventory, user, user);
         }
 
-        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        public ISkillEffect Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
-            inventoryFunctions.Use(this.inventoryItem, inventory, user, user, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+            return inventoryFunctions.Use(this.inventoryItem, inventory, user, user, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
         }
 
         public void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState)
@@ -127,9 +127,10 @@ namespace Adventure
             gameState.PlotItems.Add(plotItem);
         }
 
-        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        public ISkillEffect Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
             gameState.PlotItems.Add(plotItem);
+            return null;
         }
 
         public void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState)
