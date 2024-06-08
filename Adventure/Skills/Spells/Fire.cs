@@ -2,26 +2,26 @@
 using Adventure.Assets.SoundEffects;
 using RpgMath;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills.Spells
 {
-    class Ice : ElementalBase
+    class Fire : ElementalBase
     {
-        public Ice()
-            : base(Element.Ice, new IceEffect(), IceSpellSoundEffect.Instance)
+        public Fire()
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
-            Name = "Ice";
+            Name = "Fire";
             MpCost = 16;
             TriggeredMpCost = 22;
             Power = 4;
         }
     }
 
-    class StrongIce : ElementalBase
+    class StrongFire : ElementalBase
     {
-        public StrongIce()
-            : base(Element.Ice, new IceEffect(), IceSpellSoundEffect.Instance)
+        public StrongFire()
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
-            Name = "Strong Ice";
+            Name = "Strong Fire";
             MpCost = 34;
             TriggeredMpCost = 42;
             Power = 8;
@@ -30,12 +30,12 @@ namespace Adventure.Battle.Skills
         }
     }
 
-    class ArchIce : ElementalBase
+    class ArchFire : ElementalBase
     {
-        public ArchIce()
-            : base(Element.Ice, new IceEffect(), IceSpellSoundEffect.Instance)
+        public ArchFire()
+            : base(Element.Fire, new FireEffect(), FireSpellSoundEffect.Instance)
         {
-            Name = "Arch Ice";
+            Name = "Arch Fire";
             MpCost = 64;
             TriggeredMpCost = 82;
             Power = 16;

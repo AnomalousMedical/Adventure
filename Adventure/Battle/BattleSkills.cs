@@ -1,4 +1,4 @@
-﻿using Adventure.Battle.Skills;
+﻿using Adventure.Skills.Spells;
 using Engine;
 using Engine.Platform;
 using SharpGui;

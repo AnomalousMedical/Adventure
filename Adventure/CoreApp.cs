@@ -1,6 +1,5 @@
 ﻿using Adventure.Assets;
 using Adventure.Battle;
-using Adventure.Battle.Skills;
 using Adventure.Exploration;
 using Adventure.GameOver;
 using Adventure.Items;
@@ -8,6 +7,7 @@ using Adventure.Items.Actions;
 using Adventure.Items.Creators;
 using Adventure.Menu;
 using Adventure.Services;
+using Adventure.Skills;
 using Adventure.Text;
 using Adventure.WorldMap;
 using Anomalous.OSPlatform;

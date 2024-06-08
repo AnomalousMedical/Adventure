@@ -1,11 +1,12 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.SoundEffects;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using RpgMath;
 using System.Collections.Generic;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills.Spells
 {
     class IonShread : ISkill
     {

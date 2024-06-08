@@ -1,4 +1,5 @@
-﻿using Adventure.Battle.Skills;
+﻿using Adventure.Skills;
+using Adventure.Skills.Spells;
 using System;
 
 namespace Adventure.Battle

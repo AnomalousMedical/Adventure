@@ -1,5 +1,5 @@
-﻿using Adventure.Battle.Skills;
-using Adventure.Items;
+﻿using Adventure.Items;
+using Adventure.Skills;
 using Adventure.WorldMap;
 using System;
 using System.Collections.Generic;

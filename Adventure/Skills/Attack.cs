@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills
 {
     class Attack : ISkill
     {

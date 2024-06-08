@@ -1,7 +1,8 @@
 ﻿using Adventure.Assets.Equipment;
-using Adventure.Battle.Skills;
 using Adventure.Items;
 using Adventure.Items.Creators;
+using Adventure.Skills;
+using Adventure.Skills.Spells;
 using Engine;
 using RpgMath;
 using System;

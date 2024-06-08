@@ -2,7 +2,7 @@
 using Adventure.Assets.SoundEffects;
 using RpgMath;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills.Spells
 {
     class Lightning : ElementalBase
     {

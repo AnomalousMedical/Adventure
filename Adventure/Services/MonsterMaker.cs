@@ -1,7 +1,7 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.Enemies;
 using Adventure.Assets.SoundEffects;
-using Adventure.Battle.Skills;
+using Adventure.Skills.Spells;
 using Engine;
 using RpgMath;
 using System;

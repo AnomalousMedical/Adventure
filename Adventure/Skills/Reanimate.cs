@@ -1,11 +1,12 @@
 ﻿using Adventure.Assets.PixelEffects;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using RpgMath;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills
 {
     class Reanimate : ISkill
     {
@@ -51,7 +52,7 @@ namespace Adventure.Battle.Skills
             }
 
             //Apply resistance
-            var resistance = target.Stats.GetResistance(RpgMath.Element.Healing);
+            var resistance = target.Stats.GetResistance(Element.Healing);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
 
             if (target.IsDead || damage > 0)

@@ -1,34 +1,18 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.PixelEffects;
 using Adventure.Assets.SoundEffects;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
-using Engine.Platform;
 using RpgMath;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills
 {
-    abstract class BuffSpell : ISkill
+    class Cure : ISkill
     {
-        public string Name { get; init; }
-
-        public long MpCost { get; init; }
-
         public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
-
-        public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
-
-        public bool DefaultTargetPlayers => true;
-
-        public Color CastColor => Color.FromARGB(0xffffff74);
-
-        public bool HealingItemsOnly { get; set; } = true;
-
-        public ISoundEffect SoundEffect { get; set; }
-
-        public bool MultiTarget { get; set; }
 
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
@@ -37,7 +21,7 @@ namespace Adventure.Battle.Skills
                 return null;
             }
 
-            if (HealingItemsOnly && source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
+            if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
             {
                 //Mp is taken, but nothing is done if cure can't be cast.
                 return null;
@@ -50,8 +34,16 @@ namespace Adventure.Battle.Skills
 
             source.CurrentMp -= MpCost;
 
-            var buff = CreateBuff();
-            target.UpdateBuffs(buff);
+            var damage = damageCalculator.Cure(source, Amount);
+            damage = damageCalculator.RandomVariation(damage);
+
+            damage *= -1; //Make it healing
+
+            //Apply resistance
+            var resistance = target.GetResistance(Element.Healing);
+            damage = damageCalculator.ApplyResistance(damage, resistance);
+
+            target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
 
             //Effect
             if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
@@ -66,15 +58,12 @@ namespace Adventure.Battle.Skills
 
                     var applyEffects = new List<IAttachment>();
 
-                    if(SoundEffect != null)
-                    {
-                        soundEffectPlayer.PlaySound(SoundEffect);
-                    }
+                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
 
                     var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
                     var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
                     {
-                        ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
+                        ISpriteAsset asset = new MagicBubbles();
                         o.RenderShadow = false;
                         o.Sprite = asset.CreateSprite();
                         o.SpriteMaterial = asset.CreateMaterial();
@@ -89,7 +78,7 @@ namespace Adventure.Battle.Skills
                     applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
                     applyEffects.Add(applyEffect);
 
-                    yield return coroutine.WaitSeconds(1.0);
+                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
                     foreach (var effect in applyEffects)
                     {
                         effect.RequestDestruction();
@@ -108,17 +97,15 @@ namespace Adventure.Battle.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
-            if (HealingItemsOnly && attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
+            if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
                 return new SkillEffect(true);
             }
 
-            var applyEffects = new List<Attachment<BattleScene>>();
-
             target = battleManager.ValidateTarget(attacker, target);
             IEnumerable<IBattleTarget> targets;
-            if (MultiTarget && triggered)
+            if (attacker.Stats.CanCureAll && triggered)
             {
                 targets = battleManager.GetTargetsInGroup(target).Where(i => !i.IsDead).ToArray(); //It is important to make this copy, otherwise enumeration can fail on the death checks
             }
@@ -127,16 +114,36 @@ namespace Adventure.Battle.Skills
                 targets = new[] { target };
             }
 
-            foreach(var currentTarget in targets)
-            {
-                var buff = CreateBuff();
-                currentTarget.Stats.UpdateBuffs(buff);
+            var applyEffects = new List<Attachment<BattleScene>>();
 
-                battleManager.AddDamageNumber(currentTarget, DamageNumberText, Color.White);
+            battleManager.SoundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
+            foreach (var currentTarget in targets)
+            {
+                var damage = battleManager.DamageCalculator.Cure(attacker.Stats, Amount);
+                damage = battleManager.DamageCalculator.RandomVariation(damage);
+
+                damage *= -1; //Make it healing
+                if (currentTarget != target)
+                {
+                    damage /= 15;
+                }
+
+                if (triggerSpammed)
+                {
+                    damage /= 2;
+                }
+
+                //Apply resistance
+                var resistance = target.Stats.GetResistance(Element.Healing);
+                damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+
+                battleManager.AddDamageNumber(currentTarget, damage);
+                currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
-                    ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
+                    ISpriteAsset asset = new MagicBubbles();
                     o.RenderShadow = false;
                     o.Sprite = asset.CreateSprite();
                     o.SpriteMaterial = asset.CreateMaterial();
@@ -151,140 +158,55 @@ namespace Adventure.Battle.Skills
                 applyEffects.Add(applyEffect);
             }
 
-            if (SoundEffect != null)
-            {
-                battleManager.SoundEffectPlayer.PlaySound(SoundEffect);
-            }
-
+            var skillEffect = new SkillEffect();
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(1.0);
-                foreach (var applyEffect in applyEffects)
+                yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                foreach (var currentTarget in targets)
                 {
-                    applyEffect.RequestDestruction();
+                    battleManager.HandleDeath(currentTarget);
                 }
+                foreach (var effect in applyEffects)
+                {
+                    effect.RequestDestruction();
+                }
+                skillEffect.Finished = true;
             }
             coroutine.Run(run());
 
-            return new SkillEffect(true);
+            return skillEffect;
         }
 
-        public abstract CharacterBuff CreateBuff();
+        public bool DefaultTargetPlayers => true;
 
-        public abstract String DamageNumberText { get; }
+        public string Name { get; init; } = "Cure";
 
-        public int Amount { get; set; }
+        public long MpCost { get; init; } = 17;
 
-        public long Duration { get; set; } = 5 * 60 * Clock.SecondsToMicro;
+        public long Amount { get; init; } = 4;
+
+        public SkillAttackStyle AttackStyle => SkillAttackStyle.Cast;
+
+        public Color CastColor => Color.FromARGB(0xff63c74c);
     }
 
-    class PhysicalBuff : BuffSpell
+    class MegaCure : Cure
     {
-        protected static readonly int Id = 0;
-
-        public override string DamageNumberText => $"+{Amount} Strength and Vitality";
-
-        public override CharacterBuff CreateBuff()
+        public MegaCure()
         {
-            return new CharacterBuff()
-            {
-                Name = Name,
-                Strength = Amount,
-                Vitality = Amount,
-                TimeRemaining = Duration,
-                BuffTypeId = Id
-            };
+            MpCost = 36;
+            Amount = 35;
+            Name = "Mega Cure";
         }
     }
 
-    class BattleCry : PhysicalBuff
+    class UltraCure : Cure
     {
-        public BattleCry()
+        public UltraCure()
         {
-            Amount = 30;
-            Name = "Battle Cry";
-            MpCost = 35;
-            SoundEffect = WarCrySpellSoundEffect.Instance;
-        }
-    }
-
-    class WarCry : PhysicalBuff
-    {
-        public WarCry()
-        {
-            Amount = 45;
-            Name = "War Cry";
-            MpCost = 48;
-            SoundEffect = WarCrySpellSoundEffect.Instance;
-            MultiTarget = true;
-        }
-    }
-
-    class MagicBuff : BuffSpell
-    {
-        protected static readonly int Id = 1;
-
-        public override string DamageNumberText => $"+{Amount} Magic";
-
-        public override CharacterBuff CreateBuff()
-        {
-            return new CharacterBuff()
-            {
-                Name = Name,
-                Magic = Amount,
-                Spirit = Amount,
-                TimeRemaining = Duration,
-                BuffTypeId = Id
-            };
-        }
-    }
-
-    class Focus : MagicBuff
-    {
-        public Focus()
-        {
-            Amount = 20;
-            Name = "Focus";
-            MpCost = 30;
-        }
-    }
-
-    class IntenseFocus : MagicBuff
-    {
-        public IntenseFocus()
-        {
-            Amount = 45;
-            Name = "Intense Focus";
-            MpCost = 48;
-            MultiTarget = true;
-        }
-    }
-
-    class Haste : BuffSpell
-    {
-        protected static readonly int Id = 4;
-
-        public Haste()
-        {
-            Amount = 100;
-            Name = "Haste";
-            MpCost = 87;
-            HealingItemsOnly = false;
-            Duration = 2 * 60 * Clock.SecondsToMicro;
-    }
-
-        public override string DamageNumberText => "Haste";
-
-        public override CharacterBuff CreateBuff()
-        {
-            return new CharacterBuff()
-            {
-                Name = Name,
-                Dexterity = Amount,
-                TimeRemaining = Duration,
-                BuffTypeId = Id,
-                QueueTurnsFront = true
-            };
+            MpCost = 62;
+            Amount = 65;
+            Name = "Ultra Cure";
         }
     }
 }

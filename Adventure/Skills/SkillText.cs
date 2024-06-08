@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Battle.Skills;
+namespace Adventure.Skills;
 
 record SkillTextEntry
 (

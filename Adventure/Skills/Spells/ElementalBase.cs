@@ -1,5 +1,6 @@
 ﻿using Adventure.Assets;
 using Adventure.Assets.SoundEffects;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -8,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills.Spells
 {
     class ElementalBase : ISkill
     {
@@ -25,7 +26,7 @@ namespace Adventure.Battle.Skills
 
         public long GetMpCost(bool triggered, bool triggerSpammed)
         {
-            if(triggered || triggerSpammed)
+            if (triggered || triggerSpammed)
             {
                 return TriggeredMpCost;
             }
@@ -162,12 +163,12 @@ namespace Adventure.Battle.Skills
                     var effectScale = Vector3.ScaleIdentity;
                     var numShakes = 1;
                     var createExtraSpellHits = false;
-                    if(damage < originalDamage)
+                    if (damage < originalDamage)
                     {
                         effectScale *= 0.75f;
                         numShakes = 0;
                     }
-                    else if(damage > originalDamage)
+                    else if (damage > originalDamage)
                     {
                         numShakes = 5;
                         createExtraSpellHits = true;

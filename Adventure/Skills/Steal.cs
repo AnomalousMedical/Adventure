@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle;
+using Adventure.Items;
 using Adventure.Menu;
 using Adventure.Services;
 using Engine;
@@ -7,7 +8,7 @@ using RpgMath;
 using System;
 using System.Linq;
 
-namespace Adventure.Battle.Skills
+namespace Adventure.Skills
 {
     class Steal : ISkill
     {
