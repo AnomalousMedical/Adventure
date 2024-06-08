@@ -142,8 +142,8 @@ namespace Adventure.WorldMap
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
                     var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground060_1K");
                     var swampTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Moss001_1K");
-                    var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
                     var volcanoTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock037_1K");
+                    var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
 
                     var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
                     var desertTextureTask = textureManager.Checkout(desertTextureDesc);
@@ -151,8 +151,8 @@ namespace Adventure.WorldMap
                     var forestTextureTask = textureManager.Checkout(forestTextureDesc);
                     var beachTextureTask = textureManager.Checkout(beachTextureDesc);
                     var swampTextureTask = textureManager.Checkout(swampTextureDesc);
-                    var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
                     var volcanoTextureTask = textureManager.Checkout(volcanoTextureDesc);
+                    var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();
 
@@ -160,8 +160,8 @@ namespace Adventure.WorldMap
                     {
                         mapMesh = new IslandMazeMesh(description.csIslandMaze, floorMesh, mapUnitX: this.mapScale, mapUnitY: this.mapScale, mapUnitZ: this.mapScale)
                         {
-                            WallTextureIndex = 6,
-                            LowerGroundTextureIndex = 6,
+                            WallTextureIndex = 7,
+                            LowerGroundTextureIndex = 7,
                         };
                         mapMesh.Build();
                     });
@@ -174,8 +174,8 @@ namespace Adventure.WorldMap
                         forestTextureTask,
                         beachTextureTask,
                         swampTextureTask,
-                        cliffTextureTask,
                         volcanoTextureTask,
+                        cliffTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
                         shaderSetup
                     );
@@ -188,8 +188,8 @@ namespace Adventure.WorldMap
                     var forestTexture = forestTextureTask.Result;
                     var beachTexture = beachTextureTask.Result;
                     var swampTexture = swampTextureTask.Result;
-                    var cliffTexture = cliffTextureTask.Result;
                     var volcanoTexture = volcanoTextureTask.Result;
+                    var cliffTexture = cliffTextureTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
                     loadedTextures.Add(desertTexture);
@@ -197,8 +197,8 @@ namespace Adventure.WorldMap
                     loadedTextures.Add(forestTexture);
                     loadedTextures.Add(beachTexture);
                     loadedTextures.Add(swampTexture);
-                    loadedTextures.Add(cliffTexture);
                     loadedTextures.Add(volcanoTexture);
+                    loadedTextures.Add(cliffTexture);
 
                     foreach (var data in floorInstanceData)
                     {
@@ -213,8 +213,8 @@ namespace Adventure.WorldMap
                         forestTexture,
                         beachTexture,
                         swampTexture,
-                        cliffTexture,
-                        volcanoTexture);
+                        volcanoTexture,
+                        cliffTexture);
 
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);

@@ -997,27 +997,16 @@ namespace Adventure.Services
         /// </summary>
         public static BiomeType GetBiomeForSquare(csIslandMaze map, IntVector2 mapPoint)
         {
-            var biome = BiomeType.Mountain;
             var textureIndex = map.TextureOffsets[mapPoint.x, mapPoint.y];
-            switch (textureIndex)
-            {
-                case 7:
-                    biome = BiomeType.Mountain;
-                    break;
-                default:
-                    biome = (BiomeType)textureIndex;
-                    break;
-            }
-            return biome;
+            return (BiomeType)textureIndex;
         }
 
         private static int GetBiomeIndex(BiomeType biome)
         {
             switch (biome)
             {
-                case BiomeType.Mountain:
                 case BiomeType.Volcano:
-                    return 7;
+                    return 6;
                 default:
                     return (int)biome;
             }
