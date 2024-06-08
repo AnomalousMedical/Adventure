@@ -25,11 +25,18 @@ class SkillMenu
     CharacterMenuPositionService characterMenuPositionService,
     CameraMover cameraMover,
     CharacterStatsTextService characterStatsTextService,
-    CharacterStyleService characterStyleService
-) : IExplorationSubMenu
+    CharacterStyleService characterStyleService,
+    IObjectResolverFactory objectResolverFactory,
+    IScopedCoroutine coroutine,
+    IClockService clockService,
+    ISoundEffectPlayer soundEffectPlayer
+) : IExplorationSubMenu, IDisposable
 {
     public const float SkillButtonsLayer = 0.15f;
     public const float ChooseTargetLayer = 0.35f;
+    private readonly IClockService clockService = clockService;
+    private readonly ISoundEffectPlayer soundEffectPlayer = soundEffectPlayer;
+    private IObjectResolver objectResolver = objectResolverFactory.Create();
 
     private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
     SharpButton next = new SharpButton() { Text = "Next" };
@@ -38,13 +45,29 @@ class SkillMenu
     List<SharpText> infos;
     List<SharpText> descriptions;
     private int currentSheet;
+    private ISkillEffect currentEffect;
 
     private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
     private List<ButtonColumnItem<Action>> characterChoices = null;
     private List<ButtonColumnItem<String>> currentPlayerSkills = null;
 
+    public void Dispose()
+    {
+        objectResolver.Dispose();
+    }
+
     public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
     {
+        if(currentEffect != null)
+        {
+            currentEffect.Update(clockService.Clock);
+            if (currentEffect.Finished)
+            {
+                currentEffect = null;
+            }
+            return;
+        }
+
         var choosingCharacter = characterChoices != null;
 
         if (currentSheet >= persistence.Current.Party.Members.Count)
@@ -84,7 +107,7 @@ class SkillMenu
 
         if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
         {
-            cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+            cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
             characterMenuPosition.FaceCamera();
         }
 
@@ -165,7 +188,7 @@ class SkillMenu
                         var selectedSkill = skillFactory.CreateSkill(newSelection);
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
-                            selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet);
+                            currentEffect = selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
                             infos = null;
                             descriptions = null;
                         }))

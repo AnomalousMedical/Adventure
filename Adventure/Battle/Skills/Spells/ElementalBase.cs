@@ -59,7 +59,7 @@ namespace Adventure.Battle.Skills
                 {
                     battleManager.AddDamageNumber(currentTarget, $"{element} Attack", Color.White);
 
-                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                     {
                         ISpriteAsset asset = this.asset;
                         o.RenderShadow = false;
@@ -190,7 +190,7 @@ namespace Adventure.Battle.Skills
                     battleManager.AddDamageNumber(currentTarget, damage);
                     currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
-                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                     {
                         ISpriteAsset asset = this.asset;
                         o.RenderShadow = false;
@@ -210,7 +210,7 @@ namespace Adventure.Battle.Skills
                     {
                         Vector3 randomOffset;
 
-                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                         {
                             ISpriteAsset asset = this.asset;
                             o.RenderShadow = false;
@@ -227,7 +227,7 @@ namespace Adventure.Battle.Skills
                         applyEffect.SetPosition(currentTarget.MagicHitLocation + randomOffset, Quaternion.Identity, effectScale);
                         applyEffects.Add(applyEffect);
 
-                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                        applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                         {
                             ISpriteAsset asset = this.asset;
                             o.RenderShadow = false;

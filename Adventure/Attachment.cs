@@ -7,8 +7,16 @@ using System;
 
 namespace Adventure
 {
-    class Attachment<T> : IDisposable
+    interface IAttachment
     {
+        Vector3 BaseScale { get; }
+        void RequestDestruction();
+        void SetAdditionalRotation(in Quaternion additionalRotation);
+        void SetAnimation(string name);
+        void SetGraphicsActive(bool active);
+        void SetPosition(in Vector3 parentPosition, in Quaternion parentRotation, in Vector3 parentScale);
+        void SetWorldPosition(in Vector3 finalPosition, in Quaternion finalOrientation, in Vector3 finalScale);
+
         public class Description
         {
             public Quaternion Orientation { get; set; } = Quaternion.Identity;
@@ -25,8 +33,10 @@ namespace Adventure
 
             public int? LightAttachmentChannel { get; set; }
         }
+    }
 
-        
+    class Attachment<T> : IDisposable, IAttachment
+    {
         private const int PrimaryAttachment = 0;
 
         private readonly IDestructionRequest destructionRequest;
@@ -59,7 +69,7 @@ namespace Adventure
             RTInstances<T> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,
             IScopedCoroutine coroutine,
-            Description attachmentDescription,
+            IAttachment.Description attachmentDescription,
             TypedLightManager<T> lightManager
         )
         {

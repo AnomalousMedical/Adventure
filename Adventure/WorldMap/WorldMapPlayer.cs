@@ -214,7 +214,9 @@ namespace Adventure.WorldMap
             {
                 sprite.SetAnimation("stand-down");
                 Sprite_FrameChanged(sprite);
-            });
+            },
+            GetMagicHitLocation: () => this.currentPosition + new Vector3(0f, 0f, -0.05f),
+            GetScale: () => this.currentScale);
             characterMenuPositionTracker.Set(characterSheet, characterMenuPositionEntry);
 
             coroutine.RunTask(async () =>
@@ -544,7 +546,7 @@ namespace Adventure.WorldMap
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, IAttachment.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -563,7 +565,7 @@ namespace Adventure.WorldMap
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, IAttachment.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -590,7 +592,7 @@ namespace Adventure.WorldMap
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<WorldMapScene>, IAttachment.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -609,7 +611,7 @@ namespace Adventure.WorldMap
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, Attachment<WorldMapScene>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<WorldMapScene>, IAttachment.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {

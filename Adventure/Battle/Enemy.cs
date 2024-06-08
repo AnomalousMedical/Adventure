@@ -271,7 +271,7 @@ namespace Adventure.Battle
         private void Cast(ISkill skill)
         {
             castEffect?.RequestDestruction();
-            castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            castEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 var asset = new Assets.PixelEffects.Nebula();
                 o.RenderShadow = false;
@@ -328,7 +328,7 @@ namespace Adventure.Battle
                 {
                     createSkillCastEffect = false;
                     castEffect?.RequestDestruction();
-                    castEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                    castEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                     {
                         ISpriteAsset asset = skill.SpriteAsset;
                         o.RenderShadow = false;

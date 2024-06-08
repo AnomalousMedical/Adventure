@@ -169,7 +169,7 @@ namespace Adventure.Menu
 
             if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
             {
-                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
                 characterMenuPosition.FaceCamera();
             }
 

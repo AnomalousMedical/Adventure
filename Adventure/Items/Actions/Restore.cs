@@ -42,7 +42,7 @@ namespace Adventure.Items.Actions
             target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 var asset = new MagicBubbles();
                 o.RenderShadow = false;
@@ -92,7 +92,7 @@ namespace Adventure.Items.Actions
             target.TakeMp(damage);
             battleManager.HandleDeath(target);
 
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 var asset = new MagicBubbles();
                 o.RenderShadow = false;
@@ -155,7 +155,7 @@ namespace Adventure.Items.Actions
             target.Resurrect(battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 var asset = new MagicBubbles();
                 o.RenderShadow = false;

@@ -10,16 +10,24 @@ namespace Adventure.Services
 {
     interface ICharacterMenuPositionEntry
     {
-        Vector3 Position { get; }
+        Vector3 MagicHitLocation { get; }
+
+        Vector3 Scale { get; }
+
+        Vector3 CameraPosition { get; }
 
         Quaternion CameraRotation { get; }
 
         void FaceCamera();
     }
 
-    public class CharacterMenuPositionEntry(Func<Vector3> GetPosition, Func<Quaternion> GetCameraRotation, Action FaceCameraCb) : ICharacterMenuPositionEntry
+    public class CharacterMenuPositionEntry(Func<Vector3> GetCameraPosition, Func<Quaternion> GetCameraRotation, Action FaceCameraCb, Func<Vector3> GetMagicHitLocation, Func<Vector3> GetScale) : ICharacterMenuPositionEntry
     {
-        public Vector3 Position => GetPosition();
+        public Vector3 MagicHitLocation => GetMagicHitLocation();
+
+        public Vector3 Scale => GetScale();
+
+        public Vector3 CameraPosition => GetCameraPosition();
 
         public Quaternion CameraRotation => GetCameraRotation();
 
@@ -63,10 +71,14 @@ namespace Adventure.Services
     )
     {
         private CharacterMenuPositionTracker currentTracker;
+        private Type activeTrackerType;
+
+        public Type ActiveTrackerType => activeTrackerType;
 
         public void SetTrackerActive(Type trackerType)
         {
-            if(trackerType == typeof(WorldMapScene))
+            activeTrackerType = trackerType;
+            if (trackerType == typeof(WorldMapScene))
             {
                 currentTracker = worldMapCharacterPositionTracker;
             }

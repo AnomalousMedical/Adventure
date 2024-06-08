@@ -812,7 +812,7 @@ namespace Adventure.Battle
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
@@ -824,7 +824,7 @@ namespace Adventure.Battle
 
             if (dualHit)
             {
-                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
                     o.RenderShadow = false;
                     o.Sprite = asset.CreateSprite();
@@ -873,7 +873,7 @@ namespace Adventure.Battle
 
             if(elementalEffect != null)
             {
-                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
                     o.RenderShadow = false;
                     o.Sprite = elementalEffect.CreateSprite();
@@ -918,7 +918,7 @@ namespace Adventure.Battle
         {
             var applyEffects = new List<Attachment<BattleScene>>();
 
-            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+            var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 ISpriteAsset asset = new EnemyDeathEffect();
                 o.Sprite = asset.CreateSprite();

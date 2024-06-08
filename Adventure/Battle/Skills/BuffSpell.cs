@@ -30,11 +30,11 @@ namespace Adventure.Battle.Skills
 
         public bool MultiTarget { get; set; }
 
-        public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
+        public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
             if (source.CurrentMp - MpCost < 0)
             {
-                return;
+                return null;
             }
 
             source.CurrentMp -= MpCost;
@@ -42,16 +42,18 @@ namespace Adventure.Battle.Skills
             if (HealingItemsOnly && source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
             {
                 //Mp is taken, but nothing is done if cure can't be cast.
-                return;
+                return null;
             }
 
             if (target.CurrentHp == 0)
             {
-                return;
+                return null;
             }
 
             var buff = CreateBuff();
             target.UpdateBuffs(buff);
+
+            return null;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
@@ -82,7 +84,7 @@ namespace Adventure.Battle.Skills
 
                 battleManager.AddDamageNumber(currentTarget, DamageNumberText, Color.White);
 
-                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
                     ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
                     o.RenderShadow = false;

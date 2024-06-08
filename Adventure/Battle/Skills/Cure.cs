@@ -13,11 +13,11 @@ namespace Adventure.Battle.Skills
     {
         public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
 
-        public void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target)
+        public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
-            if(source.CurrentMp - MpCost < 0)
+            if (source.CurrentMp - MpCost < 0)
             {
-                return;
+                return null;
             }
 
             source.CurrentMp -= MpCost;
@@ -25,12 +25,12 @@ namespace Adventure.Battle.Skills
             if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
             {
                 //Mp is taken, but nothing is done if cure can't be cast.
-                return;
+                return null;
             }
 
-            if(target.CurrentHp == 0)
+            if (target.CurrentHp == 0)
             {
-                return;
+                return null;
             }
 
             var damage = damageCalculator.Cure(source, Amount);
@@ -43,11 +43,60 @@ namespace Adventure.Battle.Skills
             damage = damageCalculator.ApplyResistance(damage, resistance);
 
             target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
+
+            //Effect
+            if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                characterEntry.FaceCamera();
+
+                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                IEnumerator<YieldAction> run()
+                {
+                    yield return coroutine.WaitSeconds(0.3f);
+
+                    var applyEffects = new List<IAttachment>();
+
+                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
+                    var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
+                    var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
+                    {
+                        ISpriteAsset asset = new MagicBubbles();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+
+                    applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
+                    applyEffects.Add(applyEffect);
+
+                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                    foreach (var effect in applyEffects)
+                    {
+                        effect.RequestDestruction();
+                    }
+                    skillEffect.Finished = true;
+                }
+                coroutine.Run(run());
+
+                return skillEffect;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
-            if(attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
+            if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
                 return new SkillEffect(true);
@@ -74,7 +123,7 @@ namespace Adventure.Battle.Skills
                 damage = battleManager.DamageCalculator.RandomVariation(damage);
 
                 damage *= -1; //Make it healing
-                if(currentTarget != target)
+                if (currentTarget != target)
                 {
                     damage /= 15;
                 }
@@ -91,7 +140,7 @@ namespace Adventure.Battle.Skills
                 battleManager.AddDamageNumber(currentTarget, damage);
                 currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
-                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
                     ISpriteAsset asset = new MagicBubbles();
                     o.RenderShadow = false;
@@ -108,7 +157,7 @@ namespace Adventure.Battle.Skills
                 applyEffects.Add(applyEffect);
             }
 
-            var effect = new SkillEffect();
+            var skillEffect = new SkillEffect();
             IEnumerator<YieldAction> run()
             {
                 yield return coroutine.WaitSeconds(MagicBubbles.Duration);
@@ -120,11 +169,11 @@ namespace Adventure.Battle.Skills
                 {
                     effect.RequestDestruction();
                 }
-                effect.Finished = true;
+                skillEffect.Finished = true;
             }
             coroutine.Run(run());
 
-            return effect;
+            return skillEffect;
         }
 
         public bool DefaultTargetPlayers => true;

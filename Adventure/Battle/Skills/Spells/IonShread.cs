@@ -86,7 +86,7 @@ namespace Adventure.Battle.Skills
                 battleManager.AddDamageNumber(target, damage);
                 target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
 
-                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, Attachment<BattleScene>.Description>(o =>
+                var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
                     ISpriteAsset asset = new Assets.PixelEffects.IonicShreadEffect();
                     o.RenderShadow = false;

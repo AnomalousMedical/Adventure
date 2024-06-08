@@ -49,6 +49,18 @@ namespace Engine
             return instance;
         }
 
+        public T Resolve<T>(Type realType)
+        {
+            var scope = serviceProvider.CreateScope();
+            var instance = scope.ServiceProvider.GetRequiredService(realType);
+            var resolved = scope.ServiceProvider.GetRequiredService<ResolvedObject>();
+            resolved.Scope = scope;
+            resolved.ObjectResolver = this;
+            resolvedObjects.Add(resolved);
+
+            return (T)instance;
+        }
+
         public T Resolve<T, TConfig>(Action<TConfig> configure)
         {
             var scope = serviceProvider.CreateScope();
@@ -61,6 +73,20 @@ namespace Engine
             resolvedObjects.Add(resolved);
 
             return instance;
+        }
+
+        public T Resolve<T, TConfig>(Type realType, Action<TConfig> configure)
+        {
+            var scope = serviceProvider.CreateScope();
+            var options = scope.ServiceProvider.GetRequiredService<TConfig>();
+            configure(options);
+            var instance = scope.ServiceProvider.GetRequiredService(realType);
+            var resolved = scope.ServiceProvider.GetRequiredService<ResolvedObject>();
+            resolved.Scope = scope;
+            resolved.ObjectResolver = this;
+            resolvedObjects.Add(resolved);
+
+            return (T)instance;
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ class TreasureMenu
         {
             if(characterMenuPositionService.TryGetEntry(cd.CharacterSheet, out var characterMenuPosition))
             {
-                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.Position, characterMenuPosition.CameraRotation);
+                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
                 characterMenuPosition.FaceCamera();
             }
         });

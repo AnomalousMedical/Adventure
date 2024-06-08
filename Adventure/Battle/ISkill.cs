@@ -1,7 +1,9 @@
 ﻿using Adventure.Assets;
+using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
+using System;
 
 namespace Adventure.Battle
 {
@@ -13,7 +15,7 @@ namespace Adventure.Battle
 
     interface ISkill
     {
-        void Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target) { }
+        ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer) { return null; }
 
         ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed);
 
@@ -56,6 +58,24 @@ namespace Adventure.Battle
         public void Update(Clock clock)
         {
 
+        }
+    }
+
+    class CallbackSkillEffect : ISkillEffect
+    {
+        private readonly Action<Clock> update;
+
+        public CallbackSkillEffect(Action<Clock> update, bool finished = false)
+        {
+            this.update = update;
+            this.Finished = finished;
+        }
+
+        public bool Finished { get; set; }
+
+        public void Update(Clock clock)
+        {
+            update(clock);
         }
     }
 }

@@ -302,7 +302,7 @@ namespace Adventure.Exploration
             mainHandItem = null;
             if (characterSheet.MainHand?.Sprite != null)
             {
-                mainHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                mainHandItem = objectResolver.Resolve<Attachment<ZoneScene>, IAttachment.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.MainHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -315,7 +315,7 @@ namespace Adventure.Exploration
             {
                 if (mainHandHand == null)
                 {
-                    mainHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    mainHandHand = objectResolver.Resolve<Attachment<ZoneScene>, IAttachment.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
@@ -340,7 +340,7 @@ namespace Adventure.Exploration
             offHandItem = null;
             if (characterSheet.OffHand?.Sprite != null)
             {
-                offHandItem = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                offHandItem = objectResolver.Resolve<Attachment<ZoneScene>, IAttachment.Description>(o =>
                 {
                     var asset = assetFactory.CreateEquipment(characterSheet.OffHand.Sprite);
                     o.Orientation = asset.GetOrientation();
@@ -353,7 +353,7 @@ namespace Adventure.Exploration
             {
                 if (offHandHand == null)
                 {
-                    offHandHand = objectResolver.Resolve<Attachment<ZoneScene>, Attachment<ZoneScene>.Description>(o =>
+                    offHandHand = objectResolver.Resolve<Attachment<ZoneScene>, IAttachment.Description>(o =>
                     {
                         o.Sprite = new Sprite(playerSpriteInfo.Animations)
                         {
