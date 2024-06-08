@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine;
-using Adventure.Battle;
+using Adventure.Skills;
 
 namespace Adventure.Services
 {

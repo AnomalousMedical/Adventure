@@ -1,12 +1,11 @@
-﻿using Adventure.Skills;
-using Adventure.Skills.Spells;
+﻿using Adventure.Skills.Spells;
 using System;
 
-namespace Adventure.Battle
+namespace Adventure.Skills
 {
     interface ISkillFactory
     {
-        ISkill CreateSkill(string name);
+        ISkill CreateSkill(String name);
     }
 
     class SkillFactory : ISkillFactory

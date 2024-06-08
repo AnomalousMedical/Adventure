@@ -1,11 +1,12 @@
 ﻿using Adventure.Assets;
+using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
 using System;
 
-namespace Adventure.Battle
+namespace Adventure.Skills
 {
     public enum SkillAttackStyle
     {

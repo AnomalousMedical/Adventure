@@ -2,6 +2,7 @@
 using Adventure.Assets.SoundEffects;
 using Adventure.Items;
 using Adventure.Services;
+using Adventure.Skills;
 using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;

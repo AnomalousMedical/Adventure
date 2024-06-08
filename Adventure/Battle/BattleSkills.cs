@@ -1,4 +1,5 @@
-﻿using Adventure.Skills.Spells;
+﻿using Adventure.Skills;
+using Adventure.Skills.Spells;
 using Engine;
 using Engine.Platform;
 using SharpGui;
