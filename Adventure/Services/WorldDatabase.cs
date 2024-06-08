@@ -992,15 +992,6 @@ namespace Adventure.Services
             throw new InvalidOperationException($"Cannot find unused island {usedIslands.Length}");
         }
 
-        /// <summary>
-        /// This function is the opposite of the one below it.
-        /// </summary>
-        public static BiomeType GetBiomeForSquare(csIslandMaze map, IntVector2 mapPoint)
-        {
-            var textureIndex = map.TextureOffsets[mapPoint.x, mapPoint.y];
-            return (BiomeType)textureIndex;
-        }
-
         private static int GetBiomeIndex(BiomeType biome)
         {
             switch (biome)

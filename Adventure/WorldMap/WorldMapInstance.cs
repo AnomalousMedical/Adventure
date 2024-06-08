@@ -577,7 +577,8 @@ namespace Adventure.WorldMap
 
             foreach (var prop in biomeProps)
             {
-                var biomeType = WorldDatabase.GetBiomeForSquare(map, prop);
+                var textureIndex = map.TextureOffsets[prop.x, prop.y];
+                var biomeType = (BiomeType)textureIndex;
                 var biome = biomeManager.GetBiome(biomeType);
                 var add = biome.BackgroundItems.FirstOrDefault();
 
