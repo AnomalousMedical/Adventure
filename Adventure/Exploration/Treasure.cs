@@ -31,6 +31,8 @@ namespace Adventure
 
         void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
 
+        void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer);
+
         void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState);
 
         int? Id { get; }
@@ -78,6 +80,11 @@ namespace Adventure
             inventoryFunctions.Use(this.inventoryItem, inventory, user, user);
         }
 
+        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            inventoryFunctions.Use(this.inventoryItem, inventory, user, user, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+        }
+
         public void Use(Inventory inventory, IInventoryFunctions inventoryFunctions, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, Persistence.GameState gameState)
         {
             inventoryFunctions.Use(this.inventoryItem, inventory, battleManager, objectResolver, coroutine, attacker, target);
@@ -116,6 +123,11 @@ namespace Adventure
         }
 
         public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState)
+        {
+            gameState.PlotItems.Add(plotItem);
+        }
+
+        public void Use(Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
             gameState.PlotItems.Add(plotItem);
         }

@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Battle;
+using Adventure.Items;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -16,9 +17,17 @@ class UseItemMenu
     IScaleHelper scaleHelper,
     IScreenPositioner screenPositioner,
     IInventoryFunctions inventoryFunctions,
-    ILanguageService languageService
-)
+    ILanguageService languageService,
+    CharacterMenuPositionService characterMenuPositionService,
+    IObjectResolverFactory objectResolverFactory,
+    IScopedCoroutine coroutine,
+    CameraMover cameraMover,
+    ISoundEffectPlayer soundEffectPlayer,
+    IClockService clockService
+) : IDisposable
 {
+    IObjectResolver objectResolver = objectResolverFactory.Create();
+
     SharpButton use = new SharpButton() { Text = "Use", Layer = ItemMenu.UseItemMenuLayer };
     SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
     SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
@@ -34,12 +43,27 @@ class UseItemMenu
 
     public InventoryItem SelectedItem { get; set; }
     private String itemName;
+    private ISkillEffect currentEffect;
 
     public event Action Closed;
     public event Action IsTransferStatusChanged;
 
     public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style)
     {
+        if (currentEffect != null)
+        {
+            currentEffect.Update(clockService.Clock);
+            if (currentEffect.Finished)
+            {
+                currentEffect = null;
+                if (swapItemChoices == null)
+                {
+                    Close();
+                }
+            }
+            return;
+        }
+
         if (SelectedItem == null) { return; }
 
         if (itemPrompt.Text == null)
@@ -73,7 +97,7 @@ class UseItemMenu
             {
                 action.Invoke();
                 characterChoices = null;
-                if (swapItemChoices == null)
+                if (swapItemChoices == null && currentEffect == null) //Keep this check after the action invoke, since currentEffect can get set in there
                 {
                     Close();
                     return;
@@ -146,7 +170,7 @@ class UseItemMenu
                             characterChooserPrompt.Text = "Use the " + itemName + " on...";
                             characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                             {
-                                inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet);
+                                currentEffect = inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
                             }))
                             .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
                             .ToList();
@@ -219,6 +243,11 @@ class UseItemMenu
         this.SelectedItem = null;
         itemPrompt.Text = null;
         Closed?.Invoke();
+    }
+
+    public void Dispose()
+    {
+        objectResolver.Dispose();
     }
 }
 

@@ -1,5 +1,8 @@
-﻿using Adventure.Assets.PixelEffects;
+﻿using Adventure.Assets;
+using Adventure.Assets.PixelEffects;
+using Adventure.Assets.SoundEffects;
 using Adventure.Battle;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 using System;
@@ -12,6 +15,8 @@ namespace Adventure.Items.Actions
 {
     class RestoreHp : IInventoryAction
     {
+        public Color CastColor => Color.FromARGB(0xff63c74c);
+
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
@@ -22,6 +27,71 @@ namespace Adventure.Items.Actions
             if(target.CurrentHp > target.Hp)
             {
                 target.CurrentHp = target.Hp;
+            }
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            inventory.Items.Remove(item);
+
+            if (target.CurrentHp == 0)
+            {
+                return null;
+            }
+
+            target.CurrentHp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            if (target.CurrentHp > target.Hp)
+            {
+                target.CurrentHp = target.Hp;
+            }
+
+            //Effect
+            if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                characterEntry.FaceCamera();
+
+                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                IEnumerator<YieldAction> run()
+                {
+                    yield return coroutine.WaitSeconds(0.3f);
+
+                    var applyEffects = new List<IAttachment>();
+
+                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
+                    var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
+                    var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
+                    {
+                        ISpriteAsset asset = new MagicBubbles();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+
+                    applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
+                    applyEffects.Add(applyEffect);
+
+                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                    foreach (var effect in applyEffects)
+                    {
+                        effect.RequestDestruction();
+                    }
+                    skillEffect.Finished = true;
+                }
+                coroutine.Run(run());
+
+                return skillEffect;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -48,6 +118,12 @@ namespace Adventure.Items.Actions
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = CastColor,
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
 
@@ -62,6 +138,8 @@ namespace Adventure.Items.Actions
 
     class RestoreMp : IInventoryAction
     {
+        public Color CastColor => Color.FromARGB(0xff63c74c);
+
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
@@ -72,6 +150,71 @@ namespace Adventure.Items.Actions
             if (target.CurrentMp > target.Mp)
             {
                 target.CurrentMp = target.Mp;
+            }
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            inventory.Items.Remove(item);
+
+            if (target.CurrentHp == 0)
+            {
+                return null;
+            }
+
+            target.CurrentMp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            if (target.CurrentMp > target.Mp)
+            {
+                target.CurrentMp = target.Mp;
+            }
+
+            //Effect
+            if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                characterEntry.FaceCamera();
+
+                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                IEnumerator<YieldAction> run()
+                {
+                    yield return coroutine.WaitSeconds(0.3f);
+
+                    var applyEffects = new List<IAttachment>();
+
+                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
+                    var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
+                    var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
+                    {
+                        ISpriteAsset asset = new MagicBubbles();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+
+                    applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
+                    applyEffects.Add(applyEffect);
+
+                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                    foreach (var effect in applyEffects)
+                    {
+                        effect.RequestDestruction();
+                    }
+                    skillEffect.Finished = true;
+                }
+                coroutine.Run(run());
+
+                return skillEffect;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -98,6 +241,12 @@ namespace Adventure.Items.Actions
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = CastColor,
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
 
@@ -114,6 +263,8 @@ namespace Adventure.Items.Actions
     {
         public bool AllowTargetChange => false;
 
+        public Color CastColor => Color.FromARGB(0xff63c74c);
+
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
             inventory.Items.Remove(item);
@@ -121,6 +272,67 @@ namespace Adventure.Items.Actions
             if (target.CurrentHp != 0) { return; }
 
             target.CurrentHp += GetStartHp(target.Hp, item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus));
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            inventory.Items.Remove(item);
+
+            if (target.CurrentHp != 0)
+            {
+                return null;
+            }
+
+            target.CurrentHp += GetStartHp(target.Hp, item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus));
+
+            //Effect
+            if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                characterEntry.FaceCamera();
+
+                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                IEnumerator<YieldAction> run()
+                {
+                    yield return coroutine.WaitSeconds(0.3f);
+
+                    var applyEffects = new List<IAttachment>();
+
+                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
+                    var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
+                    var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
+                    {
+                        ISpriteAsset asset = new MagicBubbles();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+
+                    applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
+                    applyEffects.Add(applyEffect);
+
+                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                    foreach (var effect in applyEffects)
+                    {
+                        effect.RequestDestruction();
+                    }
+                    skillEffect.Finished = true;
+                }
+                coroutine.Run(run());
+
+                return skillEffect;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private long GetStartHp(long maxHp, long value)
@@ -161,6 +373,12 @@ namespace Adventure.Items.Actions
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
+                o.Light = new Light
+                {
+                    Color = CastColor,
+                    Length = 2.3f,
+                };
+                o.LightOffset = new Vector3(0, 0, -0.1f);
             });
             applyEffect.SetPosition(target.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
 

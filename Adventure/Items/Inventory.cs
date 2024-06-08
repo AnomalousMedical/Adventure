@@ -1,4 +1,5 @@
 ﻿using Adventure.Battle;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 using System;
@@ -39,6 +40,9 @@ namespace Adventure.Items
         bool AllowTargetChange => true;
 
         void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target);
+
+        ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer);
+
         void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
     }
 

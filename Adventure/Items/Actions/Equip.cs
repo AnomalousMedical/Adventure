@@ -1,4 +1,5 @@
 ﻿using Adventure.Battle;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 
@@ -10,6 +11,14 @@ namespace Adventure.Items.Actions
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            item.Equipment.EnsureEquipmentId();
+            Equip(item, target);
+
+            return null;
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
@@ -43,6 +52,14 @@ namespace Adventure.Items.Actions
             Equip(item, target);
         }
 
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            item.Equipment.EnsureEquipmentId();
+            Equip(item, target);
+
+            return null;
+        }
+
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
@@ -74,6 +91,14 @@ namespace Adventure.Items.Actions
             Equip(item, target);
         }
 
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            item.Equipment.EnsureEquipmentId();
+            Equip(item, target);
+
+            return null;
+        }
+
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
         {
             item.Equipment.EnsureEquipmentId();
@@ -103,6 +128,14 @@ namespace Adventure.Items.Actions
         {
             item.Equipment.EnsureEquipmentId();
             Equip(item, target);
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            item.Equipment.EnsureEquipmentId();
+            Equip(item, target);
+
+            return null;
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)

@@ -15,6 +15,8 @@ interface IInventoryFunctions
 
     void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target);
 
+    ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer);
+
     void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target);
 }
 
@@ -31,6 +33,12 @@ class InventoryFunctions : IInventoryFunctions
     {
         var action = CreateAction(item, inventory);
         action.Use(item, inventory, attacker, target);
+    }
+
+    public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+    {
+        var action = CreateAction(item, inventory);
+        return action.Use(item, inventory, attacker, target, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
     }
 
     public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)

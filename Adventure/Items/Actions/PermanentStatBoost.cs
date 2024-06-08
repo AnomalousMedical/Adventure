@@ -1,4 +1,5 @@
 ﻿using Adventure.Battle;
+using Adventure.Services;
 using Engine;
 using RpgMath;
 using System;
@@ -15,6 +16,14 @@ namespace Adventure.Items.Actions
         {
             inventory.Items.Remove(item);
             RaiseStat(item, target);
+        }
+
+        public ISkillEffect Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
+        {
+            inventory.Items.Remove(item);
+            RaiseStat(item, target);
+
+            return null;
         }
 
         public void Use(InventoryItem item, Inventory inventory, IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target)
