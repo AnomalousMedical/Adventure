@@ -143,7 +143,6 @@ namespace Adventure.WorldMap
                     var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground060_1K");
                     var swampTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Moss001_1K");
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
-                    var oceanFloorTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock022_1K");
                     var volcanoTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock037_1K");
 
                     var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
@@ -153,7 +152,6 @@ namespace Adventure.WorldMap
                     var beachTextureTask = textureManager.Checkout(beachTextureDesc);
                     var swampTextureTask = textureManager.Checkout(swampTextureDesc);
                     var cliffTextureTask = textureManager.Checkout(cliffTextureDesc);
-                    var oceanFloorTextureTask = textureManager.Checkout(oceanFloorTextureDesc);
                     var volcanoTextureTask = textureManager.Checkout(volcanoTextureDesc);
 
                     var shaderSetup = primaryHitShaderFactory.Checkout();
@@ -177,7 +175,6 @@ namespace Adventure.WorldMap
                         beachTextureTask,
                         swampTextureTask,
                         cliffTextureTask,
-                        oceanFloorTextureTask,
                         volcanoTextureTask,
                         floorMesh.End("SceneDungeonFloor"),
                         shaderSetup
@@ -192,7 +189,6 @@ namespace Adventure.WorldMap
                     var beachTexture = beachTextureTask.Result;
                     var swampTexture = swampTextureTask.Result;
                     var cliffTexture = cliffTextureTask.Result;
-                    var oceanFloorTexture = oceanFloorTextureTask.Result;
                     var volcanoTexture = volcanoTextureTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
@@ -202,7 +198,6 @@ namespace Adventure.WorldMap
                     loadedTextures.Add(beachTexture);
                     loadedTextures.Add(swampTexture);
                     loadedTextures.Add(cliffTexture);
-                    loadedTextures.Add(oceanFloorTexture);
                     loadedTextures.Add(volcanoTexture);
 
                     foreach (var data in floorInstanceData)
@@ -219,7 +214,6 @@ namespace Adventure.WorldMap
                         beachTexture,
                         swampTexture,
                         cliffTexture,
-                        oceanFloorTexture,
                         volcanoTexture);
 
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);

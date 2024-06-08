@@ -1001,7 +1001,7 @@ namespace Adventure.Services
             var textureIndex = map.TextureOffsets[mapPoint.x, mapPoint.y];
             switch (textureIndex)
             {
-                case 8:
+                case 7:
                     biome = BiomeType.Mountain;
                     break;
                 default:
@@ -1017,7 +1017,7 @@ namespace Adventure.Services
             {
                 case BiomeType.Mountain:
                 case BiomeType.Volcano:
-                    return 8;
+                    return 7;
                 default:
                     return (int)biome;
             }
