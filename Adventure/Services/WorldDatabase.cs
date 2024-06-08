@@ -740,13 +740,20 @@ namespace Adventure.Services
             }
             
             InnkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            PreventUsageSouth(InnkeeperPosition, usedSquares, 2);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            PreventUsageSouth(BlacksmithPosition, usedSquares, 2);
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            PreventUsageSouth(AlchemistPosition, usedSquares, 2);
             FortuneTellerPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            PreventUsageSouth(FortuneTellerPosition, usedSquares, 2);
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
+            PreventUsageSouth(BlacksmithUpgradePosition, usedSquares, 2);
             AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);
+            PreventUsageSouth(AlchemistUpgradePosition, usedSquares, 2);
             ElementalStonePosition = GetUnusedSquare(usedSquares, elementalStoneIsland, placementRandom);
+            PreventUsageSouth(ElementalStonePosition, usedSquares, 2);
 
             var biomePropLocations = new List<IntVector2>();
             foreach(var island in map.IslandInfo)
@@ -758,6 +765,17 @@ namespace Adventure.Services
                 }
             }
             this.BiomePropLocations = biomePropLocations;
+        }
+
+        private static void PreventUsageSouth(IntVector2 startPos, bool[,] usedSquares, int num)
+        {
+            var x = startPos.x;
+            var startY = Math.Max(startPos.y - num, 0);
+            var endY = startPos.y;
+            for(int y = startY; y < endY; ++y)
+            {
+                usedSquares[x, y] = true;
+            }
         }
 
         /// <summary>
