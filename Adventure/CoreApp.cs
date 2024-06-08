@@ -220,6 +220,7 @@ namespace Adventure
             services.AddSingleton<Party>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
+            services.AddSingleton<IClockService, ClockService>();
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<ILanguageService>(s => new LanguageService(EnglishLanguage.Create()));
 #if !RELEASE

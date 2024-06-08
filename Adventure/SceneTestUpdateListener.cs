@@ -31,6 +31,7 @@ namespace Adventure
         private readonly PlayedTimeService playedTimeService;
         private readonly IGameStateRequestor gameStateRequestor;
         private readonly GameOptions gameOptions;
+        private readonly IClockService clockService;
         private IGameState gameState;
 
         public unsafe SceneTestUpdateListener
@@ -47,7 +48,8 @@ namespace Adventure
             LightManager lightManager,
             PlayedTimeService playedTimeService,
             IGameStateRequestor gameStateRequestor,
-            GameOptions gameOptions
+            GameOptions gameOptions,
+            IClockService clockService
         )
         {
 
@@ -64,6 +66,7 @@ namespace Adventure
             this.playedTimeService = playedTimeService;
             this.gameStateRequestor = gameStateRequestor;
             this.gameOptions = gameOptions;
+            this.clockService = clockService;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -80,6 +83,7 @@ namespace Adventure
 
         public unsafe void sendUpdate(Clock clock)
         {
+            clockService.Update(clock); //Keep this one first, since it manages the injected clock service
             timeClock.Update(clock);
             playedTimeService.Update(clock);
             sharpGui.Begin(clock);
