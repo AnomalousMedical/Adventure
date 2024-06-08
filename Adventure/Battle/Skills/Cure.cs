@@ -20,8 +20,6 @@ namespace Adventure.Battle.Skills
                 return null;
             }
 
-            source.CurrentMp -= MpCost;
-
             if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
             {
                 //Mp is taken, but nothing is done if cure can't be cast.
@@ -32,6 +30,8 @@ namespace Adventure.Battle.Skills
             {
                 return null;
             }
+
+            source.CurrentMp -= MpCost;
 
             var damage = damageCalculator.Cure(source, Amount);
             damage = damageCalculator.RandomVariation(damage);
