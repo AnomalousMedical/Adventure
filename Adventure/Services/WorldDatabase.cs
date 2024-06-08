@@ -1037,7 +1037,7 @@ namespace Adventure.Services
             var nextGeneration = new List<IntVector2>(25);
             var currentGeneration = new List<IntVector2>(25) { startPoint };
 
-            for (var gen = 0; gen < 4 && currentGeneration.Count > 0; ++gen)
+            for (var gen = 0; gen < 6 && currentGeneration.Count > 0; ++gen)
             {
                 foreach (var item in currentGeneration)
                 {
