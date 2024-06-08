@@ -353,7 +353,7 @@ namespace Adventure
             };
         }
 
-        public void SetLocation(in Vector3 location)
+        public void SetLocation(in Vector3 location, Zone.Alignment alignment)
         {
             var finalLoc = location + new Vector3(0f, sprite.BaseScale.y / 2f, 0f);
 
@@ -364,8 +364,25 @@ namespace Adventure
             this.currentPosition = finalLoc;
             this.persistence.Current.Player.Position = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
-            this.followerManager.LineUpBehindLeader(this.currentPosition);
-            this.sprite.SetAnimation("down");
+            this.followerManager.LineUpBehindLeader(this.currentPosition, alignment);
+            string animation;
+            switch (alignment)
+            {
+                case Zone.Alignment.NorthSouth:
+                    animation = "down";
+                    break;
+                case Zone.Alignment.SouthNorth:
+                    animation = "up";
+                    break;
+                case Zone.Alignment.WestEast:
+                    animation = "right";
+                    break;
+                default:
+                case Zone.Alignment.EastWest:
+                    animation = "left";
+                    break;
+            }
+            this.sprite.SetAnimation(animation);
             Sprite_FrameChanged(sprite);
         }
 
@@ -386,19 +403,23 @@ namespace Adventure
         /// the front or the end position. If the player has never started the game before
         /// they will be forced to the start position.
         /// </summary>
-        public void RestorePersistedLocation(in Vector3 startSafetyPosition, in Vector3 endSafetyPosition, bool startEnd)
+        public void RestorePersistedLocation(in Vector3 startSafetyPosition, in Vector3 endSafetyPosition, bool startEnd, Zone.Alignment alignment)
         {
+            if (startEnd)
+            {
+                alignment = Zone.GetEndAlignment(alignment);
+            }
             var location = persistence.Current.Player.Position;
             if (location == null)
             {
                 //Game has started and first zone is complete
                 if (persistence.Current.Player.Started && persistence.Current.World.CompletedAreaLevels.ContainsKey(0))
                 {
-                    SetLocation(startEnd ? endSafetyPosition : startSafetyPosition);
+                    SetLocation(startEnd ? endSafetyPosition : startSafetyPosition, alignment);
                 }
                 else
                 {
-                    SetLocation(startSafetyPosition);
+                    SetLocation(startSafetyPosition, alignment);
                     persistence.Current.Player.Started = true;
                 }
             }

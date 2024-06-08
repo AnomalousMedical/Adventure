@@ -238,6 +238,27 @@ namespace Adventure
 
         private Alignment alignment;
 
+        public Alignment ZoneAlignment => alignment;
+
+        public static Alignment GetEndAlignment(Alignment alignment)
+        {
+            switch (alignment)
+            {
+                case Alignment.SouthNorth:
+                    return Alignment.NorthSouth;
+
+                case Alignment.NorthSouth:
+                    return Alignment.SouthNorth;
+
+                case Alignment.WestEast:
+                    return Alignment.EastWest;
+
+                default:
+                case Alignment.EastWest:
+                    return Alignment.WestEast;
+            }
+        }
+
         public Zone
         (
             IDestructionRequest destructionRequest,
@@ -285,7 +306,7 @@ namespace Adventure
             this.biome = description.Biome;
             this.treasure = description.Treasure ?? Enumerable.Empty<ITreasure>();
             this.partyMembers = description.PartyMembers ?? Enumerable.Empty<PartyMember>();
-            this.Size = new Size2(description.MapUnitX * (description.Width + description.PadLeft + description.PadRight), 
+            this.Size = new Size2(description.MapUnitX * (description.Width + description.PadLeft + description.PadRight),
                                   description.MapUnitZ * (description.Height + description.PadTop + description.PadBottom));
 
             //Set current position and shift if requested
@@ -872,7 +893,7 @@ namespace Adventure
                 int roomIndex;
                 do
                 {
-                    if(skipRooms >= rooms.Count)
+                    if (skipRooms >= rooms.Count)
                     {
                         return rooms[rooms.Count - 1];
                     }
@@ -938,13 +959,13 @@ namespace Adventure
                 PlaceKey(point);
             }
 
-            if(placeTorch)
+            if (placeTorch)
             {
                 placeTorch = false;
                 int roomIndex;
                 if (shareKeyAndTorchRoom)
                 {
-                     roomIndex = keyRoomIndex ?? GetRoom();
+                    roomIndex = keyRoomIndex ?? GetRoom();
                 }
                 //Otherwise get a unique room for the torch.
                 else
@@ -1230,7 +1251,7 @@ namespace Adventure
         private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome)
         {
             bool mustBeEven = false;
-            for(var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
+            for (var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
             {
                 mustBeEven = !mustBeEven;
                 for (var y = mapMesh.MapBuilder.Map_Size.Height - 1; y > -1; --y)
@@ -1239,9 +1260,9 @@ namespace Adventure
                     {
                         BiomeBackgroundItem add = null;
                         var roll = bgItemsRandom.Next(0, biome.MaxBackgroundItemRoll);
-                        foreach(var item in biome.BackgroundItems)
+                        foreach (var item in biome.BackgroundItems)
                         {
-                            if(roll < item.Chance)
+                            if (roll < item.Chance)
                             {
                                 add = item;
                                 break;
@@ -1262,7 +1283,7 @@ namespace Adventure
                                 var keyAsset = add.Asset;
                                 var sprite = keyAsset.CreateSprite();
                                 mapLoc.x += bgItemsRandom.NextSingle() * mapUnitX - halfUnitX;
-                                if(keyAsset.GroundAttachmentChannel.HasValue)
+                                if (keyAsset.GroundAttachmentChannel.HasValue)
                                 {
                                     var groundOffset = sprite.GetCurrentFrame().Attachments[keyAsset.GroundAttachmentChannel.Value].translate;
                                     mapLoc += groundOffset * scale * sprite.BaseScale;

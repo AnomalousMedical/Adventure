@@ -100,6 +100,51 @@ namespace Adventure.Services
             }
         }
 
+        public void LineUpBehindLeader(in Vector3 location, Zone.Alignment zoneAlignment)
+        {
+            leaderStartLocation = location;
+            Vector3 offset;
+            Vector3 movementDirection;
+            switch (zoneAlignment)
+            {
+                case Zone.Alignment.NorthSouth:
+                    offset = new Vector3(0f, 0f, characterDistance);
+                    movementDirection = new Vector3(0f, 0f, -1f);
+                    break;
+                case Zone.Alignment.SouthNorth:
+                    offset = new Vector3(0f, 0f, -characterDistance);
+                    movementDirection = new Vector3(0f, 0f, 1f);
+                    break;
+                case Zone.Alignment.WestEast:
+                    offset = new Vector3(-characterDistance, 0f, 0f);
+                    movementDirection = new Vector3(1f, 0f, 0f);
+                    break;
+                default: 
+                case Zone.Alignment.EastWest:
+                    offset = new Vector3(characterDistance, 0f, 0f);
+                    movementDirection = new Vector3(-1f, 0f, 0f);
+                    break;
+            }
+
+            var totalOffset = offset;
+            var previousLoc = leaderStartLocation;
+            foreach (var entry in followers)
+            {
+                var offsetLoc = leaderStartLocation + totalOffset;
+                totalOffset += offset;
+                args.NewLocation = offsetLoc;
+                args.MovementDirection = movementDirection;
+                args.Moving = false;
+                entry.Node.UpdateLocation(args);
+                entry.StartPosition = offsetLoc;
+                entry.EndPosition = previousLoc;
+                entry.LastPosition = offsetLoc;
+                entry.DistancePercent = 0.0f;
+                entry.MovementDirection = movementDirection;
+                previousLoc = offsetLoc;
+            }
+        }
+
         public void LeaderMoved(in Vector3 location, bool activeMove)
         {
             var leaderLocDiff = location - leaderStartLocation;

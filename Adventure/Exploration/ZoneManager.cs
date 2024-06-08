@@ -41,6 +41,7 @@ namespace Adventure
         private IObjectResolver objectResolver;
         private readonly Party party;
         private readonly IWorldManager worldManager;
+        private readonly IObjectResolverFactory objectResolverFactory;
         private readonly Persistence persistence;
         private readonly Sky sky;
         private readonly PartyMemberManager partyMemberManager;
@@ -65,6 +66,7 @@ namespace Adventure
 
             this.party = party;
             this.worldManager = worldManager;
+            this.objectResolverFactory = objectResolverFactory;
             this.persistence = persistence;
             this.sky = sky;
             this.partyMemberManager = partyMemberManager;
@@ -112,9 +114,11 @@ namespace Adventure
 
             ManagePlayers();
 
-            foreach(var player in players)
+            objectResolverFactory.Flush(); //FLushing this here ensures the old followers are deleted
+
+            foreach (var player in players)
             {
-                player?.RestorePersistedLocation(currentZone.StartPoint, currentZone.EndPoint, currentZone.StartEnd);
+                player?.RestorePersistedLocation(currentZone.StartPoint, currentZone.EndPoint, currentZone.StartEnd, currentZone.ZoneAlignment);
                 player?.CenterCamera();
             }
 
@@ -160,7 +164,7 @@ namespace Adventure
             {
                 if (player != null)
                 {
-                    player.SetLocation(currentZone.StartPoint);
+                    player.SetLocation(currentZone.StartPoint, currentZone.ZoneAlignment);
                     player.StopMovement();
                     player.CenterCamera();
                 }
@@ -173,7 +177,7 @@ namespace Adventure
             {
                 if (player != null)
                 {
-                    player.SetLocation(currentZone.EndPoint);
+                    player.SetLocation(currentZone.EndPoint, Zone.GetEndAlignment(currentZone.ZoneAlignment));
                     player.StopMovement();
                     player.CenterCamera();
                 }
