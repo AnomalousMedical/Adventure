@@ -23,6 +23,13 @@ namespace Engine
             return value;
         }
 
+        public IEnumerable<T> GetRemaining()
+        {
+            EnsureDistributions();
+
+            return distributions;
+        }
+
         private void EnsureDistributions()
         {
             if (distributions == null || distributions.Count == 0)

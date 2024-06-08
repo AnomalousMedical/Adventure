@@ -341,8 +341,8 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            var biomes = new List<BiomeType>() { BiomeType.Forest, BiomeType.Snowy, BiomeType.Beach, BiomeType.Swamp, BiomeType.Mountain }; //BiomeType.Desert, 
-            var biomeDistributor = new EnumerableDistributor<BiomeType>(biomes);
+            //BiomeType.Desert is not being used
+            var biomeDistributor = new EnumerableDistributor<BiomeType>(new[] { BiomeType.Forest, BiomeType.Snowy, BiomeType.Swamp });//This is not all of the biomes, some are added later
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
             var elementalMonsters = new Dictionary<Element, List<MonsterInfo>>()
@@ -535,6 +535,9 @@ namespace Adventure.Services
             }
 
             //Phase 2
+            //Add remaining biome types
+            biomeDistributor = new EnumerableDistributor<BiomeType>(biomeDistributor.GetRemaining().Concat(new[] { BiomeType.Mountain, BiomeType.Beach }));
+
             {
                 IslandInfo island;
 
