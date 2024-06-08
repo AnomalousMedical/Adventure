@@ -23,40 +23,6 @@ namespace Adventure.Battle.Skills
 
         public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
 
-        public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
-        {
-            if (source.CurrentMp - MpCost < 0)
-            {
-                return null;
-            }
-
-            source.CurrentMp -= MpCost;
-
-            if (source.EquippedItems().Any(i => i.AttackElements?.Any(i => i == Element.Piercing || i == Element.Slashing) == true))
-            {
-                //Mp is taken, but nothing is done if cure can't be cast.
-                return null;
-            }
-
-            if (target.CurrentHp != 0)
-            {
-                return null;
-            }
-
-            var damage = damageCalculator.Cure(source, Amount);
-            damage = damageCalculator.RandomVariation(damage);
-
-            damage *= -1; //Make it healing
-
-            //Apply resistance
-            var resistance = target.GetResistance(RpgMath.Element.Healing);
-            damage = damageCalculator.ApplyResistance(damage, resistance);
-
-            target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
-
-            return null;
-        }
-
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
             if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
