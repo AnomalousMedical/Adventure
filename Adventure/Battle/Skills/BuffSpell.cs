@@ -53,7 +53,57 @@ namespace Adventure.Battle.Skills
             var buff = CreateBuff();
             target.UpdateBuffs(buff);
 
-            return null;
+            //Effect
+            if (characterMenuPositionService.TryGetEntry(target, out var characterEntry))
+            {
+                cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                characterEntry.FaceCamera();
+
+                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                IEnumerator<YieldAction> run()
+                {
+                    yield return coroutine.WaitSeconds(0.3f);
+
+                    var applyEffects = new List<IAttachment>();
+
+                    if(SoundEffect != null)
+                    {
+                        soundEffectPlayer.PlaySound(SoundEffect);
+                    }
+
+                    var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
+                    var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
+                    {
+                        ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
+                        o.RenderShadow = false;
+                        o.Sprite = asset.CreateSprite();
+                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Light = new Light
+                        {
+                            Color = CastColor,
+                            Length = 2.3f,
+                        };
+                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                    });
+
+                    applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
+                    applyEffects.Add(applyEffect);
+
+                    yield return coroutine.WaitSeconds(1.0);
+                    foreach (var effect in applyEffects)
+                    {
+                        effect.RequestDestruction();
+                    }
+                    skillEffect.Finished = true;
+                }
+                coroutine.Run(run());
+
+                return skillEffect;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
