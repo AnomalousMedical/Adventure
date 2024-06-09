@@ -160,6 +160,7 @@ Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
 
         if(sharpGui.Button(credits, gamepadId, navUp: exitGame.Id, navDown: back.Id))
         {
+            creditsMenu.Previous = this;
             menu.RequestSubMenu(creditsMenu, gamepadId);
         }
 
