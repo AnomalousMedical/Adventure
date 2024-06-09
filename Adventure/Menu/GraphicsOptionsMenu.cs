@@ -34,6 +34,9 @@ internal class GraphicsOptionsMenu
 
     public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
     {
+        var items = new List<ILayoutItem>() { toggleFullscreen, toggleUpsampling };
+        var showFsrSlider = false;
+
         toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
         switch (options.UpsamplingMethod)
         {
@@ -42,15 +45,19 @@ internal class GraphicsOptionsMenu
                 break;
             case UpsamplingMethod.FSR1:
                 toggleUpsampling.Text = "FSR 1";
+                items.Add(fsrPercentSlider);
+                showFsrSlider = true;
                 break;
         }
 
         fsrPercentSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));
 
+        items.Add(back);
+
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(toggleFullscreen, toggleUpsampling, fsrPercentSlider, back) { Margin = new IntPad(10) }
+           new ColumnLayout(items) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -81,16 +88,16 @@ internal class GraphicsOptionsMenu
             imageBlitter.RecreateBuffer();
         }
 
-        int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
-        if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent))
+        if (showFsrSlider)
         {
-            var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
-            if (fsrPercentFloat != options.FSR1RenderPercentage)
+            int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
+            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent))
             {
-                options.FSR1RenderPercentage = fsrPercentFloat;
-                diligentEngineOptions.FSR1RenderPercentage = fsrPercentFloat;
-                if (options.UpsamplingMethod == UpsamplingMethod.FSR1)
+                var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
+                if (fsrPercentFloat != options.FSR1RenderPercentage)
                 {
+                    options.FSR1RenderPercentage = fsrPercentFloat;
+                    diligentEngineOptions.FSR1RenderPercentage = fsrPercentFloat;
                     imageBlitter.RecreateBuffer();
                 }
             }
