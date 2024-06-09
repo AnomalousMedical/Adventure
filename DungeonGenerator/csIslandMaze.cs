@@ -5,7 +5,7 @@ using System.Linq;
 /// <summary>
 /// IslandMaze class - generates simple islands and mazes.
 /// 
-/// For more info on it's use see http://www.evilscience.co.uk/?p=53
+/// For more info on it's use see https://github.com/AndyStobirski/RogueLike
 /// 
 /// Map generation is controlled by the following variables:
 /// 

@@ -14,7 +14,7 @@ namespace maze
     /// <summary>
     /// csCaveGenerator - generate a cave system and connect the caves together.
     /// 
-    /// For more info on it's use see http://www.evilscience.co.uk/?p=624
+    /// For more info on it's use see https://github.com/AndyStobirski/RogueLike
     /// </summary>
     class csCaveGenerator
     {
