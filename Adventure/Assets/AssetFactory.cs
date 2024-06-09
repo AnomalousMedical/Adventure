@@ -22,7 +22,6 @@ namespace Adventure.Assets
             switch (name)
             {
                 //Equipment
-                case nameof(BattleAxe6): return new BattleAxe6();
                 case nameof(Dagger1): return new Dagger1();
                 case nameof(Dagger2): return new Dagger2();
                 case nameof(Dagger3): return new Dagger3();
