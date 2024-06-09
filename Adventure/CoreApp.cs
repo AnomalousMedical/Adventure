@@ -251,12 +251,14 @@ namespace Adventure
             services.AddSingleton<RestManager>();
             services.AddSingleton<PickUpTreasureMenu>();
             services.AddSingleton<OptionsMenu>();
+            services.AddSingleton<CreditsMenu>();
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();
 
             services.AddSingleton<CharacterMenuPositionTracker<ZoneScene>>();
             services.AddSingleton<CharacterMenuPositionTracker<WorldMapScene>>();
             services.AddSingleton<CharacterMenuPositionService>();
+            services.AddSingleton<ICreditsService, CreditsService>();
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();
