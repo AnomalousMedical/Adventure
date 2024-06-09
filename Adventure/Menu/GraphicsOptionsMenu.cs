@@ -73,7 +73,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: toggleFullscreen.Id, navDown: back.Id))
+        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: toggleFullscreen.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : back.Id))
         {
             switch (options.UpsamplingMethod)
             {
@@ -91,7 +91,7 @@ internal class GraphicsOptionsMenu
         if (showFsrSlider)
         {
             int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
-            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent))
+            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent, navUp: toggleUpsampling.Id, navDown: back.Id))
             {
                 var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
                 if (fsrPercentFloat != options.FSR1RenderPercentage)
@@ -103,7 +103,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(back, gamepadId, navUp: toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(back, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             Close(menu, gamepadId);
         }
