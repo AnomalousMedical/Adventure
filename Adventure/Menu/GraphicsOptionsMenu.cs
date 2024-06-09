@@ -27,6 +27,9 @@ internal class GraphicsOptionsMenu
     private readonly SharpButton toggleUpsampling = new SharpButton();
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
+    private const float FSRPercentConversion = 10f;
+    private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(1f * FSRPercentConversion) };
+
     public IExplorationSubMenu PreviousMenu { get; set; }
 
     public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
@@ -41,10 +44,13 @@ internal class GraphicsOptionsMenu
                 toggleUpsampling.Text = "FSR 1";
                 break;
         }
+
+        fsrPercentSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));
+
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(toggleFullscreen, toggleUpsampling, back) { Margin = new IntPad(10) }
+           new ColumnLayout(toggleFullscreen, toggleUpsampling, fsrPercentSlider, back) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -73,6 +79,21 @@ internal class GraphicsOptionsMenu
             }
             diligentEngineOptions.UpsamplingMethod = options.UpsamplingMethod;
             imageBlitter.RecreateBuffer();
+        }
+
+        int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
+        if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent))
+        {
+            var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
+            if (fsrPercentFloat != options.FSR1RenderPercentage)
+            {
+                options.FSR1RenderPercentage = fsrPercentFloat;
+                diligentEngineOptions.FSR1RenderPercentage = fsrPercentFloat;
+                if (options.UpsamplingMethod == UpsamplingMethod.FSR1)
+                {
+                    imageBlitter.RecreateBuffer();
+                }
+            }
         }
 
         if (sharpGui.Button(back, gamepadId, navUp: toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
