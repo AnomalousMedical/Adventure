@@ -15,7 +15,6 @@ internal class OptionsMenu
     GameOptions options,
     ISharpGui sharpGui,
     IScreenPositioner screenPositioner,
-    NativeOSWindow nativeOSWindow,
     App app,
     PlayerMenu playerMenu,
     IGameStateRequestor gameStateRequestor,
