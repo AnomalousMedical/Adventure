@@ -22,13 +22,14 @@ internal class OptionsMenu
     IPersistenceWriter persistenceWriter,
     IResetGameState resetGameState,
     ICoroutineRunner coroutineRunner,
-    CreditsMenu creditsMenu
+    CreditsMenu creditsMenu,
+    GraphicsOptionsMenu graphicsOptionsMenu
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
 
     private readonly SharpButton players = new SharpButton() { Text = "Players" };
-    private readonly SharpButton toggleFullscreen = new SharpButton() { Text = "Fullscreen" };
+    private readonly SharpButton graphicsOptions = new SharpButton() { Text = "Graphics" };
     private readonly SharpButton load = new SharpButton() { Text = "Load" };
     private readonly SharpButton newGame = new SharpButton() { Text = "New Game" };
     private readonly SharpButton exitGame = new SharpButton() { Text = "Exit Game" };
@@ -72,33 +73,28 @@ internal class OptionsMenu
             return;
         }
 
-        toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(players, toggleFullscreen, load, newGame, exitGame, credits, back) { Margin = new IntPad(10) }
+           new ColumnLayout(players, graphicsOptions, load, newGame, exitGame, credits, back) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-        if (sharpGui.Button(players, gamepadId, navDown: toggleFullscreen.Id, navUp: back.Id))
+        if (sharpGui.Button(players, gamepadId, navDown: graphicsOptions.Id, navUp: back.Id))
         {
             playerMenu.PreviousMenu = this;
             menu.RequestSubMenu(playerMenu, gamepadId);
         }
 
-        if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: players.Id, navDown: load.Id))
+        if (sharpGui.Button(graphicsOptions, gamepadId, navUp: players.Id, navDown: load.Id))
         {
-            options.Fullscreen = !options.Fullscreen;
-            nativeOSWindow.toggleFullscreen();
-            if (!options.Fullscreen)
-            {
-                nativeOSWindow.Maximized = true;
-            }
+            graphicsOptionsMenu.PreviousMenu = this;
+            menu.RequestSubMenu(graphicsOptionsMenu, gamepadId);
         }
 
-        if (sharpGui.Button(load, gamepadId, navUp: toggleFullscreen.Id, navDown: newGame.Id))
+        if (sharpGui.Button(load, gamepadId, navUp: graphicsOptions.Id, navDown: newGame.Id))
         {
             saveFiles = new List<ButtonColumnItem<SaveInfo>>();
             var mySaveFiles = saveFiles;

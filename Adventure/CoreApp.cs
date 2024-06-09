@@ -215,6 +215,7 @@ namespace Adventure
             services.AddSingleton<IExplorationGameState, ExplorationGameState>();
             services.AddSingleton<IAssetFactory, AssetFactory>();
             services.AddSingleton<ISkillFactory, SkillFactory>();
+            services.AddSingleton<GraphicsOptionsMenu>();
             services.AddSingleton<Party>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();

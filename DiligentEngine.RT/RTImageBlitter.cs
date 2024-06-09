@@ -15,7 +15,6 @@ namespace DiligentEngine.RT
         ITexture RTTexture { get; }
         ITexture FullBufferTexture { get; }
         uint Width { get; }
-
         void Blit(GraphicsEngine graphicsEngine);
         void CreateBuffers(GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader);
         void WindowResize(GraphicsEngine graphicsEngine, uint width, uint height);
@@ -23,15 +22,34 @@ namespace DiligentEngine.RT
 
     public class RTImageBlitter : IDisposable
     {
+        private readonly ShaderLoader<RTShaders> shaderLoader;
         private readonly GraphicsEngine graphicsEngine;
         private readonly OSWindow window;
-
+        private readonly DiligentEngineOptions options;
+        private readonly ILogger<RTImageBlitter> logger;
         IRTImageBlitterImpl blitterImpl;
 
         public RTImageBlitter(ShaderLoader<RTShaders> shaderLoader, GraphicsEngine graphicsEngine, OSWindow window, DiligentEngineOptions options, ILogger<RTImageBlitter> logger)
         {
+            this.shaderLoader = shaderLoader;
             this.graphicsEngine = graphicsEngine;
             this.window = window;
+            this.options = options;
+            this.logger = logger;
+            RecreateBuffer();
+
+            window.Resized += Window_Resized;
+        }
+
+        public void Dispose()
+        {
+            window.Resized -= Window_Resized;
+            blitterImpl?.Dispose();
+        }
+
+        public void RecreateBuffer()
+        {
+            blitterImpl?.Dispose();
 
             switch (options.UpsamplingMethod)
             {
@@ -46,15 +64,7 @@ namespace DiligentEngine.RT
                     break;
             }
             blitterImpl.CreateBuffers(graphicsEngine, shaderLoader);
-
             WindowResize((uint)window.WindowWidth, (uint)window.WindowHeight);
-            window.Resized += Window_Resized;
-        }
-
-        public void Dispose()
-        {
-            window.Resized -= Window_Resized;
-            blitterImpl?.Dispose();
         }
 
         public void SetupUnorderedAccess(List<StateTransitionDesc> barriers)
