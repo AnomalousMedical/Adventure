@@ -35,6 +35,12 @@ namespace Adventure
         /// <param name="resumeToken">The token to use to resume playback. Can be null to always play the song from the start.</param>
         /// <returns></returns>
         ResumeMusicToken SetBackgroundSong(string songFile, ResumeMusicToken resumeToken = null);
+
+        /// <summary>
+        /// Update the current volume for any playing music.
+        /// </summary>
+        /// <param name="musicVolume"></param>
+        void UpdateCurrentVolume(float musicVolume);
     }
 
     class BackgroundMusicPlayer : IDisposable, IBackgroundMusicPlayer
@@ -105,6 +111,14 @@ namespace Adventure
             currentBackgroundSong = songFile;
             this.resumeMusicToken = new ResumeMusicToken(songFile);
             return this.resumeMusicToken;
+        }
+
+        public void UpdateCurrentVolume(float musicVolume)
+        {
+            if(bgMusicSound != null && bgMusicSound.Source != null)
+            {
+                bgMusicSound.Source.Gain = musicVolume;
+            }
         }
 
         private void ResetBackgroundSong()
