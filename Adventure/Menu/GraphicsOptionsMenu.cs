@@ -30,7 +30,7 @@ internal class GraphicsOptionsMenu
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
     private const float FSRPercentConversion = 10f;
-    private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(1f * FSRPercentConversion) };
+    private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(0.9f * FSRPercentConversion) };
 
     private SharpText restartRequired = new SharpText("Restart Required") { Color = Color.White };
 
