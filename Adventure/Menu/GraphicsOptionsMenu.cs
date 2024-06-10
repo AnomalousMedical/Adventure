@@ -25,10 +25,13 @@ internal class GraphicsOptionsMenu
 {
     private readonly SharpButton toggleFullscreen = new SharpButton();
     private readonly SharpButton toggleUpsampling = new SharpButton();
+    private readonly SharpButton toggleRenderApi = new SharpButton();
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
     private const float FSRPercentConversion = 10f;
     private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(1f * FSRPercentConversion) };
+
+    private SharpText restartRequired = new SharpText("Restart Required") { Color = Color.White };
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
@@ -36,6 +39,7 @@ internal class GraphicsOptionsMenu
     {
         var items = new List<ILayoutItem>() { toggleFullscreen, toggleUpsampling };
         var showFsrSlider = false;
+        var showRestartRequired = options.RenderApi != diligentEngineOptions.RenderApi;
 
         toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
         switch (options.UpsamplingMethod)
@@ -46,11 +50,26 @@ internal class GraphicsOptionsMenu
             case UpsamplingMethod.FSR1:
                 toggleUpsampling.Text = "FSR 1";
                 items.Add(fsrPercentSlider);
+                fsrPercentSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));
                 showFsrSlider = true;
                 break;
         }
 
-        fsrPercentSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));
+        switch (options.RenderApi)
+        {
+            case GraphicsEngine.RenderApi.D3D12:
+                toggleRenderApi.Text = "D3D12";
+                break;
+            case GraphicsEngine.RenderApi.Vulkan:
+                toggleRenderApi.Text = "Vulkan";
+                break;
+        }
+        items.Add(toggleRenderApi);
+
+        if (showRestartRequired)
+        {
+            items.Add(restartRequired);
+        }
 
         items.Add(back);
 
@@ -73,7 +92,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: toggleFullscreen.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : back.Id))
+        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: toggleFullscreen.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : toggleRenderApi.Id))
         {
             switch (options.UpsamplingMethod)
             {
@@ -91,7 +110,7 @@ internal class GraphicsOptionsMenu
         if (showFsrSlider)
         {
             int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
-            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent, navUp: toggleUpsampling.Id, navDown: back.Id))
+            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent, navUp: toggleUpsampling.Id, navDown: toggleRenderApi.Id))
             {
                 var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
                 if (fsrPercentFloat != options.FSR1RenderPercentage)
@@ -103,7 +122,25 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(back, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        {
+            switch (options.RenderApi)
+            {
+                case GraphicsEngine.RenderApi.D3D12:
+                    options.RenderApi = GraphicsEngine.RenderApi.Vulkan;
+                    break;
+                case GraphicsEngine.RenderApi.Vulkan:
+                    options.RenderApi = GraphicsEngine.RenderApi.D3D12;
+                    break;
+            }
+        }
+
+        if (showRestartRequired)
+        {
+            sharpGui.Text(restartRequired);
+        }
+
+        if (sharpGui.Button(back, gamepadId, navUp: toggleRenderApi.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             Close(menu, gamepadId);
         }
