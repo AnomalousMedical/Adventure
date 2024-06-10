@@ -95,7 +95,8 @@ namespace Adventure.Menu
             }
             else
             {
-                for(var i = 0; i < buttons.Length; i++)
+                var iterations = Math.Min(persistence.Current.Party.Members.Count, buttons.Length);
+                for(var i = 0; i < iterations; i++)
                 {
                     var character = persistence.Current.Party.Members[i];
                     buttons[i].Text = $"{character.CharacterSheet.Name}: Pad {character.Player + 1}";
@@ -108,27 +109,27 @@ namespace Adventure.Menu
                 ));
                 layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
-                if (sharpGui.Button(buttons[0], gamepadId, navUp: back.Id, navDown: buttons[1].Id) && selectedCharacter == NoSelectedCharacter)
+                if (iterations > 0 && sharpGui.Button(buttons[0], gamepadId, navUp: back.Id, navDown: buttons[1].Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 0;
                 }
 
-                if (sharpGui.Button(buttons[1], gamepadId, navUp: buttons[0].Id, navDown: buttons[2].Id) && selectedCharacter == NoSelectedCharacter)
+                if (iterations > 1 && sharpGui.Button(buttons[1], gamepadId, navUp: buttons[0].Id, navDown: buttons[2].Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 1;
                 }
 
-                if (sharpGui.Button(buttons[2], gamepadId, navUp: buttons[1].Id, navDown: buttons[3].Id) && selectedCharacter == NoSelectedCharacter)
+                if (iterations > 2 && sharpGui.Button(buttons[2], gamepadId, navUp: buttons[1].Id, navDown: buttons[3].Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 2;
                 }
 
-                if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: back.Id) && selectedCharacter == NoSelectedCharacter)
+                if (iterations > 3 && sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: back.Id) && selectedCharacter == NoSelectedCharacter)
                 {
                     selectedCharacter = 3;
                 }
 
-                closeNavUp = buttons[3].Id;
+                closeNavUp = buttons[iterations - 1].Id;
                 closeNavDown = buttons[0].Id;
             }
 
