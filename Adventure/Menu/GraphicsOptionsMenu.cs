@@ -25,6 +25,7 @@ internal class GraphicsOptionsMenu
 {
     private readonly SharpButton toggleFullscreen = new SharpButton();
     private readonly SharpButton toggleUpsampling = new SharpButton();
+    private readonly SharpButton togglePresent = new SharpButton();
     private readonly SharpButton toggleRenderApi = new SharpButton();
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
@@ -37,7 +38,7 @@ internal class GraphicsOptionsMenu
 
     public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
     {
-        var items = new List<ILayoutItem>() { toggleFullscreen, toggleUpsampling };
+        var items = new List<ILayoutItem>() { toggleFullscreen, togglePresent, toggleUpsampling };
         var showFsrSlider = false;
         var showRestartRequired = options.RenderApi != diligentEngineOptions.RenderApi;
 
@@ -54,6 +55,8 @@ internal class GraphicsOptionsMenu
                 showFsrSlider = true;
                 break;
         }
+
+        togglePresent.Text = "Present " + options.PresentInterval;
 
         switch (options.RenderApi)
         {
@@ -82,7 +85,7 @@ internal class GraphicsOptionsMenu
         var desiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-        if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: back.Id, navDown: toggleUpsampling.Id))
+        if (sharpGui.Button(toggleFullscreen, gamepadId, navUp: back.Id, navDown: togglePresent.Id))
         {
             options.Fullscreen = !options.Fullscreen;
             nativeOSWindow.toggleFullscreen();
@@ -92,7 +95,12 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: toggleFullscreen.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : toggleRenderApi.Id))
+        if (sharpGui.Button(togglePresent, gamepadId, navUp: toggleFullscreen.Id, navDown: toggleUpsampling.Id))
+        {
+            options.PresentInterval = (options.PresentInterval + 1) % 5;
+        }
+
+        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: togglePresent.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : toggleRenderApi.Id))
         {
             switch (options.UpsamplingMethod)
             {
@@ -122,7 +130,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: back.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             switch (options.RenderApi)
             {
