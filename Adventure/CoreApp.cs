@@ -252,6 +252,7 @@ namespace Adventure
             services.AddSingleton<RestManager>();
             services.AddSingleton<PickUpTreasureMenu>();
             services.AddSingleton<OptionsMenu>();
+            services.AddSingleton<FileMenu>();
             services.AddSingleton<CreditsMenu>();
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();

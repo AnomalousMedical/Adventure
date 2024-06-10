@@ -24,11 +24,13 @@ class RootMenu
     SkillMenu skillMenu,
     OptionsMenu optionsMenu,
     CharacterStatsTextService characterStatsTextService,
-    Persistence persistence
+    Persistence persistence,
+    FileMenu fileMenu
 ) : IRootMenu
 {
     SharpButton skills = new SharpButton() { Text = "Skills" };
     SharpButton items = new SharpButton() { Text = "Items" };
+    SharpButton files = new SharpButton() { Text = "Files" };
     SharpButton options = new SharpButton() { Text = "Options" };
     SharpButton debug = new SharpButton() { Text = "Debug" };
     SharpButton close = new SharpButton() { Text = "Close" };
@@ -42,6 +44,7 @@ class RootMenu
     {
         yield return skills;
         yield return items;
+        yield return files;
         yield return options;
         yield return debug;
         yield return close;
@@ -101,12 +104,18 @@ class RootMenu
             infos = null;
             explorationMenu.RequestSubMenu(skillMenu, gamepad);
         }
-        else if (sharpGui.Button(items, gamepad, navDown: options.Id, navUp: skills.Id))
+        else if (sharpGui.Button(items, gamepad, navDown: files.Id, navUp: skills.Id))
         {
             infos = null;
             explorationMenu.RequestSubMenu(itemMenu, gamepad);
         }
-        else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: items.Id))
+        else if (sharpGui.Button(files, gamepad, navDown: options.Id, navUp: items.Id))
+        {
+            infos = null;
+            fileMenu.PreviousMenu = this;
+            explorationMenu.RequestSubMenu(fileMenu, gamepad);
+        }
+        else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: files.Id))
         {
             infos = null;
             optionsMenu.PreviousMenu = this;
