@@ -55,10 +55,11 @@ namespace SharpGui
             // Render scroll button
             var buttonAreaLeft = mainLeft + look.Padding.Left;
             var withinMarginWidth = mainRight - buttonAreaLeft - look.Padding.Right;
-            int buttonWidth = Math.Max(withinMarginWidth / max, 1);
-            var buttonLeft = buttonAreaLeft + value * buttonWidth;
-            var buttonTop = mainTop + look.Padding.Top;
-            int buttonRight = buttonLeft + buttonWidth;
+            float buttonWidth = Math.Max((float)withinMarginWidth / (max + 1), 1f); //Must use float or too much precision is lost
+            int buttonLeft = buttonAreaLeft + (int)(value * buttonWidth);
+            int intButtonWidth = (int)buttonWidth;
+            int buttonTop = mainTop + look.Padding.Top;
+            int buttonRight = buttonLeft + intButtonWidth;
             int buttonBottom = mainBottom - look.Padding.Bottom;
             buffer.DrawQuad(buttonLeft, buttonTop, buttonRight, buttonBottom, look.Color, slider.Layer);
 
@@ -72,7 +73,7 @@ namespace SharpGui
                 if (mousepos < 0) { mousepos = 0; }
                 if (mousepos > withinMarginWidth) { mousepos = withinMarginWidth; }
 
-                v = mousepos / buttonWidth;
+                v = mousepos / intButtonWidth;
                 stealFocus = true;
             }
 
@@ -103,9 +104,9 @@ namespace SharpGui
             {
                 v = 0;
             }
-            else if (v >= max)
+            else if (v > max)
             {
-                v = max - 1;
+                v = max;
             }
 
             if (v != value)
@@ -168,12 +169,13 @@ namespace SharpGui
             // Render scroll button
             //var buttonAreaTop = ;
             var buttonAreaBottom = mainBottom - look.Padding.Bottom;
-            var withinMarginHeight = buttonAreaBottom - mainTop + look.Padding.Top;
-            int buttonHeight = withinMarginHeight / max;
-            var buttonLeft = mainLeft + look.Padding.Left;
-            var buttonTop = buttonAreaBottom - value * buttonHeight - buttonHeight;
+            var withinMarginHeight = buttonAreaBottom - mainTop - look.Padding.Top;
+            float buttonHeight = (float)withinMarginHeight / (max + 1);
+            int buttonLeft = mainLeft + look.Padding.Left;
+            int intButtonHeight = (int)buttonHeight;
+            int buttonTop = buttonAreaBottom - (int)(value * buttonHeight) - intButtonHeight;
             int buttonRight = mainRight - look.Padding.Right;
-            int buttonBottom = buttonTop + buttonHeight;
+            int buttonBottom = buttonTop + intButtonHeight;
             buffer.DrawQuad(buttonLeft, buttonTop, buttonRight, buttonBottom, look.Color, slider.Layer);
 
             // Update widget value
@@ -186,7 +188,7 @@ namespace SharpGui
                 if (mousepos < 0) { mousepos = 0; }
                 if (mousepos > withinMarginHeight) { mousepos = withinMarginHeight; }
 
-                v = mousepos / buttonHeight;
+                v = mousepos / intButtonHeight;
                 stealFocus = true;
             }
 
@@ -217,9 +219,9 @@ namespace SharpGui
             {
                 v = 0;
             }
-            else if (v >= max)
+            else if (v > max)
             {
-                v = max - 1;
+                v = max;
             }
 
             if (v != value)

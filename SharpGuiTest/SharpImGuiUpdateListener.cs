@@ -121,7 +121,7 @@ namespace SharpImGuiTest
                 displayText = $"New slider value {sliderValue}";
             }
 
-            sharpGui.Progress(progressHorz, (float)sliderValue / (sliderHorz.Max - 1));
+            sharpGui.Progress(progressHorz, (float)sliderValue / sliderHorz.Max);
 
             var textColumn = new ColumnLayout(
                 runtimeLabel.UpdateText($"Program has been running for {TimeSpan.FromMilliseconds(clock.CurrentTimeMicro * Clock.MicroToMilliseconds)}"),
