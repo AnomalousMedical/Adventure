@@ -13,13 +13,15 @@ internal class OptionsMenu
     App app,
     PlayerMenu playerMenu,
     CreditsMenu creditsMenu,
-    GraphicsOptionsMenu graphicsOptionsMenu
+    GraphicsOptionsMenu graphicsOptionsMenu,
+    SoundOptionsMenu soundOptionsMenu
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
 
     private readonly SharpButton players = new SharpButton() { Text = "Players" };
     private readonly SharpButton graphicsOptions = new SharpButton() { Text = "Graphics" };
+    private readonly SharpButton soundOptions = new SharpButton() { Text = "Sound" };
     private readonly SharpButton exitGame = new SharpButton() { Text = "Exit Game" };
     private readonly SharpButton credits = new SharpButton() { Text = "Credits" };
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
@@ -34,7 +36,7 @@ internal class OptionsMenu
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(players, graphicsOptions, exitGame, credits, back) { Margin = new IntPad(10) }
+           new ColumnLayout(players, graphicsOptions, soundOptions, exitGame, credits, back) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -46,13 +48,19 @@ internal class OptionsMenu
             menu.RequestSubMenu(playerMenu, gamepadId);
         }
 
-        if (sharpGui.Button(graphicsOptions, gamepadId, navUp: players.Id, navDown: exitGame.Id))
+        if (sharpGui.Button(graphicsOptions, gamepadId, navUp: players.Id, navDown: soundOptions.Id))
         {
             graphicsOptionsMenu.PreviousMenu = this;
             menu.RequestSubMenu(graphicsOptionsMenu, gamepadId);
         }
 
-        if (sharpGui.Button(exitGame, gamepadId, navUp: graphicsOptions.Id, navDown: credits.Id))
+        if (sharpGui.Button(soundOptions, gamepadId, navUp: graphicsOptions.Id, navDown: exitGame.Id))
+        {
+            soundOptionsMenu.PreviousMenu = this;
+            menu.RequestSubMenu(soundOptionsMenu, gamepadId);
+        }
+
+        if (sharpGui.Button(exitGame, gamepadId, navUp: soundOptions.Id, navDown: credits.Id))
         {
             app.Exit();
         }
