@@ -58,8 +58,11 @@ class PickUpTreasureMenu
     private UseCallback useCallback;
     private Action<Persistence.CharacterData> activeCharacterChanged;
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback, Action<Persistence.CharacterData> activeCharacterChanged = null)
+    private bool layoutNavigationRight = true;
+
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback, Action<Persistence.CharacterData> activeCharacterChanged = null, bool layoutNavigationRight = true)
     {
+        this.layoutNavigationRight = layoutNavigationRight;
         this.useCallback = useCallback;
         this.activeCharacterChanged = activeCharacterChanged;
         currentTreasure = new Stack<ITreasure>(treasure);
@@ -164,7 +167,15 @@ class PickUpTreasureMenu
         layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
         layout = new RowLayout(previous, next) { Margin = new IntPad(scaleHelper.Scaled(10)) };
-        var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
+        IntRect backButtonRect;
+        if (layoutNavigationRight)
+        {
+            backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
+        }
+        else
+        {
+            backButtonRect = screenPositioner.GetBottomLeftRect(layout.GetDesiredSize(sharpGui));
+        }
         layout.SetRect(backButtonRect);
 
         var hasInventoryRoom = treasure.IsPlotItem || sheet.HasRoom;

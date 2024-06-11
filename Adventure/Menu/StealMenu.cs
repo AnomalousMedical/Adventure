@@ -23,7 +23,7 @@ class StealMenu
         {
             var useTarget = battleManager.GetTargetForStats(user);
             treasure.Use(inventory, inventoryFunctions, battleManager, objectResolver, coroutine, attacker, useTarget, gameState);
-        });
+        }, layoutNavigationRight: false);
     }
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
