@@ -18,7 +18,8 @@ internal class FileMenu
     IGameStateRequestor gameStateRequestor,
     IPersistenceWriter persistenceWriter,
     IResetGameState resetGameState,
-    ICoroutineRunner coroutineRunner
+    ICoroutineRunner coroutineRunner,
+    ConfirmMenu confirmMenu
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
@@ -48,7 +49,6 @@ internal class FileMenu
             if (newSelection != null)
             {
                 SaveSelectedAction(newSelection, menu, gamepadId);
-                saveFiles = null;
             }
 
             if (sharpGui.Button(back, gamepadId, navLeft: saveFileButtons.TopButton, navRight: saveFileButtons.TopButton)
@@ -69,7 +69,7 @@ internal class FileMenu
         var desiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
-        if (sharpGui.Button(newGame, gamepadId, navUp: load.Id, navDown: back.Id))
+        if (sharpGui.Button(newGame, gamepadId, navUp: back.Id, navDown: load.Id))
         {
             persistenceWriter.Save();
             options.CurrentSave = persistenceWriter.CreateSaveFileName();
@@ -101,15 +101,24 @@ internal class FileMenu
         options.CurrentSave = newSelection.FileName;
         menu.RequestSubMenu(null, gamepadId);
         gameStateRequestor.RequestGameState(resetGameState);
+        saveFiles = null;
     }
 
     private void DeleteSave(SaveInfo saveInfo, IExplorationMenu menu, GamepadId gamepadId)
     {
-        if(options.CurrentSave == saveInfo.FileName)
-        {
-            options.CurrentSave = null;
-        }
-        persistenceWriter.DeleteFile(saveInfo.FileName);
+        confirmMenu.Setup($"Are you sure you want to delete the save {saveInfo.SaveTime}?",
+            yes: () => 
+            {
+                if (options.CurrentSave == saveInfo.FileName)
+                {
+                    options.CurrentSave = null;
+                }
+                persistenceWriter.DeleteFile(saveInfo.FileName);
+                saveFiles = null;
+            },
+            no: () => { },
+            this);
+        menu.RequestSubMenu(confirmMenu, gamepadId);
     }
 
     private void LoadSaveFileInfo()
