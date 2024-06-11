@@ -55,7 +55,7 @@ class TreasureMenu
             return;
         }
 
-        if (pickUpTreasureMenu.Update(gamepad))
+        if (pickUpTreasureMenu.Update(gamepad, menu, this))
         {
             if (currentEffect == null)
             {

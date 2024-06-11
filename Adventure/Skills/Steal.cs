@@ -42,30 +42,27 @@ namespace Adventure.Skills
         }
 
         private readonly IBattleManager battleManager;
-        private readonly PickUpTreasureMenu pickUpTreasureMenu;
+        private readonly IExplorationMenu explorationMenu;
 
-        public StealEffect(PickUpTreasureMenu pickUpTreasureMenu, Description description)
+        public StealEffect(StealMenu stealMenu, Description description, IExplorationMenu explorationMenu)
         {
             this.battleManager = description.BattleManager;
-            this.pickUpTreasureMenu = pickUpTreasureMenu;
+            this.explorationMenu = explorationMenu;
             var treasures = battleManager.Steal();
             if (treasures.Any()) //Only show the menu if there are treasures, this disrupts the gui otherwise for the current player's turn
             {
                 battleManager.AllowActivePlayerGui = false;
-                pickUpTreasureMenu.GatherTreasures(treasures, TimeSpan.FromSeconds(1), (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
-                {
-                    var useTarget = battleManager.GetTargetForStats(user);
-                    treasure.Use(inventory, inventoryFunctions, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker, useTarget, gameState);
-                });
+                stealMenu.SetTreasure(treasures, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker);
+                var padId = battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
+                explorationMenu.RequestSubMenu(stealMenu, padId);
             }
         }
 
         public bool Finished { get; private set; }
 
         public void Update(Clock clock)
-        {
-            var padId = battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
-            if (pickUpTreasureMenu.Update(padId))
+        {            
+            if (!explorationMenu.Update())
             {
                 battleManager.AllowActivePlayerGui = true;
                 Finished = true;

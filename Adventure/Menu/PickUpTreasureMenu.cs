@@ -21,7 +21,8 @@ class PickUpTreasureMenu
     ILanguageService languageService,
     EquipmentTextService equipmentTextService,
     CharacterStatsTextService characterStatsTextService,
-    CharacterStyleService characterStyleService
+    CharacterStyleService characterStyleService,
+    ConfirmMenu confirmMenu
 )
 {
     public const float ChooseTargetLayer = 0.15f;
@@ -69,7 +70,7 @@ class PickUpTreasureMenu
         FireActiveCharacterChanged();
     }
 
-    public bool Update(GamepadId gamepadId)
+    public bool Update(GamepadId gamepadId, IExplorationMenu menu, IExplorationSubMenu parentSubMenu)
     {
         if (currentSheet > persistence.Current.Party.Members.Count)
         {
@@ -272,13 +273,20 @@ class PickUpTreasureMenu
                     replacingItem = false;
                     if (removeItem != CancelInventoryItem)
                     {
-                        equippingItem = treasure.CanEquipOnPickup;
-                        if (!equippingItem)
-                        {
-                            NextTreasure();
-                        }
-                        sheet.RemoveItem(removeItem);
-                        treasure.GiveTo(sheet.Inventory, persistence.Current);
+                        confirmMenu.Setup($"Remove {languageService.Current.Items.GetText(removeItem.InfoId)} and take {languageService.Current.Items.GetText(treasure.InfoId)}?",
+                            yes: () =>
+                            {
+                                equippingItem = treasure.CanEquipOnPickup;
+                                if (!equippingItem)
+                                {
+                                    NextTreasure();
+                                }
+                                sheet.RemoveItem(removeItem);
+                                treasure.GiveTo(sheet.Inventory, persistence.Current);
+                            },
+                            no: () => { },
+                            parentSubMenu);
+                        menu.RequestSubMenu(confirmMenu, gamepadId);
                     }
                 }
 
