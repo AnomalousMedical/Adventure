@@ -23,7 +23,8 @@ class UseItemMenu
     IScopedCoroutine coroutine,
     CameraMover cameraMover,
     ISoundEffectPlayer soundEffectPlayer,
-    IClockService clockService
+    IClockService clockService,
+    ConfirmMenu confirmMenu
 ) : IDisposable
 {
     IObjectResolver objectResolver = objectResolverFactory.Create();
@@ -48,7 +49,7 @@ class UseItemMenu
     public event Action Closed;
     public event Action IsTransferStatusChanged;
 
-    public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style)
+    public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style, IExplorationSubMenu parentSubMenu, IExplorationMenu menu)
     {
         if (currentEffect != null)
         {
@@ -214,9 +215,15 @@ class UseItemMenu
                 {
                     if (!choosingCharacter)
                     {
-                        //TODO: Add confirmation for this
-                        characterData.RemoveItem(SelectedItem);
-                        Close();
+                        confirmMenu.Setup($"Discard the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?",
+                            yes: () =>
+                            {
+                                characterData.RemoveItem(SelectedItem);
+                                Close();
+                            },
+                            no: () => { },
+                            parentSubMenu);
+                        menu.RequestSubMenu(confirmMenu, gamepadId);
                     }
                 }
                 if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id, style: style) || sharpGui.IsStandardBackPressed(gamepadId))
@@ -406,7 +413,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
         itemButtons.Bottom = backButtonRect.Top;
 
-        useItemMenu.Update(characterData, gamepad, currentCharacterStyle);
+        useItemMenu.Update(characterData, gamepad, currentCharacterStyle, this, menu);
 
         if (allowChanges)
         {
