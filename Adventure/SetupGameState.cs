@@ -150,7 +150,7 @@ namespace Adventure
         {
             IGameState next = this;
 
-            if (explorationMenu.Update(explorationGameState))
+            if (explorationMenu.Update())
             {
                 //Menu updated
             }

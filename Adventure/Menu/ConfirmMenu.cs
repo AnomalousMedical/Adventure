@@ -32,7 +32,7 @@ class ConfirmMenu
         this.previousMenu = previousMenu;
     }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),

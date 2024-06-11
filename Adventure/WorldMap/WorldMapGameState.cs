@@ -131,7 +131,7 @@ namespace Adventure.WorldMap
             buffManager.Update(clock);
             restManager.Update(clock);
 
-            if (explorationMenu.Update(explorationState))
+            if (explorationMenu.Update())
             {
                 //If menu did something
             }

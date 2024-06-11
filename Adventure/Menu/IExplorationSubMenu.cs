@@ -9,6 +9,6 @@ namespace Adventure.Menu
 {
    interface IExplorationSubMenu
     {
-        void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId);
+        void Update(IExplorationMenu menu, GamepadId gamepadId);
     }
 }

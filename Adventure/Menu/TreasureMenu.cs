@@ -43,7 +43,7 @@ class TreasureMenu
         });
     }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepad)
+    public void Update(IExplorationMenu menu, GamepadId gamepad)
     {
         if (currentEffect != null)
         {

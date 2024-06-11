@@ -141,7 +141,7 @@ namespace Adventure.Menu
             }
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+        public void Update(IExplorationMenu menu, GamepadId gamepadId)
         {
             if(GetTextBoxWidth() != lastWidth)
             {

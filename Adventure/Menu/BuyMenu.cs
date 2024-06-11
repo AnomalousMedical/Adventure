@@ -156,7 +156,7 @@ namespace Adventure.Menu
             return menuClosedTask.Task;
         }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+        public void Update(IExplorationMenu menu, GamepadId gamepadId)
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 

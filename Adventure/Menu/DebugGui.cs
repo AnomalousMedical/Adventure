@@ -15,17 +15,20 @@ namespace Adventure.Menu
     {
     }
 
-    class DebugGui : IDebugGui, IExplorationSubMenu
+    class DebugGui
+    (
+        ISharpGui sharpGui,
+        IScaleHelper scaleHelper,
+        IScreenPositioner screenPositioner,
+        IZoneManager zoneManager,
+        ITimeClock timeClock,
+        Party party,
+        FlyCameraManager flyCameraManager,
+        Persistence persistence,
+        IExplorationGameState explorationGameState
+    //TextDialog textDialog
+    ) : IDebugGui, IExplorationSubMenu
     {
-        private readonly ISharpGui sharpGui;
-        private readonly IScaleHelper scaleHelper;
-        private readonly IScreenPositioner screenPositioner;
-        private readonly IZoneManager zoneManager;
-        private readonly ITimeClock timeClock;
-        private readonly Party party;
-        private readonly ILevelCalculator levelCalculator;
-        private readonly FlyCameraManager flyCameraManager;
-        private readonly Persistence persistence;
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
         SharpButton goEnd = new SharpButton() { Text = "Go End" };
         SharpButton goWorld = new SharpButton() { Text = "Go World" };
@@ -34,36 +37,9 @@ namespace Adventure.Menu
         SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
-        SharpSliderHorizontal currentHour;
+        SharpSliderHorizontal currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
 
-        public DebugGui
-        (
-            ISharpGui sharpGui,
-            IScaleHelper scaleHelper,
-            IScreenPositioner screenPositioner,
-            IZoneManager zoneManager,
-            ITimeClock timeClock,
-            ICoroutineRunner coroutineRunner,
-            Party party,
-            ILevelCalculator levelCalculator,
-            FlyCameraManager flyCameraManager,
-            Persistence persistence
-            //TextDialog textDialog
-        )
-        {
-            this.sharpGui = sharpGui;
-            this.scaleHelper = scaleHelper;
-            this.screenPositioner = screenPositioner;
-            this.zoneManager = zoneManager;
-            this.timeClock = timeClock;
-            this.party = party;
-            this.levelCalculator = levelCalculator;
-            this.flyCameraManager = flyCameraManager;
-            this.persistence = persistence;
-            currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
-        }
-
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
+        public void Update(IExplorationMenu explorationMenu, GamepadId gamepad)
         {
             averageLevel.Text = $"Zone: {zoneManager.Current?.Index} Level: {party.GetAverageLevel()} World: {persistence.Current.World.Level}";
             allowBattle.Text = explorationGameState.AllowBattles ? "Battles Allowed" : "Battles Disabled";

@@ -42,7 +42,7 @@ namespace Adventure.Menu
 
         public IExplorationSubMenu PreviousMenu { get; set; }
 
-        public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+        public void Update(IExplorationMenu menu, GamepadId gamepadId)
         {
             ILayoutItem layout;
             Guid closeNavDown;

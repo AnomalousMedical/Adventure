@@ -158,7 +158,7 @@ namespace Adventure
             buffManager.Update(clock);
             restManager.Update(clock);
 
-            if (explorationMenu.Update(this))
+            if (explorationMenu.Update())
             {
                 //If menu did something
             }

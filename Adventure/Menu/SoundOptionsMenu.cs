@@ -35,7 +35,7 @@ class SoundOptionsMenu
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         masterVolumeSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));
         musicVolumeSlider.DesiredSize = scaleHelper.Scaled(new IntSize2(500, 35));

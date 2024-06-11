@@ -50,7 +50,7 @@ class RootMenu
         yield return close;
     }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu explorationMenu, GamepadId gamepad)
+    public void Update(IExplorationMenu explorationMenu, GamepadId gamepad)
     {
         var time = TimeSpan.FromMilliseconds(persistence.Current.Time.Total * Clock.MicroToMilliseconds);
         timePlayed.Text = $"{(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";

@@ -37,7 +37,7 @@ internal class FileMenu
 
     private Action<SaveInfo, IExplorationMenu, GamepadId> SaveSelectedAction;
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         if (saveFiles != null)
         {

@@ -31,7 +31,7 @@ internal class OptionsMenu
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),

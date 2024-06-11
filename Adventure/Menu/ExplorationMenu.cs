@@ -12,9 +12,8 @@ namespace Adventure.Menu
     {
         IDebugGui DebugGui { get; }
         IRootMenu RootMenu { get; }
-
         void RequestSubMenu(IExplorationSubMenu subMenu, GamepadId gamepad);
-        bool Update(IExplorationGameState explorationGameState);
+        bool Update();
     }
 
     class ExplorationMenu : IExplorationMenu
@@ -40,13 +39,13 @@ namespace Adventure.Menu
         /// Update the menu. Returns true if something was done. False if nothing was done and the menu wasn't shown
         /// </summary>
         /// <returns></returns>
-        public bool Update(IExplorationGameState explorationGameState)
+        public bool Update()
         {
             bool handled = false;
             if (currentMenu != null)
             {
                 handled = true;
-                currentMenu.Update(explorationGameState, this, currentGamepad);
+                currentMenu.Update(this, currentGamepad);
             }
             else
             {

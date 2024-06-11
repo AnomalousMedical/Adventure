@@ -35,7 +35,7 @@ internal class CreditsMenu
 
     public IExplorationSubMenu Previous { get; set; }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         if(currentCredits == null)
         {

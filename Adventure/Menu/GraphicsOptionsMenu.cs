@@ -36,7 +36,7 @@ internal class GraphicsOptionsMenu
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
-    public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
+    public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         var items = new List<ILayoutItem>() { toggleFullscreen, togglePresent, toggleUpsampling };
         var showFsrSlider = false;
