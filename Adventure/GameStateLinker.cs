@@ -23,7 +23,8 @@ namespace Adventure
             IStartExplorationGameState startExplorationGameState,
             IExplorationMenu explorationMenu,
             IRootMenu rootMenu,
-            IResetGameState resetGameState
+            IResetGameState resetGameState,
+            IDebugGui debugGui
         )
         {
             resetGameState.Link(setup);
@@ -34,6 +35,7 @@ namespace Adventure
             setupRespawnGameState.Link(exploration);
             worldMap.Link(exploration, startExplorationGameState);
             startExplorationGameState.Link(exploration);
+            debugGui.Link(exploration);
         }
     }
 }

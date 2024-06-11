@@ -13,6 +13,7 @@ namespace Adventure.Menu
 {
     interface IDebugGui : IExplorationSubMenu
     {
+        void Link(IExplorationGameState explorationGameState);
     }
 
     class DebugGui
@@ -24,11 +25,12 @@ namespace Adventure.Menu
         ITimeClock timeClock,
         Party party,
         FlyCameraManager flyCameraManager,
-        Persistence persistence,
-        IExplorationGameState explorationGameState
+        Persistence persistence
     //TextDialog textDialog
     ) : IDebugGui, IExplorationSubMenu
     {
+        private IExplorationGameState explorationGameState;
+
         SharpButton goStart = new SharpButton() { Text = "Go Start" };
         SharpButton goEnd = new SharpButton() { Text = "Go End" };
         SharpButton goWorld = new SharpButton() { Text = "Go World" };
@@ -38,6 +40,11 @@ namespace Adventure.Menu
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
         SharpSliderHorizontal currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
+
+        public void Link(IExplorationGameState explorationGameState)
+        {
+            this.explorationGameState = explorationGameState;
+        }
 
         public void Update(IExplorationMenu explorationMenu, GamepadId gamepad)
         {
