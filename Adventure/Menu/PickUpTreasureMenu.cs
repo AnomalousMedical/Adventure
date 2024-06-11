@@ -345,7 +345,11 @@ class PickUpTreasureMenu
 
                 if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: previous.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
                 {
-                    NextTreasure();
+                    confirmMenu.Setup($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}",
+                        yes: () => NextTreasure(),
+                        no: () => { },
+                        parentSubMenu);
+                    menu.RequestSubMenu(confirmMenu, gamepadId);
                 }
 
                 if (sharpGui.Button(previous, gamepadId, navUp: replacingItem ? replaceButtons.BottomButton : discard.Id, navDown: replacingItem ? replaceButtons.TopButton : take.Id, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
