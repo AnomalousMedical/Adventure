@@ -12,6 +12,7 @@ namespace Adventure.Services
     {
         void AddSaveBlock(object blocker);
         string CreateSaveFileName();
+        void DeleteFile(String saveFile);
         IAsyncEnumerable<SaveDataInfo> GetAllSaveData();
         IEnumerable<string> GetSaveFiles();
         void Load();
@@ -121,6 +122,17 @@ namespace Adventure.Services
                 logger.LogInformation($"Loading save from '{outFile}'.");
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
                 return JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+            }
+        }
+
+        public void DeleteFile(String saveFile)
+        {
+            var saveDir = Path.GetFullPath(GetSaveDirectory());
+            saveFile = Path.GetFullPath(Path.Combine(saveDir, saveFile));
+
+            if (saveFile.StartsWith(saveDir) && File.Exists(saveFile))
+            {
+                File.Delete(saveFile);
             }
         }
 

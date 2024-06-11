@@ -23,36 +23,35 @@ internal class FileMenu
 {
     public const float LoadButtonsLayer = 0.15f;
 
+    private readonly SharpButton newGame = new SharpButton() { Text = "New" };
     private readonly SharpButton load = new SharpButton() { Text = "Load" };
-    private readonly SharpButton newGame = new SharpButton() { Text = "New Game" };
+    private readonly SharpButton delete = new SharpButton() { Text = "Delete" };
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
-    private ButtonColumn loadButtons = new ButtonColumn(25, LoadButtonsLayer);
+    private ButtonColumn saveFileButtons = new ButtonColumn(25, LoadButtonsLayer);
 
     record SaveInfo(string FileName, DateTime SaveTime);
     private List<ButtonColumnItem<SaveInfo>> saveFiles = null;
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
+    private Action<SaveInfo, IExplorationMenu, GamepadId> SaveSelectedAction;
+
     public void Update(IExplorationGameState explorationGameState, IExplorationMenu menu, GamepadId gamepadId)
     {
         if (saveFiles != null)
         {
-            loadButtons.Margin = scaleHelper.Scaled(10);
-            loadButtons.MaxWidth = scaleHelper.Scaled(900);
-            loadButtons.Bottom = screenPositioner.ScreenSize.Height;
+            saveFileButtons.Margin = scaleHelper.Scaled(10);
+            saveFileButtons.MaxWidth = scaleHelper.Scaled(900);
+            saveFileButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-            var newSelection = loadButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
+            var newSelection = saveFileButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
             if (newSelection != null)
             {
-                persistenceWriter.Save();
-                options.CurrentSave = newSelection.FileName;
-                menu.RequestSubMenu(null, gamepadId);
-                gameStateRequestor.RequestGameState(resetGameState);
+                SaveSelectedAction(newSelection, menu, gamepadId);
                 saveFiles = null;
-                menu.RequestSubMenu(null, gamepadId);
             }
 
-            if (sharpGui.Button(back, gamepadId, navLeft: loadButtons.TopButton, navRight: loadButtons.TopButton)
+            if (sharpGui.Button(back, gamepadId, navLeft: saveFileButtons.TopButton, navRight: saveFileButtons.TopButton)
                 || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 saveFiles = null;
@@ -64,58 +63,11 @@ internal class FileMenu
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(load, newGame, back) { Margin = new IntPad(10) }
+           new ColumnLayout(newGame, load, delete, back) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
-
-        if (sharpGui.Button(load, gamepadId, navUp: back.Id, navDown: newGame.Id))
-        {
-            saveFiles = new List<ButtonColumnItem<SaveInfo>>();
-            var mySaveFiles = saveFiles;
-            coroutineRunner.RunTask(async () =>
-            {
-                await foreach (var save in persistenceWriter.GetAllSaveData())
-                {
-                    if (saveFiles != mySaveFiles)
-                    {
-                        break;
-                    }
-
-                    var message =
-@$"{save.GameState.Party.Members.FirstOrDefault()?.CharacterSheet?.Name}
-Areas Cleared: {save.GameState.World.CompletedAreaLevels.Count}
-Level: {save.GameState.World.Level}
-Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
-
-                    if (save.GameState.Party.Undefeated)
-                    {
-                        message += "\nUndefeated";
-                    }
-
-                    if (save.GameState.Party.OldSchool)
-                    {
-                        message += "\nOld School";
-                    }
-
-                    message += $"\nSaved: {save.GameState.SaveTime}";
-
-                    var buttonColumnItem = new ButtonColumnItem<SaveInfo>(message, new SaveInfo(save.FileName, save.GameState.SaveTime));
-
-                    if (mySaveFiles.Count == 0)
-                    {
-                        mySaveFiles.Add(buttonColumnItem);
-                    }
-                    else
-                    {
-                        var i = 0;
-                        for (; i < mySaveFiles.Count && save.GameState.SaveTime < mySaveFiles[i].Item.SaveTime; i++) { }
-                        mySaveFiles.Insert(i, buttonColumnItem);
-                    }
-                }
-            });
-        }
 
         if (sharpGui.Button(newGame, gamepadId, navUp: load.Id, navDown: back.Id))
         {
@@ -125,9 +77,85 @@ Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
             menu.RequestSubMenu(null, gamepadId);
         }
 
-        if (sharpGui.Button(back, gamepadId, navUp: newGame.Id, navDown: load.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(load, gamepadId, navUp: newGame.Id, navDown: delete.Id))
+        {
+            SaveSelectedAction = LoadSave;
+            LoadSaveFileInfo();
+        }
+
+        if (sharpGui.Button(delete, gamepadId, navUp: load.Id, navDown: back.Id))
+        {
+            SaveSelectedAction = DeleteSave;
+            LoadSaveFileInfo();
+        }
+
+        if (sharpGui.Button(back, gamepadId, navUp: delete.Id, navDown: newGame.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             menu.RequestSubMenu(PreviousMenu, gamepadId);
         }
+    }
+
+    private void LoadSave(SaveInfo newSelection, IExplorationMenu menu, GamepadId gamepadId)
+    {
+        persistenceWriter.Save();
+        options.CurrentSave = newSelection.FileName;
+        menu.RequestSubMenu(null, gamepadId);
+        gameStateRequestor.RequestGameState(resetGameState);
+    }
+
+    private void DeleteSave(SaveInfo saveInfo, IExplorationMenu menu, GamepadId gamepadId)
+    {
+        if(options.CurrentSave == saveInfo.FileName)
+        {
+            options.CurrentSave = null;
+        }
+        persistenceWriter.DeleteFile(saveInfo.FileName);
+    }
+
+    private void LoadSaveFileInfo()
+    {
+        saveFiles = new List<ButtonColumnItem<SaveInfo>>();
+        var mySaveFiles = saveFiles;
+        coroutineRunner.RunTask(async () =>
+        {
+            await foreach (var save in persistenceWriter.GetAllSaveData())
+            {
+                if (saveFiles != mySaveFiles)
+                {
+                    break;
+                }
+
+                var message =
+@$"{save.GameState.Party.Members.FirstOrDefault()?.CharacterSheet?.Name}
+Areas Cleared: {save.GameState.World.CompletedAreaLevels.Count}
+Level: {save.GameState.World.Level}
+Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
+
+                if (save.GameState.Party.Undefeated)
+                {
+                    message += "\nUndefeated";
+                }
+
+                if (save.GameState.Party.OldSchool)
+                {
+                    message += "\nOld School";
+                }
+
+                message += $"\nSaved: {save.GameState.SaveTime}";
+
+                var buttonColumnItem = new ButtonColumnItem<SaveInfo>(message, new SaveInfo(save.FileName, save.GameState.SaveTime));
+
+                if (mySaveFiles.Count == 0)
+                {
+                    mySaveFiles.Add(buttonColumnItem);
+                }
+                else
+                {
+                    var i = 0;
+                    for (; i < mySaveFiles.Count && save.GameState.SaveTime < mySaveFiles[i].Item.SaveTime; i++) { }
+                    mySaveFiles.Insert(i, buttonColumnItem);
+                }
+            }
+        });
     }
 }
