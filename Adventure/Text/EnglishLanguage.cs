@@ -120,7 +120,7 @@ namespace Adventure.Text
                     , Hammer3: new(Text: "Hammer of the Gods", Description: "A unique hammer suitable for divine use. Delivers the most bludgeoning damage to your foes out of anything in the world. Does not restrict using restorative magic.")
                     , StoreHammer1: new(Text: "Smithed Hammer", Description: "A hand made hammer for bludgeoning your foes.")
                     , StoreHammer2: new(Text: "Ancient Hammer", Description: "A hand made hammer created with ancient techniques. It will deliver bludgeoning damage to your foes better than most.")
-                    , Sword1: new(Text: "Busted Sword", Description: "A soldier's blade, inevitably replaced by something better. Still does an ok amount of slashing damage to your opponents.")
+                    , Sword1: new(Text: "Soldier's Sword", Description: "A basic blade. Does a small amount of slashing damage to your opponents.")
                     , Sword2: new(Text: "Common Sword", Description: "The most common type of blade found through the land. Many rely on its slashing damage to defeat their opponents.")
                     , Sword3: new(Text: "Ultimate Sword", Description: "A blade of legend. Nothing delivers more slashing damage to your opponents in the entire world.")
                     , StoreSword1: new(Text: "Smithed Sword", Description: "A hand made sword for slashing your opponents.")
