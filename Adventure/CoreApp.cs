@@ -223,6 +223,9 @@ namespace Adventure
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IClockService, ClockService>();
             services.AddSingleton<IContextMenu, ContextMenu>();
+            services.AddSingleton<ItemVoidMenu>();
+            services.AddScoped<ItemStorage>();
+            services.AddScoped<ItemStorage.Description>();
             services.AddSingleton<ILanguageService>(s => new LanguageService(EnglishLanguage.Create()));
 #if !RELEASE
             services.AddSingleton<ISeedProvider>(s => new ConstantSeedProvider(0)); //Set to 0 for debugging

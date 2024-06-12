@@ -49,6 +49,7 @@ namespace Adventure.Services
         IntVector2 AlchemistUpgradePosition { get; }
         IntVector2 FortuneTellerPosition { get; }
         IntVector2 ElementalStonePosition { get; }
+        IntVector2 ItemStoragePosition { get; }
         IEnumerable<IntVector2> BiomePropLocations { get; }
     }
 
@@ -97,6 +98,7 @@ namespace Adventure.Services
         public IntVector2 AlchemistUpgradePosition { get; private set; }
         public IntVector2 FortuneTellerPosition { get; private set; }
         public IntVector2 ElementalStonePosition { get; private set; }
+        public IntVector2 ItemStoragePosition { get; private set; }
         public IEnumerable<IntVector2> BiomePropLocations { get; private set; }
 
         public int GetLevelDelta(int currentLevel)
@@ -751,6 +753,8 @@ namespace Adventure.Services
             PreventUsageSouth(AlchemistPosition, usedSquares, 2);
             FortuneTellerPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             PreventUsageSouth(FortuneTellerPosition, usedSquares, 2);
+            ItemStoragePosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
+            PreventUsageSouth(ItemStoragePosition, usedSquares, 2);
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
             PreventUsageSouth(BlacksmithUpgradePosition, usedSquares, 2);

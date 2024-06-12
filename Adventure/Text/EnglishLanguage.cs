@@ -59,6 +59,12 @@ namespace Adventure.Text
                     Check: "Check",
                     GiveUpgrade: "The gargoyle whispers ancient blacksmithing secrets into your ear..."
                 ),
+                ItemStorage: new ItemStorage.Text
+                (
+                    Greeting: "Hello",
+                    RecoverItems: "The gargoyle whispers the echos of discarded power in your ear...",
+                    NoItems: "The gargoyle whispers the sounds of an empty void in your ear..."
+                ),
                 ElementalStone: new ElementalStone.Text
                 (
                     Check: "Check",
