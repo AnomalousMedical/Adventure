@@ -21,10 +21,15 @@ class TreasureMenu
     IScopedCoroutine coroutine,
     ISoundEffectPlayer soundEffectPlayer,
     IClockService clockService
-) : IExplorationSubMenu
+) : IExplorationSubMenu, IDisposable
 {
     private IObjectResolver objectResolver = objectResolverFactory.Create();
     private ISkillEffect currentEffect;
+
+    public void Dispose()
+    {
+        objectResolver.Dispose();
+    }
 
     public void GatherTreasures(IEnumerable<ITreasure> treasure)
     {
