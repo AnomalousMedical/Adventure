@@ -34,6 +34,8 @@ namespace Adventure.Items
         public long? Number { get; set; }
 
         public bool CanUseOnPickup { get; set; }
+
+        public bool Unique { get; set; }
     }
 
     interface IInventoryAction

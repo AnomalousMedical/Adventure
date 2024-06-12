@@ -262,7 +262,7 @@ namespace Adventure.Services
                     StyleIndex = 0,
                 };
                 hero.CharacterSheet.Rest();
-                GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Spear1), nameof(Spear1)), TreasureType.Weapon));
+                GiveAndEquip(hero, new Treasure(SpearCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Spear1), nameof(Spear1), false), TreasureType.Weapon));
                 GiveAndEquip(hero, new Treasure(ShieldCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Shield1), 0.15f, nameof(Shield1)), TreasureType.OffHand));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreatePlate(phase1TreasureLevel, nameof(ItemText.Plate1), EquipmentTier.Tier1), TreasureType.Armor));
                 yield return new PartyMember
@@ -301,7 +301,7 @@ namespace Adventure.Services
                     StyleIndex = 2,
                 };
                 hero.CharacterSheet.Rest();
-                GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Sword1), nameof(Sword1)), TreasureType.Weapon));
+                GiveAndEquip(hero, new Treasure(SwordCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Sword1), nameof(Sword1), false), TreasureType.Weapon));
                 GiveAndEquip(hero, new Treasure(DaggerCreator.CreateNormal(nameof(Dagger1), phase0TreasureLevel, nameof(ItemText.Dagger1), nameof(Steal)), TreasureType.OffHand));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateLeather(phase1TreasureLevel, nameof(ItemText.Leather1), EquipmentTier.Tier1, 1), TreasureType.Armor));
                 new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel), TreasureType.Potion).GiveTo(hero.Inventory, null);
@@ -323,7 +323,7 @@ namespace Adventure.Services
                     StyleIndex = 3,
                 };
                 hero.CharacterSheet.Rest();
-                GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Hammer1), nameof(Hammer1)), TreasureType.Weapon));
+                GiveAndEquip(hero, new Treasure(MaceCreator.CreateNormal(phase0TreasureLevel, nameof(ItemText.Hammer1), nameof(Hammer1), false), TreasureType.Weapon));
                 GiveAndEquip(hero, new Treasure(BookCreator.CreateRestoration(nameof(Book1), phase0TreasureLevel, nameof(ItemText.Book1), nameof(Cure)), TreasureType.OffHand));
                 GiveAndEquip(hero, new Treasure(ArmorCreator.CreateCloth(phase1TreasureLevel, nameof(ItemText.Cloth1), EquipmentTier.Tier1), TreasureType.Armor));
                 yield return new PartyMember
@@ -428,9 +428,9 @@ namespace Adventure.Services
                 var phase2TreasureLevel = 35;
                 var phase2Weapons = new List<Treasure>()
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Sword2), nameof(Sword2)), TreasureType.Weapon),
-                    new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Spear2), nameof(Spear2)), TreasureType.Weapon),
-                    new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Hammer2), nameof(Hammer2)), TreasureType.Weapon),
+                    new Treasure(SwordCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Sword2), nameof(Sword2), true), TreasureType.Weapon),
+                    new Treasure(SpearCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Spear2), nameof(Spear2), true), TreasureType.Weapon),
+                    new Treasure(MaceCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Hammer2), nameof(Hammer2), true), TreasureType.Weapon),
                     new Treasure(BookCreator.CreateRestoration(nameof(Book2), phase2TreasureLevel, nameof(ItemText.Book2), nameof(MegaCure), nameof(BattleCry), nameof(Focus)), TreasureType.OffHand),
                     new Treasure(ShieldCreator.CreateNormal(phase2TreasureLevel, nameof(ItemText.Shield2), 0.35f, nameof(Shield2)), TreasureType.OffHand),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff2), phase2TreasureLevel, nameof(ItemText.Staff2), nameof(StrongFire), nameof(StrongIce), nameof(StrongLightning)), TreasureType.Weapon),
@@ -545,9 +545,9 @@ namespace Adventure.Services
                 var phase3TreasureLevel = 55;
                 var phase3Weapons = new List<Treasure>
                 {
-                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Sword3), nameof(Sword3)), TreasureType.Weapon),
-                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Spear3), nameof(Spear3)), TreasureType.Weapon),
-                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Hammer3), nameof(Hammer3)), TreasureType.Weapon),
+                    new Treasure(SwordCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Sword3), nameof(Sword3), true), TreasureType.Weapon),
+                    new Treasure(SpearCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Spear3), nameof(Spear3), true), TreasureType.Weapon),
+                    new Treasure(MaceCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Hammer3), nameof(Hammer3), true), TreasureType.Weapon),
                     new Treasure(ElementalStaffCreator.CreateNormal(nameof(Staff3), phase3TreasureLevel, nameof(ItemText.Staff3), nameof(IonShread), nameof(ArchFire), nameof(ArchIce), nameof(ArchLightning)), TreasureType.Weapon),
                     new Treasure(ShieldCreator.CreateNormal(phase3TreasureLevel, nameof(ItemText.Shield3), 0.45f, nameof(Shield3)), TreasureType.OffHand),
                     new Treasure(BookCreator.CreateRestoration(nameof(Book3), phase3TreasureLevel, nameof(ItemText.Book3), nameof(UltraCure), nameof(Reanimate), nameof(WarCry), nameof(IntenseFocus)), TreasureType.OffHand),
@@ -886,16 +886,16 @@ namespace Adventure.Services
                     if (plotItems.Contains(PlotItems.BlacksmithUpgrade))
                     {
                         var treasureLevel = 40;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Sword1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreSpear2), 350, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear2), nameof(Spear1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreHammer2), 350, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer2), nameof(Hammer1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Sword1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreSpear2), 350, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear2), nameof(Spear1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreHammer2), 350, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer2), nameof(Hammer1), false));
                     }
 
                     {
                         var treasureLevel = 15;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(Sword1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(Spear1)));
-                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(Hammer1)));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(Sword1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(Spear1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(Hammer1), false));
                     }
                     break;
             }

@@ -125,7 +125,7 @@ class PickUpTreasureMenu
             }
             else
             {
-                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList(); 
+                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList();
             }
         }
 
@@ -136,7 +136,7 @@ class PickUpTreasureMenu
             var description = new SharpText() { Color = Color.White };
             description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);
             descriptions.Add(description);
-            
+
             if (treasure.CanEquipOnPickup && treasure.Item != null)
             {
                 descriptions.Add(new SharpText(" \n") { Color = Color.White });
@@ -159,9 +159,9 @@ class PickUpTreasureMenu
         layout =
             new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
             new MaxWidthLayout(scaleHelper.Scaled(600),
-            new ColumnLayout(descriptions) 
-            { 
-                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) 
+            new ColumnLayout(descriptions)
+            {
+                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
             }
         ));
         layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
@@ -293,6 +293,10 @@ class PickUpTreasureMenu
                                     NextTreasure();
                                 }
                                 sheet.RemoveItem(removeItem);
+                                if (removeItem.Unique)
+                                {
+                                    persistence.Current.ItemVoid.Add(removeItem);
+                                }
                                 treasure.GiveTo(sheet.Inventory, persistence.Current);
                             },
                             no: () => { },
@@ -346,7 +350,14 @@ class PickUpTreasureMenu
                 if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: previous.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
                 {
                     confirmMenu.Setup($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}",
-                        yes: () => NextTreasure(),
+                        yes: () =>
+                        {
+                            NextTreasure();
+                            if (treasure.Item?.Unique == true)
+                            {
+                                persistence.Current.ItemVoid.Add(treasure.Item);
+                            }
+                        },
                         no: () => { },
                         parentSubMenu);
                     menu.RequestSubMenu(confirmMenu, gamepadId);

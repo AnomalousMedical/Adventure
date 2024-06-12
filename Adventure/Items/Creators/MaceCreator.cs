@@ -14,7 +14,7 @@ namespace Adventure.Items.Creators
             this.equipmentCurve = equipmentCurve;
         }
 
-        public InventoryItem CreateNormal(int level, string infoId, string sprite)
+        public InventoryItem CreateNormal(int level, string infoId, string sprite, bool unique)
         {
             var mace = new Equipment
             {
@@ -25,12 +25,15 @@ namespace Adventure.Items.Creators
                 AttackElements = new[] { Element.Bludgeoning }
             };
 
-            return CreateInventoryItem(mace);
+            return CreateInventoryItem(mace, unique);
         }
 
-        private InventoryItem CreateInventoryItem(Equipment equipment)
+        private InventoryItem CreateInventoryItem(Equipment equipment, bool unique)
         {
-            return new InventoryItem(equipment, nameof(EquipMainHand));
+            return new InventoryItem(equipment, nameof(EquipMainHand))
+            {
+                Unique = unique
+            };
         }
     }
 }

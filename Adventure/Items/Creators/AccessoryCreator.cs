@@ -21,7 +21,7 @@ namespace Adventure.Items.Creators
                 CounterPercent = 70L
             };
 
-            return CreateInventoryItem(accessory);
+            return CreateInventoryItem(accessory, true);
         }
 
         public InventoryItem CreateTargetScope()
@@ -32,7 +32,7 @@ namespace Adventure.Items.Creators
                 ShowEnemyInfo = true
             };
 
-            return CreateInventoryItem(accessory);
+            return CreateInventoryItem(accessory, true);
         }
 
         public InventoryItem CreateHealing(float healingBonus, bool cureAll)
@@ -44,7 +44,7 @@ namespace Adventure.Items.Creators
                 CureAll = cureAll
             };
 
-            return CreateInventoryItem(accessory);
+            return CreateInventoryItem(accessory, true);
         }
 
         public InventoryItem CreateDoublecast()
@@ -55,7 +55,7 @@ namespace Adventure.Items.Creators
                 Doublecast = true,
             };
 
-            return CreateInventoryItem(accessory);
+            return CreateInventoryItem(accessory, true);
         }
 
         public InventoryItem CreateItemUsage(float itemUsageBonus)
@@ -66,12 +66,15 @@ namespace Adventure.Items.Creators
                 ItemUsageBonus = itemUsageBonus
             };
 
-            return CreateInventoryItem(accessory);
+            return CreateInventoryItem(accessory, true);
         }
 
-        private InventoryItem CreateInventoryItem(Equipment equipment)
+        private InventoryItem CreateInventoryItem(Equipment equipment, bool unique)
         {
-            return new InventoryItem(equipment, nameof(EquipAccessory));
+            return new InventoryItem(equipment, nameof(EquipAccessory))
+            {
+                Unique = unique
+            };
         }
     }
 }

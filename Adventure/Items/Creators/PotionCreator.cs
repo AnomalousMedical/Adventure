@@ -77,6 +77,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(StrengthBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -91,6 +92,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(MagicBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -105,6 +107,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(SpiritBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -119,6 +122,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(VitalityBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -133,6 +137,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(DexterityBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -147,6 +152,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(LuckBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = amount;
@@ -161,6 +167,7 @@ namespace Adventure.Items.Creators
             {
                 Action = nameof(LevelBoost),
                 CanUseOnPickup = true,
+                Unique = true,
             };
 
             item.Number = 3;

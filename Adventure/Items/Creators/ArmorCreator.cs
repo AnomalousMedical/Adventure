@@ -62,7 +62,10 @@ namespace Adventure.Items.Creators
 
         private InventoryItem CreateInventoryItem(Equipment equipment)
         {
-            return new InventoryItem(equipment, nameof(EquipBody));
+            return new InventoryItem(equipment, nameof(EquipBody))
+            {
+                Unique = true
+            };
         }
     }
 }

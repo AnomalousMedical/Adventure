@@ -69,6 +69,8 @@ namespace Adventure.Services
             public PartyData Party { get; init; } = new PartyData();
 
             public DateTime SaveTime { get; set; }
+
+            public List<InventoryItem> ItemVoid { get; set; } = new List<InventoryItem>();
         }
 
         public class PersistenceEntry<T>

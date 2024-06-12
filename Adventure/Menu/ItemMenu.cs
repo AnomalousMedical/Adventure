@@ -219,6 +219,10 @@ class UseItemMenu
                             yes: () =>
                             {
                                 characterData.RemoveItem(SelectedItem);
+                                if (SelectedItem.Unique)
+                                {
+                                    persistence.Current.ItemVoid.Add(SelectedItem);
+                                }
                                 Close();
                             },
                             no: () => { },
