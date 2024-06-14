@@ -87,7 +87,7 @@ namespace Adventure.Exploration
 
         public Quaternion CameraAngle => this.cameraAngle;
 
-        public string Name => partyMember.CharacterData.CharacterSheet.Name;
+        public Persistence.CharacterData CharacterData => partyMember.CharacterData;
 
         public PartyMemberTrigger(
             RTInstances<ZoneScene> rtInstances,

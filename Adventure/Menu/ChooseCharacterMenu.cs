@@ -21,22 +21,29 @@ class ChooseCharacterMenu
     CameraMover cameraMover,
     FileMenu fileMenu,
     OptionsMenu optionsMenu,
-    ConfirmMenu confirmMenu
+    ConfirmMenu confirmMenu,
+    CharacterStatsTextService characterStatsTextService,
+    ILanguageService languageService
 ) : IExplorationSubMenu
 {
     private SharpText prompt = new SharpText() { Color = Color.White };
 
-    SharpButton choose = new SharpButton() { Text = "Choose" };
-    SharpButton next = new SharpButton() { Text = "Next" };
-    SharpButton previous = new SharpButton() { Text = "Previous" };
-    SharpButton files = new SharpButton() { Text = "Files" };
-    SharpButton options = new SharpButton() { Text = "Options" };
+    private SharpButton choose = new SharpButton() { Text = "Choose" };
+    private SharpButton next = new SharpButton() { Text = "Next" };
+    private SharpButton previous = new SharpButton() { Text = "Previous" };
+    private SharpButton files = new SharpButton() { Text = "Files" };
+    private SharpButton options = new SharpButton() { Text = "Options" };
 
     private int currentPlayerIndex = 0;
     private bool instantMoveCamera = true;
 
+    private List<SharpText> infos = null;
+    private List<SharpText> descriptions = null;
+
     public void Reset()
     {
+        descriptions = null;
+        infos = null;
         instantMoveCamera = true;
         currentPlayerIndex = 0;
     }
@@ -53,6 +60,27 @@ class ChooseCharacterMenu
 
             var currentTrigger = partyMemberTriggerManager.Get(currentPlayerIndex);
 
+            if (infos == null)
+            {
+                infos = characterStatsTextService.GetFullStats(currentTrigger.CharacterData).ToList();
+            }
+
+            if (descriptions == null)
+            {
+                descriptions = new List<SharpText>()
+                {
+                    new SharpText("Skills") { Color = Color.White }
+                };
+                foreach (var skill in currentTrigger.CharacterData.CharacterSheet.Skills)
+                {
+                    descriptions.Add(new SharpText(languageService.Current.Skills.GetText(skill)) { Color = Color.White });
+                }
+                if (currentTrigger.CharacterData.CharacterSheet.CanBlock)
+                {
+                    descriptions.Add(new SharpText("Block") { Color = Color.White });
+                }
+            }
+
             if (instantMoveCamera)
             {
                 instantMoveCamera = false;
@@ -68,6 +96,8 @@ class ChooseCharacterMenu
 
             if (sharpGui.Button(previous, gamepadId, navLeft: options.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
             {
+                descriptions = null;
+                infos = null;
                 --currentPlayerIndex;
                 if (currentPlayerIndex < 0)
                 {
@@ -76,12 +106,14 @@ class ChooseCharacterMenu
             }
             if (sharpGui.Button(next, gamepadId, navLeft: previous.Id, navRight: choose.Id) || sharpGui.IsStandardNextPressed(gamepadId))
             {
+                descriptions = null;
+                infos = null;
                 ++currentPlayerIndex;
                 currentPlayerIndex %= partyMemberTriggerManager.Count;
             }
             if (sharpGui.Button(choose, gamepadId, navLeft: next.Id, navRight: files.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
-                confirmMenu.Setup($"Are you sure you want to choose {currentTrigger.Name}?",
+                confirmMenu.Setup($"Are you sure you want to choose {currentTrigger.CharacterData.CharacterSheet.Name}?",
                     yes: () =>
                     {
                         currentTrigger.AddToParty();
@@ -92,7 +124,7 @@ class ChooseCharacterMenu
 
                     },
                     this);
-                menu.RequestSubMenu(confirmMenu, gamepadId);                
+                menu.RequestSubMenu(confirmMenu, gamepadId);
             }
             if (sharpGui.Button(files, gamepadId, navLeft: choose.Id, navRight: options.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
@@ -113,5 +145,35 @@ class ChooseCharacterMenu
         }
 
         sharpGui.Text(prompt);
+
+        if (infos != null)
+        {
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+
+            foreach (var info in infos)
+            {
+                sharpGui.Text(info);
+            }
+        }
+
+        if (descriptions != null)
+        {
+            layout =
+               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new ColumnLayout(descriptions.Select(i => new KeepWidthRightLayout(i))) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
+            ));
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
+
+            foreach (var description in descriptions)
+            {
+                sharpGui.Text(description);
+            }
+        }
     }
 }
