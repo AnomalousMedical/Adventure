@@ -24,7 +24,7 @@ class ChooseCharacterMenu
     ConfirmMenu confirmMenu
 ) : IExplorationSubMenu
 {
-    private SharpText prompt = new SharpText("Choose your character.") { Color = Color.White };
+    private SharpText prompt = new SharpText() { Color = Color.White };
 
     SharpButton choose = new SharpButton() { Text = "Choose" };
     SharpButton next = new SharpButton() { Text = "Next" };
@@ -43,13 +43,14 @@ class ChooseCharacterMenu
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
-        ILayoutItem layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
-        layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
-
-        sharpGui.Text(prompt);
+        ILayoutItem layout;
 
         if (partyMemberTriggerManager.Count > 0)
         {
+            prompt.Text = "Choose your character...";
+            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
+            layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+
             var currentTrigger = partyMemberTriggerManager.Get(currentPlayerIndex);
 
             if (instantMoveCamera)
@@ -104,5 +105,13 @@ class ChooseCharacterMenu
                 menu.RequestSubMenu(optionsMenu, gamepadId); //Have to fix party menu somehow
             }
         }
+        else
+        {
+            prompt.Text = "Anomalous Adventure";
+            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
+            layout.SetRect(screenPositioner.GetCenterRect(layout.GetDesiredSize(sharpGui)));
+        }
+
+        sharpGui.Text(prompt);
     }
 }
