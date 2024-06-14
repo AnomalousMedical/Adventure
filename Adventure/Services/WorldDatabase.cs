@@ -421,7 +421,7 @@ namespace Adventure.Services
                 };
                 areaBuilder.StartEnd = true;
                 areaBuilder.MaxMainCorridorBattles = 1;
-                areaBuilder.PartyMembers = CreateParty().Skip(1);
+                areaBuilder.PartyMembers = CreateParty();
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
                 yield return areaBuilder;
             }

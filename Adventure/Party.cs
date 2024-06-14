@@ -22,14 +22,18 @@ namespace Adventure
 
         public int GetAverageLevel()
         {
-            var level = (int)persistence.Current.Party.Members.Average(i => i.CharacterSheet.Level);
-            if (level < 1)
+            int level = 1;
+            if (persistence.Current.Party.Members.Count > 0)
             {
-                level = 1;
-            }
-            else if (level > CharacterSheet.MaxLevel)
-            {
-                level = CharacterSheet.MaxLevel;
+                level = (int)persistence.Current.Party.Members.Average(i => i.CharacterSheet.Level);
+                if (level < 1)
+                {
+                    level = 1;
+                }
+                else if (level > CharacterSheet.MaxLevel)
+                {
+                    level = CharacterSheet.MaxLevel;
+                }
             }
             return level;
         }

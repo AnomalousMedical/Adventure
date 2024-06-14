@@ -99,17 +99,11 @@ namespace Adventure.WorldMap
         public async Task SetupWorldMap()
         {
             player?.RequestDestruction();
+            player = null;
             worldMapInstance?.RequestDestruction();
             airship?.RequestDestruction();
 
-            var playerCharacter = party.ActiveCharacters.FirstOrDefault();
-            player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
-            {
-                o.PlayerSprite = playerCharacter.PlayerSprite;
-                o.CharacterSheet = playerCharacter.CharacterSheet;
-                o.Gamepad = GamepadId.Pad1;
-            });
-            CreateFollowers();
+            CreatePlayersAndFollowers();
 
             airship = objectResolver.Resolve<Airship, Airship.Description>(o =>
             {
@@ -129,13 +123,27 @@ namespace Adventure.WorldMap
             worldMapInstance.SetupPhysics();
         }
 
-        private void CreateFollowers()
+        private void CreatePlayersAndFollowers()
         {
-            player?.CreateFollowers(party.ActiveCharacters.Skip(1));
+            if (party.ActiveCharacters.Any())
+            {
+                if (player == null)
+                {
+                    var playerCharacter = party.ActiveCharacters.FirstOrDefault();
+                    player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
+                    {
+                        o.PlayerSprite = playerCharacter.PlayerSprite;
+                        o.CharacterSheet = playerCharacter.CharacterSheet;
+                        o.Gamepad = GamepadId.Pad1;
+                    });
+                }
+
+                player?.CreateFollowers(party.ActiveCharacters.Skip(1));
+            }
         }
 
-        public Vector3 GetCellCenterpoint(in IntVector2 cell) 
-        { 
+        public Vector3 GetCellCenterpoint(in IntVector2 cell)
+        {
             return worldMapInstance.GetCellCenterpoint(cell);
         }
 
@@ -146,7 +154,7 @@ namespace Adventure.WorldMap
 
         private void PartyMemberManager_PartyChanged()
         {
-            CreateFollowers();
+            CreatePlayersAndFollowers();
         }
     }
 }

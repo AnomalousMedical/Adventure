@@ -50,6 +50,7 @@ namespace Adventure.Exploration
         private readonly IAssetFactory assetFactory;
         private readonly TextDialog textDialog;
         private readonly PartyMemberManager partyMemberManager;
+        private readonly PartyMemberTriggerManager partyMemberTriggerManager;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -79,6 +80,15 @@ namespace Adventure.Exploration
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
+        private Vector3 zoomedCameraOffset = new Vector3(0, 2, -2.8f);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
+
+        public Vector3 CameraPosition => this.currentPosition + zoomedCameraOffset;
+
+        public Quaternion CameraAngle => this.cameraAngle;
+
+        public string Name => partyMember.CharacterData.CharacterSheet.Name;
+
         public PartyMemberTrigger(
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
@@ -92,7 +102,8 @@ namespace Adventure.Exploration
             IAssetFactory assetFactory,
             IObjectResolverFactory objectResolverFactory,
             TextDialog textDialog,
-            PartyMemberManager partyMemberManager)
+            PartyMemberManager partyMemberManager,
+            PartyMemberTriggerManager partyMemberTriggerManager)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -112,6 +123,7 @@ namespace Adventure.Exploration
             this.assetFactory = assetFactory;
             this.textDialog = textDialog;
             this.partyMemberManager = partyMemberManager;
+            this.partyMemberTriggerManager = partyMemberTriggerManager;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -125,10 +137,12 @@ namespace Adventure.Exploration
 
             this.tlasData = new TLASInstanceData()
             {
-                InstanceName = RTId.CreateId("BattleTrigger"),
+                InstanceName = RTId.CreateId("PartyMemberTrigger"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
+
+            partyMemberTriggerManager.Add(this);
 
             coroutine.RunTask(async () =>
             {
@@ -147,6 +161,8 @@ namespace Adventure.Exploration
 
         public void Dispose()
         {
+            partyMemberTriggerManager.Remove(this);
+
             RemoveGraphics();
             DestroyPhysics();
 
@@ -280,15 +296,20 @@ namespace Adventure.Exploration
             {
                 await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
 
-                //If something were to go wrong handing out the party member it would be lost, but the
-                //other option opens it up to duplication
-                state.Found = true;
-                persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
-                partyMemberManager.AddToParty(this.partyMember);
-
-                RemoveGraphics();
-                DestroyPhysics();
+                AddToParty();
             });
+        }
+
+        public void AddToParty()
+        {
+            //If something were to go wrong handing out the party member it would be lost, but the
+            //other option opens it up to duplication
+            state.Found = true;
+            persistence.Current.PartyMemberTriggers.SetData(zoneIndex, instanceId, state);
+            partyMemberManager.AddToParty(this.partyMember);
+
+            RemoveGraphics();
+            DestroyPhysics();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

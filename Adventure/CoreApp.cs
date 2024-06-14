@@ -169,6 +169,7 @@ namespace Adventure
             services.AddScoped<TreasureTrigger.Description>();
             services.AddScoped<PartyMemberTrigger>();
             services.AddScoped<PartyMemberTrigger.Description>();
+            services.AddSingleton<PartyMemberTriggerManager>();
             services.AddScoped<Gate>();
             services.AddScoped<Gate.Description>();
             services.AddScoped<Torch>();
@@ -254,6 +255,7 @@ namespace Adventure
             services.AddSingleton<ElementalStaffCreator>();
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
+            services.AddSingleton<ChooseCharacterMenu>();
             services.AddSingleton<RestManager>();
             services.AddSingleton<PickUpTreasureMenu>();
             services.AddSingleton<StealMenu>();

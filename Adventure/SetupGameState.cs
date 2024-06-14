@@ -33,6 +33,7 @@ namespace Adventure
         private readonly IWorldDatabase worldDatabase;
         private readonly ITimeClock timeClock;
         private readonly PartyMemberManager partyMemberManager;
+        private readonly ChooseCharacterMenu chooseCharacterMenu;
         private IGameState nextState;
         private bool finished = false;
 
@@ -61,7 +62,8 @@ namespace Adventure
             IPersistenceWriter persistenceWriter,
             IWorldDatabase worldDatabase,
             ITimeClock timeClock,
-            PartyMemberManager partyMemberManager
+            PartyMemberManager partyMemberManager,
+            ChooseCharacterMenu chooseCharacterMenu
         )
         {
             this.zoneManager = zoneManager;
@@ -78,6 +80,7 @@ namespace Adventure
             this.worldDatabase = worldDatabase;
             this.timeClock = timeClock;
             this.partyMemberManager = partyMemberManager;
+            this.chooseCharacterMenu = chooseCharacterMenu;
         }
 
         public void Link(IExplorationMenu explorationMenu, IRootMenu rootMenu, IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState, IGameOverGameState gameOverGameState)
@@ -101,14 +104,16 @@ namespace Adventure
                 zoneManager.DestroyPlayers();
                 this.persistenceWriter.Load();
                 this.worldDatabase.Reset(persistence.Current.World.Seed);
-                if(persistence.Current.Party.Members.Count == 0)
-                {
-                    var partyMember = this.worldDatabase.CreateParty().First();
-                    partyMemberManager.AddToParty(partyMember);
-                }
-                timeClock.ResetToPersistedTime();
-                var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
 
+                timeClock.ResetToPersistedTime();
+
+                if (persistence.Current.Party.Members.Count == 0)
+                {
+                    chooseCharacterMenu.Reset();
+                    explorationMenu.RequestSubMenu(chooseCharacterMenu, GamepadId.Pad1);
+                }
+
+                var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
                 coroutineRunner.RunTask(async () =>
                 {
                     if (persistence.Current.Player.InWorld)

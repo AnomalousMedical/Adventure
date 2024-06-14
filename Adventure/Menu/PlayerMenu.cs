@@ -44,6 +44,13 @@ namespace Adventure.Menu
 
         public void Update(IExplorationMenu menu, GamepadId gamepadId)
         {
+            //No party members, just close
+            if(persistence.Current.Party.Members.Count == 0)
+            {
+                menu.RequestSubMenu(PreviousMenu, gamepadId);
+                return;
+            }
+
             ILayoutItem layout;
             Guid closeNavDown;
             Guid closeNavUp;
