@@ -118,6 +118,36 @@ namespace SharpGui
             return new IntSize2(widest, yOffset + tallestLineChar - SmallestBearingY);
         }
 
+        public IntVector2 FindCursorPos(StringBuilder text, out int tallestLineChar)
+        {
+            ///This is closely related to <see cref="SharpGuiBuffer.DrawText(int, int, Color, StringBuilder, Font)"/>
+            int xOffset = 0;
+            int yOffset = 0;
+            int widest = 0;
+            tallestLineChar = SubstituteGlyphInfoSize + SmallestBearingY;
+            for (int i = 0; i < text.Length; ++i)
+            {
+                var c = text[i];
+                if (TryGetGlyphInfo(c, out var glyphInfo))
+                {
+                    int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
+                    xOffset += fullAdvance;
+                    tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
+                }
+                if (c == '\n')
+                {
+                    widest = Math.Max(widest, xOffset);
+                    yOffset += tallestLineChar;
+                    tallestLineChar = 0;
+                    xOffset = 0;
+                }
+            }
+
+            widest = Math.Max(widest, xOffset);
+
+            return new IntVector2(widest, yOffset - SmallestBearingY);
+        }
+
         public bool IsTextWider(StringBuilder text, int width)
         {
             ///This is closely related to <see cref="SharpGuiBuffer.DrawText(int, int, Color, StringBuilder, Font)"/>

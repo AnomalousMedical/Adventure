@@ -56,12 +56,14 @@ namespace SharpGui
             buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, input.Layer);
 
             //Draw text
-            if(input.Text != null)
+            var textLeft = mainLeft + look.Padding.Left;
+            var textTop = mainTop + look.Padding.Top;
+            var textRight = mainRight - look.Padding.Right;
+            bool fontIsWider = false;
+            if (input.Text != null)
             {
-                var textLeft = mainLeft + look.Padding.Left;
-                var textTop = mainTop + look.Padding.Top;
-                var textRight = mainRight - look.Padding.Right;
-                if (font.IsTextWider(input.Text, textRight - textLeft))
+                fontIsWider = font.IsTextWider(input.Text, textRight - textLeft);
+                if (fontIsWider)
                 {
                     buffer.DrawTextReverse(textLeft, textTop, textRight, look.Color, input.Text, font, input.Layer);
                 }
@@ -71,22 +73,41 @@ namespace SharpGui
                 }
             }
 
-            //Handle input
-            bool result = false;
-            if (state.LastKeyChar != uint.MaxValue)
-            {
-                input.Text.Append((char)state.LastKeyChar);
-                result = true;
-            }
-
             //Determine clicked
             if (regionHit && !state.MouseDown && state.ActiveItem == id)
             {
                 state.StealFocus(id);
             }
-            
+
+            bool result = false;
+
             if (state.ProcessFocus(id, 0, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
+                if (DateTime.Now.Second % 2 == 0)
+                {
+                    var cursorLoc = font.FindCursorPos(input.Text, out var tallestChar);
+                    var cursorPos = new IntVector2(textRight, textTop + cursorLoc.y);
+                    if (!fontIsWider)
+                    {
+                        cursorPos.x = textLeft + cursorLoc.x;
+                    }
+
+                    //Draw Cursor
+                    var cursorLeft = cursorPos.x;
+                    var cursorTop = cursorPos.y;
+                    var cursorRight = cursorLeft + Math.Max(look.Border.Left / 2, 1);
+                    var cursorBottom = cursorTop + tallestChar;
+
+                    buffer.DrawQuad(cursorLeft, cursorTop, cursorRight, cursorBottom, look.BorderColor, input.Layer);
+                }
+
+                //Handle input
+                if (state.LastKeyChar != uint.MaxValue)
+                {
+                    input.Text.Append((char)state.LastKeyChar);
+                    result = true;
+                }
+
                 switch (state.KeyEntered)
                 {
                     case Engine.Platform.KeyboardButtonCode.KC_BACK:
