@@ -30,7 +30,7 @@ namespace Adventure.GameOver
         private IGameState nextState;
         private SharpButton retry = new SharpButton() { Text = "Retry Battle" };
         private SharpButton restart = new SharpButton() { Text = "Restart Zone" };
-        private SharpText gameOver = new SharpText("Game Over");
+        private SharpText gameOver = new SharpText("Game Over") { Color = Color.White };
         private ILayoutItem layout;
         private readonly object saveBlock = new object();
 
@@ -45,9 +45,12 @@ namespace Adventure.GameOver
             IZoneManager zoneManager,
             Persistence persistence,
             IPersistenceWriter persistenceWriter,
-            ISetupGameState setupGameState
+            ISetupGameState setupGameState,
+            FontLoader fontLoader
         )
         {
+            gameOver.Font = fontLoader.TitleFont;
+
             this.sharpGui = sharpGui;
             this.rtInstances = rtInstances;
             this.screenPositioner = screenPositioner;
@@ -56,7 +59,7 @@ namespace Adventure.GameOver
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
             this.setupGameState = setupGameState;
-            layout = new ColumnLayout(gameOver, retry, restart) { Margin = new IntPad(10) };
+            layout = new ColumnLayout(new KeepWidthCenterLayout(gameOver), retry, restart) { Margin = new IntPad(10) };
         }
 
         public void Link(IGameState nextState)
