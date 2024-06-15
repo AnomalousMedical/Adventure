@@ -12,6 +12,8 @@ namespace SharpGui
 {
     class SharpGuiRenderer : IDisposable
     {
+        private const int NumFonts = 5;
+
         private AutoPtr<IPipelineState> quadPipelineState;
         private AutoPtr<IShaderResourceBinding> quadShaderResourceBinding;
         private AutoPtr<IBuffer> quadVertexBuffer;
@@ -22,6 +24,8 @@ namespace SharpGui
         private AutoPtr<IBuffer> textVertexBuffer;
         private AutoPtr<IBuffer> textIndexBuffer;
         private Font font;
+        private List<AutoPtr<ITexture>> fontTextures = new List<AutoPtr<ITexture>>(NumFonts);
+        private List<IDeviceObject> fontDeviceObjects = new List<IDeviceObject>(NumFonts);
 
         private readonly OSWindow osWindow;
         private readonly IResourceProvider<SharpGuiRenderer> resourceProvider;
@@ -246,6 +250,11 @@ namespace SharpGui
 
         private void LoadFontTexture(GraphicsEngine graphicsEngine, IScaleHelper scaleHelper, List<StateTransitionDesc> barriers)
         {
+            if(fontTextures.Count + 1 == NumFonts)
+            {
+                throw new InvalidOperationException($"Can only load {NumFonts} fonts at a time.");
+            }
+
             //Load Font Texture
             using var fontStream = resourceProvider.openFile("Fonts/Roboto-Regular.ttf");
             var bytes = new byte[fontStream.Length];
@@ -289,11 +298,12 @@ namespace SharpGui
             TextureData TexData = new TextureData();
             TexData.pSubResources = pSubResources;
 
-            using var tex = graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData); //This does not do anything with this pointer, just pass it along and let the caller handle it
-            var m_TextureSRV = tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
+            var tex = graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData);
+            fontTextures.Add(tex);
+            fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
 
             // Set texture SRV in the SRB
-            textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").Set(m_TextureSRV);
+            textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").SetArray(fontDeviceObjects);
 
             this.font = new Font(font.CharMap, font.GlyphInfo, font.SubstituteCodePoint, font.SubstituteCodePointGlyphInfo);
 
@@ -304,6 +314,13 @@ namespace SharpGui
 
         public void Dispose()
         {
+            fontDeviceObjects.Clear();
+            foreach (var fontTexture in fontTextures)
+            {
+                fontTexture.Dispose();
+            }
+            fontTextures.Clear();
+
             textIndexBuffer.Dispose();
             textVertexBuffer.Dispose();
             textShaderResourceBinding.Dispose();
@@ -492,9 +509,9 @@ void main(in  VSInput VSIn,
     PSIn.UV    = VSIn.UV;
 }";
 
-        const String TextPSSource =
+        private String TextPSSource =
 @"
-Texture2D    g_Texture;
+Texture2D    g_Texture[" + NumFonts + @"];
 SamplerState g_Texture_sampler;
 
 struct PSInput 
@@ -512,7 +529,7 @@ struct PSOutput
 void main(in  PSInput  PSIn,
           out PSOutput PSOut)
 {
-    float4 texColor = g_Texture.Sample(g_Texture_sampler, PSIn.UV);
+    float4 texColor = g_Texture[0].Sample(g_Texture_sampler, PSIn.UV);
     PSOut.Color.rgb = PSIn.Color.rgb * texColor.rgb;
     PSOut.Color.a = texColor.a;
 }";
