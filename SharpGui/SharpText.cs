@@ -11,6 +11,7 @@ namespace SharpGui
         public IntRect Rect;
         public Color Color;
         public int Width = int.MaxValue;
+        public Font Font;
 
         public float Layer { get; set; }
 
@@ -35,7 +36,7 @@ namespace SharpGui
 
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
-            return sharpGui.MeasureText(Text);
+            return sharpGui.MeasureText(Text, Font);
         }
 
         public void SetRect(in IntRect rect)

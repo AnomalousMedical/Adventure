@@ -88,7 +88,7 @@ namespace Adventure.Menu
             while (words.MoveNext())
             {
                 var word = words.Current;
-                var wordWidth = sharpGui.MeasureText(word).Width;
+                var wordWidth = sharpGui.MeasureText(word, null).Width;
                 if (lineWidth + wordWidth >= screenWidth)
                 {
                     foundLines++;

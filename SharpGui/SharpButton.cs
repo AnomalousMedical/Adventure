@@ -38,6 +38,8 @@ namespace SharpGui
         
         public String Text { get; set; }
 
+        public Font Font { get; set; }
+
         public float Layer { get; set; }
     }
 

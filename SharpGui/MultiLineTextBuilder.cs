@@ -8,7 +8,7 @@ namespace SharpGui
 {
     public static class MultiLineTextBuilder
     {
-        public static String CreateMultiLineString(String contents, int width, ISharpGui sharpGui)
+        public static String CreateMultiLineString(String contents, int width, ISharpGui sharpGui, Font font = null)
         {
             if(contents == null)
             {
@@ -22,7 +22,7 @@ namespace SharpGui
 
             foreach (var word in FindWords(contents))
             {
-                var wordWidth = sharpGui.MeasureText(word).Width;
+                var wordWidth = sharpGui.MeasureText(word, font).Width;
                 if (lineWidth + wordWidth >= width)
                 {
                     sb.Append('\n');

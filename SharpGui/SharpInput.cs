@@ -44,6 +44,8 @@ namespace SharpGui
 
         public StringBuilder Text { get; set; } = new StringBuilder();
 
+        public Font Font { get; set; }
+
         public float Layer { get; set; }
     }
 }

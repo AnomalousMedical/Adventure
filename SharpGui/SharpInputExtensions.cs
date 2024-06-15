@@ -10,7 +10,7 @@ namespace SharpGui
 {
     static class SharpInputExtensions
     {
-        public static bool Process(this SharpInput input, SharpGuiState state, SharpGuiBuffer buffer, Font font, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight)
+        public static bool Process(this SharpInput input, SharpGuiState state, SharpGuiBuffer buffer, IFontManager fontManager, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight)
         {
             Guid id = input.Id;
 
@@ -56,6 +56,7 @@ namespace SharpGui
             buffer.DrawQuad(mainLeft, mainTop, mainRight, mainBottom, look.Background, input.Layer);
 
             //Draw text
+            var font = fontManager.FontOrDefault(input.Font);
             var textLeft = mainLeft + look.Padding.Left;
             var textTop = mainTop + look.Padding.Top;
             var textRight = mainRight - look.Padding.Right;

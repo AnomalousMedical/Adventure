@@ -10,7 +10,7 @@ namespace SharpGui
 {
     static class SharpButtonExtensions
     {
-        public static bool Process(this SharpButton button, SharpGuiState state, SharpGuiBuffer buffer, Font font, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight, int gamepad)
+        public static bool Process(this SharpButton button, SharpGuiState state, SharpGuiBuffer buffer, IFontManager fontManager, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight, int gamepad)
         {
             Guid id = button.Id;
 
@@ -62,7 +62,7 @@ namespace SharpGui
                 var textTop = mainTop + look.Padding.Top;
                 var textRight = mainRight - look.Padding.Right;
 
-                buffer.DrawText(textLeft, textTop, textRight, look.Color, button.Text, font, button.Layer);
+                buffer.DrawText(textLeft, textTop, textRight, look.Color, button.Text, fontManager.FontOrDefault(button.Font), button.Layer);
             }
 
             //Determine clicked

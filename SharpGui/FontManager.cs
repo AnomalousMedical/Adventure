@@ -9,18 +9,38 @@ namespace SharpGui;
 
 interface IFontManager
 {
-    Font Font { get; }
+    Font FontOrDefault(Font font);
 }
 
 class FontManager : IFontManager
 {
     private readonly SharpGuiRenderer sharpGuiRenderer;
+    private readonly IScaleHelper scaleHelper;
+    private Font defaultFont;
 
     public FontManager(SharpGuiRenderer sharpGuiRenderer, IScaleHelper scaleHelper)
     {
         this.sharpGuiRenderer = sharpGuiRenderer;
-        this.Font = sharpGuiRenderer.LoadFontTexture("Fonts/Roboto-Regular.ttf", MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
+        this.scaleHelper = scaleHelper;
     }
 
-    public Font Font { get; private set; }
+    public Font FontOrDefault(Font font)
+    {
+        if(font != null)
+        {
+            return font;
+        }
+        
+        return EnsureDefaultFont();
+    }
+
+    private Font EnsureDefaultFont()
+    {
+        if(this.defaultFont == null)
+        {
+            this.defaultFont = sharpGuiRenderer.LoadFontTexture("Fonts/Roboto-Regular.ttf", MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
+        }
+
+        return this.defaultFont;
+    }
 }

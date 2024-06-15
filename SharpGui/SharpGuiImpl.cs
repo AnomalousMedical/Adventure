@@ -214,12 +214,12 @@ namespace SharpGui
 
         public bool Button(SharpButton button, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return button.Process(state, buffer, fontManager.Font, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
+            return button.Process(state, buffer, fontManager, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
         public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return input.Process(state, buffer, fontManager.Font, style ?? inputStyle, navUp, navDown, navLeft, navRight);
+            return input.Process(state, buffer, fontManager, style ?? inputStyle, navUp, navDown, navLeft, navRight);
         }
 
         public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, SharpStyle style = null)
@@ -242,19 +242,19 @@ namespace SharpGui
             panel.Process(state, buffer, style ?? panelStyle);
         }
 
-        public void Text(int x, int y, Color color, String text, float layer = 0f)
+        public void Text(int x, int y, Color color, String text, float layer = 0f, Font font = null)
         {
-            buffer.DrawText(x, y, int.MaxValue, color, text, fontManager.Font, layer);
+            buffer.DrawText(x, y, int.MaxValue, color, text, fontManager.FontOrDefault(font), layer);
         }
 
-        public void Text(int x, int y, Color color, String text, int maxWidth, float layer = 0f)
+        public void Text(int x, int y, Color color, String text, int maxWidth, float layer = 0f, Font font = null)
         {
-            buffer.DrawText(x, y, x + maxWidth, color, text, fontManager.Font, layer);
+            buffer.DrawText(x, y, x + maxWidth, color, text, fontManager.FontOrDefault(font), layer);
         }
 
         public void Text(SharpText text)
         {
-            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, fontManager.Font, text.Layer);
+            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, fontManager.FontOrDefault(text.Font), text.Layer);
         }
 
         public void Render(IDeviceContext immediateContext)
@@ -264,12 +264,12 @@ namespace SharpGui
 
         public IntSize2 MeasureButton(SharpButton button)
         {
-            return button.GetDesiredSize(fontManager.Font, state, buttonStyle);
+            return button.GetDesiredSize(fontManager.FontOrDefault(button.Font), state, buttonStyle);
         }
 
         public IntSize2 MeasureInput(SharpInput input)
         {
-            return input.GetDesiredSize(fontManager.Font, state, inputStyle);
+            return input.GetDesiredSize(fontManager.FontOrDefault(input.Font), state, inputStyle);
         }
 
         public IntSize2 MeasurePanel(SharpPanel panel)
@@ -277,14 +277,14 @@ namespace SharpGui
             return panel.GetDesiredSize(state, panelStyle);
         }
 
-        public IntSize2 MeasureText(String text)
+        public IntSize2 MeasureText(String text, Font font = null)
         {
-            return fontManager.Font.MeasureText(text);
+            return fontManager.FontOrDefault(font).MeasureText(text);
         }
 
-        public IntSize2 MeasureText(StringBuilder text)
+        public IntSize2 MeasureText(StringBuilder text, Font font = null)
         {
-            return fontManager.Font.MeasureText(text);
+            return fontManager.FontOrDefault(font).MeasureText(text);
         }
 
         public void StealFocus(Guid id)

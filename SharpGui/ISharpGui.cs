@@ -67,7 +67,7 @@ namespace SharpGui
         /// <param name="y"></param>
         /// <param name="color"></param>
         /// <param name="text"></param>
-        void Text(int x, int y, Color color, string text, float layer = 0f);
+        void Text(int x, int y, Color color, string text, float layer = 0f, Font font = null);
 
         /// <summary>
         /// Draw text up to a max width.
@@ -76,7 +76,7 @@ namespace SharpGui
         /// <param name="y"></param>
         /// <param name="color"></param>
         /// <param name="text"></param>
-        void Text(int x, int y, Color color, string text, int maxWidth, float layer = 0f);
+        void Text(int x, int y, Color color, string text, int maxWidth, float layer = 0f, Font font = null);
 
         /// <summary>
         /// Draw the given sharp text.
@@ -139,14 +139,14 @@ namespace SharpGui
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public IntSize2 MeasureText(String text);
+        public IntSize2 MeasureText(String text, Font font);
 
         /// <summary>
         /// Measure the size of the text in the string builder.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public IntSize2 MeasureText(StringBuilder text);
+        public IntSize2 MeasureText(StringBuilder text, Font font);
 
         /// <summary>
         /// Determine if this input type's standardized back button is pressed.
