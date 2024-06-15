@@ -269,6 +269,7 @@ namespace Adventure
             services.AddSingleton<CharacterMenuPositionTracker<WorldMapScene>>();
             services.AddSingleton<CharacterMenuPositionService>();
             services.AddSingleton<ICreditsService, CreditsService>();
+            services.AddSingleton<UserInputMenu>();
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();

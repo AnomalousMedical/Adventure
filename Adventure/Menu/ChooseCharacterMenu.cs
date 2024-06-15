@@ -12,8 +12,6 @@ namespace Adventure.Menu;
 
 class ChooseCharacterMenu
 (
-    PartyMemberManager partyMemberManager,
-    IWorldDatabase worldDatabase,
     ISharpGui sharpGui,
     IScreenPositioner screenPositioner,
     IScaleHelper scaleHelper,
@@ -23,7 +21,8 @@ class ChooseCharacterMenu
     OptionsMenu optionsMenu,
     ConfirmMenu confirmMenu,
     CharacterStatsTextService characterStatsTextService,
-    ILanguageService languageService
+    ILanguageService languageService,
+    UserInputMenu userInputMenu
 ) : IExplorationSubMenu
 {
     private SharpText prompt = new SharpText() { Color = Color.White };
@@ -113,18 +112,33 @@ class ChooseCharacterMenu
             }
             if (sharpGui.Button(choose, gamepadId, navLeft: next.Id, navRight: files.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
-                confirmMenu.Setup($"Are you sure you want to choose {currentTrigger.CharacterData.CharacterSheet.Name}?",
-                    yes: () =>
+                userInputMenu.Setup("Enter your name.",
+                    yes: newName =>
                     {
-                        currentTrigger.AddToParty();
-                        menu.RequestSubMenu(null, gamepadId);
+                        confirmMenu.Setup($"Are you sure you want to choose {newName}?",
+                        yes: () =>
+                        {
+                            currentTrigger.CharacterData.CharacterSheet.Name = newName;
+                            currentTrigger.AddToParty();
+                            menu.RequestSubMenu(null, gamepadId);
+                        },
+                        no: () =>
+                        {
+
+                        },
+                        this);
+                        menu.RequestSubMenu(confirmMenu, gamepadId);
                     },
                     no: () =>
                     {
 
                     },
-                    this);
-                menu.RequestSubMenu(confirmMenu, gamepadId);
+                    this,
+                    currentText: currentTrigger.CharacterData.CharacterSheet.Name,
+                    yesText: "Confirm",
+                    noText: "Cancel");
+
+                menu.RequestSubMenu(userInputMenu, gamepadId);
             }
             if (sharpGui.Button(files, gamepadId, navLeft: choose.Id, navRight: options.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
