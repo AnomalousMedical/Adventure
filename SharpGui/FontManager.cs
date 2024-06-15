@@ -16,12 +16,14 @@ class FontManager : IFontManager
 {
     private readonly SharpGuiRenderer sharpGuiRenderer;
     private readonly IScaleHelper scaleHelper;
+    private readonly SharpGuiOptions sharpGuiOptions;
     private Font defaultFont;
 
-    public FontManager(SharpGuiRenderer sharpGuiRenderer, IScaleHelper scaleHelper)
+    public FontManager(SharpGuiRenderer sharpGuiRenderer, IScaleHelper scaleHelper, SharpGuiOptions sharpGuiOptions)
     {
         this.sharpGuiRenderer = sharpGuiRenderer;
         this.scaleHelper = scaleHelper;
+        this.sharpGuiOptions = sharpGuiOptions;
     }
 
     public Font FontOrDefault(Font font)
@@ -38,7 +40,7 @@ class FontManager : IFontManager
     {
         if(this.defaultFont == null)
         {
-            this.defaultFont = sharpGuiRenderer.LoadFontTexture("Fonts/Roboto-Regular.ttf", MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
+            this.defaultFont = sharpGuiRenderer.LoadFontTexture(sharpGuiOptions.DefaultFont, MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
         }
 
         return this.defaultFont;

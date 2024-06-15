@@ -12,5 +12,10 @@ namespace SharpGui
         public uint MaxNumberOfQuads = 1000;
 
         public uint MaxNumberOfTextQuads = 1000;
+
+        /// <summary>
+        /// The file name of the default font. Must be on the Virtual File System.
+        /// </summary>
+        public string DefaultFont { get; set; } = "Fonts/Roboto-Regular.ttf";
     }
 }
