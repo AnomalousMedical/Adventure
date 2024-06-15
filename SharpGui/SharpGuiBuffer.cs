@@ -93,7 +93,7 @@ namespace SharpGui
             {
                 if (xOffset < right && font.TryGetGlyphInfo(c, out var glyphInfo))
                 {
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer, font.FontTexture);
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset += fullAdvance;
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
@@ -122,7 +122,7 @@ namespace SharpGui
                 var c = text[i];
                 if (xOffset < right && font.TryGetGlyphInfo(c, out var glyphInfo))
                 {
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer, font.FontTexture);
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset += fullAdvance;
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
@@ -152,7 +152,7 @@ namespace SharpGui
                 {
                     int fullAdvance = glyphInfo.advance + glyphInfo.bearingX;
                     xOffset -= fullAdvance;
-                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer);
+                    DrawTextQuad(xOffset + glyphInfo.bearingX, yOffset + glyphInfo.bearingY, glyphInfo.width, glyphInfo.height, ref color, ref glyphInfo.uvRect, layer, font.FontTexture);
                     tallestLineChar = Math.Max(glyphInfo.height + glyphInfo.bearingY, tallestLineChar);
                 }
 
@@ -165,7 +165,7 @@ namespace SharpGui
             }
         }
 
-        public void DrawTextQuad(int x, int y, int width, int height, ref Color color, ref GlyphRect uvRect, float layer)
+        public void DrawTextQuad(int x, int y, int width, int height, ref Color color, ref GlyphRect uvRect, float layer, uint fontTexture)
         {
             if (currentText >= textVerts.Length)
             {
@@ -193,10 +193,10 @@ namespace SharpGui
             textVerts[currentText + 2].uv = new Vector2(uvRect.Right, uvRect.Bottom);
             textVerts[currentText + 3].uv = new Vector2(uvRect.Left, uvRect.Bottom);
 
-            textVerts[currentText].textureIndex = 0;
-            textVerts[currentText + 1].textureIndex = 0;
-            textVerts[currentText + 2].textureIndex = 0;
-            textVerts[currentText + 3].textureIndex = 0;
+            textVerts[currentText].textureIndex = fontTexture;
+            textVerts[currentText + 1].textureIndex = fontTexture;
+            textVerts[currentText + 2].textureIndex = fontTexture;
+            textVerts[currentText + 3].textureIndex = fontTexture;
 
             currentText += 4;
             NumTextIndices += 6;

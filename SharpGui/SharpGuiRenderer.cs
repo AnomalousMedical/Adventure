@@ -307,6 +307,7 @@ namespace SharpGui
             TextureData TexData = new TextureData();
             TexData.pSubResources = pSubResources;
 
+            uint textureIndex = (uint)fontTextures.Count;
             var tex = graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData);
             fontTextures.Add(tex);
             fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
@@ -314,7 +315,7 @@ namespace SharpGui
             // Set texture SRV in the SRB
             textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").SetArray(fontDeviceObjects);
 
-            this.font = new Font(font.CharMap, font.GlyphInfo, font.SubstituteCodePoint, font.SubstituteCodePointGlyphInfo);
+            this.font = new Font(font.CharMap, font.GlyphInfo, font.SubstituteCodePoint, font.SubstituteCodePointGlyphInfo, textureIndex);
 
             barriers.Add(new StateTransitionDesc { pResource = tex.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
         }

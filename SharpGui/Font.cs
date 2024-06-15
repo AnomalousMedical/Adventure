@@ -12,13 +12,16 @@ namespace SharpGui
         private Dictionary<char, uint> CharMap;
         private Dictionary<uint, GlyphInfo> GlyphInfo;
 
-        public Font(Dictionary<char, uint> charMap, Dictionary<uint, GlyphInfo> glyphInfo, uint substituteCodePoint, GlyphInfo substituteCodePointGlyphInfo)
+        public Font(Dictionary<char, uint> charMap, Dictionary<uint, GlyphInfo> glyphInfo, uint substituteCodePoint, GlyphInfo substituteCodePointGlyphInfo, uint fontTexture)
         {
             this.CharMap = charMap;
             this.GlyphInfo = glyphInfo;
             this.SubstituteCodePoint = substituteCodePoint;
             this.SubstituteCodePointGlyphInfo = substituteCodePointGlyphInfo;
+            this.FontTexture = fontTexture;
         }
+
+        public uint FontTexture { get; internal set; }
 
         public uint SubstituteCodePoint { get; private set; }
 
