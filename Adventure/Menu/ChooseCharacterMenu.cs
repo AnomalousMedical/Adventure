@@ -24,10 +24,12 @@ class ChooseCharacterMenu
     ILanguageService languageService,
     UserInputMenu userInputMenu,
     IScopedCoroutine coroutine,
-    Persistence persistence
+    Persistence persistence,
+    FontLoader fontLoader
 ) : IExplorationSubMenu
 {
-    private SharpText prompt = new SharpText() { Color = Color.White };
+    private SharpText title = new SharpText("Anomalous Adventure") { Color = Color.White, Font = fontLoader.TitleFont };
+    private SharpText prompt = new SharpText("Choose your character...") { Color = Color.White };
 
     private SharpButton choose = new SharpButton() { Text = "Choose" };
     private SharpButton next = new SharpButton() { Text = "Next" };
@@ -55,9 +57,9 @@ class ChooseCharacterMenu
 
         if (partyMemberTriggerManager.Count > 0)
         {
-            prompt.Text = "Choose your character...";
             layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
             layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+            sharpGui.Text(prompt);
 
             var currentTrigger = partyMemberTriggerManager.Get(currentPlayerIndex);
 
@@ -147,12 +149,10 @@ class ChooseCharacterMenu
         }
         else
         {
-            prompt.Text = "Anomalous Adventure";
-            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
+            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), title);
             layout.SetRect(screenPositioner.GetCenterRect(layout.GetDesiredSize(sharpGui)));
+            sharpGui.Text(title);
         }
-
-        sharpGui.Text(prompt);
 
         if (infos != null)
         {

@@ -64,7 +64,8 @@ namespace Adventure
             IWorldDatabase worldDatabase,
             ITimeClock timeClock,
             PartyMemberManager partyMemberManager,
-            ChooseCharacterMenu chooseCharacterMenu
+            ChooseCharacterMenu chooseCharacterMenu,
+            FontLoader fontLoader
         )
         {
             this.zoneManager = zoneManager;
@@ -82,6 +83,7 @@ namespace Adventure
             this.timeClock = timeClock;
             this.partyMemberManager = partyMemberManager;
             this.chooseCharacterMenu = chooseCharacterMenu;
+            this.loading.Font = fontLoader.TitleFont;
         }
 
         public void Link(IExplorationMenu explorationMenu, IRootMenu rootMenu, IExplorationGameState explorationGameState, IWorldMapGameState worldMapGameState, IBattleGameState battleGameState, IGameOverGameState gameOverGameState)
