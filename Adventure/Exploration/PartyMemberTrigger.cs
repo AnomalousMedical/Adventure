@@ -51,6 +51,7 @@ namespace Adventure.Exploration
         private readonly TextDialog textDialog;
         private readonly PartyMemberManager partyMemberManager;
         private readonly PartyMemberTriggerManager partyMemberTriggerManager;
+        private readonly UserInputMenu userInputMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -103,7 +104,8 @@ namespace Adventure.Exploration
             IObjectResolverFactory objectResolverFactory,
             TextDialog textDialog,
             PartyMemberManager partyMemberManager,
-            PartyMemberTriggerManager partyMemberTriggerManager)
+            PartyMemberTriggerManager partyMemberTriggerManager,
+            UserInputMenu userInputMenu)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -124,6 +126,7 @@ namespace Adventure.Exploration
             this.textDialog = textDialog;
             this.partyMemberManager = partyMemberManager;
             this.partyMemberTriggerManager = partyMemberTriggerManager;
+            this.userInputMenu = userInputMenu;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -296,7 +299,16 @@ namespace Adventure.Exploration
             {
                 await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
 
-                AddToParty();
+                var nameResult = await userInputMenu.ShowAndWait("Enter a name for this character...", null, args.GamepadId,
+                    currentText: partyMember.CharacterData.CharacterSheet.Name,
+                    yesText: "Recruit",
+                    noText: "Don't Recruit");
+
+                if (nameResult.Confirmed)
+                {
+                    partyMember.CharacterData.CharacterSheet.Name = nameResult.Value;
+                    AddToParty();
+                }
             });
         }
 
