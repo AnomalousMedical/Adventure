@@ -50,7 +50,6 @@ namespace Adventure
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
         private ResumeMusicToken resumeMusicToken;
-        private readonly object shopBlock = new object();
 
         public RTInstances Instances => rtInstances;
 
