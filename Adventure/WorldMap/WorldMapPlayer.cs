@@ -205,7 +205,7 @@ namespace Adventure.WorldMap
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
-            if (!persistence.Current.Player.InAirship)
+            if (!persistence.Current.Player.InAirship && persistence.Current.Player.InWorld)
             {
                 cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
             }

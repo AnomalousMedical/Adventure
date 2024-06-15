@@ -90,6 +90,16 @@ namespace Adventure.Exploration
 
         public Persistence.CharacterData CharacterData => partyMember.CharacterData;
 
+        public Vector3 SpawnPosition
+        {
+            get
+            {
+                var finalPosition = currentPosition;
+                finalPosition.y += currentScale.y / 2.0f;
+                return finalPosition;
+            }
+        }
+
         public PartyMemberTrigger(
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,

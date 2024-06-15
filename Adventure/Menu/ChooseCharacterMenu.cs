@@ -23,7 +23,8 @@ class ChooseCharacterMenu
     CharacterStatsTextService characterStatsTextService,
     ILanguageService languageService,
     UserInputMenu userInputMenu,
-    IScopedCoroutine coroutine
+    IScopedCoroutine coroutine,
+    Persistence persistence
 ) : IExplorationSubMenu
 {
     private SharpText prompt = new SharpText() { Color = Color.White };
@@ -125,6 +126,7 @@ class ChooseCharacterMenu
                         var confirmChoice = await confirmMenu.ShowAndWait($"Are you sure you want to choose {nameResult.Value}?", this, menu, gamepadId);
                         if (confirmChoice)
                         {
+                            persistence.Current.Player.Position = currentTrigger.SpawnPosition;
                             currentTrigger.CharacterData.CharacterSheet.Name = nameResult.Value;
                             currentTrigger.AddToParty();
                             menu.RequestSubMenu(null, gamepadId);
