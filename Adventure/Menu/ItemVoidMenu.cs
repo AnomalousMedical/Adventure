@@ -153,8 +153,9 @@ class ItemVoidMenu
             }
             if (newSelection != null)
             {
-                confirmMenu.Setup($"Do you want to recover {languageService.Current.Items.GetText(newSelection.InfoId)}?",
-                    yes: () =>
+                coroutine.RunTask(async () =>
+                {
+                    if (await confirmMenu.ShowAndWait($"Do you want to recover {languageService.Current.Items.GetText(newSelection.InfoId)}?", this, menu, gamepad))
                     {
                         //The item should only be given to the player if it is removed
                         //The pick up menu will return the item to the void, so it does not need special tracking
@@ -167,10 +168,8 @@ class ItemVoidMenu
                                     currentEffect = treasure.Use(inventory, user, inventoryFunctions, gameState, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
                                 });
                         }
-                    },
-                    no: () => { },
-                    this);
-                menu.RequestSubMenu(confirmMenu, gamepad);
+                    }
+                });
             }
 
             var hasItems = currentItems.Any();

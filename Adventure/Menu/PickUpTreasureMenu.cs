@@ -22,7 +22,8 @@ class PickUpTreasureMenu
     EquipmentTextService equipmentTextService,
     CharacterStatsTextService characterStatsTextService,
     CharacterStyleService characterStyleService,
-    ConfirmMenu confirmMenu
+    ConfirmMenu confirmMenu,
+    IScopedCoroutine scopedCoroutine
 )
 {
     public const float ChooseTargetLayer = 0.15f;
@@ -284,8 +285,9 @@ class PickUpTreasureMenu
                     replacingItem = false;
                     if (removeItem != CancelInventoryItem)
                     {
-                        confirmMenu.Setup($"Remove {languageService.Current.Items.GetText(removeItem.InfoId)} and take {languageService.Current.Items.GetText(treasure.InfoId)}?",
-                            yes: () =>
+                        scopedCoroutine.RunTask(async () =>
+                        {
+                            if (await confirmMenu.ShowAndWait($"Remove {languageService.Current.Items.GetText(removeItem.InfoId)} and take {languageService.Current.Items.GetText(treasure.InfoId)}?", parentSubMenu, menu, gamepadId))
                             {
                                 equippingItem = treasure.CanEquipOnPickup;
                                 if (!equippingItem)
@@ -298,10 +300,8 @@ class PickUpTreasureMenu
                                     persistence.Current.ItemVoid.Add(removeItem);
                                 }
                                 treasure.GiveTo(sheet.Inventory, persistence.Current);
-                            },
-                            no: () => { },
-                            parentSubMenu);
-                        menu.RequestSubMenu(confirmMenu, gamepadId);
+                            }
+                        });
                     }
                 }
 
@@ -349,18 +349,17 @@ class PickUpTreasureMenu
 
                 if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: previous.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
                 {
-                    confirmMenu.Setup($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}",
-                        yes: () =>
+                    scopedCoroutine.RunTask(async () =>
+                    {
+                        if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, menu, gamepadId))
                         {
                             NextTreasure();
                             if (treasure.Item?.Unique == true)
                             {
                                 persistence.Current.ItemVoid.Add(treasure.Item);
                             }
-                        },
-                        no: () => { },
-                        parentSubMenu);
-                    menu.RequestSubMenu(confirmMenu, gamepadId);
+                        }
+                    });
                 }
 
                 if (sharpGui.Button(previous, gamepadId, navUp: replacingItem ? replaceButtons.BottomButton : discard.Id, navDown: replacingItem ? replaceButtons.TopButton : take.Id, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))

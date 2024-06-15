@@ -20,25 +20,15 @@ class ConfirmMenu
     private SharpButton yesButton = new SharpButton() { Text = "Yes" };
     private SharpButton noButton = new SharpButton() { Text = "No" };
 
-    private Action yesCallback;
-    private Action noCallback;
     private IExplorationSubMenu previousMenu;
-
     private TaskCompletionSource<bool> currentTask;
     private bool confirmed = false;
 
-    public void Setup(String message, Action yes, Action no, IExplorationSubMenu previousMenu)
+    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, IExplorationMenu explorationMenu, GamepadId gamepadId)
     {
         this.confirmed = false;
         this.message.Text = message;
-        this.yesCallback = yes;
-        this.noCallback = no;
         this.previousMenu = previousMenu;
-    }
-
-    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, IExplorationMenu explorationMenu, GamepadId gamepadId)
-    {
-        Setup(message, () => { }, () => { }, previousMenu);
         explorationMenu.RequestSubMenu(this, gamepadId);
         return WaitForCurrentInput();
     }
@@ -68,13 +58,11 @@ class ConfirmMenu
         {
             confirmed = true;
             Close(menu, gamepadId);
-            yesCallback();
         }
         else if (sharpGui.Button(noButton, gamepadId, navUp: yesButton.Id, navDown: yesButton.Id))
         {
             confirmed = false;
             Close(menu, gamepadId);
-            noCallback();
         }
     }
 
