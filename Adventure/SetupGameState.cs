@@ -40,7 +40,7 @@ namespace Adventure
 
         public RTInstances Instances => rtInstances;
 
-        private SharpText loading = new SharpText("Loading") { Color = Color.White };
+        private SharpText loading = new SharpText("Anomalous Adventure") { Color = Color.White };
         private IExplorationGameState explorationGameState;
         private IWorldMapGameState worldMapGameState;
         private IBattleGameState battleGameState;
