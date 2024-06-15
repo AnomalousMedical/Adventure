@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 
 namespace SharpGui;
 
-interface IFontManager
+public interface IFontManager
 {
     Font FontOrDefault(Font font);
+
+    Font LoadFont(String fileName);
+
+    Font LoadFont(String fileName, in MyGUITrueTypeFontDesc fontDesc);
 }
 
 class FontManager : IFontManager
@@ -36,11 +40,21 @@ class FontManager : IFontManager
         return EnsureDefaultFont();
     }
 
+    public Font LoadFont(String fileName)
+    {
+        return LoadFont(fileName, MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
+    }
+
+    public Font LoadFont(String fileName, in MyGUITrueTypeFontDesc fontDesc)
+    {
+        return sharpGuiRenderer.LoadFontTexture(fileName, fontDesc);
+    }
+
     private Font EnsureDefaultFont()
     {
         if(this.defaultFont == null)
         {
-            this.defaultFont = sharpGuiRenderer.LoadFontTexture(sharpGuiOptions.DefaultFont, MyGUITrueTypeFontDesc.CreateDefault(scaleHelper));
+            this.defaultFont = LoadFont(sharpGuiOptions.DefaultFont);
         }
 
         return this.defaultFont;

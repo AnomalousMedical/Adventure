@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SharpGui
 {
     [StructLayout(LayoutKind.Sequential)]
-    struct MyGUITrueTypeFontDesc
+    public struct MyGUITrueTypeFontDesc
     {
         /// <summary>
         /// Size of the font, in points (there are 72 points per inch).
