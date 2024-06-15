@@ -13,20 +13,25 @@ class UserInputMenu
 (
     ISharpGui sharpGui,
     IScaleHelper scaleHelper,
-    IScreenPositioner screenPositioner
+    IScreenPositioner screenPositioner,
+    IExplorationMenu explorationMenu
 ) : IExplorationSubMenu
 {
+    public record Result(bool Confirmed, string Value);
+
     private SharpText message = new SharpText() { Color = Color.White };
     private SharpInput input = new SharpInput();
     private SharpButton yesButton = new SharpButton();
     private SharpButton noButton = new SharpButton();
 
-    private Action<string> yesCallback;
-    private Action noCallback;
     private IExplorationSubMenu previousMenu;
 
-    public void Setup(String message, Action<string> yes, Action no, IExplorationSubMenu previousMenu, String currentText = null, String yesText = "Yes", String noText = "No")
+    private TaskCompletionSource<Result> currentTask;
+    private bool confirmed = false;
+
+    public Task<Result> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepad, String currentText = null, String yesText = "Yes", String noText = "No")
     {
+        this.confirmed = false;
         this.message.Text = message;
         this.yesButton.Text = yesText;
         this.noButton.Text = noText;
@@ -35,16 +40,25 @@ class UserInputMenu
         {
             this.input.Text.Append(currentText);
         }
-        this.yesCallback = yes;
-        this.noCallback = no;
         this.previousMenu = previousMenu;
+        explorationMenu.RequestSubMenu(this, gamepad);
+        return WaitForCurrentInput();
+    }
+
+    public Task<Result> WaitForCurrentInput()
+    {
+        if (currentTask == null)
+        {
+            currentTask = new TaskCompletionSource<Result>();
+        }
+        return currentTask.Task;
     }
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new ColumnLayout(new KeepWidthCenterLayout(message), input, new KeepWidthCenterLayout(yesButton), new KeepWidthCenterLayout(noButton)) { Margin = new IntPad(10) }
+           new ColumnLayout(new KeepWidthCenterLayout(message), new FixedWidthLayout(scaleHelper.Scaled(200), input), new KeepWidthCenterLayout(yesButton), new KeepWidthCenterLayout(noButton)) { Margin = new IntPad(10) }
         );
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -56,13 +70,21 @@ class UserInputMenu
 
         if (sharpGui.Button(yesButton, gamepadId, navUp: input.Id, navDown: noButton.Id))
         {
-            menu.RequestSubMenu(previousMenu, gamepadId);
-            yesCallback(input.Text.ToString());
+            this.confirmed = true;
+            Close(menu, gamepadId);
         }
         else if (sharpGui.Button(noButton, gamepadId, navUp: yesButton.Id, navDown: input.Id))
         {
-            menu.RequestSubMenu(previousMenu, gamepadId);
-            noCallback();
+            this.confirmed = false;
+            Close(menu, gamepadId);
         }
+    }
+
+    private void Close(IExplorationMenu menu, GamepadId gamepadId)
+    {
+        menu.RequestSubMenu(previousMenu, gamepadId);
+        var tempTask = currentTask;
+        currentTask = null;
+        tempTask?.SetResult(new Result(confirmed, this.input.Text.ToString()));
     }
 }

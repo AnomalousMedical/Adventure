@@ -24,12 +24,32 @@ class ConfirmMenu
     private Action noCallback;
     private IExplorationSubMenu previousMenu;
 
+    private TaskCompletionSource<bool> currentTask;
+    private bool confirmed = false;
+
     public void Setup(String message, Action yes, Action no, IExplorationSubMenu previousMenu)
     {
+        this.confirmed = false;
         this.message.Text = message;
         this.yesCallback = yes;
         this.noCallback = no;
         this.previousMenu = previousMenu;
+    }
+
+    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, IExplorationMenu explorationMenu, GamepadId gamepadId)
+    {
+        Setup(message, () => { }, () => { }, previousMenu);
+        explorationMenu.RequestSubMenu(this, gamepadId);
+        return WaitForCurrentInput();
+    }
+
+    public Task<bool> WaitForCurrentInput()
+    {
+        if (currentTask == null)
+        {
+            currentTask = new TaskCompletionSource<bool>();
+        }
+        return currentTask.Task;
     }
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
@@ -46,13 +66,23 @@ class ConfirmMenu
 
         if (sharpGui.Button(yesButton, gamepadId, navUp: noButton.Id, navDown: noButton.Id))
         {
-            menu.RequestSubMenu(previousMenu, gamepadId);
+            confirmed = true;
+            Close(menu, gamepadId);
             yesCallback();
         }
         else if (sharpGui.Button(noButton, gamepadId, navUp: yesButton.Id, navDown: yesButton.Id))
         {
-            menu.RequestSubMenu(previousMenu, gamepadId);
+            confirmed = false;
+            Close(menu, gamepadId);
             noCallback();
         }
+    }
+
+    private void Close(IExplorationMenu menu, GamepadId gamepadId)
+    {
+        menu.RequestSubMenu(previousMenu, gamepadId);
+        var tempTask = currentTask;
+        currentTask = null;
+        tempTask?.SetResult(confirmed);
     }
 }

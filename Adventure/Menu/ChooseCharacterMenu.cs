@@ -22,7 +22,8 @@ class ChooseCharacterMenu
     ConfirmMenu confirmMenu,
     CharacterStatsTextService characterStatsTextService,
     ILanguageService languageService,
-    UserInputMenu userInputMenu
+    UserInputMenu userInputMenu,
+    IScopedCoroutine coroutine
 ) : IExplorationSubMenu
 {
     private SharpText prompt = new SharpText() { Color = Color.White };
@@ -112,33 +113,24 @@ class ChooseCharacterMenu
             }
             if (sharpGui.Button(choose, gamepadId, navLeft: next.Id, navRight: files.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
-                userInputMenu.Setup("Enter your name.",
-                    yes: newName =>
-                    {
-                        confirmMenu.Setup($"Are you sure you want to choose {newName}?",
-                        yes: () =>
-                        {
-                            currentTrigger.CharacterData.CharacterSheet.Name = newName;
-                            currentTrigger.AddToParty();
-                            menu.RequestSubMenu(null, gamepadId);
-                        },
-                        no: () =>
-                        {
-
-                        },
-                        this);
-                        menu.RequestSubMenu(confirmMenu, gamepadId);
-                    },
-                    no: () =>
-                    {
-
-                    },
-                    this,
+                coroutine.RunTask(async () =>
+                {
+                    var nameResult = await userInputMenu.ShowAndWait("Enter your name.", this, gamepadId,
                     currentText: currentTrigger.CharacterData.CharacterSheet.Name,
                     yesText: "Confirm",
                     noText: "Cancel");
 
-                menu.RequestSubMenu(userInputMenu, gamepadId);
+                    if (nameResult.Confirmed)
+                    {
+                        var confirmChoice = await confirmMenu.ShowAndWait($"Are you sure you want to choose {nameResult.Value}?", this, menu, gamepadId);
+                        if (confirmChoice)
+                        {
+                            currentTrigger.CharacterData.CharacterSheet.Name = nameResult.Value;
+                            currentTrigger.AddToParty();
+                            menu.RequestSubMenu(null, gamepadId);
+                        }
+                    }
+                });
             }
             if (sharpGui.Button(files, gamepadId, navLeft: choose.Id, navRight: options.Id) || sharpGui.IsStandardBackPressed(gamepadId))
             {
