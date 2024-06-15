@@ -24,6 +24,7 @@ namespace SharpGui
         private readonly SharpGuiBuffer buffer;
         private readonly SharpGuiRenderer renderer;
         private readonly EventManager eventManager;
+        private readonly IFontManager fontManager;
         private readonly SharpGuiState state = new SharpGuiState();
         private KeyboardButtonCode lastKeyPressed = KeyboardButtonCode.KC_UNASSIGNED;
         private uint lastKeyCharPressed = uint.MaxValue;
@@ -38,11 +39,12 @@ namespace SharpGui
         private SharpStyle inputStyle;
         private SharpStyle panelStyle;
 
-        public SharpGuiImpl(SharpGuiBuffer buffer, SharpGuiRenderer renderer, EventManager eventManager, IScaleHelper scaleHelper)
+        public SharpGuiImpl(SharpGuiBuffer buffer, SharpGuiRenderer renderer, EventManager eventManager, IScaleHelper scaleHelper, IFontManager fontManager)
         {
             this.buffer = buffer;
             this.renderer = renderer;
             this.eventManager = eventManager;
+            this.fontManager = fontManager;
             eventManager.Keyboard.KeyPressed += Keyboard_KeyPressed;
             eventManager.Keyboard.KeyReleased += Keyboard_KeyReleased;
 
@@ -212,12 +214,12 @@ namespace SharpGui
 
         public bool Button(SharpButton button, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return button.Process(state, buffer, renderer.Font, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
+            return button.Process(state, buffer, fontManager.Font, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
         public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return input.Process(state, buffer, renderer.Font, style ?? inputStyle, navUp, navDown, navLeft, navRight);
+            return input.Process(state, buffer, fontManager.Font, style ?? inputStyle, navUp, navDown, navLeft, navRight);
         }
 
         public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, SharpStyle style = null)
@@ -242,17 +244,17 @@ namespace SharpGui
 
         public void Text(int x, int y, Color color, String text, float layer = 0f)
         {
-            buffer.DrawText(x, y, int.MaxValue, color, text, renderer.Font, layer);
+            buffer.DrawText(x, y, int.MaxValue, color, text, fontManager.Font, layer);
         }
 
         public void Text(int x, int y, Color color, String text, int maxWidth, float layer = 0f)
         {
-            buffer.DrawText(x, y, x + maxWidth, color, text, renderer.Font, layer);
+            buffer.DrawText(x, y, x + maxWidth, color, text, fontManager.Font, layer);
         }
 
         public void Text(SharpText text)
         {
-            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, renderer.Font, text.Layer);
+            buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, fontManager.Font, text.Layer);
         }
 
         public void Render(IDeviceContext immediateContext)
@@ -262,12 +264,12 @@ namespace SharpGui
 
         public IntSize2 MeasureButton(SharpButton button)
         {
-            return button.GetDesiredSize(renderer.Font, state, buttonStyle);
+            return button.GetDesiredSize(fontManager.Font, state, buttonStyle);
         }
 
         public IntSize2 MeasureInput(SharpInput input)
         {
-            return input.GetDesiredSize(renderer.Font, state, inputStyle);
+            return input.GetDesiredSize(fontManager.Font, state, inputStyle);
         }
 
         public IntSize2 MeasurePanel(SharpPanel panel)
@@ -277,12 +279,12 @@ namespace SharpGui
 
         public IntSize2 MeasureText(String text)
         {
-            return renderer.Font.MeasureText(text);
+            return fontManager.Font.MeasureText(text);
         }
 
         public IntSize2 MeasureText(StringBuilder text)
         {
-            return renderer.Font.MeasureText(text);
+            return fontManager.Font.MeasureText(text);
         }
 
         public void StealFocus(Guid id)

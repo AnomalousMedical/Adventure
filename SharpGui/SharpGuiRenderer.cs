@@ -23,10 +23,9 @@ namespace SharpGui
         private AutoPtr<IShaderResourceBinding> textShaderResourceBinding;
         private AutoPtr<IBuffer> textVertexBuffer;
         private AutoPtr<IBuffer> textIndexBuffer;
-        private Font font;
-        private List<AutoPtr<ITexture>> fontTextures = new List<AutoPtr<ITexture>>(NumFonts);
+        private Dictionary<Font, AutoPtr<ITexture>> fontTextures = new Dictionary<Font, AutoPtr<ITexture>>(NumFonts);
         private List<IDeviceObject> fontDeviceObjects = new List<IDeviceObject>(NumFonts);
-
+        private readonly GraphicsEngine graphicsEngine;
         private readonly OSWindow osWindow;
         private readonly IResourceProvider<SharpGuiRenderer> resourceProvider;
         private DrawIndexedAttribs DrawAttrs;
@@ -46,15 +45,13 @@ namespace SharpGui
 
             var m_pSwapChain = graphicsEngine.SwapChain;
             var m_pDevice = graphicsEngine.RenderDevice;
-
+            this.graphicsEngine = graphicsEngine;
             this.osWindow = osWindow;
             this.resourceProvider = resourceProvider;
             CreateQuadPso(graphicsEngine, m_pSwapChain, m_pDevice);
             CreateTextPso(graphicsEngine, m_pSwapChain, m_pDevice, scaleHelper);
 
-            var barriers = new List<StateTransitionDesc>(5);
-
-            LoadFontTexture(graphicsEngine, scaleHelper, barriers);
+            var barriers = new List<StateTransitionDesc>(4);
 
             quadVertexBuffer = CreateVertexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Vertex Buffer", (uint)sizeof(SharpGuiVertex), maxNumberOfQuads, barriers);
             quadIndexBuffer = CreateIndexBuffer(graphicsEngine.RenderDevice, "SharpGui Quad Index Buffer", maxNumberOfQuads, barriers);
@@ -257,19 +254,19 @@ namespace SharpGui
             this.textShaderResourceBinding = textPipelineState.Obj.CreateShaderResourceBinding(true);
         }
 
-        private void LoadFontTexture(GraphicsEngine graphicsEngine, IScaleHelper scaleHelper, List<StateTransitionDesc> barriers)
+        public Font LoadFontTexture(String fileName, in MyGUITrueTypeFontDesc fontDesc)
         {
-            if(fontTextures.Count + 1 == NumFonts)
+            if (fontTextures.Count + 1 == NumFonts)
             {
                 throw new InvalidOperationException($"Can only load {NumFonts} fonts at a time.");
             }
 
             //Load Font Texture
-            using var fontStream = resourceProvider.openFile("Fonts/Roboto-Regular.ttf");
+            using var fontStream = resourceProvider.openFile(fileName);
             var bytes = new byte[fontStream.Length];
             var span = new Span<byte>(bytes);
             while (fontStream.Read(span) != 0) { }
-            using var font = new MyGUITrueTypeFont(MyGUITrueTypeFontDesc.CreateDefault(scaleHelper), bytes);
+            using var trueTypeFont = new MyGUITrueTypeFont(fontDesc, bytes);
 
             //Debug
             //unsafe {
@@ -283,8 +280,8 @@ namespace SharpGui
             //}
             ////End
 
-            uint width = (uint)font.TextureBufferWidth;
-            uint height = (uint)font.TextureBufferHeight;
+            uint width = (uint)trueTypeFont.TextureBufferWidth;
+            uint height = (uint)trueTypeFont.TextureBufferHeight;
 
             TextureDesc TexDesc = new TextureDesc();
             TexDesc.Name = "Font texture";
@@ -300,7 +297,7 @@ namespace SharpGui
             var pSubResources = new List<TextureSubResData>(1);
             pSubResources.Add(new TextureSubResData()
             {
-                pData = font.TextureBuffer,
+                pData = trueTypeFont.TextureBuffer,
                 Stride = sizeof(UInt32) * width,
             });
 
@@ -308,24 +305,27 @@ namespace SharpGui
             TexData.pSubResources = pSubResources;
 
             uint textureIndex = (uint)fontTextures.Count;
+
+            var font = new Font(trueTypeFont.CharMap, trueTypeFont.GlyphInfo, trueTypeFont.SubstituteCodePoint, trueTypeFont.SubstituteCodePointGlyphInfo, textureIndex);
+
             var tex = graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData);
-            fontTextures.Add(tex);
+            fontTextures.Add(font, tex);
             fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
 
             // Set texture SRV in the SRB
             textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").SetArray(fontDeviceObjects);
 
-            this.font = new Font(font.CharMap, font.GlyphInfo, font.SubstituteCodePoint, font.SubstituteCodePointGlyphInfo, textureIndex);
-
+            var barriers = new List<StateTransitionDesc>(1);
             barriers.Add(new StateTransitionDesc { pResource = tex.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
-        }
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
 
-        public Font Font => this.font;
+            return font;
+        }
 
         public void Dispose()
         {
             fontDeviceObjects.Clear();
-            foreach (var fontTexture in fontTextures)
+            foreach (var fontTexture in fontTextures.Values)
             {
                 fontTexture.Dispose();
             }
