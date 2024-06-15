@@ -147,6 +147,12 @@ namespace Adventure.Services
 
         private String GetSaveFile()
         {
+            //This can happen if a user erases the current file, just make up a new name and use it
+            if(options.CurrentSave == null)
+            {
+                options.CurrentSave = CreateSaveFileName();
+            }
+
             var outDir = GetSaveDirectory();
             var outFile = Path.Combine(outDir, Path.GetFileName(options.CurrentSave));
 

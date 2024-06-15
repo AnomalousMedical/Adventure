@@ -106,8 +106,9 @@ internal class FileMenu
 
     private void DeleteSave(SaveInfo saveInfo, IExplorationMenu menu, GamepadId gamepadId)
     {
-        confirmMenu.Setup($"Are you sure you want to delete the save {saveInfo.SaveTime}?",
-            yes: () => 
+        coroutineRunner.RunTask(async () =>
+        {
+            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete the save {saveInfo.SaveTime}?", this, menu, gamepadId))
             {
                 if (options.CurrentSave == saveInfo.FileName)
                 {
@@ -115,10 +116,8 @@ internal class FileMenu
                 }
                 persistenceWriter.DeleteFile(saveInfo.FileName);
                 saveFiles = null;
-            },
-            no: () => { },
-            this);
-        menu.RequestSubMenu(confirmMenu, gamepadId);
+            }
+        });
     }
 
     private void LoadSaveFileInfo()
