@@ -119,6 +119,7 @@ namespace Adventure
                 timeClock.DayStarted += TimeClock_DayStarted;
                 timeClock.NightStarted += TimeClock_NightStarted;
                 ZoneManager_ZoneChanged(null);
+                zoneManager.CenterCamera();
                 characterMenuPositionService.SetTrackerActive(typeof(ZoneScene));
             }
             else

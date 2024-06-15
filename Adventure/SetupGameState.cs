@@ -36,6 +36,7 @@ namespace Adventure
         private readonly ChooseCharacterMenu chooseCharacterMenu;
         private IGameState nextState;
         private bool finished = false;
+        private bool allowStateChangeWithMenu = false;
 
         public RTInstances Instances => rtInstances;
 
@@ -111,6 +112,7 @@ namespace Adventure
                 {
                     chooseCharacterMenu.Reset();
                     explorationMenu.RequestSubMenu(chooseCharacterMenu, GamepadId.Pad1);
+                    allowStateChangeWithMenu = true;
                 }
 
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
@@ -157,7 +159,10 @@ namespace Adventure
 
             if (explorationMenu.Update())
             {
-                //Menu updated
+                if(allowStateChangeWithMenu && finished)
+                {
+                    next = this.nextState;
+                }
             }
             else
             {
