@@ -215,8 +215,9 @@ class UseItemMenu
                 {
                     if (!choosingCharacter)
                     {
-                        confirmMenu.Setup($"Discard the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?",
-                            yes: () =>
+                        coroutine.RunTask(async () =>
+                        {
+                            if(await confirmMenu.ShowAndWait($"Discard the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", parentSubMenu, menu, gamepadId))
                             {
                                 characterData.RemoveItem(SelectedItem);
                                 if (SelectedItem.Unique)
@@ -224,10 +225,8 @@ class UseItemMenu
                                     persistence.Current.ItemVoid.Add(SelectedItem);
                                 }
                                 Close();
-                            },
-                            no: () => { },
-                            parentSubMenu);
-                        menu.RequestSubMenu(confirmMenu, gamepadId);
+                            }
+                        });
                     }
                 }
                 if (sharpGui.Button(cancel, gamepadId, navUp: discard.Id, navDown: use.Id, style: style) || sharpGui.IsStandardBackPressed(gamepadId))
