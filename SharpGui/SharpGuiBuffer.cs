@@ -193,6 +193,11 @@ namespace SharpGui
             textVerts[currentText + 2].uv = new Vector2(uvRect.Right, uvRect.Bottom);
             textVerts[currentText + 3].uv = new Vector2(uvRect.Left, uvRect.Bottom);
 
+            textVerts[currentText].textureIndex = 0;
+            textVerts[currentText + 1].textureIndex = 0;
+            textVerts[currentText + 2].textureIndex = 0;
+            textVerts[currentText + 3].textureIndex = 0;
+
             currentText += 4;
             NumTextIndices += 6;
             currentZ -= zStep;

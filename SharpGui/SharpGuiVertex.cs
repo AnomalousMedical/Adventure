@@ -22,5 +22,6 @@ namespace SharpGui
         public Vector3 pos;
         public Color color;
         public Vector2 uv;
+        public uint textureIndex;
     };
 }

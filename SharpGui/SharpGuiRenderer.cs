@@ -214,6 +214,15 @@ namespace SharpGui
                     ValueType = VALUE_TYPE.VT_FLOAT32,
                     IsNormalized = false
                 },
+                // Attribute 3 - textureIndex
+                new LayoutElement
+                {
+                    InputIndex = 3,
+                    BufferSlot = 0,
+                    NumComponents = 1,
+                    ValueType = VALUE_TYPE.VT_UINT32,
+                    IsNormalized = false
+                },
             };
 
             PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = LayoutElems;
@@ -492,13 +501,15 @@ struct VSInput
     float3 Pos   : ATTRIB0;
     float4 Color : ATTRIB1;
     float2 UV    : ATTRIB2;
+    uint textureIndex : ATTRIB3;
 };
 
 struct PSInput 
 { 
     float4 Pos   : SV_POSITION; 
     float4 Color : COLOR0; 
-    float2 UV    : TEX_COORD; 
+    float2 UV    : TEX_COORD0;
+    float2 textureIndex: TEX_COORD1;
 };
 
 void main(in  VSInput VSIn,
@@ -507,6 +518,7 @@ void main(in  VSInput VSIn,
     PSIn.Pos   = float4(VSIn.Pos, 1);
     PSIn.Color = VSIn.Color;
     PSIn.UV    = VSIn.UV;
+    PSIn.textureIndex.x    = float2(VSIn.textureIndex, 0);
 }";
 
         private String TextPSSource =
@@ -518,7 +530,8 @@ struct PSInput
 { 
     float4 Pos   : SV_POSITION; 
     float4 Color : COLOR0; 
-    float2 UV    : TEX_COORD; 
+    float2 UV    : TEX_COORD0; 
+    float2 textureIndex: TEX_COORD1;
 };
 
 struct PSOutput
@@ -529,7 +542,7 @@ struct PSOutput
 void main(in  PSInput  PSIn,
           out PSOutput PSOut)
 {
-    float4 texColor = g_Texture[0].Sample(g_Texture_sampler, PSIn.UV);
+    float4 texColor = g_Texture[PSIn.textureIndex.x].Sample(g_Texture_sampler, PSIn.UV);
     PSOut.Color.rgb = PSIn.Color.rgb * texColor.rgb;
     PSOut.Color.a = texColor.a;
 }";
