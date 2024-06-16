@@ -45,6 +45,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly Sky sky;
         private readonly PartyMemberManager partyMemberManager;
+        private readonly IGcService gcService;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -59,7 +60,8 @@ namespace Adventure
             Persistence persistence,
             IBepuScene<ZoneScene> bepuScene, //Inject this so it is created earlier and destroyed later
             Sky sky,
-            PartyMemberManager partyMemberManager
+            PartyMemberManager partyMemberManager,
+            IGcService gcService
         )
         {
             objectResolver = objectResolverFactory.Create();
@@ -70,6 +72,7 @@ namespace Adventure
             this.persistence = persistence;
             this.sky = sky;
             this.partyMemberManager = partyMemberManager;
+            this.gcService = gcService;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
@@ -125,6 +128,8 @@ namespace Adventure
             }
 
             ZoneChanged?.Invoke(this);
+
+            gcService.Collect();
 
             changingZone = false;
         }
