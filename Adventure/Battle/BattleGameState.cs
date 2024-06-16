@@ -20,6 +20,7 @@ namespace Adventure.Battle
         /// </summary>
         void Link(IGameState returnState, IGameOverGameState gameOver);
         void SetBattleTrigger(BattleTrigger battleTrigger);
+        bool ShowExplorationMenu { get; set; }
     }
 
     class BattleGameState : IBattleGameState
@@ -43,7 +44,7 @@ namespace Adventure.Battle
         private Random noTriggerRandom = new Random();
         private bool saveOnExit = false;
 
-        private bool showExplorationMenu = false;
+        public bool ShowExplorationMenu { get; set; } = false;
 
         private IGameState nextState;
 
@@ -160,7 +161,7 @@ namespace Adventure.Battle
 
         public IGameState Update(Clock clock)
         {
-            if (showExplorationMenu)
+            if (ShowExplorationMenu)
             {
                 explorationMenu.Update();
             }
@@ -178,18 +179,18 @@ namespace Adventure.Battle
                             gameOverState.SaveDeathStatus();
                             persistenceWriter.AddSaveBlock(saveBlock);
 
-                            showExplorationMenu = true;
+                            ShowExplorationMenu = true;
                             await fadeScreenMenu.ShowAndWaitAndClose(0.0f, 1.0f, 2.0f, GamepadId.Pad1);
-                            showExplorationMenu = false;
+                            ShowExplorationMenu = false;
                             nextState = gameOverState;
                         });
                         break;
                     case IBattleManager.Result.ReturnToExploration:
                         coroutine.RunTask(async () =>
                         {
-                            showExplorationMenu = true;
+                            ShowExplorationMenu = true;
                             await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
-                            showExplorationMenu = false;
+                            ShowExplorationMenu = false;
 
                             nextState = returnState;
                             battleTrigger?.BattleWon();

@@ -190,7 +190,7 @@ namespace Adventure.Battle
 
         public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy)
         {
-            startBattleDelay = 1 * Clock.SecondsToMicro;
+            startBattleDelay = (long)(0.7f * Clock.SecondsToMicro);
             this.stealCb = stealCb;
             var currentZ = 3;
             foreach (var character in party.ActiveCharacters)
@@ -235,6 +235,7 @@ namespace Adventure.Battle
                 if (active)
                 {
                     cursor.BattleStarted();
+                    cursor.Visible = false; 
                     numbers.Clear();
                     allowBattleFinish = false;
                     showEndBattleButton = false;

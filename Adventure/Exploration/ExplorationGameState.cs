@@ -46,6 +46,8 @@ namespace Adventure
         private readonly RestManager restManager;
         private readonly TypedLightManager<ZoneScene> typedLightManager;
         private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly IScopedCoroutine coroutine;
+        private readonly FadeScreenMenu fadeScreenMenu;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -70,7 +72,9 @@ namespace Adventure
             IGcService gcService,
             RestManager restManager,
             TypedLightManager<ZoneScene> typedLightManager,
-            CharacterMenuPositionService characterMenuPositionService
+            CharacterMenuPositionService characterMenuPositionService,
+            IScopedCoroutine coroutine,
+            FadeScreenMenu fadeScreenMenu
         )
         {
             this.bepuScene = bepuScene;
@@ -89,6 +93,8 @@ namespace Adventure
             this.restManager = restManager;
             this.typedLightManager = typedLightManager;
             this.characterMenuPositionService = characterMenuPositionService;
+            this.coroutine = coroutine;
+            this.fadeScreenMenu = fadeScreenMenu;
         }
 
         public void Dispose()
@@ -113,7 +119,6 @@ namespace Adventure
             zoneManager.StopPlayer();
             if (active)
             {
-                gcService.Collect();
                 eventManager[EventLayers.Exploration].makeFocusLayer();
                 zoneManager.ZoneChanged += ZoneManager_ZoneChanged;
                 timeClock.DayStarted += TimeClock_DayStarted;
@@ -137,8 +142,20 @@ namespace Adventure
         {
             if (AllowBattles)
             {
-                battleState.SetBattleTrigger(battleTrigger);
-                nextState = battleState;
+                coroutine.RunTask(async () =>
+                {
+                    battleState.ShowExplorationMenu = true;
+
+                    await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+
+                    battleState.SetBattleTrigger(battleTrigger);
+                    nextState = battleState;
+
+                    await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                    fadeScreenMenu.Close();
+
+                    battleState.ShowExplorationMenu = false;
+                });
             }
             else
             {

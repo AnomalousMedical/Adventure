@@ -95,7 +95,6 @@ namespace Adventure.WorldMap
             if (active)
             {
                 characterMenuPositionService.SetTrackerActive(typeof(WorldMapScene));
-                gcService.Collect();
                 eventManager[EventLayers.WorldMap].makeFocusLayer();
                 nextState = this;
                 persistence.Current.BattleTriggers.ClearData();
