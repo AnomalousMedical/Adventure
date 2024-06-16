@@ -9,6 +9,7 @@ using Engine.Platform;
 using RpgMath;
 using SharpGui;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Adventure
 {
@@ -130,7 +131,7 @@ namespace Adventure
                     else
                     {
                         this.nextState = explorationGameState;
-                        await zoneManager.Restart(lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
+                        await zoneManager.Restart(() => Task.CompletedTask, lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
                         rtInstances = zoneInstances;
                         if (persistence.Current.Player.InBattle)

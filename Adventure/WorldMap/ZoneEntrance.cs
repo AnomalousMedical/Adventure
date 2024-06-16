@@ -198,8 +198,9 @@ namespace Adventure.WorldMap
             contextMenu.ClearContext(Enter);
             coroutine.RunTask(async () =>
             {
-                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
-                await worldMapGameState.EnterZone(zoneIndex);
+                var fadeOut = fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
+                await worldMapGameState.EnterZone(() => fadeOut, zoneIndex);
+                await fadeOut;
                 await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
 
                 fadeScreenMenu.Close();

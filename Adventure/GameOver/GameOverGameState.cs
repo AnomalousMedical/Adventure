@@ -124,7 +124,7 @@ namespace Adventure.GameOver
 
                 persistenceWriter.Save();
 
-                coroutineRunner.RunTask(zoneManager.Restart());
+                coroutineRunner.RunTask(zoneManager.Restart(() => Task.CompletedTask));
                 nextState = this.nextState;
             }
 

@@ -17,7 +17,7 @@ namespace Adventure
 
         bool ChangingZone { get; }
         Zone Current { get; }
-        Task Restart(bool allowHoldZone = true);
+        Task Restart(Func<Task> waitForMainThreadWorkCb, bool allowHoldZone = true);
         Task WaitForCurrent();
         void StopPlayer();
         void GoStartPoint();
@@ -73,7 +73,7 @@ namespace Adventure
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
-        public async Task Restart(bool allowHoldZone = true)
+        public async Task Restart(Func<Task> waitForMainThreadWorkCb, bool allowHoldZone = true)
         {
             if (changingZone)
             {
@@ -81,16 +81,26 @@ namespace Adventure
             }
 
             changingZone = true;
-            Zone holdZone = null;
+            Zone newZone;
             var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
-            int? holdZoneIndex = allowHoldZone ? currentZoneIndex : null;
 
-            if(currentZone != null)
+            if (allowHoldZone && currentZone?.Index == currentZoneIndex) //Reuse the current zone that already exists in memory, if it matches the new one
+            {
+                newZone = currentZone;
+            }
+            else
+            {
+                newZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
+            }
+
+            await waitForMainThreadWorkCb();
+            await newZone.WaitForGeneration();
+
+            if (currentZone != null)
             {
                 await currentZone.WaitForGeneration();
-                if (currentZone.Index == holdZoneIndex)
+                if (allowHoldZone && currentZone.Index == currentZoneIndex) //This is for reusing the zone, so reset its objects don't destroy it
                 {
-                    holdZone = currentZone;
                     currentZone.ResetPlaceables();
                     currentZone.DestroyPhysics();
                 }
@@ -100,15 +110,7 @@ namespace Adventure
                 }
             }
 
-            if (holdZone != null)
-            {
-                currentZone = holdZone;
-            }
-            else
-            {
-                currentZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
-                await currentZone.WaitForGeneration();
-            }
+            currentZone = newZone;
 
             currentZone.SetupPhysics();
 
