@@ -185,10 +185,20 @@ namespace Adventure.Battle
                         });
                         break;
                     case IBattleManager.Result.ReturnToExploration:
-                        nextState = returnState;
-                        battleTrigger?.BattleWon();
-                        persistence.Current.Player.InBattle = false;
-                        saveOnExit = true;
+                        coroutine.RunTask(async () =>
+                        {
+                            showExplorationMenu = true;
+                            await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+                            showExplorationMenu = false;
+
+                            nextState = returnState;
+                            battleTrigger?.BattleWon();
+                            persistence.Current.Player.InBattle = false;
+                            saveOnExit = true;
+
+                            await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                            fadeScreenMenu.Close();
+                        });
                         break;
                 }
             }
