@@ -34,6 +34,7 @@ class FadeScreenMenu
     private float time;
     private float duration;
     private IExplorationSubMenu wrappedMenu;
+    private bool tickThisFrame; //This is used to force 1 frame at the start value
 
     private TaskCompletionSource currentTask;
 
@@ -58,6 +59,7 @@ class FadeScreenMenu
         this.time = 0;
         this.duration = durationSeconds;
         this.wrappedMenu = wrappedMenu;
+        this.tickThisFrame = false;
 
         explorationMenu.RequestSubMenu(this, gamepad);
     }
@@ -82,13 +84,20 @@ class FadeScreenMenu
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         bool drawPanel = true;
-        time += clockService.Clock.DeltaSeconds;
-        if(time > duration)
+        if (tickThisFrame)
         {
-            time = duration;
-            AlertFadeComplete(menu, gamepadId);
+            time += clockService.Clock.DeltaSeconds;
+            if (time > duration)
+            {
+                time = duration;
+                AlertFadeComplete(menu, gamepadId);
 
-            drawPanel = wrappedMenu == null;
+                drawPanel = wrappedMenu == null;
+            }
+        }
+        else
+        {
+            tickThisFrame = true;
         }
 
         if (drawPanel)
