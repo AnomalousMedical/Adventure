@@ -199,9 +199,7 @@ namespace Adventure.WorldMap
             coroutine.RunTask(async () =>
             {
                 await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
-
-                worldMapGameState.EnterZone(zoneIndex);
-
+                await worldMapGameState.EnterZone(zoneIndex);
                 await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
 
                 fadeScreenMenu.Close();

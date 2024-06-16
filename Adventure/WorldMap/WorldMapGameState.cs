@@ -18,13 +18,12 @@ namespace Adventure.WorldMap
     interface IWorldMapGameState : IGameState
     {
         void Link(IExplorationGameState explorationState, IGameState startExplorationGameState);
-        void EnterZone(int zoneIndex);
+        Task EnterZone(int zoneIndex);
     }
 
     class WorldMapGameState : IWorldMapGameState
     {
         private readonly RTInstances<WorldMapScene> rtInstances;
-        private readonly ICoroutineRunner coroutineRunner;
         private readonly IZoneManager zoneManager;
         private readonly Persistence persistence;
         private readonly IWorldMapManager worldMapManager;
@@ -49,7 +48,6 @@ namespace Adventure.WorldMap
         public WorldMapGameState
         (
             RTInstances<WorldMapScene> rtInstances,
-            ICoroutineRunner coroutineRunner,
             IZoneManager zoneManager,
             Persistence persistence,
             IWorldMapManager worldMapManager,
@@ -68,7 +66,6 @@ namespace Adventure.WorldMap
         )
         {
             this.rtInstances = rtInstances;
-            this.coroutineRunner = coroutineRunner;
             this.zoneManager = zoneManager;
             this.persistence = persistence;
             this.worldMapManager = worldMapManager;
@@ -112,7 +109,7 @@ namespace Adventure.WorldMap
             typedLightManager.SetActive(active);
         }
 
-        public void EnterZone(int zoneIndex)
+        public async Task EnterZone(int zoneIndex)
         {
             persistence.Current.Player.Position = null;
             persistence.Current.Zone.CurrentIndex = zoneIndex;
@@ -121,8 +118,8 @@ namespace Adventure.WorldMap
             persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
             worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             worldMapManager.MakePlayerIdle();
-            coroutineRunner.RunTask(zoneManager.Restart());
             nextState = this.startExplorationGameState;
+            await zoneManager.Restart();
         }
 
         public IGameState Update(Clock clock)
