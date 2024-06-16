@@ -129,6 +129,7 @@ class ChooseCharacterMenu
                         if (confirmChoice)
                         {
                             persistence.Current.Player.Position = currentTrigger.SpawnPosition;
+                            persistence.Current.Player.Started = true;
                             currentTrigger.CharacterData.CharacterSheet.Name = nameResult.Value;
                             currentTrigger.AddToParty();
                             menu.RequestSubMenu(null, gamepadId);
