@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Adventure.Items.Creators;
 using Adventure.Services;
+using Adventure.Menu;
+using Engine;
 
 namespace Adventure.Battle
 {
@@ -16,7 +18,7 @@ namespace Adventure.Battle
         /// <summary>
         /// This is a circular link, so it must be set by the ExplorationGameState itself, which injects this class.
         /// </summary>
-        void Link(IGameState returnState, IGameState gameOver);
+        void Link(IGameState returnState, IGameOverGameState gameOver);
         void SetBattleTrigger(BattleTrigger battleTrigger);
     }
 
@@ -31,12 +33,19 @@ namespace Adventure.Battle
         private readonly Persistence persistence;
         private readonly TypedLightManager<BattleScene> typedLightManager;
         private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly IExplorationMenu explorationMenu;
+        private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly IScopedCoroutine coroutine;
         private readonly object saveBlock = new object();
-        private IGameState gameOverState;
+        private IGameOverGameState gameOverState;
         private IGameState returnState;
         private BattleTrigger battleTrigger;
         private Random noTriggerRandom = new Random();
         private bool saveOnExit = false;
+
+        private bool showExplorationMenu = false;
+
+        private IGameState nextState;
 
         public BattleGameState
         (
@@ -48,7 +57,10 @@ namespace Adventure.Battle
             IPersistenceWriter persistenceWriter,
             Persistence persistence,
             TypedLightManager<BattleScene> typedLightManager,
-            CharacterMenuPositionService characterMenuPositionService
+            CharacterMenuPositionService characterMenuPositionService,
+            IExplorationMenu explorationMenu,
+            FadeScreenMenu fadeScreenMenu,
+            IScopedCoroutine coroutine
         )
         {
             this.battleManager = battleManager;
@@ -60,11 +72,14 @@ namespace Adventure.Battle
             this.persistence = persistence;
             this.typedLightManager = typedLightManager;
             this.characterMenuPositionService = characterMenuPositionService;
+            this.explorationMenu = explorationMenu;
+            this.fadeScreenMenu = fadeScreenMenu;
+            this.coroutine = coroutine;
         }
 
         public RTInstances Instances => rtInstances;
 
-        public void Link(IGameState returnState, IGameState gameOver)
+        public void Link(IGameState returnState, IGameOverGameState gameOver)
         {
             this.returnState = returnState;
             this.gameOverState = gameOver;
@@ -84,6 +99,8 @@ namespace Adventure.Battle
         {
             if (active)
             {
+                nextState = this;
+
                 characterMenuPositionService.SetTrackerActive(typeof(BattleScene));
                 persistence.Current.Player.InBattle = true;
                 persistenceWriter.Save();
@@ -94,7 +111,7 @@ namespace Adventure.Battle
                 bool boss = false;
                 Func<IEnumerable<ITreasure>> stealCb;
                 BiomeEnemy triggerEnemy = null;
-                if(battleTrigger == null) //This is the test battle setup
+                if (battleTrigger == null) //This is the test battle setup
                 {
                     level = party.GetAverageLevel() * 4 / 5;
                     if (level < 1)
@@ -143,22 +160,40 @@ namespace Adventure.Battle
 
         public IGameState Update(Clock clock)
         {
-            IGameState nextState = this;
-            var result = battleManager.Update(clock);
-            switch(result)
+            if (showExplorationMenu)
             {
-                case IBattleManager.Result.GameOver:
-                    nextState = gameOverState;
-                    break;
-                case IBattleManager.Result.ReturnToExploration:
-                    nextState = returnState;
-                    battleTrigger?.BattleWon();
-                    persistence.Current.Player.InBattle = false;
-                    saveOnExit = true;
-                    break;
+                explorationMenu.Update();
+            }
+            else if(nextState == this)
+            {
+                var result = battleManager.Update(clock);
+                switch (result)
+                {
+                    case IBattleManager.Result.GameOver:
+                        coroutine.RunTask(async () =>
+                        {
+                            //Allow the game over state to save the defeated status.
+                            //With the time delay this needs to happen right when you die.
+                            persistenceWriter.RemoveSaveBlock(saveBlock);
+                            gameOverState.SaveDeathStatus();
+                            persistenceWriter.AddSaveBlock(saveBlock);
+
+                            showExplorationMenu = true;
+                            await fadeScreenMenu.ShowAndWaitAndClose(0.0f, 1.0f, 2.0f, GamepadId.Pad1);
+                            showExplorationMenu = false;
+                            nextState = gameOverState;
+                        });
+                        break;
+                    case IBattleManager.Result.ReturnToExploration:
+                        nextState = returnState;
+                        battleTrigger?.BattleWon();
+                        persistence.Current.Player.InBattle = false;
+                        saveOnExit = true;
+                        break;
+                }
             }
 
-            if(nextState != this)
+            if (nextState != this)
             {
                 battleTrigger = null;
             }

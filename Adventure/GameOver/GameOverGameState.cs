@@ -15,6 +15,8 @@ namespace Adventure.GameOver
     interface IGameOverGameState : IGameState
     {
         void Link(IGameState explorationState);
+
+        void SaveDeathStatus();
     }
 
     class GameOverGameState : IGameOverGameState
@@ -67,17 +69,21 @@ namespace Adventure.GameOver
             this.nextState = nextState;
         }
 
+        public void SaveDeathStatus()
+        {
+            if (persistence.Current.Party.Undefeated)
+            {
+                persistenceWriter.SaveDefeated();
+                persistence.Current.Party.Undefeated = false;
+            }
+            persistence.Current.Party.GameOver = true;
+            persistenceWriter.SaveGameOver(persistence.Current.Party.GameOver);
+        }
+
         public void SetActive(bool active)
         {
             if (active)
             {
-                if (persistence.Current.Party.Undefeated)
-                {
-                    persistenceWriter.SaveDefeated();
-                    persistence.Current.Party.Undefeated = false;
-                }
-                persistence.Current.Party.GameOver = true;
-                persistenceWriter.SaveGameOver(persistence.Current.Party.GameOver);
                 persistenceWriter.AddSaveBlock(saveBlock);
             }
             else
