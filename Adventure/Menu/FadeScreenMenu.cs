@@ -32,6 +32,7 @@ class FadeScreenMenu
     private float change;
     private float time;
     private float duration;
+    private IExplorationSubMenu wrappedMenu;
 
     private TaskCompletionSource currentTask;
 
@@ -44,16 +45,27 @@ class FadeScreenMenu
         return currentTask.Task;
     }
 
-    public Task ShowAndWait(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad)
+    public void Show(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
     {
         this.start = fadeStart;
         this.change = fadeEnd - fadeStart;
         this.time = 0;
         this.duration = durationSeconds;
+        this.wrappedMenu = wrappedMenu;
 
         explorationMenu.RequestSubMenu(this, gamepad);
+    }
 
+    public Task ShowAndWait(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
+    {
+        Show(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu);
         return WaitForCurrentEffect();
+    }
+
+    public async Task ShowAndWaitAndClose(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
+    {
+        await ShowAndWait(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu);
+        Close();
     }
 
     public void Close()
@@ -63,19 +75,29 @@ class FadeScreenMenu
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
+        bool drawPanel = true;
         time += clockService.Clock.DeltaSeconds;
         if(time > duration)
         {
             time = duration;
             AlertFadeComplete(menu, gamepadId);
+
+            drawPanel = wrappedMenu == null;
         }
 
-        var fade = EasingFunctions.None(start, change, time, duration);
-        style.Background = new Color(GreyColor, GreyColor, GreyColor, fade);
+        if (drawPanel)
+        {
+            var fade = EasingFunctions.None(start, change, time, duration);
+            style.Background = new Color(GreyColor, GreyColor, GreyColor, fade);
 
-        backgroundPanel.SetRect(0, 0, screenPositioner.ScreenSize.Width, screenPositioner.ScreenSize.Height);
+            backgroundPanel.SetRect(0, 0, screenPositioner.ScreenSize.Width, screenPositioner.ScreenSize.Height);
 
-        sharpGui.Panel(backgroundPanel, style);
+            sharpGui.Panel(backgroundPanel, style);
+        }
+        else
+        {
+            wrappedMenu.Update(menu, gamepadId);
+        }
     }
 
     private void AlertFadeComplete(IExplorationMenu menu, GamepadId gamepadId)

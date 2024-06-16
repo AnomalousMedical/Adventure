@@ -51,6 +51,15 @@ class ChooseCharacterMenu
         currentPlayerIndex = 0;
     }
 
+    public void MoveCameraToCurrentTrigger()
+    {
+        if (partyMemberTriggerManager.Count > 0)
+        {
+            var currentTrigger = partyMemberTriggerManager.Get(currentPlayerIndex);
+            cameraMover.SetPosition(currentTrigger.CameraPosition, currentTrigger.CameraAngle);
+        }
+    }
+
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         ILayoutItem layout;
