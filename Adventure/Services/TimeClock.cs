@@ -61,11 +61,11 @@ namespace Adventure
         {
             if(persistence.Current != null)
             {
-                CurrentTimeMicro = persistence.Current.Time.Current ?? 6L * HoursToMicro;
+                CurrentTimeMicro = persistence.Current.Time.Current ?? 10L * HoursToMicro;
             }
             else
             {
-                CurrentTimeMicro = 6L * HoursToMicro;
+                CurrentTimeMicro = 10L * HoursToMicro;
             }
         }
 
