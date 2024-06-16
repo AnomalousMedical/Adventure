@@ -16,7 +16,7 @@ namespace Adventure.Skills
 
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
-            if (source.CurrentMp - MpCost < 0)
+            if (source.CurrentMp == 0)
             {
                 return null;
             }
@@ -27,12 +27,18 @@ namespace Adventure.Skills
                 return null;
             }
 
-            if (target.CurrentHp == 0)
+            if (target.CurrentHp <= 0)
             {
                 return null;
             }
 
+            var damageEffectScale = DamageEffectScaler.GetEffectScale(source.CurrentMp, MpCost);
+
             source.CurrentMp -= MpCost;
+            if (source.CurrentMp < 0)
+            {
+                source.CurrentMp = 0;
+            }
 
             var damage = damageCalculator.Cure(source, Amount);
             damage = damageCalculator.RandomVariation(damage);
@@ -42,6 +48,8 @@ namespace Adventure.Skills
             //Apply resistance
             var resistance = target.GetResistance(Element.Healing);
             damage = damageCalculator.ApplyResistance(damage, resistance);
+
+            damage = DamageEffectScaler.ApplyEffect(damage, damageEffectScale);
 
             target.CurrentHp = damageCalculator.ApplyDamage(damage, target.CurrentHp, target.Hp);
 
@@ -97,6 +105,8 @@ namespace Adventure.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
+            var damageEffectScale = DamageEffectScaler.GetEffectScale(attacker.Stats.CurrentMp, GetMpCost(triggered, triggerSpammed));
+
             if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
@@ -137,6 +147,8 @@ namespace Adventure.Skills
                 //Apply resistance
                 var resistance = target.Stats.GetResistance(Element.Healing);
                 damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+
+                damage = DamageEffectScaler.ApplyEffect(damage, damageEffectScale);
 
                 battleManager.AddDamageNumber(currentTarget, damage);
                 currentTarget.ApplyDamage(attacker, battleManager.DamageCalculator, damage);

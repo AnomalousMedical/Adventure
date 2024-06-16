@@ -34,7 +34,7 @@ namespace Adventure.Skills.Spells
             target = battleManager.ValidateTarget(attacker, target);
 
             var applyEffects = new List<Attachment<BattleScene>>();
-            ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggerSpammed, applyEffects);
+            ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggered, triggerSpammed, applyEffects);
 
             var effect = new SkillEffect();
             IEnumerator<YieldAction> run()
@@ -47,7 +47,7 @@ namespace Adventure.Skills.Spells
                     if (target != null)
                     {
                         applyEffects.Clear();
-                        ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggerSpammed, applyEffects);
+                        ApplyDamage(battleManager, objectResolver, attacker, target, coroutine, triggered, triggerSpammed, applyEffects);
                         yield return coroutine.WaitSeconds(0.5);
                         CleanupAndHandleDeath(battleManager, target, applyEffects);
                     }
@@ -68,8 +68,10 @@ namespace Adventure.Skills.Spells
             }
         }
 
-        private void ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, IScopedCoroutine coroutine, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
+        private void ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, IScopedCoroutine coroutine, bool triggered, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
         {
+            var damageEffectScale = DamageEffectScaler.GetEffectScale(attacker.Stats.CurrentMp, GetMpCost(triggered, triggerSpammed));
+
             var resistance = Resistance.Normal;
 
             if (battleManager.DamageCalculator.MagicalHit(attacker.Stats, target.Stats, resistance, attacker.Stats.MagicAttackPercent))
@@ -82,6 +84,8 @@ namespace Adventure.Skills.Spells
                 {
                     damage /= 2;
                 }
+
+                damage = DamageEffectScaler.ApplyEffect(damage, damageEffectScale);
 
                 battleManager.SoundEffectPlayer.PlaySound(IonShreadSpellSoundEffect.Instance);
                 battleManager.AddDamageNumber(target, damage);

@@ -134,6 +134,8 @@ namespace Adventure.Skills.Spells
 
         private IEnumerable<IBattleTarget> ApplyDamage(IBattleManager battleManager, IObjectResolver objectResolver, IBattleTarget attacker, IBattleTarget target, IScopedCoroutine coroutine, bool triggered, bool triggerSpammed, List<Attachment<BattleScene>> applyEffects)
         {
+            var damageEffectScale = DamageEffectScaler.GetEffectScale(attacker.Stats.CurrentMp, GetMpCost(triggered, triggerSpammed));
+
             IEnumerable<IBattleTarget> groupTargets;
             //Cause Damage
 
@@ -160,6 +162,7 @@ namespace Adventure.Skills.Spells
                     var damage = battleManager.DamageCalculator.Magical(attacker.Stats, currentTarget.Stats, Power);
                     var originalDamage = damage;
                     damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+                    damage = DamageEffectScaler.ApplyEffect(damage, damageEffectScale);
                     var effectScale = Vector3.ScaleIdentity;
                     var numShakes = 1;
                     var createExtraSpellHits = false;

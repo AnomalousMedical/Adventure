@@ -33,7 +33,7 @@ namespace Adventure.Skills
 
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
-            if (source.CurrentMp - MpCost < 0)
+            if (source.CurrentMp == 0)
             {
                 return null;
             }
@@ -44,14 +44,20 @@ namespace Adventure.Skills
                 return null;
             }
 
-            if (target.CurrentHp == 0)
+            if (target.CurrentHp <= 0)
             {
                 return null;
             }
 
-            source.CurrentMp -= MpCost;
+            var effectScale = DamageEffectScaler.GetEffectScale(source.CurrentMp, MpCost);
 
-            var buff = CreateBuff();
+            source.CurrentMp -= MpCost;
+            if(source.CurrentMp < 0)
+            {
+                source.CurrentMp = 0;
+            }
+
+            var buff = CreateBuff(DamageEffectScaler.ApplyEffect(Amount, effectScale));
             target.UpdateBuffs(buff);
 
             //Effect
@@ -109,6 +115,8 @@ namespace Adventure.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
+            var effectScale = DamageEffectScaler.GetEffectScale(attacker.Stats.CurrentMp, GetMpCost(triggered, triggerSpammed));
+
             if (HealingItemsOnly && attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
@@ -130,10 +138,11 @@ namespace Adventure.Skills
 
             foreach (var currentTarget in targets)
             {
-                var buff = CreateBuff();
+                var scaledAmount = DamageEffectScaler.ApplyEffect(Amount, effectScale);
+                var buff = CreateBuff(scaledAmount);
                 currentTarget.Stats.UpdateBuffs(buff);
 
-                battleManager.AddDamageNumber(currentTarget, DamageNumberText, Color.White);
+                battleManager.AddDamageNumber(currentTarget, String.Format(DamageNumberText, scaledAmount), Color.White);
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
@@ -170,7 +179,7 @@ namespace Adventure.Skills
             return new SkillEffect(true);
         }
 
-        public abstract CharacterBuff CreateBuff();
+        public abstract CharacterBuff CreateBuff(int scaledAmount);
 
         public abstract String DamageNumberText { get; }
 
@@ -183,15 +192,15 @@ namespace Adventure.Skills
     {
         protected static readonly int Id = 0;
 
-        public override string DamageNumberText => $"+{Amount} Strength and Vitality";
+        public override string DamageNumberText => "+{0} Strength and Vitality";
 
-        public override CharacterBuff CreateBuff()
+        public override CharacterBuff CreateBuff(int scaledAmount)
         {
             return new CharacterBuff()
             {
                 Name = Name,
-                Strength = Amount,
-                Vitality = Amount,
+                Strength = scaledAmount,
+                Vitality = scaledAmount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id
             };
@@ -225,15 +234,15 @@ namespace Adventure.Skills
     {
         protected static readonly int Id = 1;
 
-        public override string DamageNumberText => $"+{Amount} Magic";
+        public override string DamageNumberText => "+{0} Magic and Spirit";
 
-        public override CharacterBuff CreateBuff()
+        public override CharacterBuff CreateBuff(int scaledAmount)
         {
             return new CharacterBuff()
             {
                 Name = Name,
-                Magic = Amount,
-                Spirit = Amount,
+                Magic = scaledAmount,
+                Spirit = scaledAmount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id
             };
@@ -276,12 +285,12 @@ namespace Adventure.Skills
 
         public override string DamageNumberText => "Haste";
 
-        public override CharacterBuff CreateBuff()
+        public override CharacterBuff CreateBuff(int scaledAmount)
         {
             return new CharacterBuff()
             {
                 Name = Name,
-                Dexterity = Amount,
+                Dexterity = scaledAmount,
                 TimeRemaining = Duration,
                 BuffTypeId = Id,
                 QueueTurnsFront = true

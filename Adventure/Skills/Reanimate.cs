@@ -26,6 +26,8 @@ namespace Adventure.Skills
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
+            var damageEffectScale = DamageEffectScaler.GetEffectScale(attacker.Stats.CurrentMp, GetMpCost(triggered, triggerSpammed));
+
             if (attacker.Stats.AttackElements.Any(i => i == Element.Piercing || i == Element.Slashing))
             {
                 battleManager.AddDamageNumber(attacker, "Cannot cast restore magic", Color.Red);
@@ -54,6 +56,8 @@ namespace Adventure.Skills
             //Apply resistance
             var resistance = target.Stats.GetResistance(Element.Healing);
             damage = battleManager.DamageCalculator.ApplyResistance(damage, resistance);
+
+            damage = DamageEffectScaler.ApplyEffect(damage, damageEffectScale);
 
             if (target.IsDead || damage > 0)
             {
