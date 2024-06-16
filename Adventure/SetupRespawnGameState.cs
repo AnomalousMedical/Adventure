@@ -1,80 +1,66 @@
-﻿using Adventure.Services;
-using Adventure.WorldMap;
+﻿using Adventure.Menu;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
-using SharpGui;
 
-namespace Adventure
+namespace Adventure;
+
+interface ISetupRespawnGameState : IGameState
 {
-    interface ISetupRespawnGameState : IGameState
+    void Link(IGameState next);
+}
+
+class SetupRespawnGameState
+(
+    IZoneManager zoneManager,
+    ICoroutineRunner coroutineRunner,
+    RTInstances<EmptyScene> emptySceneInstances,
+    RTInstances<ZoneScene> explorationSceneInstances,
+    FadeScreenMenu fadeScreenMenu,
+    IExplorationMenu explorationMenu
+) : ISetupRespawnGameState
+{
+    private IGameState nextState;
+    private bool finished = false;
+
+    private RTInstances rtInstances = emptySceneInstances;
+    public RTInstances Instances => rtInstances;
+
+    public void Link(IGameState next)
     {
-        void Link(IGameState next);
+        this.nextState = next;
     }
 
-    class SetupRespawnGameState : ISetupRespawnGameState
+    public void SetActive(bool active)
     {
-        private readonly IZoneManager zoneManager;
-        private readonly ICoroutineRunner coroutineRunner;
-        private readonly ISharpGui sharpGui;
-        private readonly IScreenPositioner screenPositioner;
-        private RTInstances rtInstances;
-        private IGameState nextState;
-        private bool finished = false;
-
-        public RTInstances Instances => rtInstances;
-
-        private SharpText loading = new SharpText("Loading") { Color = Color.White };
-
-        public SetupRespawnGameState
-        (
-            IZoneManager zoneManager,
-            ICoroutineRunner coroutineRunner,
-            ISharpGui sharpGui,
-            IScreenPositioner screenPositioner,
-            RTInstances<EmptyScene> rtInstances
-        )
+        if (active)
         {
-            this.zoneManager = zoneManager;
-            this.coroutineRunner = coroutineRunner;
-            this.sharpGui = sharpGui;
-            this.screenPositioner = screenPositioner;
-            this.rtInstances = rtInstances;
-        }
-
-        public void Link(IGameState next)
-        {
-            this.nextState = next;
-        }
-
-        public void SetActive(bool active)
-        {
-            if (active)
+            rtInstances = emptySceneInstances;
+            finished = false;
+            coroutineRunner.RunTask(async () =>
             {
-                finished = false;
-                coroutineRunner.RunTask(async () =>
-                {
-                    await zoneManager.WaitForCurrent();
-                    finished = true;
-                });
-            }
-        }
+                await zoneManager.WaitForCurrent();
 
-        public IGameState Update(Clock clock)
-        {
-            IGameState next = this;
+                rtInstances = explorationSceneInstances;
 
-            var size = loading.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetCenterRect(size);
-            loading.SetRect(rect);
+                await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
 
-            sharpGui.Text(loading);
-
-            if (finished)
-            {
-                next = this.nextState;
-            }
-            return next;
+                finished = true;
+            });
         }
     }
+
+    public IGameState Update(Clock clock)
+    {
+        explorationMenu.Update();
+
+        IGameState next = this;
+
+        if (finished)
+        {
+            next = this.nextState;
+        }
+        return next;
+    }
+
 }
