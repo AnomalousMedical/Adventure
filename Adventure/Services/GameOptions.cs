@@ -18,7 +18,7 @@ namespace Adventure.Services
     {
         public GraphicsEngine.RenderApi RenderApi { get; set; } = GraphicsEngine.RenderApi.D3D12;
 
-        public bool Fullscreen { get; set; }
+        public bool Fullscreen { get; set; } = true;
 
         public String CurrentSave { get; set; }
 
