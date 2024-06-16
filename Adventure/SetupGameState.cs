@@ -105,6 +105,7 @@ namespace Adventure
             if (active)
             {
                 finished = false;
+                allowStateChangeWithMenu = false;
 
                 var lastSeed = persistence.Current?.World.Seed;
 
