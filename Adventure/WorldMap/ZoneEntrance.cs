@@ -39,11 +39,13 @@ namespace Adventure.WorldMap
 
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IWorldMapGameState worldMapGameState;
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
+        private readonly FadeScreenMenu fadeScreenMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -59,7 +61,8 @@ namespace Adventure.WorldMap
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public ZoneEntrance(
+        public ZoneEntrance
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -70,12 +73,15 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             IWorldMapGameState worldMapGameState,
             Persistence persistence,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            FadeScreenMenu fadeScreenMenu
+        )
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
+            this.coroutine = coroutine;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
@@ -83,6 +89,7 @@ namespace Adventure.WorldMap
             this.worldMapGameState = worldMapGameState;
             this.persistence = persistence;
             this.languageService = languageService;
+            this.fadeScreenMenu = fadeScreenMenu;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -189,7 +196,16 @@ namespace Adventure.WorldMap
         private void Enter(ContextMenuArgs args)
         {
             contextMenu.ClearContext(Enter);
-            worldMapGameState.EnterZone(zoneIndex);
+            coroutine.RunTask(async () =>
+            {
+                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
+
+                worldMapGameState.EnterZone(zoneIndex);
+
+                await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
+
+                fadeScreenMenu.Close();
+            });
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

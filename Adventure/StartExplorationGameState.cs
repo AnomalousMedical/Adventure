@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Menu;
+using Adventure.Services;
 using Adventure.WorldMap;
 using DiligentEngine.RT;
 using Engine;
@@ -19,12 +20,11 @@ namespace Adventure
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private RTInstances rtInstances;
+        private readonly IExplorationMenu explorationMenu;
         private IGameState nextState;
         private bool finished = false;
 
         public RTInstances Instances => rtInstances;
-
-        private SharpText loading = new SharpText("Loading") { Color = Color.White };
 
         public StartExplorationGameState
         (
@@ -32,7 +32,8 @@ namespace Adventure
             ICoroutineRunner coroutineRunner,
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            RTInstances<EmptyScene> rtInstances
+            RTInstances<EmptyScene> rtInstances,
+            IExplorationMenu explorationMenu
         )
         {
             this.zoneManager = zoneManager;
@@ -40,6 +41,7 @@ namespace Adventure
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
             this.rtInstances = rtInstances;
+            this.explorationMenu = explorationMenu;
         }
 
         public void Link(IGameState next)
@@ -64,11 +66,7 @@ namespace Adventure
         {
             IGameState next = this;
 
-            var size = loading.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetCenterRect(size);
-            loading.SetRect(rect);
-
-            sharpGui.Text(loading);
+            explorationMenu.Update();
 
             if (finished)
             {

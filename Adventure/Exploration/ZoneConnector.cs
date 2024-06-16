@@ -1,4 +1,5 @@
-﻿using BepuPhysics;
+﻿using Adventure.Menu;
+using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin;
 using DiligentEngine;
@@ -21,17 +22,20 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IExplorationGameState explorationGameState;
+        private readonly FadeScreenMenu fadeScreenMenu;
         private Rect collisionRect;
 
         public ZoneConnector(
             IDestructionRequest destructionRequest,
             Description description,
             ICoroutineRunner coroutineRunner,
-            IExplorationGameState explorationGameState)
+            IExplorationGameState explorationGameState,
+            FadeScreenMenu fadeScreenMenu)
         {
             this.destructionRequest = destructionRequest;
             this.coroutineRunner = coroutineRunner;
             this.explorationGameState = explorationGameState;
+            this.fadeScreenMenu = fadeScreenMenu;
             var halfScale = description.Scale / 2f;
             this.collisionRect = new Rect(description.Translation.x - halfScale.x, description.Translation.z - halfScale.z, description.Scale.x + halfScale.x, description.Scale.z + halfScale.z);
             
@@ -58,10 +62,15 @@ namespace Adventure
 
         private void HandleZoneChange(Vector3 playerLoc)
         {
-            coroutineRunner.RunTask(() =>
+            coroutineRunner.RunTask(async () =>
             {
+                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
+
                 explorationGameState.RequestWorldMap();
-                return Task.CompletedTask;
+
+                await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
+
+                fadeScreenMenu.Close();
             });
         }
     }
