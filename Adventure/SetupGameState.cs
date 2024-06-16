@@ -130,13 +130,13 @@ namespace Adventure
                         this.nextState = explorationGameState;
                         await zoneManager.Restart(() => Task.CompletedTask, lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
-                        rtInstances = zoneInstances;
                         if (persistence.Current.Party.GameOver)
                         {
                             nextState = gameOverGameState;
                         }
                         else
                         {
+                            rtInstances = zoneInstances;
                             if (persistence.Current.Player.InBattle)
                             {
                                 fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu);
@@ -158,7 +158,6 @@ namespace Adventure
                         }
                     }
 
-                    await rayTracingRenderer.WaitForPipelineRebuild();
                     finished = true;
                 });
             }
