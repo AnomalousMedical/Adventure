@@ -12,7 +12,7 @@ namespace Adventure.Menu;
 
 interface IRootMenu : IExplorationSubMenu
 {
-
+    Task WaitForClose();
 }
 
 class RootMenu
@@ -39,6 +39,17 @@ class RootMenu
     SharpText oldSchool = new SharpText() { Text = "Old School", Color = Color.White };
     SharpText timePlayed = new SharpText() { Color = Color.White };
     List<SharpText> infos;
+
+    private TaskCompletionSource currentTask;
+
+    public Task WaitForClose()
+    {
+        if (currentTask == null)
+        {
+            currentTask = new TaskCompletionSource();
+        }
+        return currentTask.Task;
+    }
 
     private IEnumerable<SharpButton> GetMenuItems()
     {
@@ -130,6 +141,9 @@ class RootMenu
         {
             infos = null;
             explorationMenu.RequestSubMenu(null, gamepad);
+            var tempTask = currentTask;
+            currentTask = null;
+            tempTask?.SetResult();
         }
     }
 }

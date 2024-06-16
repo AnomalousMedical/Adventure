@@ -37,8 +37,7 @@ namespace Adventure
         private readonly ChooseCharacterMenu chooseCharacterMenu;
         private readonly FadeScreenMenu fadeScreenMenu;
         private IGameState nextState;
-        private bool finished = false;
-        private bool allowStateChangeWithMenu = false;
+        private bool showLogo = true;
 
         public RTInstances Instances => rtInstances;
 
@@ -104,8 +103,8 @@ namespace Adventure
         {
             if (active)
             {
-                finished = false;
-                allowStateChangeWithMenu = false;
+                nextState = null;
+                showLogo = true;
 
                 var lastSeed = persistence.Current?.World.Seed;
 
@@ -120,20 +119,21 @@ namespace Adventure
                 {
                     if (persistence.Current.Player.InWorld)
                     {
-                        this.nextState = worldMapGameState;
                         await mapLoadTask;
                         rtInstances = worldInstances;
                         await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                        this.nextState = worldMapGameState;
+                        showLogo = false;
                         //No world battles
                     }
                     else
                     {
-                        this.nextState = explorationGameState;
                         await zoneManager.Restart(() => Task.CompletedTask, lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
                         await zoneManager.WaitForCurrent();
                         if (persistence.Current.Party.GameOver)
                         {
-                            nextState = gameOverGameState;
+                            this.nextState = gameOverGameState;
+                            showLogo = false;
                         }
                         else
                         {
@@ -141,25 +141,34 @@ namespace Adventure
                             if (persistence.Current.Player.InBattle)
                             {
                                 fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu);
+                                await rootMenu.WaitForClose();
+                                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
                                 var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
                                 battleGameState.SetBattleTrigger(battleTrigger);
                                 this.nextState = battleGameState;
+                                showLogo = false;
+
+                                battleGameState.ShowExplorationMenu = true;
+                                await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                                fadeScreenMenu.Close();
+                                battleGameState.ShowExplorationMenu = false;
                             }
                             else if (persistence.Current.Party.Members.Count == 0)
                             {
                                 chooseCharacterMenu.Reset();
                                 chooseCharacterMenu.MoveCameraToCurrentTrigger();
                                 fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, chooseCharacterMenu);
-                                allowStateChangeWithMenu = true;
+                                this.nextState = explorationGameState;
+                                showLogo = false;
                             }
                             else
                             {
                                 await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                                this.nextState = explorationGameState;
+                                showLogo = false;
                             }
                         }
                     }
-
-                    finished = true;
                 });
             }
         }
@@ -170,18 +179,19 @@ namespace Adventure
 
             if (explorationMenu.Update())
             {
-                if(allowStateChangeWithMenu && finished)
+                if(nextState != null)
                 {
                     next = this.nextState;
                 }
             }
             else
             {
-                if (finished)
+                if (nextState != null)
                 {
                     next = this.nextState;
                 }
-                else
+                
+                if(showLogo)
                 {
                     var size = loading.GetDesiredSize(sharpGui);
                     var rect = screenPositioner.GetCenterRect(size);
