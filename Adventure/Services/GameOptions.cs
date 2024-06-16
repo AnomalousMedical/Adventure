@@ -20,7 +20,7 @@ namespace Adventure.Services
 
         public bool Fullscreen { get; set; }
 
-        public String CurrentSave { get; set; } = "save.json";
+        public String CurrentSave { get; set; }
 
         public float MasterVolume { get; set; } = 1.0f;
 
