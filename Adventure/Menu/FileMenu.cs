@@ -19,7 +19,8 @@ internal class FileMenu
     IPersistenceWriter persistenceWriter,
     IResetGameState resetGameState,
     ICoroutineRunner coroutineRunner,
-    ConfirmMenu confirmMenu
+    ConfirmMenu confirmMenu,
+    FadeScreenMenu fadeScreenMenu
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
@@ -71,10 +72,15 @@ internal class FileMenu
 
         if (sharpGui.Button(newGame, gamepadId, navUp: back.Id, navDown: load.Id))
         {
-            persistenceWriter.Save();
-            options.CurrentSave = persistenceWriter.CreateSaveFileName();
-            gameStateRequestor.RequestGameState(resetGameState);
-            menu.RequestSubMenu(null, gamepadId);
+            coroutineRunner.RunTask(async () =>
+            {
+                persistenceWriter.Save();
+                options.CurrentSave = persistenceWriter.CreateSaveFileName();
+
+                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+
+                gameStateRequestor.RequestGameState(resetGameState);
+            });
         }
 
         if (sharpGui.Button(load, gamepadId, navUp: newGame.Id, navDown: delete.Id))
@@ -97,11 +103,16 @@ internal class FileMenu
 
     private void LoadSave(SaveInfo newSelection, IExplorationMenu menu, GamepadId gamepadId)
     {
-        persistenceWriter.Save();
-        options.CurrentSave = newSelection.FileName;
-        menu.RequestSubMenu(null, gamepadId);
-        gameStateRequestor.RequestGameState(resetGameState);
-        saveFiles = null;
+        coroutineRunner.RunTask(async () =>
+        {
+            persistenceWriter.Save();
+            options.CurrentSave = newSelection.FileName;
+
+            await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+
+            gameStateRequestor.RequestGameState(resetGameState);
+            saveFiles = null;
+        });
     }
 
     private void DeleteSave(SaveInfo saveInfo, IExplorationMenu menu, GamepadId gamepadId)

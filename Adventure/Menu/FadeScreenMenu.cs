@@ -14,8 +14,7 @@ class FadeScreenMenu
 (
     ISharpGui sharpGui,
     IScreenPositioner screenPositioner,
-    IClockService clockService,
-    IExplorationMenu explorationMenu
+    IClockService clockService
 )
 : IExplorationSubMenu
 {
@@ -28,6 +27,8 @@ class FadeScreenMenu
         Background = new Color(GreyColor, GreyColor, GreyColor, 0.0f),
     };
 
+    private IExplorationMenu explorationMenu;
+
     private float start;
     private float change;
     private float time;
@@ -35,6 +36,11 @@ class FadeScreenMenu
     private IExplorationSubMenu wrappedMenu;
 
     private TaskCompletionSource currentTask;
+
+    public void Link(IExplorationMenu explorationMenu)
+    {
+        this.explorationMenu = explorationMenu;
+    }
 
     public Task WaitForCurrentEffect()
     {

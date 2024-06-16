@@ -24,10 +24,11 @@ namespace Adventure
             IExplorationMenu explorationMenu,
             IRootMenu rootMenu,
             IResetGameState resetGameState,
-            IDebugGui debugGui
+            IDebugGui debugGui,
+            FadeScreenMenu fadeScreenMenu
         )
         {
-            resetGameState.Link(setup);
+            resetGameState.Link(setup, explorationMenu);
             setup.Link(explorationMenu, rootMenu, exploration, worldMap, battle, gameOver);
             exploration.Link(battle, worldMap);
             battle.Link(exploration, gameOver);
@@ -36,6 +37,7 @@ namespace Adventure
             worldMap.Link(exploration, startExplorationGameState);
             startExplorationGameState.Link(exploration);
             debugGui.Link(exploration);
+            fadeScreenMenu.Link(explorationMenu);
         }
     }
 }
