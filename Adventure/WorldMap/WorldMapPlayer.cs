@@ -302,9 +302,10 @@ namespace Adventure.WorldMap
         {
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
-            this.sprite.SetAnimation("down");
+            this.sprite.SetAnimation("stand-down");
             this.followerManager.LineUpBehindLeader(this.currentPosition);
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
+            Sprite_FrameChanged(sprite);
         }
 
         public void CenterCamera()
@@ -407,6 +408,7 @@ namespace Adventure.WorldMap
             this.currentPosition = finalLoc;
             cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
             this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
+            this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
         }
 

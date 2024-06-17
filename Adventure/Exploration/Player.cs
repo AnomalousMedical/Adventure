@@ -369,17 +369,17 @@ namespace Adventure
             switch (alignment)
             {
                 case Zone.Alignment.NorthSouth:
-                    animation = "down";
+                    animation = "stand-down";
                     break;
                 case Zone.Alignment.SouthNorth:
-                    animation = "up";
+                    animation = "stand-up";
                     break;
                 case Zone.Alignment.WestEast:
-                    animation = "right";
+                    animation = "stand-right";
                     break;
                 default:
                 case Zone.Alignment.EastWest:
-                    animation = "left";
+                    animation = "stand-left";
                     break;
             }
             this.sprite.SetAnimation(animation);
