@@ -146,6 +146,8 @@ namespace Adventure
                 {
                     battleState.ShowExplorationMenu = true;
 
+                    zoneManager.StopPlayer();
+
                     await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
 
                     battleState.SetBattleTrigger(battleTrigger);

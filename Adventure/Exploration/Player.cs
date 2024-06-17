@@ -269,7 +269,10 @@ namespace Adventure
         {
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
+            this.movementDir = characterMover.movementDirection;
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
+            ChangeToStoppedAnimation();
+            followerManager.LeaderMoved(this.currentPosition, IsMoving);
         }
 
         private void SetupInput()
@@ -499,21 +502,26 @@ namespace Adventure
 
                 if (characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
                 {
-                    switch (sprite.CurrentAnimationName)
-                    {
-                        case "up":
-                        case "down":
-                        case "left":
-                        case "right":
-                            var animation = $"stand-{sprite.CurrentAnimationName}";
-                            sprite.SetAnimation(animation);
-                            mainHandItem?.SetAnimation(animation);
-                            offHandItem?.SetAnimation(animation);
-                            break;
-                    }
+                    ChangeToStoppedAnimation();
                 }
 
                 eventLayer.alertEventsHandled();
+            }
+        }
+
+        private void ChangeToStoppedAnimation()
+        {
+            switch (sprite.CurrentAnimationName)
+            {
+                case "up":
+                case "down":
+                case "left":
+                case "right":
+                    var animation = $"stand-{sprite.CurrentAnimationName}";
+                    sprite.SetAnimation(animation);
+                    mainHandItem?.SetAnimation(animation);
+                    offHandItem?.SetAnimation(animation);
+                    break;
             }
         }
 
