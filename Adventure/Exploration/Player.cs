@@ -270,7 +270,10 @@ namespace Adventure
             characterMover.movementDirection.X = 0;
             characterMover.movementDirection.Y = 0;
             this.movementDir = characterMover.movementDirection;
+            bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
+            this.characterMover.SetLocation(this.currentPosition.ToSystemNumerics());
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
+            bepuScene.AddToInterpolation(characterMover.BodyHandle);
             ChangeToStoppedAnimation();
             followerManager.LeaderMoved(this.currentPosition, IsMoving);
         }
