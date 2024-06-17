@@ -23,19 +23,24 @@ namespace Adventure
         private readonly ICoroutineRunner coroutineRunner;
         private readonly IExplorationGameState explorationGameState;
         private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly IZoneManager zoneManager;
         private Rect collisionRect;
 
-        public ZoneConnector(
+        public ZoneConnector
+        (
             IDestructionRequest destructionRequest,
             Description description,
             ICoroutineRunner coroutineRunner,
             IExplorationGameState explorationGameState,
-            FadeScreenMenu fadeScreenMenu)
+            FadeScreenMenu fadeScreenMenu,
+            IZoneManager zoneManager
+        )
         {
             this.destructionRequest = destructionRequest;
             this.coroutineRunner = coroutineRunner;
             this.explorationGameState = explorationGameState;
             this.fadeScreenMenu = fadeScreenMenu;
+            this.zoneManager = zoneManager;
             var halfScale = description.Scale / 2f;
             this.collisionRect = new Rect(description.Translation.x - halfScale.x, description.Translation.z - halfScale.z, description.Scale.x + halfScale.x, description.Scale.z + halfScale.z);
             
@@ -64,6 +69,8 @@ namespace Adventure
         {
             coroutineRunner.RunTask(async () =>
             {
+                zoneManager.StopPlayer();
+
                 await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, Engine.Platform.GamepadId.Pad1);
 
                 explorationGameState.RequestWorldMap();
