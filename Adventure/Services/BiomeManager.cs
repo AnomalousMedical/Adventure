@@ -279,8 +279,8 @@ namespace Adventure
                 FloorTexture2 = "Graphics/Textures/AmbientCG/Ground031_1K",
                 WallTexture2 = "Graphics/Textures/AmbientCG/Rock037_1K",
                 WallTexture = "Graphics/Textures/AmbientCG/Lava004_1K",
-                BgMusic = "Music/opengameart/congusbongus - Mythica.ogg",
-                BgMusicNight = "Music/opengameart/congusbongus - Mythica.ogg",
+                BgMusic = "Music/freepd/Kevin MacLeod - Evil Incoming.ogg",
+                BgMusicNight = "Music/freepd/Kevin MacLeod - Evil Incoming.ogg",
                 EntranceAsset = new VolcanoEntrance(),
                 Treasure = MakeDefaultTreasure(),
                 BackgroundItems = new List<BiomeBackgroundItem>
