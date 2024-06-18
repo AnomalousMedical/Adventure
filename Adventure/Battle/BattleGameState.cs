@@ -10,6 +10,7 @@ using Adventure.Items.Creators;
 using Adventure.Services;
 using Adventure.Menu;
 using Engine;
+using Adventure.Assets.Music;
 
 namespace Adventure.Battle
 {
@@ -23,20 +24,23 @@ namespace Adventure.Battle
         bool ShowExplorationMenu { get; set; }
     }
 
-    class BattleGameState : IBattleGameState
+    class BattleGameState
+    (
+        IBattleManager battleManager,
+        RTInstances<BattleScene> rtInstances,
+        Party party,
+        PotionCreator potionCreator,
+        EventManager eventManager,
+        IPersistenceWriter persistenceWriter,
+        Persistence persistence,
+        TypedLightManager<BattleScene> typedLightManager,
+        CharacterMenuPositionService characterMenuPositionService,
+        IExplorationMenu explorationMenu,
+        FadeScreenMenu fadeScreenMenu,
+        IScopedCoroutine coroutine,
+        IBackgroundMusicPlayer backgroundMusicPlayer
+    ) : IBattleGameState
     {
-        private readonly IBattleManager battleManager;
-        private readonly RTInstances<BattleScene> rtInstances;
-        private readonly Party party;
-        private readonly PotionCreator potionCreator;
-        private readonly EventManager eventManager;
-        private readonly IPersistenceWriter persistenceWriter;
-        private readonly Persistence persistence;
-        private readonly TypedLightManager<BattleScene> typedLightManager;
-        private readonly CharacterMenuPositionService characterMenuPositionService;
-        private readonly IExplorationMenu explorationMenu;
-        private readonly FadeScreenMenu fadeScreenMenu;
-        private readonly IScopedCoroutine coroutine;
         private readonly object saveBlock = new object();
         private IGameOverGameState gameOverState;
         private IGameState returnState;
@@ -47,36 +51,6 @@ namespace Adventure.Battle
         public bool ShowExplorationMenu { get; set; } = false;
 
         private IGameState nextState;
-
-        public BattleGameState
-        (
-            IBattleManager battleManager,
-            RTInstances<BattleScene> rtInstances,
-            Party party,
-            PotionCreator potionCreator,
-            EventManager eventManager,
-            IPersistenceWriter persistenceWriter,
-            Persistence persistence,
-            TypedLightManager<BattleScene> typedLightManager,
-            CharacterMenuPositionService characterMenuPositionService,
-            IExplorationMenu explorationMenu,
-            FadeScreenMenu fadeScreenMenu,
-            IScopedCoroutine coroutine
-        )
-        {
-            this.battleManager = battleManager;
-            this.rtInstances = rtInstances;
-            this.party = party;
-            this.potionCreator = potionCreator;
-            this.eventManager = eventManager;
-            this.persistenceWriter = persistenceWriter;
-            this.persistence = persistence;
-            this.typedLightManager = typedLightManager;
-            this.characterMenuPositionService = characterMenuPositionService;
-            this.explorationMenu = explorationMenu;
-            this.fadeScreenMenu = fadeScreenMenu;
-            this.coroutine = coroutine;
-        }
 
         public RTInstances Instances => rtInstances;
 
@@ -173,6 +147,8 @@ namespace Adventure.Battle
                     case IBattleManager.Result.GameOver:
                         coroutine.RunTask(async () =>
                         {
+                            backgroundMusicPlayer.SetBackgroundSong(GameOverMusic.File);
+
                             //Allow the game over state to save the defeated status.
                             //With the time delay this needs to happen right when you die.
                             persistenceWriter.RemoveSaveBlock(saveBlock);
