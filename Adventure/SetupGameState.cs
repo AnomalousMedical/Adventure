@@ -115,6 +115,7 @@ namespace Adventure
                 timeClock.ResetToPersistedTime();
 
                 var mapLoadTask = worldMapManager.SetupWorldMap(); //Task only needs await if world is loading
+                var zoneRestartTask = zoneManager.Restart(() => Task.CompletedTask, lastSeed == persistence.Current.World.Seed); //Task only needs await if zone is loading
                 coroutineRunner.RunTask(async () =>
                 {
                     if (persistence.Current.Player.InWorld)
@@ -128,7 +129,7 @@ namespace Adventure
                     }
                     else
                     {
-                        await zoneManager.Restart(() => Task.CompletedTask, lastSeed == persistence.Current.World.Seed); //When restarting if the world seed is the same allow hold zones
+                        await zoneRestartTask;
                         await zoneManager.WaitForCurrent();
                         if (persistence.Current.Party.GameOver)
                         {
