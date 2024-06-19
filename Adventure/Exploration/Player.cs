@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RpgMath;
+using Adventure.Menu;
 
 namespace Adventure
 {
@@ -47,6 +48,7 @@ namespace Adventure
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
         private readonly CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
+        private readonly IExplorationMenu explorationMenu;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
@@ -114,7 +116,8 @@ namespace Adventure
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
-            CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker
+            CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
+            IExplorationMenu explorationMenu
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -122,6 +125,7 @@ namespace Adventure
             this.assetFactory = assetFactory;
             this.followerManager = followerManager;
             this.characterMenuPositionTracker = characterMenuPositionTracker;
+            this.explorationMenu = explorationMenu;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -283,7 +287,7 @@ namespace Adventure
             //These events are owned by this class, so don't have to unsubscribe
             moveForward.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.Y = 1;
                     l.alertEventsHandled();
@@ -302,7 +306,7 @@ namespace Adventure
             };
             moveBackward.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.Y = -1;
                     l.alertEventsHandled();
@@ -321,7 +325,7 @@ namespace Adventure
             };
             moveLeft.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.X = -1;
                     l.alertEventsHandled();
@@ -340,7 +344,7 @@ namespace Adventure
             };
             moveRight.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.X = 1;
                     l.alertEventsHandled();
@@ -492,8 +496,22 @@ namespace Adventure
             cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 1.15f, cameraAngle);
         }
 
+        bool forceStopOnMenuHandled = false;
         private void EventLayer_OnUpdate(EventLayer eventLayer)
         {
+            if (explorationMenu.Handled)
+            {
+                var lastForceStop = forceStopOnMenuHandled;
+                forceStopOnMenuHandled = true;
+                if(forceStopOnMenuHandled != lastForceStop)
+                {
+                    StopMovement();
+                }
+                return;
+            }
+
+            forceStopOnMenuHandled = false;
+
             if (eventLayer.EventProcessingAllowed)
             {
                 if (allowJoystickInput)

@@ -7,6 +7,8 @@ interface IExplorationMenu
 {
     IDebugGui DebugGui { get; }
     IRootMenu RootMenu { get; }
+    bool Handled { get; }
+
     void RequestSubMenu(IExplorationSubMenu subMenu, GamepadId gamepad);
     bool Update();
 }
@@ -25,13 +27,16 @@ class ExplorationMenu
 
     public IRootMenu RootMenu => rootMenu;
 
+    bool handled;
+    public bool Handled => handled;
+
     /// <summary>
     /// Update the menu. Returns true if something was done. False if nothing was done and the menu wasn't shown
     /// </summary>
     /// <returns></returns>
     public bool Update()
     {
-        bool handled = false;
+        handled = false;
         if (currentMenu != null)
         {
             handled = true;

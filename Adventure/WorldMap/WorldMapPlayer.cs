@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -49,6 +50,7 @@ namespace Adventure.WorldMap
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
         private readonly CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
+        private readonly IExplorationMenu explorationMenu;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
@@ -116,7 +118,8 @@ namespace Adventure.WorldMap
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
-            CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker
+            CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker,
+            IExplorationMenu explorationMenu
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -124,6 +127,7 @@ namespace Adventure.WorldMap
             this.assetFactory = assetFactory;
             this.followerManager = followerManager;
             this.characterMenuPositionTracker = characterMenuPositionTracker;
+            this.explorationMenu = explorationMenu;
             this.followerManager.CharacterDistance = this.followerManager.CharacterDistance * description.Scale.x;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
@@ -316,12 +320,25 @@ namespace Adventure.WorldMap
             }
         }
 
+        public void StopMovement()
+        {
+            characterMover.movementDirection.X = 0;
+            characterMover.movementDirection.Y = 0;
+            this.movementDir = characterMover.movementDirection;
+            bepuScene.RemoveFromInterpolation(characterMover.BodyHandle);
+            this.characterMover.SetLocation(this.currentPosition.ToSystemNumerics());
+            this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
+            bepuScene.AddToInterpolation(characterMover.BodyHandle);
+            ChangeToStoppedAnimation();
+            followerManager.LeaderMoved(this.currentPosition, IsMoving);
+        }
+
         private void SetupInput()
         {
             //These events are owned by this class, so don't have to unsubscribe
             moveForward.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.Y = 1;
                     l.alertEventsHandled();
@@ -340,7 +357,7 @@ namespace Adventure.WorldMap
             };
             moveBackward.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.Y = -1;
                     l.alertEventsHandled();
@@ -359,7 +376,7 @@ namespace Adventure.WorldMap
             };
             moveLeft.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.X = -1;
                     l.alertEventsHandled();
@@ -378,7 +395,7 @@ namespace Adventure.WorldMap
             };
             moveRight.FirstFrameDownEvent += l =>
             {
-                if (l.EventProcessingAllowed)
+                if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
                     characterMover.movementDirection.X = 1;
                     l.alertEventsHandled();
@@ -457,8 +474,22 @@ namespace Adventure.WorldMap
             cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.55f, cameraAngle);
         }
 
+        bool forceStopOnMenuHandled;
         private void EventLayer_OnUpdate(EventLayer eventLayer)
         {
+            if (explorationMenu.Handled)
+            {
+                var lastForceStop = forceStopOnMenuHandled;
+                forceStopOnMenuHandled = true;
+                if (forceStopOnMenuHandled != lastForceStop)
+                {
+                    StopMovement();
+                }
+                return;
+            }
+
+            forceStopOnMenuHandled = false;
+
             if (eventLayer.EventProcessingAllowed) 
             {
                 if (allowJoystickInput)
@@ -470,21 +501,26 @@ namespace Adventure.WorldMap
 
                 if (characterMover.movementDirection.X == 0 && characterMover.movementDirection.Y == 0)
                 {
-                    switch (sprite.CurrentAnimationName)
-                    {
-                        case "up":
-                        case "down":
-                        case "left":
-                        case "right":
-                            var animation = $"stand-{sprite.CurrentAnimationName}";
-                            sprite.SetAnimation(animation);
-                            mainHandItem?.SetAnimation(animation);
-                            offHandItem?.SetAnimation(animation);
-                            break;
-                    }
+                    ChangeToStoppedAnimation();
                 }
 
                 eventLayer.alertEventsHandled();
+            }
+        }
+
+        private void ChangeToStoppedAnimation()
+        {
+            switch (sprite.CurrentAnimationName)
+            {
+                case "up":
+                case "down":
+                case "left":
+                case "right":
+                    var animation = $"stand-{sprite.CurrentAnimationName}";
+                    sprite.SetAnimation(animation);
+                    mainHandItem?.SetAnimation(animation);
+                    offHandItem?.SetAnimation(animation);
+                    break;
             }
         }
 
