@@ -434,6 +434,8 @@ namespace Adventure.WorldMap
             destructionRequest.RequestDestruction();
         }
 
+        private bool biasUpDown = true;
+
         private void BepuScene_OnUpdated(IBepuScene obj)
         {
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
@@ -443,35 +445,52 @@ namespace Adventure.WorldMap
             Sprite_FrameChanged(sprite);
 
             var movementDir = characterMover.movementDirection;
-            if (movementDir.Y > 0.3f)
+            const float ChangeDirXThreshold = 0.80f;
+            const float ChangeDirYThreshold = 0.80f;
+            var movingUp = movementDir.Y > 0;
+            var movingDown = movementDir.Y < 0;
+            if (biasUpDown && movingUp && (movementDir.X < ChangeDirYThreshold && movementDir.X > -ChangeDirYThreshold))
             {
-                sprite.SetAnimation("up");
-                mainHandItem?.SetAnimation("up");
-                offHandItem?.SetAnimation("up");
+                SetCurrentAnimation("up");
+                biasUpDown = true;
             }
-            else if (movementDir.Y < -0.3f)
+            else if (biasUpDown && movingDown && (movementDir.X < ChangeDirYThreshold && movementDir.X > -ChangeDirYThreshold))
             {
-                sprite.SetAnimation("down");
-                mainHandItem?.SetAnimation("down");
-                offHandItem?.SetAnimation("down");
+                SetCurrentAnimation("down");
+                biasUpDown = true;
             }
-            else if (movementDir.X > 0)
+            else if (movementDir.X > 0 && !(!biasUpDown && (movementDir.Y > ChangeDirXThreshold || movementDir.Y < -ChangeDirXThreshold)))
             {
-                sprite.SetAnimation("right");
-                mainHandItem?.SetAnimation("right");
-                offHandItem?.SetAnimation("right");
+                SetCurrentAnimation("right");
+                biasUpDown = false;
             }
-            else if (movementDir.X < 0)
+            else if (movementDir.X < 0 && !(!biasUpDown && (movementDir.Y > ChangeDirXThreshold || movementDir.Y < -ChangeDirXThreshold)))
             {
-                sprite.SetAnimation("left");
-                mainHandItem?.SetAnimation("left");
-                offHandItem?.SetAnimation("left");
+                SetCurrentAnimation("left");
+                biasUpDown = false;
+            }
+            else if (movingUp)
+            {
+                SetCurrentAnimation("up");
+                biasUpDown = true;
+            }
+            else if (movingDown)
+            {
+                SetCurrentAnimation("down");
+                biasUpDown = true;
             }
             this.movementDir = movementDir;
 
             var speedOffset = characterMover.LinearVelocity / characterMover.speed;
             speedOffset.y = 0;
             cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.55f, cameraAngle);
+        }
+
+        private void SetCurrentAnimation(string name)
+        {
+            sprite.SetAnimation(name);
+            mainHandItem?.SetAnimation(name);
+            offHandItem?.SetAnimation(name);
         }
 
         bool forceStopOnMenuHandled;
