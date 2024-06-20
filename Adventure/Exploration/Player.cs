@@ -284,22 +284,35 @@ namespace Adventure
 
         private void SetupInput()
         {
+            const float FullMovementAmount = 1.0f;
+            const float SharedMovementAmount = 0.7f;
+
             //These events are owned by this class, so don't have to unsubscribe
             moveForward.FirstFrameDownEvent += l =>
             {
                 if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
-                    characterMover.movementDirection.Y = 1;
+                    characterMover.movementDirection.Y = MathF.Abs(characterMover.movementDirection.X) > 0.01f ? SharedMovementAmount : FullMovementAmount;
                     l.alertEventsHandled();
                     allowJoystickInput = false;
-                    this.sprite.SetAnimation("up");
                 }
             };
             moveForward.FirstFrameUpEvent += l =>
             {
                 if (l.EventProcessingAllowed)
                 {
-                    if (characterMover.movementDirection.Y > 0.5f) { characterMover.movementDirection.Y = 0; }
+                    if (characterMover.movementDirection.Y > 0.5f)
+                    {
+                        characterMover.movementDirection.Y = 0;
+                        if (characterMover.movementDirection.X > 0.01f)
+                        {
+                            characterMover.movementDirection.X = FullMovementAmount;
+                        }
+                        else if (characterMover.movementDirection.X < -0.01f)
+                        {
+                            characterMover.movementDirection.X = -FullMovementAmount;
+                        }
+                    }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
                 }
@@ -308,17 +321,27 @@ namespace Adventure
             {
                 if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
-                    characterMover.movementDirection.Y = -1;
+                    characterMover.movementDirection.Y = MathF.Abs(characterMover.movementDirection.X) > 0.01f ? -SharedMovementAmount : -FullMovementAmount;
                     l.alertEventsHandled();
                     allowJoystickInput = false;
-                    this.sprite.SetAnimation("down");
                 }
             };
             moveBackward.FirstFrameUpEvent += l =>
             {
                 if (l.EventProcessingAllowed)
                 {
-                    if (characterMover.movementDirection.Y < -0.5f) { characterMover.movementDirection.Y = 0; }
+                    if (characterMover.movementDirection.Y < -0.5f)
+                    {
+                        characterMover.movementDirection.Y = 0;
+                        if (characterMover.movementDirection.X > 0.01f)
+                        {
+                            characterMover.movementDirection.X = FullMovementAmount;
+                        }
+                        else if (characterMover.movementDirection.X < -0.01f)
+                        {
+                            characterMover.movementDirection.X = -FullMovementAmount;
+                        }
+                    }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
                 }
@@ -327,17 +350,27 @@ namespace Adventure
             {
                 if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
-                    characterMover.movementDirection.X = -1;
+                    characterMover.movementDirection.X = MathF.Abs(characterMover.movementDirection.Y) > 0.01f ? -SharedMovementAmount : -FullMovementAmount;
                     l.alertEventsHandled();
                     allowJoystickInput = false;
-                    this.sprite.SetAnimation("left");
                 }
             };
             moveLeft.FirstFrameUpEvent += l =>
             {
                 if (l.EventProcessingAllowed)
                 {
-                    if (characterMover.movementDirection.X < 0.5f) { characterMover.movementDirection.X = 0; }
+                    if (characterMover.movementDirection.X < 0.5f)
+                    {
+                        characterMover.movementDirection.X = 0;
+                        if (characterMover.movementDirection.Y > 0.01f)
+                        {
+                            characterMover.movementDirection.Y = FullMovementAmount;
+                        }
+                        else if (characterMover.movementDirection.Y < -0.01f)
+                        {
+                            characterMover.movementDirection.Y = -FullMovementAmount;
+                        }
+                    }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
                 }
@@ -346,17 +379,27 @@ namespace Adventure
             {
                 if (l.EventProcessingAllowed && !explorationMenu.Handled)
                 {
-                    characterMover.movementDirection.X = 1;
+                    characterMover.movementDirection.X = MathF.Abs(characterMover.movementDirection.Y) > 0.01f ? SharedMovementAmount : FullMovementAmount;
                     l.alertEventsHandled();
                     allowJoystickInput = false;
-                    this.sprite.SetAnimation("right");
                 }
             };
             moveRight.FirstFrameUpEvent += l =>
             {
                 if (l.EventProcessingAllowed)
                 {
-                    if (characterMover.movementDirection.X > 0.5f) { characterMover.movementDirection.X = 0; }
+                    if (characterMover.movementDirection.X > 0.5f)
+                    {
+                        characterMover.movementDirection.X = 0;
+                        if (characterMover.movementDirection.Y > 0.01f)
+                        {
+                            characterMover.movementDirection.Y = FullMovementAmount;
+                        }
+                        else if (characterMover.movementDirection.Y < -0.01f)
+                        {
+                            characterMover.movementDirection.Y = -FullMovementAmount;
+                        }
+                    }
                     l.alertEventsHandled();
                     allowJoystickInput = moveForward.Up && moveBackward.Up && moveLeft.Up && moveRight.Up;
                 }
