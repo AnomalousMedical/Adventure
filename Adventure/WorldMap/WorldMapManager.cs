@@ -94,6 +94,7 @@ namespace Adventure.WorldMap
         public void CenterCamera()
         {
             player.CenterCamera();
+            airship.CenterCamera();
         }
 
         public async Task SetupWorldMap()

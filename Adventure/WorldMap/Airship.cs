@@ -204,6 +204,14 @@ namespace Adventure.WorldMap
             DestroyPhysics();
         }
 
+        public void CenterCamera()
+        {
+            if (persistence.Current.Player.InAirship)
+            {
+                cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
+            }
+        }
+
         private void CreateGraphics()
         {
             if(!graphicsActive && map != null)
