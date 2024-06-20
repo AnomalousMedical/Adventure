@@ -441,7 +441,10 @@ namespace Adventure
 
         public void CenterCamera()
         {
-            cameraMover.SetPosition(currentPosition + cameraOffset, cameraAngle);
+            if (!persistence.Current.Player.InWorld)
+            {
+                cameraMover.SetPosition(currentPosition + cameraOffset, cameraAngle);
+            }
         }
 
         public void OffsetCamera(in Vector3 offset)
@@ -744,7 +747,7 @@ namespace Adventure
 
         private void CharacterSheet_OnBodyModified(CharacterSheet obj)
         {
-             coroutine.RunTask(SwapSprites());
+            coroutine.RunTask(SwapSprites());
         }
 
         private async Task SwapSprites()
