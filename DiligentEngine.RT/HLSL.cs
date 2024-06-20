@@ -27,6 +27,7 @@ namespace DiligentEngine.RT.HLSL
         float3 Color;
         float Depth;
         uint Recursion;
+        float2 RayConeAtOrigin;
     };
 
     [StructLayout(LayoutKind.Sequential)]

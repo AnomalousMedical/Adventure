@@ -19,11 +19,12 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
     float3 normalColor;
     float4 physicalColor;
     float3 emissiveColor;
+    float2 currentRayCone = payload.RayConeAtOrigin;
 
     [forcecase] switch (instanceData.dispatchType) 
     {
         case $$(LIGHTANDSHADEBASE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -33,7 +34,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -43,7 +44,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBase(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor);
             LightAndShadeBase
             (
@@ -54,7 +55,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -65,7 +66,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBase
             (
                 payload, barycentrics,
@@ -76,7 +77,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASEEMISSIVE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseEmissive(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, emissiveColor);
             LightAndShadeBase
             (
@@ -88,7 +89,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -99,7 +100,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -110,7 +111,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMAL) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormal(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor);
             LightAndShadeBaseNormal
             (
@@ -122,7 +123,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -134,7 +135,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormal
             (
                 payload, barycentrics,
@@ -146,7 +147,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALEMISSIVE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormalEmissive(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor, emissiveColor);
             LightAndShadeBaseNormal
             (
@@ -159,7 +160,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -171,7 +172,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -183,7 +184,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICAL) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormalPhysical(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor, physicalColor);
             LightAndShadeBaseNormalPhysical
             (
@@ -197,7 +198,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -210,7 +211,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysical
             (
                 payload, barycentrics,
@@ -223,7 +224,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALEMISSIVE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormalPhysicalEmissive(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor, physicalColor, emissiveColor);
             LightAndShadeBaseNormalPhysical
             (
@@ -237,7 +238,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -249,7 +250,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -261,7 +262,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormalPhysical(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor, physicalColor);
             LightAndShadeBaseNormalPhysicalReflective
             (
@@ -274,7 +275,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -287,7 +288,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE) + 1:
-            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone);
+            GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv, uvAreaFromCone, currentRayCone);
             LightAndShadeBaseNormalPhysicalReflective
             (
                 payload, barycentrics,
@@ -300,7 +301,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(LIGHTANDSHADEBASENORMALPHYSICALREFLECTIVEEMISSIVE) + 2:
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             GetMultiBaseNormalPhysicalEmissive(uv, globalUv, uvAreaFromCone, posX, posY, posZ, baseColor, normalColor, physicalColor, emissiveColor);
             LightAndShadeBaseNormalPhysicalReflective
             (
@@ -314,7 +315,7 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
             break;
 
         case $$(GLASSMATERIAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             Glass
             (
                 payload, barycentrics,
@@ -322,12 +323,13 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 float3(instanceData.uv0.x, instanceData.uv0.y, instanceData.uv1.x), //GlassReflectionColorMask
                 instanceData.uv1.y, //GlassAbsorption
                 instanceData.uv2, //GlassIndexOfRefraction
-                instanceData.padding //GlassMaterialColorRgb
+                instanceData.padding, //GlassMaterialColorRgb
+                currentRayCone
             );
             break;
 
         case $$(WATERMATERIAL):
-            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
+            GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv, uvAreaFromCone, currentRayCone);
             Water
             (
                 payload, barycentrics,
@@ -335,7 +337,8 @@ void main(inout PrimaryRayPayload payload, in BuiltInTriangleIntersectionAttribu
                 float3(instanceData.uv0.x, instanceData.uv0.y, instanceData.uv1.x), //GlassReflectionColorMask
                 instanceData.uv1.y, //GlassAbsorption
                 instanceData.uv2, //GlassIndexOfRefraction
-                instanceData.padding //GlassMaterialColorRgb
+                instanceData.padding, //GlassMaterialColorRgb
+                currentRayCone
             );
             break;
     }

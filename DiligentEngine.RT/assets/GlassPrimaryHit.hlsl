@@ -40,7 +40,8 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
     float3  GlassReflectionColorMask,
     float   GlassAbsorption,
     float2  GlassIndexOfRefraction, //min and max IOR
-    uint     GlassMaterialColorRgb
+    uint     GlassMaterialColorRgb,
+    float2  rayConeAtOrigin
 )
 {
     float3  GlassMaterialColor = float3
@@ -90,7 +91,7 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
         ray.Origin    = WorldRayOrigin() + WorldRayDirection() * RayTCurrent() + normal * SMALL_OFFSET;
         ray.Direction = reflect(WorldRayDirection(), normal);
 
-        PrimaryRayPayload reflPayload = CastPrimaryRay(ray, payload.Recursion + 1);
+        PrimaryRayPayload reflPayload = CastPrimaryRay(ray, payload.Recursion + 1, rayConeAtOrigin);
         reflColor = reflPayload.Color;
             
         if (HitKind() == HIT_KIND_TRIANGLE_BACK_FACE)
@@ -105,7 +106,7 @@ void Glass(inout PrimaryRayPayload payload, float3 barycentrics,
         ray.Origin    = WorldRayOrigin() + WorldRayDirection() * RayTCurrent();
         ray.Direction = rayDir;
 
-        PrimaryRayPayload nextPayload = CastPrimaryRay(ray, payload.Recursion + 1);
+        PrimaryRayPayload nextPayload = CastPrimaryRay(ray, payload.Recursion + 1, rayConeAtOrigin);
         resultColor = nextPayload.Color;
             
         if (HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE || payload.Recursion == 0)
@@ -125,7 +126,8 @@ void Water(inout PrimaryRayPayload payload, float3 barycentrics,
     float3  GlassReflectionColorMask,
     float   GlassAbsorption,
     float2  GlassIndexOfRefraction, //min and max IOR
-    uint     GlassMaterialColorRgb
+    uint    GlassMaterialColorRgb,
+    float2  rayConeAtOrigin
 )
 {
     float3  GlassMaterialColor = float3
@@ -175,7 +177,7 @@ void Water(inout PrimaryRayPayload payload, float3 barycentrics,
         ray.Origin = WorldRayOrigin() + WorldRayDirection() * RayTCurrent() + normal * SMALL_OFFSET;
         ray.Direction = reflect(WorldRayDirection(), normal);
 
-        PrimaryRayPayload reflPayload = CastPrimaryRay(ray, payload.Recursion + 1);
+        PrimaryRayPayload reflPayload = CastPrimaryRay(ray, payload.Recursion + 1, rayConeAtOrigin);
         reflColor = reflPayload.Color;
 
         if (HitKind() == HIT_KIND_TRIANGLE_BACK_FACE)
@@ -190,7 +192,7 @@ void Water(inout PrimaryRayPayload payload, float3 barycentrics,
         ray.Origin = WorldRayOrigin() + WorldRayDirection() * RayTCurrent();
         ray.Direction = rayDir;
 
-        PrimaryRayPayload nextPayload = CastPrimaryRay(ray, payload.Recursion + 1);
+        PrimaryRayPayload nextPayload = CastPrimaryRay(ray, payload.Recursion + 1, rayConeAtOrigin);
         resultColor = nextPayload.Color;
 
         if (HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE || payload.Recursion == 0)

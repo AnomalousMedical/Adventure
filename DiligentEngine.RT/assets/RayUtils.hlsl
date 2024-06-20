@@ -5,9 +5,9 @@
 RaytracingAccelerationStructure g_TLAS;
 ConstantBuffer<Constants>       g_ConstantsCB;
 
-PrimaryRayPayload CastPrimaryRay(RayDesc ray, uint Recursion)
+PrimaryRayPayload CastPrimaryRay(RayDesc ray, uint Recursion, float2 RayConeAtOrigin)
 {
-    PrimaryRayPayload payload = {float3(0, 0, 0), 0.0, Recursion};
+    PrimaryRayPayload payload = { float3(0, 0, 0), 0.0, Recursion, RayConeAtOrigin };
 
     // Manually terminate the recusrion as the driver doesn't check the recursion depth.
     if (Recursion >= g_ConstantsCB.MaxRecursion)
@@ -26,6 +26,11 @@ PrimaryRayPayload CastPrimaryRay(RayDesc ray, uint Recursion)
         ray,
         payload);
     return payload;
+}
+
+PrimaryRayPayload CastPrimaryRay(RayDesc ray, uint Recursion)
+{
+    return CastPrimaryRay(ray, Recursion, float2(0, g_ConstantsCB.eyeToPixelConeSpreadAngle));
 }
 
 ShadowRayPayload CastShadow(RayDesc ray, uint Recursion)

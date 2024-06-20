@@ -49,6 +49,7 @@ struct PrimaryRayPayload
     float3 Color;
     float  Depth;
     uint   Recursion;
+    float2 RayConeAtOrigin;
 };
 
 struct EmissiveRayPayload

@@ -17,7 +17,8 @@ float2 GetUvAreaFromCone
     in float3 barycentrics,
     in CubeAttribVertex posX,
     in CubeAttribVertex posY,
-    in CubeAttribVertex posZ
+    in CubeAttribVertex posZ,
+    inout float2 currentRayCone
 )
 {
     float3 hitPosition = WorldRayOrigin() + RayTCurrent() * WorldRayDirection();
@@ -35,16 +36,16 @@ float2 GetUvAreaFromCone
     const float3 aPos[3] = { posX.position.xyz, posY.position.xyz, posZ.position.xyz };
 	const float2 aUVs[3] = { posX.uv, posY.uv, posZ.uv };
 
-	const float2 rayConeAtOrigin = float2(0, g_ConstantsCB.eyeToPixelConeSpreadAngle);
+	const float2 rayConeAtOrigin = currentRayCone;
 
 	// New cone width should increase by 2*RayLength*tan(SpreadAngle/2), but RayLength*SpreadAngle is a close approximation
-	const float2 rayConeAtHit = float2
+    currentRayCone = float2
     (
 		rayConeAtOrigin.x + rayConeAtOrigin.y * length(hitPosition - g_ConstantsCB.CameraPos.xyz),
 		rayConeAtOrigin.y + g_ConstantsCB.eyeToPixelConeSpreadAngle
     );
 
-    return UVAreaFromRayCone(WorldRayDirection(), normal, rayConeAtHit.x, aUVs, aPos, matWorld);
+    return UVAreaFromRayCone(WorldRayDirection(), normal, currentRayCone.x, aUVs, aPos, matWorld);
 }
 
 void GetInstanceDataMesh
@@ -84,11 +85,12 @@ void GetInstanceDataMesh
     out CubeAttribVertex posZ,
     out float2 uv,
     out float2 globalUv,
-    out float2 uvAreaFromCone
+    out float2 uvAreaFromCone,
+    inout float2 currentRayCone
 )
 {
     GetInstanceDataMesh(attr, barycentrics, posX, posY, posZ, uv, globalUv);
-    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ);
+    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ, currentRayCone);
 }
 
 float2 GetTriUvs(uint vertId)
@@ -157,9 +159,10 @@ void GetInstanceDataSprite
     out CubeAttribVertex posY,
     out CubeAttribVertex posZ,
     out float2 uv,
-    out float2 uvAreaFromCone
+    out float2 uvAreaFromCone,
+    inout float2 currentRayCone
 )
 {
     GetInstanceDataSprite(attr, barycentrics, posX, posY, posZ, uv);
-    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ);
+    uvAreaFromCone = GetUvAreaFromCone(barycentrics, posX, posY, posZ, currentRayCone);
 }
