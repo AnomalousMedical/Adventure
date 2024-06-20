@@ -81,9 +81,9 @@ namespace Adventure.WorldMap
         ButtonEvent moveLeft;
 
         private bool disposed;
-        private Vector3 cameraOffset = new Vector3(0, 5, -12);
+        private Vector3 cameraOffset = new Vector3(0, 3, -12);
         private Vector3 zoomedCameraOffset = new Vector3(0, 2 * 0.35f, -2.8f * 0.35f);
-        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 15f);
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
