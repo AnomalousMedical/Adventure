@@ -364,6 +364,8 @@ namespace Adventure
                 mainHandHand.RequestDestruction();
                 mainHandHand = null;
             }
+            mainHandHand?.SetGraphicsActive(graphicsActive);
+            mainHandItem?.SetGraphicsActive(graphicsActive);
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
         }
@@ -408,6 +410,8 @@ namespace Adventure
                 offHandHand.RequestDestruction();
                 offHandHand = null;
             }
+            offHandHand?.SetGraphicsActive(graphicsActive);
+            offHandItem?.SetGraphicsActive(graphicsActive);
             Sprite_AnimationChanged(sprite);
             Sprite_FrameChanged(sprite);
         }
