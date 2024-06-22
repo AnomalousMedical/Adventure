@@ -37,7 +37,13 @@ void main(inout PrimaryRayPayload payload)
     {
         float2 uv = sphere2mapUV_EqualArea(WorldRayDirection());
         color = $$(G_TEXTURES)[$$(G_TEXTURESETS)[g_ConstantsCB.missTextureSet].baseTexture].SampleLevel(g_SamLinearWrap, uv, 0).rgb;
-        //color = float3(uv.x, uv.y, 0);
+        if (g_ConstantsCB.missTextureSet2 > -1)
+        {
+            float tex2Blend = g_ConstantsCB.missTextureBlend;
+            float tex1Blend = 1.0f - tex2Blend;
+            float3 blendColor = $$(G_TEXTURES)[$$(G_TEXTURESETS)[g_ConstantsCB.missTextureSet2].baseTexture].SampleLevel(g_SamLinearWrap, uv, 0).rgb;
+            color = color * tex1Blend + blendColor * tex2Blend;
+        }
     }
     else
     {

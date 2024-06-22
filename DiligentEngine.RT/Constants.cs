@@ -104,7 +104,12 @@ namespace DiligentEngine.RT
         /// </summary>
         public float mipBias;
         public int missTextureSet;
-        public int pad3;
+        public int missTextureSet2;
+        public float missTextureBlend;
+
+        public float padding1;
+        public float padding2;
+        public float padding3;
 
         public static Constants CreateDefault(uint maxRecursionDepth)
         {
@@ -129,7 +134,9 @@ namespace DiligentEngine.RT
                 Pallete_4 = new float4(0.78f, 1.00f, 1.00f, 0f),
                 Pallete_5 = new float4(1.00f, 1.00f, 1.00f, 0f),
 
-                missTextureSet = -1
+                missTextureSet = -1,
+                missTextureSet2 = -1,
+                missTextureBlend = 0
             };
         }
     }
