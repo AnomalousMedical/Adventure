@@ -1,4 +1,5 @@
 ﻿using DiligentEngine.RT;
+using DiligentEngine.RT.Resources;
 using Engine;
 using Engine.Platform;
 using System;
@@ -9,18 +10,14 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class Sky
+    class Sky : IDisposable
     {
         const long OneHour = 60L * 60L * Clock.SecondsToMicro;
-        readonly Color[] DaySky = new Color[6] { Color.FromARGB(0xff2a63cc), Color.FromARGB(0xff2a63cc), Color.FromARGB(0xff2a63cc), Color.FromARGB(0xff2a63cc), Color.FromARGB(0xff2a63cc), Color.FromARGB(0xff2a63cc) };
-        readonly Color[] NightSky = new Color[6] { Color.FromARGB(0xff010101), Color.FromARGB(0xff010101), Color.FromARGB(0xff010101), Color.FromARGB(0xff010101), Color.FromARGB(0xff010101), Color.FromARGB(0xff010101) };
-        readonly Color[] DawnSky = new Color[6] { Color.FromARGB(0xff1f2b5f), Color.FromARGB(0xff7a5c9c), Color.FromARGB(0xff7a5c9c), Color.FromARGB(0xff7a5c9c), Color.FromARGB(0xff7a5c9c), Color.FromARGB(0xff7a5c9c) };
-        readonly Color[] DuskSky = new Color[6] { Color.FromARGB(0xff811d5e), Color.FromARGB(0xff983275), Color.FromARGB(0xfffd2f24), Color.FromARGB(0xffff6f01), Color.FromARGB(0xfffed800), Color.FromARGB(0xfffed800) };
         private readonly ITimeClock timeClock;
         private readonly RTCameraAndLight cameraAndLight;
-
-        //Clear Color
-        //private Color[] skyPallet = new Color[6];
+        private readonly TextureManager textureManager;
+        private readonly RayTracingRenderer rayTracingRenderer;
+        private readonly ActiveTextures activeTextures;
 
         //Light
         private Vector3 sunPosition;
@@ -29,10 +26,56 @@ namespace Adventure
         float lightIntensity = 3;
         float averageLogLum = 0.3f;
 
-        public Sky(ITimeClock timeClock, RTCameraAndLight cameraAndLight)
+        private bool texturesReady = false;
+        private Vector2 uvOffset = new Vector2();
+
+        record SkyTextureInfo(CC0TextureResult TextureSet, int TextureIndex);
+
+        SkyTextureInfo DaySky;
+        SkyTextureInfo NightSky;
+        SkyTextureInfo DawnSky;
+        SkyTextureInfo DuskSky;
+
+        public Sky(ITimeClock timeClock, RTCameraAndLight cameraAndLight, TextureManager textureManager, IScopedCoroutine scopedCoroutine, RayTracingRenderer rayTracingRenderer, ActiveTextures activeTextures)
         {
             this.timeClock = timeClock;
             this.cameraAndLight = cameraAndLight;
+            this.textureManager = textureManager;
+            this.rayTracingRenderer = rayTracingRenderer;
+            this.activeTextures = activeTextures;
+
+            scopedCoroutine.RunTask(async () =>
+            {
+                var dayTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/kloofendal_48d_partly_cloudy_puresky_8k_Adj", false, Ext: "webp", MipLevels: 1));
+                var nightTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/NASA/starmap_2020_8k", false, Ext: "webp", MipLevels: 1));
+                var dawnTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/evening_road_01_puresky_8k", false, Ext: "webp", MipLevels: 1));
+                var duskTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/syferfontein_1d_clear_puresky_8k", false, Ext: "webp", MipLevels: 1));
+
+                await dayTextureTask;
+                await nightTextureTask;
+                await dawnTextureTask;
+                await duskTextureTask;
+
+                DaySky = new SkyTextureInfo(dayTextureTask.Result, activeTextures.AddActiveTexture(dayTextureTask.Result).tex0);
+                NightSky = new SkyTextureInfo(nightTextureTask.Result, activeTextures.AddActiveTexture(nightTextureTask.Result).tex0);
+                DawnSky = new SkyTextureInfo(dawnTextureTask.Result, activeTextures.AddActiveTexture(dawnTextureTask.Result).tex0);
+                DuskSky = new SkyTextureInfo(duskTextureTask.Result, activeTextures.AddActiveTexture(duskTextureTask.Result).tex0);
+
+                texturesReady = true;
+            });
+        }
+
+        public void Dispose()
+        {
+            activeTextures.RemoveActiveTexture(DaySky.TextureSet);
+            activeTextures.RemoveActiveTexture(NightSky.TextureSet);
+            activeTextures.RemoveActiveTexture(DawnSky.TextureSet);
+            activeTextures.RemoveActiveTexture(DuskSky.TextureSet);
+
+            textureManager.TryReturn(DaySky.TextureSet);
+            textureManager.TryReturn(NightSky.TextureSet);
+            textureManager.TryReturn(DawnSky.TextureSet);
+            textureManager.TryReturn(DuskSky.TextureSet);
         }
 
         const float LightDistance = 10000.0f;
@@ -41,6 +84,17 @@ namespace Adventure
 
         public unsafe void UpdateLight(Clock clock)
         {
+            uvOffset.x += 0.0001f * clock.DeltaSeconds;
+            if(uvOffset.x > 1f)
+            {
+                uvOffset.x -= 1f;
+            }
+
+            if (!texturesReady)
+            {
+                return;
+            }
+
             var rotation = new Quaternion(Vector3.UnitZ, timeClock.TimeFactor * 2 * MathF.PI);
             sunPosition = Quaternion.quatRotate(rotation, Vector3.Down) * LightDistance;
             sunPosition += new Vector3(0f, 0f, -LightDistance);
@@ -61,16 +115,16 @@ namespace Adventure
                 if (timeClock.CurrentTimeMicro < timeClock.DayStart + OneHour)
                 {
                     float timeFactor = (timeClock.CurrentTimeMicro - timeClock.DayStart) / (float)OneHour;
-                    BlendSetPallet(timeFactor, DawnSky, DaySky, cameraAndLight.MissPallete);
+                    BlendSetPallet(timeFactor, DawnSky, DaySky);
                 }
                 else if (timeClock.CurrentTimeMicro > timeClock.DayEnd - OneHour)
                 {
                     float timeFactor = (timeClock.CurrentTimeMicro - (timeClock.DayEnd - OneHour)) / (float)OneHour;
-                    BlendSetPallet(timeFactor, DaySky, DuskSky, cameraAndLight.MissPallete);
+                    BlendSetPallet(timeFactor, DaySky, DuskSky);
                 }
                 else
                 {
-                    SetPallet(DaySky, cameraAndLight.MissPallete);
+                    SetPallet(DaySky);
                 }
             }
             else
@@ -85,16 +139,16 @@ namespace Adventure
                 if (timeClock.CurrentTimeMicro > timeClock.DayStart - OneHour && timeClock.CurrentTimeMicro <= timeClock.DayStart)
                 {
                     float timeFactor = (timeClock.CurrentTimeMicro - (timeClock.DayStart - OneHour)) / (float)OneHour;
-                    BlendSetPallet(timeFactor, NightSky, DawnSky, cameraAndLight.MissPallete);
+                    BlendSetPallet(timeFactor, NightSky, DawnSky);
                 }
                 else if (timeClock.CurrentTimeMicro >= timeClock.DayEnd && timeClock.CurrentTimeMicro < timeClock.DayEnd + OneHour)
                 {
                     float timeFactor = (timeClock.CurrentTimeMicro - timeClock.DayEnd) / (float)OneHour;
-                    BlendSetPallet(timeFactor, DuskSky, NightSky, cameraAndLight.MissPallete);
+                    BlendSetPallet(timeFactor, DuskSky, NightSky);
                 }
                 else
                 {
-                    SetPallet(NightSky, cameraAndLight.MissPallete);
+                    SetPallet(NightSky);
                 }
             }
 
@@ -110,23 +164,14 @@ namespace Adventure
             }
         }
 
-        private void SetPallet(Color[] src, Color[] dest)
+        private void SetPallet(SkyTextureInfo src)
         {
-            var length = src.Length;
-            for (var i = 0; i < length; ++i)
-            {
-                dest[i] = src[i];
-            }
+            rayTracingRenderer.SetMissTextureSet(src.TextureIndex, uvOffset: uvOffset);
         }
 
-        private void BlendSetPallet(float factor, Color[] color1, Color[] color2, Color[] dest)
+        private void BlendSetPallet(float factor, SkyTextureInfo tex1, SkyTextureInfo tex2)
         {
-            //TODO: Use hsl to calcluate sky instead
-            var length = color1.Length;
-            for(var i = 0; i < length; ++i)
-            {
-                dest[i] = Color.FadeColors(factor, color1[i], color2[i]);
-            }
+            rayTracingRenderer.SetMissTextureSet(tex1.TextureIndex, tex2.TextureIndex, factor, uvOffset: uvOffset);
         }
     }
 }
