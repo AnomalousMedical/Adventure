@@ -30,7 +30,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<MeshBLAS>();
             services.AddSingleton<RTCameraAndLight>();
             services.AddSingleton<RayTracingRenderer>();
-            services.AddSingleton<GeneralShaders>();
             services.AddSingleton<CC0TextureLoader>();
             services.AddSingleton<TextureManager>();
             services.AddSingleton<ActiveTextures>();

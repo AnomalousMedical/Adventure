@@ -18,7 +18,6 @@ namespace DiligentEngine.RT
         private readonly GraphicsEngine graphicsEngine;
         private readonly RTImageBlitter imageBlitter;
         private readonly RTCameraAndLight cameraAndLight;
-        private readonly GeneralShaders generalShaders;
         private byte maxRecursionDepth = 8;
 
         private AutoPtr<IBuffer> m_ConstantsCB;
@@ -48,18 +47,14 @@ namespace DiligentEngine.RT
         (
             GraphicsEngine graphicsEngine,
             RTImageBlitter imageBlitter,
-            RTCameraAndLight cameraAndLight,
-            GeneralShaders generalShaders
+            RTCameraAndLight cameraAndLight
         )
         {
             this.graphicsEngine = graphicsEngine;
             this.imageBlitter = imageBlitter;
             this.cameraAndLight = cameraAndLight;
-            this.generalShaders = generalShaders;
             maxRecursionDepth = (byte)Math.Min(maxRecursionDepth, graphicsEngine.RenderDevice.DeviceProperties_MaxRayTracingRecursionDepth);
             m_Constants = Constants.CreateDefault(maxRecursionDepth);
-
-            generalShaders.Setup(cameraAndLight);
         }
 
         public void Dispose()
@@ -137,6 +132,7 @@ namespace DiligentEngine.RT
             {
                 new ImmutableSamplerDesc{ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, SamplerOrTextureName = "g_SamLinearWrap", Desc = SamLinearWrapDesc},
                 new ImmutableSamplerDesc{ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, SamplerOrTextureName = "g_SamLinearWrap", Desc = SamLinearWrapDesc},
+                new ImmutableSamplerDesc{ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_MISS, SamplerOrTextureName = "g_SamLinearWrap", Desc = SamLinearWrapDesc},
 
                 new ImmutableSamplerDesc{ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, SamplerOrTextureName = "g_SamPointWrap", Desc = SamPointWrapDesc},
                 new ImmutableSamplerDesc{ShaderStages = SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, SamplerOrTextureName = "g_SamPointWrap", Desc = SamPointWrapDesc}
@@ -153,7 +149,6 @@ namespace DiligentEngine.RT
             PSOCreateInfo.PSODesc.ResourceLayout.ImmutableSamplers = ImmutableSamplers;
             PSOCreateInfo.PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE.SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE;
 
-            generalShaders.AddToCreateInfo(PSOCreateInfo);
             OnSetupCreateInfo?.Invoke(PSOCreateInfo);
 
             return PSOCreateInfo;
@@ -359,6 +354,11 @@ namespace DiligentEngine.RT
             m_pImmediateContext.UpdateSBT(m_pSBT.Obj);
 
             return m_pTLAS;
+        }
+
+        public void SetMissTextureSet(int textureSet)
+        {
+            this.m_Constants.missTextureSet = textureSet;
         }
 
         /// <summary>

@@ -94,6 +94,8 @@ namespace DiligentEngine.RT.ShaderSets
         private RayTracingTriangleHitShaderGroup primaryHitShaderGroup;
         private RayTracingTriangleHitShaderGroup shadowHitShaderGroup;
 
+        private GeneralShaders generalShaders;
+
         public PrimaryHitShader(ActiveTextures activeTextures, RayTracingRenderer renderer, BLASBuilder builder)
         {
             this.builder = builder;
@@ -109,6 +111,8 @@ namespace DiligentEngine.RT.ShaderSets
             TextureSetsVarName = TextureSetsVarName + id;
             VerticesVarName = VerticesVarName + id;
             IndicesVarName = IndicesVarName + id;
+
+            generalShaders = new GeneralShaders(graphicsEngine, shaderLoader, activeTextures, cameraAndLight, renderer, TextureVarName, TextureSetsVarName);
 
             this.numTextures = activeTextures.MaxTextures;
 
@@ -210,6 +214,8 @@ namespace DiligentEngine.RT.ShaderSets
             pShadowAnyHit?.Dispose();
             pCubeAnyHit?.Dispose();
             pCubePrimaryHit?.Dispose();
+
+            generalShaders.Dispose();
         }
 
         private void Renderer_OnSetupCreateInfo(RayTracingPipelineStateCreateInfo PSOCreateInfo)
@@ -244,9 +250,11 @@ namespace DiligentEngine.RT.ShaderSets
             activeTextures.UpdateSharedBuffers();
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, TextureSetsVarName).Set(activeTextures.TexSetBuffer.GetDefaultView(BUFFER_VIEW_TYPE.BUFFER_VIEW_SHADER_RESOURCE));
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, TextureSetsVarName)?.Set(activeTextures.TexSetBuffer.GetDefaultView(BUFFER_VIEW_TYPE.BUFFER_VIEW_SHADER_RESOURCE));
+            rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_MISS, TextureSetsVarName)?.Set(activeTextures.TexSetBuffer.GetDefaultView(BUFFER_VIEW_TYPE.BUFFER_VIEW_SHADER_RESOURCE));
 
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_CLOSEST_HIT, TextureVarName)?.SetArray(activeTextures.Textures);
             rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_ANY_HIT, TextureVarName)?.SetArray(activeTextures.Textures);
+            rayTracingSRB.GetVariableByName(SHADER_TYPE.SHADER_TYPE_RAY_MISS, TextureVarName)?.SetArray(activeTextures.Textures);
         }
 
         private void BindTlas(IShaderBindingTable sbt, ITopLevelAS tlas)
