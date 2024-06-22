@@ -75,10 +75,10 @@ namespace Adventure.Battle
                 using var destructionBlock = destructionRequest.BlockDestruction();
                 try
                 {
-                    var floorTextureDesc = new CCOTextureBindingDescription(description.Biome.FloorTexture, reflective: description.Biome.ReflectFloor);
-                    var floorTextureDesc2 = new CCOTextureBindingDescription(description.Biome.FloorTexture2 ?? description.Biome.FloorTexture, reflective: description.Biome.ReflectFloor);
-                    var wallTextureDesc = new CCOTextureBindingDescription(description.Biome.WallTexture, reflective: description.Biome.ReflectWall);
-                    var wallTextureDesc2 = new CCOTextureBindingDescription(description.Biome.WallTexture2 ?? description.Biome.WallTexture, reflective: description.Biome.ReflectWall);
+                    var floorTextureDesc = new CCOTextureBindingDescription(description.Biome.FloorTexture, Reflective: description.Biome.ReflectFloor);
+                    var floorTextureDesc2 = new CCOTextureBindingDescription(description.Biome.FloorTexture2 ?? description.Biome.FloorTexture, Reflective: description.Biome.ReflectFloor);
+                    var wallTextureDesc = new CCOTextureBindingDescription(description.Biome.WallTexture, Reflective: description.Biome.ReflectWall);
+                    var wallTextureDesc2 = new CCOTextureBindingDescription(description.Biome.WallTexture2 ?? description.Biome.WallTexture, Reflective: description.Biome.ReflectWall);
 
                     var floorTextureTask = textureManager.Checkout(floorTextureDesc);
                     var floorTexture2Task = textureManager.Checkout(floorTextureDesc2);

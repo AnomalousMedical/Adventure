@@ -39,18 +39,18 @@ namespace DiligentEngine.RT.Resources
             this.graphicsEngine = graphicsEngine;
         }
 
-        public async Task<CC0TextureResult> LoadTextureSet(String basePath, bool reflective, String ext = "jpg", bool allowOpacityMapLoad = true)
+        public async Task<CC0TextureResult> LoadTextureSet(CCOTextureBindingDescription desc)
         {
             //In this function the auto pointers are handed off to the result, which will be managed by the caller to erase the resources.
             var result = new CC0TextureResult();
 
-            var colorMapPath = $"{basePath}_Color.{ext}";
-            var normalMapPath = $"{basePath}_Normal.{ext}";
-            var roughnessMapPath = $"{basePath}_Roughness.{ext}";
-            var metalnessMapPath = $"{basePath}_Metalness.{ext}";
-            var ambientOcclusionMapPath = $"{basePath}_AmbientOcclusion.{ext}";
-            var opacityFile = $"{basePath}_Opacity.jpg";
-            var emissiveMapPath = $"{basePath}_Emission.jpg";
+            var colorMapPath = $"{desc.BaseName}_Color.{desc.Ext}";
+            var normalMapPath = $"{desc.BaseName}_Normal.{desc.Ext}";
+            var roughnessMapPath = $"{desc.BaseName}_Roughness.{desc.Ext}";
+            var metalnessMapPath = $"{desc.BaseName}_Metalness.{desc.Ext}";
+            var ambientOcclusionMapPath = $"{desc.BaseName}_AmbientOcclusion.{desc.Ext}";
+            var opacityFile = $"{desc.BaseName}_Opacity.jpg";
+            var emissiveMapPath = $"{desc.BaseName}_Emission.jpg";
 
             var Barriers = new List<StateTransitionDesc>(5);
 
@@ -62,7 +62,7 @@ namespace DiligentEngine.RT.Resources
                     {
                         using var bmp = FreeImageBitmap.FromStream(stream);
                         bool hasOpacity = false;
-                        if (allowOpacityMapLoad && resourceProvider.exists(opacityFile))
+                        if (desc.AllowOpacityMapLoad && resourceProvider.exists(opacityFile))
                         {
                             //Jam opacity map into color alpha channel if it exists
                             bmp.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_32_BPP);
@@ -72,8 +72,8 @@ namespace DiligentEngine.RT.Resources
                             bmp.SetChannel(opacityBmp, FREE_IMAGE_COLOR_CHANNEL.FICC_ALPHA);
                             hasOpacity = true;
                         }
-                        var baseColorMap = textureLoader.CreateTextureFromImage(bmp, 0, "baseColorMap from cc0", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
-                        result.SetBaseColorMap(baseColorMap, hasOpacity, reflective);
+                        var baseColorMap = textureLoader.CreateTextureFromImage(bmp, desc.MipLevels, "baseColorMap from cc0", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, true);
+                        result.SetBaseColorMap(baseColorMap, hasOpacity, desc.Reflective);
                         Barriers.Add(new StateTransitionDesc { pResource = baseColorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
                 }
@@ -84,7 +84,7 @@ namespace DiligentEngine.RT.Resources
                     {
                         using var map = FreeImageBitmap.FromStream(stream);
 
-                        var normalMap = textureLoader.CreateTextureFromImage(map, 0, "normalTexture from cc0", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                        var normalMap = textureLoader.CreateTextureFromImage(map, desc.MipLevels, "normalTexture from cc0", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                         result.SetNormalMap(normalMap);
                         Barriers.Add(new StateTransitionDesc { pResource = normalMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                     }
@@ -131,7 +131,7 @@ namespace DiligentEngine.RT.Resources
                                 var size = physicalDescriptorBmp.Width * physicalDescriptorBmp.Height;
                                 var span = new Span<UInt32>(firstPixel, size);
                                 var fillColor = DefaultPhysicalNoReflect;
-                                if (reflective)
+                                if (desc.Reflective)
                                 {
                                     fillColor = DefaultPhysicalReflective;
                                 }
@@ -146,7 +146,7 @@ namespace DiligentEngine.RT.Resources
                                 physicalDescriptorBmp.SetChannel(roughnessBmp, FREE_IMAGE_COLOR_CHANNEL.FICC_GREEN);
                             }
 
-                            var physicalDescriptorMap = textureLoader.CreateTextureFromImage(physicalDescriptorBmp, 0, "physicalDescriptorMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+                            var physicalDescriptorMap = textureLoader.CreateTextureFromImage(physicalDescriptorBmp, desc.MipLevels, "physicalDescriptorMap", RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
                             result.SetPhysicalDescriptorMap(physicalDescriptorMap);
                             Barriers.Add(new StateTransitionDesc { pResource = physicalDescriptorMap.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
                         }
