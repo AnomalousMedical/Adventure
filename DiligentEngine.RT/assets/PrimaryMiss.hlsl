@@ -35,7 +35,7 @@ void main(inout PrimaryRayPayload payload)
     float3 color;
     if(g_ConstantsCB.missTextureSet > -1)
     {
-        float2 uv = sphere2mapUV_EqualArea(WorldRayDirection());
+        float2 uv = sphere2mapUV_EqualArea(WorldRayDirection()) + g_ConstantsCB.missUvOffset;
         color = $$(G_TEXTURES)[$$(G_TEXTURESETS)[g_ConstantsCB.missTextureSet].baseTexture].SampleLevel(g_SamLinearWrap, uv, 0).rgb;
         if (g_ConstantsCB.missTextureSet2 > -1)
         {

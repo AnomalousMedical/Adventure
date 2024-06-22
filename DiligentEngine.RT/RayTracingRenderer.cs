@@ -356,11 +356,12 @@ namespace DiligentEngine.RT
             return m_pTLAS;
         }
 
-        public void SetMissTextureSet(int textureSet, int textureSet2 = -1, float blendAmount = 0.0f)
+        public void SetMissTextureSet(int textureSet, int textureSet2 = -1, float blendAmount = 0.0f, in Vector2 uvOffset = new Vector2())
         {
             this.m_Constants.missTextureSet = textureSet;
             this.m_Constants.missTextureSet2 = textureSet2;
             this.m_Constants.missTextureBlend = blendAmount;
+            this.m_Constants.missUvOffset = uvOffset;
         }
 
         /// <summary>

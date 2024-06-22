@@ -97,13 +97,14 @@ struct Constants
     //Mip info
     float eyeToPixelConeSpreadAngle;
     float mipBias;
+    
+    //Miss texture info
     int missTextureSet;
     int missTextureSet2;
     float missTextureBlend;
-
+    float2 missUvOffset;
+    
     float padding1;
-    float padding2;
-    float padding3;
 };
 
 struct SurfaceReflectanceInfo

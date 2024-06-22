@@ -103,13 +103,14 @@ namespace DiligentEngine.RT
         /// Bias the mip map. Negative values use larger mip maps.
         /// </summary>
         public float mipBias;
+
+        //Miss texture info
         public int missTextureSet;
         public int missTextureSet2;
         public float missTextureBlend;
+        public float2 missUvOffset;
 
         public float padding1;
-        public float padding2;
-        public float padding3;
 
         public static Constants CreateDefault(uint maxRecursionDepth)
         {
@@ -136,7 +137,8 @@ namespace DiligentEngine.RT
 
                 missTextureSet = -1,
                 missTextureSet2 = -1,
-                missTextureBlend = 0
+                missTextureBlend = 0,
+                missUvOffset = new float2(0f, 0f)
             };
         }
     }
