@@ -226,15 +226,12 @@ namespace Engine
         /// <returns></returns>
         public static Color FadeColors(float amount, in Color startColor, in Color endColor)
         {
-            //Nicola Pezzotti
-            //https://stackoverflow.com/questions/20461691/c-fade-between-colors-arduino
-            //Modified to blend between 0 and 1
-            float cosArg = amount * MathF.PI / 2;
-            float fade = MathF.Abs(MathF.Cos(cosArg));
-
-            var finalColor = startColor.ScaleRgb(fade).AddRgb(endColor.ScaleRgb(1 - fade));
-
-            return finalColor;
+            return new Color
+            (
+                startColor.r + (endColor.r - startColor.r) * amount,
+                startColor.g + (endColor.g - startColor.g) * amount,
+                startColor.b + (endColor.b - startColor.b) * amount
+            );
         }
 
         /// <summary>
