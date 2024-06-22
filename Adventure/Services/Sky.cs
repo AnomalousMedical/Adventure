@@ -48,7 +48,7 @@ namespace Adventure
             {
                 var dayTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/kloofendal_48d_partly_cloudy_puresky_8k_Adj", false, Ext: "webp", MipLevels: 1));
                 var nightTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/NASA/starmap_2020_8k", false, Ext: "webp", MipLevels: 1));
-                var dawnTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/evening_road_01_puresky_8k", false, Ext: "webp", MipLevels: 1));
+                var dawnTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/EveningSkyHDRI017B_8K-TONEMAPPED", false, Ext: "webp", MipLevels: 1));
                 var duskTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/syferfontein_1d_clear_puresky_8k", false, Ext: "webp", MipLevels: 1));
 
                 await dayTextureTask;
