@@ -14,6 +14,15 @@ float2 sphere2mapUV_Equirectangular(float3 p)
     );
 }
 
+// https://en.wikipedia.org/wiki/File:Lambert_cylindrical_equal-area_projection_SW.jpg
+float2 sphere2mapUV_EqualArea(float3 p)
+{
+    return float2(
+        (atan2(p.x, -p.z) / PI + 1) / 2,
+        asin(p.y) / PI + .5
+    );
+}
+
 ConstantBuffer<Constants> g_ConstantsCB;
 
 Texture2D    $$(G_TEXTURES)[$$(NUM_TEXTURES)];
@@ -26,7 +35,7 @@ void main(inout PrimaryRayPayload payload)
     float3 color;
     if(g_ConstantsCB.missTextureSet > -1)
     {
-        float2 uv = sphere2mapUV_Equirectangular(WorldRayDirection());
+        float2 uv = sphere2mapUV_EqualArea(WorldRayDirection());
         color = $$(G_TEXTURES)[$$(G_TEXTURESETS)[g_ConstantsCB.missTextureSet].baseTexture].SampleLevel(g_SamLinearWrap, uv, 0).rgb;
         //color = float3(uv.x, uv.y, 0);
     }
