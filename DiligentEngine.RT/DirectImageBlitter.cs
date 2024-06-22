@@ -10,7 +10,7 @@ namespace DiligentEngine.RT
 {
     public class DirectImageBlitter : IRTImageBlitterImpl
     {
-        const TEXTURE_FORMAT ColorBufferFormat = TEXTURE_FORMAT.TEX_FORMAT_RGBA8_UNORM;
+        const TEXTURE_FORMAT ColorBufferFormat = TEXTURE_FORMAT.TEX_FORMAT_RGBA32_FLOAT;
 
         AutoPtr<ITexture> colorRT;
         AutoPtr<IPipelineState> imageBlitPSO;
