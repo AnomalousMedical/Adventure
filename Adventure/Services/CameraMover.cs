@@ -14,13 +14,14 @@ namespace Adventure
         private Quaternion Orientation = Quaternion.Identity;
 
         private Vector3? CurrentPosition;
+        private Quaternion? CurrentOrientation;
 
         public float InterpolateSpeed = 8.0f;
 
         public void SetPosition(in Vector3 position, in Quaternion orientation)
         {
             CurrentPosition = Position = position;
-            Orientation = orientation;
+            CurrentOrientation = Orientation = orientation;
         }
 
         public void SetInterpolatedGoalPosition(in Vector3 position, in Quaternion orientation)
@@ -50,7 +51,16 @@ namespace Adventure
                 this.CurrentPosition = Position;
             }
             position = this.CurrentPosition.Value;
-            orientation = this.Orientation;
+
+            if (this.CurrentOrientation.HasValue)
+            {
+                this.CurrentOrientation = this.CurrentOrientation.Value.slerp(this.Orientation, InterpolateSpeed * clock.DeltaSeconds);
+            }
+            else
+            {
+                this.CurrentOrientation = Orientation;
+            }
+            orientation = this.CurrentOrientation.Value;
         }
     }
 }
