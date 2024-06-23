@@ -99,7 +99,7 @@ namespace Adventure.WorldMap
 
                 this.instanceData.pBLAS = meshBlas.Instance.BLAS.Obj;
                 this.primaryHitShader = primaryHitShaderTask.Result;
-                var waterColor = Color.FromARGB(0xff61809c);
+                var waterColor = Color.FromARGB(0xff13314d);
                 blasInstanceData = GlassInstanceDataCreator.Create(new Vector3(waterColor.r, waterColor.g, waterColor.b), 100.95f, new Vector2(1.5f, 1.02f), waterColor);
                 blasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(false, false, false, false, false, isWater: true);
 
