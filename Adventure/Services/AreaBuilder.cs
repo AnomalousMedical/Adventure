@@ -140,6 +140,10 @@ namespace Adventure.Services
             {
                 o.CorridorSlopeMultiple = mapDirectionRandom.Next(int.MinValue, int.MaxValue) < 0 ? -1.0f : 1.0f;
             }
+            else
+            {
+                o.CorridorSlopeMultiple = o.Biome.CorridorSlopeMultiple;
+            }
             var biomeMonsters = monsterInfo.Where(i => i.NativeBiome == Biome).Concat(Monsters).ToList();
             regularMonsters = biomeMonsters;
             bossMonster = this.BossMonster ?? biomeMonsters[monsterRandom.Next(biomeMonsters.Count)];

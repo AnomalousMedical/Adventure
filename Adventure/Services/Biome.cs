@@ -38,6 +38,7 @@ namespace Adventure
         int MaxBackgroundItemRoll { get; set; }
         ISpriteAsset EntranceAsset { get; set; }
         Func<int, FastNoiseLite> CreateNoise { get; set; }
+        float CorridorSlopeMultiple { get; set; }
     }
 
     class Biome : IBiome
@@ -57,6 +58,11 @@ namespace Adventure
         public float MapUnitY { get; set; } = 0.1f;
 
         public bool RandomizeMapUnitYDirection { get; set; } = true;
+
+        /// <summary>
+        /// Can be 1.0 or -1.0. Will only apply if RandomizeMapUnitYDirection is false.
+        /// </summary>
+        public float CorridorSlopeMultiple { get; set; } = 1.0f;
 
         public string BgMusic { get; set; } = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg";
 

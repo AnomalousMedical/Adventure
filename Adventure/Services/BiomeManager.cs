@@ -289,6 +289,9 @@ namespace Adventure
                 },
                 MaxBackgroundItemRoll = 250,
                 CreateNoise = seed => terrainNoise.CreateLavaNoise(seed),
+                MapUnitY = 0.4f,
+                RandomizeMapUnitYDirection = false,
+                CorridorSlopeMultiple = -1.0f
             };
 
             return biome;
