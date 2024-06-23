@@ -224,6 +224,7 @@ namespace Adventure
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
             services.AddSingleton<IClockService, ClockService>();
             services.AddSingleton<IContextMenu, ContextMenu>();
+            services.AddSingleton<IAnimationService<WorldMapScene>, AnimationService<WorldMapScene>>();
             services.AddSingleton<ItemVoidMenu>();
             services.AddScoped<ItemStorage>();
             services.AddScoped<ItemStorage.Description>();

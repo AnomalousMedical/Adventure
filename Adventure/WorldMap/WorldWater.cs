@@ -1,26 +1,25 @@
-﻿using DiligentEngine;
+﻿using Adventure.Services;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.HLSL;
 using DiligentEngine.RT.Resources;
 using DiligentEngine.RT.ShaderSets;
 using Engine;
+using Engine.Platform;
 using System;
 using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
-    internal class WorldWater : IDisposable, IWorldMapPlaceable
+    internal class WorldWater : IDisposable, IWorldMapPlaceable, IAnimationListener
     {
-        public class Description
+        public class Description : SceneObjectDesc
         {
             public string InstanceName { get; set; } = RTId.CreateId("WorldWater");
 
             public byte Mask { get; set; } = RtStructures.TRANSPARENT_GEOM_MASK;
 
             public RAYTRACING_INSTANCE_FLAGS Flags { get; set; } = RAYTRACING_INSTANCE_FLAGS.RAYTRACING_INSTANCE_NONE;
-
-
-            public InstanceMatrix Transform = InstanceMatrix.Identity;
         }
 
         private readonly TLASInstanceData instanceData;
@@ -31,8 +30,15 @@ namespace Adventure.WorldMap
         private readonly TextureManager textureManager;
         private readonly ActiveTextures activeTextures;
         private readonly IDestructionRequest destructionRequest;
+        private readonly IAnimationService animationService;
         private PrimaryHitShader primaryHitShader;
         private BlasInstanceData blasInstanceData;
+
+        private readonly Vector3 startPos;
+        private readonly Quaternion startRot;
+        private readonly Vector3 startScale;
+        private float animationAmount = 0.0f;
+        private const float TwoPi = MathF.PI * 2;
 
         public WorldWater
         (
@@ -44,7 +50,8 @@ namespace Adventure.WorldMap
             RayTracingRenderer renderer,
             TextureManager textureManager,
             ActiveTextures activeTextures,
-            IDestructionRequest destructionRequest
+            IDestructionRequest destructionRequest,
+            IAnimationService<WorldMapScene> animationService
         )
         {
             this.meshBlas = meshBlas;
@@ -54,13 +61,18 @@ namespace Adventure.WorldMap
             this.textureManager = textureManager;
             this.activeTextures = activeTextures;
             this.destructionRequest = destructionRequest;
+            this.animationService = animationService;
+            this.startPos = description.Translation;
+            this.startRot = description.Orientation;
+            this.startScale = description.Scale;
             this.instanceData = new TLASInstanceData()
             {
                 InstanceName = description.InstanceName,
                 Mask = description.Mask,
-                Transform = description.Transform,
+                Transform = new InstanceMatrix(description.Translation, description.Orientation, description.Scale),
                 Flags = description.Flags,
             };
+            animationService.AddListener(this);
 
             coroutine.RunTask(async () =>
             {
@@ -75,7 +87,7 @@ namespace Adventure.WorldMap
                     new Vector3(unit, 0, -unit),
                     new Vector3(unit, 0, unit),
                     new Vector3(-unit, 0, unit),
-                    Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up, 
+                    Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
                     new Vector2(0f, 0f), new Vector2(0f, 0f),
                     new Vector2(0f, 0f), new Vector2(0f, 0f));
 
@@ -98,6 +110,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            animationService.RemoveListener(this);
             primaryHitShaderFactory.TryReturn(primaryHitShader);
             rtInstances.RemoveShaderTableBinder(Bind);
             rtInstances.RemoveTlasBuild(instanceData);
@@ -120,17 +133,29 @@ namespace Adventure.WorldMap
 
         public void CreatePhysics()
         {
-            
+
         }
 
         public void DestroyPhysics()
         {
-            
+
         }
 
         public void RequestDestruction()
         {
             destructionRequest.RequestDestruction();
+        }
+
+        public void UpdateAnimation(Clock clock)
+        {
+            animationAmount += 0.3f * clock.DeltaSeconds;
+            if(animationAmount > TwoPi)
+            {
+                animationAmount -= TwoPi;
+            }
+
+            var offset = MathF.Sin(animationAmount);
+            instanceData.Transform = new InstanceMatrix(startPos + new Vector3(0f, offset * 0.07f, 0f), startRot, startScale);
         }
     }
 }

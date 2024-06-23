@@ -39,6 +39,7 @@ namespace Adventure.WorldMap
         private readonly BuffManager buffManager;
         private readonly TypedLightManager<WorldMapScene> typedLightManager;
         private readonly CharacterMenuPositionService characterMenuPositionService;
+        private readonly IAnimationService<WorldMapScene> animationService;
         private IExplorationGameState explorationState;
         private IGameState startExplorationGameState;
         private IGameState nextState;
@@ -62,7 +63,8 @@ namespace Adventure.WorldMap
             RestManager restManager,
             BuffManager buffManager,
             TypedLightManager<WorldMapScene> typedLightManager,
-            CharacterMenuPositionService characterMenuPositionService
+            CharacterMenuPositionService characterMenuPositionService,
+            IAnimationService<WorldMapScene> animationService
         )
         {
             this.rtInstances = rtInstances;
@@ -81,6 +83,7 @@ namespace Adventure.WorldMap
             this.buffManager = buffManager;
             this.typedLightManager = typedLightManager;
             this.characterMenuPositionService = characterMenuPositionService;
+            this.animationService = animationService;
         }
 
         public void Link(IExplorationGameState explorationState, IGameState startExplorationGameState)
@@ -126,6 +129,7 @@ namespace Adventure.WorldMap
             flyCameraManager.Update(clock);
             buffManager.Update(clock);
             restManager.Update(clock);
+            animationService.Update(clock);
 
             if (explorationMenu.Update())
             {
