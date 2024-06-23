@@ -82,8 +82,9 @@ namespace Adventure.WorldMap
 
         private bool disposed;
         private Vector3 cameraOffset = new Vector3(0, 3, -12);
-        private Vector3 zoomedCameraOffset = new Vector3(0, 1 * 0.35f, -2.8f * 0.35f);
+        private Vector3 zoomedCameraOffset = new Vector3(0f, 1.7f * 0.35f, -2.8f * 0.35f);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 15f);
+        private Quaternion zoomedCameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 10f);
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -214,7 +215,7 @@ namespace Adventure.WorldMap
                 cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
             }
 
-            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle, () =>
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.zoomedCameraAngle, () =>
             {
                 sprite.SetAnimation("stand-down");
                 Sprite_FrameChanged(sprite);
@@ -751,7 +752,7 @@ namespace Adventure.WorldMap
                     c.FollowerManager = followerManager;
                     c.StartVisible = this.graphicsActive;
                     c.ZoomedCameraOffset = this.zoomedCameraOffset;
-                    c.CameraAngle = this.cameraAngle;
+                    c.CameraAngle = this.zoomedCameraAngle;
                 });
                 this.followers.Add(followerInstance);
             }
