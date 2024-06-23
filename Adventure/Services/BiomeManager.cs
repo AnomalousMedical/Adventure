@@ -241,8 +241,8 @@ namespace Adventure
                 Treasure = MakeDefaultTreasure(),
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
-                    new BiomeBackgroundItem(10, new TallTree(), 0.9f, 0.2f, 0.5f),
-                    new BiomeBackgroundItem(20, new TallTree.Swap1(), 0.9f, 0.2f, 0.5f),
+                    new BiomeBackgroundItem(8, new TallTree(), 0.9f, 0.2f, 0.5f),
+                    new BiomeBackgroundItem(16, new TallTree.Swap1(), 0.9f, 0.2f, 0.5f),
                 }
             };
 

@@ -12,8 +12,8 @@ namespace Adventure.Assets.World
 {
     class TallTree : ISpriteAsset
     {
-        private const int Width = 77;
-        private const int Height = 892;
+        private const int Width = 48;
+        private const int Height = 155;
         private const float WidthHeightRatio = (float)Width / (float)Height;
 
         public const uint Leaves = 0xff008d00;
@@ -71,7 +71,7 @@ namespace Adventure.Assets.World
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        new SpriteFrameAttachment(new Vector3((Width / 2f) / Width, (842f - Height) / Height, 0))
+                        SpriteFrameAttachment.FromFramePosition(24.5f, 90f, 0, Width, Height)
                     }
                 } )
             },
