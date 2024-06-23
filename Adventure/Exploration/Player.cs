@@ -79,9 +79,9 @@ namespace Adventure
         ButtonEvent moveLeft;
 
         private bool disposed;
-        private Vector3 cameraOffset = new Vector3(0, 5, -12);
-        private Vector3 zoomedCameraOffset = new Vector3(0, 2, -2.8f);
-        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
+        private Vector3 cameraOffset = new Vector3(0, 4, -12);
+        private Vector3 zoomedCameraOffset = new Vector3(0, 1.7f, -2.8f);
+        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 10f);
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
