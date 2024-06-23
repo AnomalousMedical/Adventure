@@ -51,15 +51,23 @@ namespace Adventure
                 var dawnTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/EveningSkyHDRI017B_8K-TONEMAPPED", false, Ext: "webp", MipLevels: 1));
                 var duskTextureTask = textureManager.Checkout(new CCOTextureBindingDescription("Graphics/Textures/PolyHaven/syferfontein_1d_clear_puresky_8k", false, Ext: "webp", MipLevels: 1));
 
-                await dayTextureTask;
-                await nightTextureTask;
-                await dawnTextureTask;
-                await duskTextureTask;
+                await Task.WhenAll
+                (
+                    dayTextureTask,
+                    nightTextureTask,
+                    dawnTextureTask,
+                    duskTextureTask
+                );
 
-                DaySky = new SkyTextureInfo(dayTextureTask.Result, activeTextures.AddActiveTexture(dayTextureTask.Result).tex0);
-                NightSky = new SkyTextureInfo(nightTextureTask.Result, activeTextures.AddActiveTexture(nightTextureTask.Result).tex0);
-                DawnSky = new SkyTextureInfo(dawnTextureTask.Result, activeTextures.AddActiveTexture(dawnTextureTask.Result).tex0);
-                DuskSky = new SkyTextureInfo(duskTextureTask.Result, activeTextures.AddActiveTexture(duskTextureTask.Result).tex0);
+                var dayTexture = dayTextureTask.Result;
+                var nightTexture = nightTextureTask.Result;
+                var dawnTexture = dawnTextureTask.Result;
+                var duskTexture = duskTextureTask.Result;
+
+                DaySky = new SkyTextureInfo(dayTexture, activeTextures.AddActiveTexture2(dayTexture));
+                NightSky = new SkyTextureInfo(nightTexture, activeTextures.AddActiveTexture2(nightTexture));
+                DawnSky = new SkyTextureInfo(dawnTexture, activeTextures.AddActiveTexture2(dawnTexture));
+                DuskSky = new SkyTextureInfo(duskTexture, activeTextures.AddActiveTexture2(duskTexture));
 
                 texturesReady = true;
             });
