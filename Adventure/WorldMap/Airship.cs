@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.WorldMap
 {
-    class Airship : IDisposable
+    class Airship : IDisposable, IAnimationListener
     {
         public class Description : SceneObjectDesc
         {
@@ -55,6 +55,7 @@ namespace Adventure.WorldMap
         private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly IWorldMapManager worldMapManager;
         private readonly ILanguageService languageService;
+        private readonly IAnimationService<WorldMapScene> animationService;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
@@ -81,6 +82,10 @@ namespace Adventure.WorldMap
         float moveSpeed = 10.0f;
         bool active = false;
 
+        private Vector3 floatOffset = new Vector3(0f, 0f, 0f);
+        private float upDownAnimationAmount = 0.0f;
+        private const float TwoPi = MathF.PI * 2;
+
         public bool Active => active;
 
         public Airship
@@ -99,12 +104,14 @@ namespace Adventure.WorldMap
             IBackgroundMusicPlayer backgroundMusicPlayer,
             SpriteInstanceFactory spriteInstanceFactory,
             IWorldMapManager worldMapManager,
-            ILanguageService languageService
+            ILanguageService languageService,
+            IAnimationService<WorldMapScene> animationService
         )
         {
             this.sprite = new EventSprite(description.Sprite);
             this.worldMapManager = worldMapManager;
             this.languageService = languageService;
+            this.animationService = animationService;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -193,6 +200,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            animationService.RemoveListener(this);
             this.sprite.AnimationChanged -= Sprite_AnimationChanged;
             StopAirshipMode();
             spriteInstanceFactory.TryReturn(spriteInstance);
@@ -214,7 +222,7 @@ namespace Adventure.WorldMap
 
         private void CreateGraphics()
         {
-            if(!graphicsActive && map != null)
+            if (!graphicsActive && map != null)
             {
                 graphicsActive = true;
 
@@ -240,7 +248,7 @@ namespace Adventure.WorldMap
 
         private void SyncGraphics()
         {
-            instanceData.Transform = new InstanceMatrix(currentPosition + map.Transforms[0], currentOrientation, currentScale);
+            instanceData.Transform = new InstanceMatrix(currentPosition + map.Transforms[0] + floatOffset, currentOrientation, currentScale);
         }
 
         public void RequestDestruction()
@@ -317,6 +325,9 @@ namespace Adventure.WorldMap
                     active = true;
                     worldMapManager.SetPlayerVisible(false);
                     backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+                    upDownAnimationAmount = 0.0f;
+                    floatOffset = new Vector3(0f, 0f, 0f);
+                    animationService.AddListener(this);
                 }
             }
         }
@@ -333,6 +344,9 @@ namespace Adventure.WorldMap
                 currentPosition.y += currentScale.y / 2.0f;
                 this.persistence.Current.Player.AirshipPosition = this.currentPosition;
                 worldMapManager.MovePlayer(center + new Vector3(0f, 0f, -0.35f));
+                upDownAnimationAmount = 0.0f;
+                floatOffset = new Vector3(0f, 0f, 0f);
+                animationService.RemoveListener(this);
                 StopAirshipMode();
                 SyncGraphics();
                 DestroyPhysics();
@@ -356,7 +370,7 @@ namespace Adventure.WorldMap
                 landEventLayer.makeFocusLayer();
                 worldMapManager.SetPlayerVisible(true);
                 backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
-            }   
+            }
         }
 
         public void UpdateInput(Clock clock)
@@ -422,7 +436,7 @@ namespace Adventure.WorldMap
                 currentPosition -= Vector3.Left * lStick.x * clock.DeltaSeconds * moveSpeed;
 
                 var offset = new Vector3(0, 0, 0);
-                if(currentPosition.x < worldRect.Left)
+                if (currentPosition.x < worldRect.Left)
                 {
                     offset.x = worldRect.Width;
                 }
@@ -432,11 +446,11 @@ namespace Adventure.WorldMap
                 }
 
                 //There is a quadrandt mismatch, rects are in the third and the world is in the first
-                if(currentPosition.z < worldRect.Top)
+                if (currentPosition.z < worldRect.Top)
                 {
                     offset.z = worldRect.Height;
                 }
-                if(currentPosition.z > worldRect.Bottom)
+                if (currentPosition.z > worldRect.Bottom)
                 {
                     offset.z = -worldRect.Height;
                 }
@@ -472,6 +486,18 @@ namespace Adventure.WorldMap
         private void Sprite_AnimationChanged(ISprite obj)
         {
             this.currentScale = AirshipSprite.GetScale(obj.CurrentAnimationName) * descriptionScale;
+            SyncGraphics();
+        }
+
+        public void UpdateAnimation(Clock clock)
+        {
+            upDownAnimationAmount += 3.5f * clock.DeltaSeconds;
+            if (upDownAnimationAmount > TwoPi)
+            {
+                upDownAnimationAmount -= TwoPi;
+            }
+
+            floatOffset.y = MathF.Sin(upDownAnimationAmount) * 0.02f;
             SyncGraphics();
         }
     }
