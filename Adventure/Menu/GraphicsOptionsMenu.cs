@@ -130,7 +130,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: back.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: back.Id))
         {
             switch (options.RenderApi)
             {

@@ -85,7 +85,7 @@ class SoundOptionsMenu
             options.SfxVolume = volumeFloat;
         }
 
-        if (sharpGui.Button(testSound, gamepadId, navUp: sfxVolumeSlider.Id, navDown: back.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(testSound, gamepadId, navUp: sfxVolumeSlider.Id, navDown: back.Id))
         {
             soundEffectPlayer.PlaySound(HeavyHammerSoundEffect.Instance);
         }
