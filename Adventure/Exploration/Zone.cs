@@ -39,6 +39,11 @@ namespace Adventure
 
         public class Description
         {
+            /// <summary>
+            /// Set this task to wait for it before doing main thread work.
+            /// </summary>
+            public Task MainThreadSyncTask { get; set; }
+
             public int Index { get; set; }
 
             public Vector3 Translation { get; set; } = Vector3.Zero;
@@ -459,6 +464,12 @@ namespace Adventure
                 });
 
                 await zoneGenerationTask; //Need the zone before kicking off the calls to End() below.
+
+                if(description.MainThreadSyncTask != null)
+                {
+                    await description.MainThreadSyncTask;
+                    description.MainThreadSyncTask = null; //Null this out so we don't hold onto any closures
+                }
 
                 await floorMesh.End("ZoneFloor");
 

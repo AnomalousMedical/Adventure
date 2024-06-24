@@ -87,16 +87,22 @@ namespace Adventure
             Zone newZone;
             var currentZoneIndex = persistence.Current.Zone.CurrentIndex;
 
+            var mainThreadWaitTask = waitForMainThreadWorkCb();
+
             if (allowHoldZone && currentZone?.Index == currentZoneIndex) //Reuse the current zone that already exists in memory, if it matches the new one
             {
                 newZone = currentZone;
             }
             else
             {
-                newZone = CreateZone(new Vector3(0, 0, 0), currentZoneIndex);
+                newZone = this.objectResolver.Resolve<Zone, Zone.Description>(o =>
+                {
+                    worldManager.SetupZone(currentZoneIndex, o);
+                    o.MainThreadSyncTask = mainThreadWaitTask;
+                });
             }
 
-            await waitForMainThreadWorkCb();
+            await mainThreadWaitTask;
             await newZone.WaitForGeneration();
 
             if (currentZone != null)
@@ -143,15 +149,6 @@ namespace Adventure
         public Task WaitForCurrent()
         {
             return currentZone?.WaitForFullLoad() ?? Task.CompletedTask;
-        }
-
-        private Zone CreateZone(Vector3 translation, int zoneIndex)
-        {
-            return this.objectResolver.Resolve<Zone, Zone.Description>(o =>
-            {
-                worldManager.SetupZone(zoneIndex, o);
-                o.Translation = translation;
-            });
         }
 
         public void CenterCamera()

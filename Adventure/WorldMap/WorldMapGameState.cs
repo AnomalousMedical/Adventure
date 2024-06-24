@@ -10,8 +10,9 @@ namespace Adventure.WorldMap;
 
 interface IWorldMapGameState : IGameState
 {
+    void ChangeToExplorationGameState();
     void Link(IGameState startExplorationGameState);
-    Task EnterZone(Func<Task> waitForMainThreadWorkCb, int zoneIndex);
+    Task SetupZone(Func<Task> waitForMainThreadWorkCb, int zoneIndex);
 }
 
 class WorldMapGameState
@@ -63,7 +64,7 @@ class WorldMapGameState
         typedLightManager.SetActive(active);
     }
 
-    public async Task EnterZone(Func<Task> waitForMainThreadWorkCb, int zoneIndex)
+    public async Task SetupZone(Func<Task> waitForMainThreadWorkCb, int zoneIndex)
     {
         persistence.Current.Player.Position = null;
         persistence.Current.Zone.CurrentIndex = zoneIndex;
@@ -71,6 +72,10 @@ class WorldMapGameState
         persistence.Current.Player.RespawnPosition = null;
         persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
         await zoneManager.Restart(waitForMainThreadWorkCb);
+    }
+
+    public void ChangeToExplorationGameState()
+    {
         worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
         worldMapManager.MakePlayerIdle();
         nextState = this.startExplorationGameState;
