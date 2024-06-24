@@ -26,9 +26,6 @@ namespace DiligentEngine.RT.Sprites
             this.textures = textures;
             Reflective = textures.Reflective;
             this.colorTexture = new AutoPtr<ITexture>(colorTexture);
-            ColorSRV = colorTexture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
-            NormalSRV = textures.NormalTexture?.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
-            PhysicalSRV = textures.PhysicalTexture?.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
         }
 
         public void Dispose()
@@ -43,10 +40,12 @@ namespace DiligentEngine.RT.Sprites
 
         public bool Reflective { get; }
 
-        public IDeviceObject ColorSRV { get; }
+        public ITexture ColorTexture => colorTexture.Obj;
 
-        public IDeviceObject NormalSRV { get; }
+        public bool HasNormal => textures.NormalTexture != null;
 
-        public IDeviceObject PhysicalSRV { get; }
+        public bool HasPhysical => textures.PhysicalTexture != null;
+
+        internal SpriteMaterialTextures Textures => textures;
     }
 }

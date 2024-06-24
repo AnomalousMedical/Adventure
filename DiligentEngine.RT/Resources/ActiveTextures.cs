@@ -17,6 +17,13 @@ namespace DiligentEngine.RT.Resources
             public int textureSetIndex;
         }
 
+        class SpriteMaterialTextureBinding
+        {
+            public int count;
+            public int normalIndex;
+            public int physicalIndex;
+        }
+
         public int MaxTextures => 200; //This can be much higher
         internal List<IDeviceObject> Textures => textures;
 
@@ -25,6 +32,7 @@ namespace DiligentEngine.RT.Resources
 
         private Dictionary<CC0TextureResult, TextureBinding> cc0Textures;
         private Dictionary<SpriteMaterial, TextureBinding> spriteTextures;
+        private Dictionary<SpriteMaterialTextures, SpriteMaterialTextureBinding> spriteMaterialTextures;
 
         private List<IDeviceObject> textures;
         private TextureSet[] textureSets;
@@ -51,6 +59,7 @@ namespace DiligentEngine.RT.Resources
 
             cc0Textures = new Dictionary<CC0TextureResult, TextureBinding>(MaxTextures);
             spriteTextures = new Dictionary<SpriteMaterial, TextureBinding>(MaxTextures);
+            spriteMaterialTextures = new Dictionary<SpriteMaterialTextures, SpriteMaterialTextureBinding>();
             textures = new List<IDeviceObject>(MaxTextures);
             availableSlots = new Stack<int>(MaxTextures);
             availableSetSlots = new Stack<int>(MaxTextures);
@@ -340,27 +349,40 @@ namespace DiligentEngine.RT.Resources
                 binding = new TextureBinding();
                 spriteTextures.Add(texture, binding);
                 binding.textureSetIndex = GetTextureSetSlot();
-                if (texture.ColorSRV != null)
+                if (texture.ColorTexture != null)
                 {
                     var slot = GetTextureSlot();
                     textureSets[binding.textureSetIndex].baseTexture = slot;
-                    textures[slot] = texture.ColorSRV;
+                    textures[slot] = texture.ColorTexture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
                 }
-                if (texture.NormalSRV != null)
+
+                SpriteMaterialTextureBinding spriteMaterialTextureBinding;
+                if(!spriteMaterialTextures.TryGetValue(texture.Textures, out spriteMaterialTextureBinding))
                 {
-                    var slot = GetTextureSlot();
-                    textureSets[binding.textureSetIndex].normalTexture = slot;
-                    textures[slot] = texture.NormalSRV;
+                    spriteMaterialTextureBinding = new SpriteMaterialTextureBinding();
+                    spriteMaterialTextures.Add(texture.Textures, spriteMaterialTextureBinding);
+                    if (texture.Textures.NormalTexture != null)
+                    {
+                        var slot = GetTextureSlot();
+                        spriteMaterialTextureBinding.normalIndex = slot; 
+                        textures[slot] = texture.Textures.NormalTexture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
+                    }
+                    if (texture.Textures.PhysicalTexture != null)
+                    {
+                        var slot = GetTextureSlot();
+                        spriteMaterialTextureBinding.physicalIndex = slot;
+                        textures[slot] = texture.Textures.PhysicalTexture.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE);
+                    }
                 }
-                if (texture.PhysicalSRV != null)
-                {
-                    var slot = GetTextureSlot();
-                    textureSets[binding.textureSetIndex].physicalTexture = slot;
-                    textures[slot] = texture.PhysicalSRV;
-                }
+                spriteMaterialTextureBinding.count++;
+                
+                textureSets[binding.textureSetIndex].normalTexture = spriteMaterialTextureBinding.normalIndex;
+                textureSets[binding.textureSetIndex].physicalTexture = spriteMaterialTextureBinding.physicalIndex;
+
                 RequestTextureSetUpdate();
             }
             binding.count++;
+
             return binding.textureSetIndex;
         }
 
@@ -381,21 +403,31 @@ namespace DiligentEngine.RT.Resources
                 if (binding.count == 0)
                 {
                     var textureSet = textureSets[binding.textureSetIndex];
-                    if (texture.ColorSRV != null)
+                    if (texture.ColorTexture != null)
                     {
                         ReturnTextureSlot(textureSet.baseTexture);
                         textures[textureSet.baseTexture] = placeholderTextureDeviceObject;
                     }
-                    if (texture.NormalSRV != null)
+
+                    if(spriteMaterialTextures.TryGetValue(texture.Textures, out var spriteMaterialTextureBinding))
                     {
-                        ReturnTextureSlot(textureSet.normalTexture);
-                        textures[textureSet.normalTexture] = placeholderTextureDeviceObject;
+                        spriteMaterialTextureBinding.count--;
+                        if(spriteMaterialTextureBinding.count == 0)
+                        {
+                            if (texture.Textures.NormalTexture != null)
+                            {
+                                ReturnTextureSlot(textureSet.normalTexture);
+                                textures[textureSet.normalTexture] = placeholderTextureDeviceObject;
+                            }
+                            if (texture.Textures.PhysicalTexture != null)
+                            {
+                                ReturnTextureSlot(textureSet.physicalTexture);
+                                textures[textureSet.physicalTexture] = placeholderTextureDeviceObject;
+                            }
+                            spriteMaterialTextures.Remove(texture.Textures);
+                        }
                     }
-                    if (texture.PhysicalSRV != null)
-                    {
-                        ReturnTextureSlot(textureSet.physicalTexture);
-                        textures[textureSet.physicalTexture] = placeholderTextureDeviceObject;
-                    }
+
                     ReturnTextureSetSlot(binding.textureSetIndex);
                     spriteTextures.Remove(texture);
                     RequestTextureSetUpdate();
