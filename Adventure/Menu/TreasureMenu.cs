@@ -25,6 +25,7 @@ class TreasureMenu
 {
     private IObjectResolver objectResolver = objectResolverFactory.Create();
     private ISkillEffect currentEffect;
+    private CharacterSheet currentEffectUser;
 
     public void Dispose()
     {
@@ -37,14 +38,11 @@ class TreasureMenu
         (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
         {
             currentEffect = treasure.Use(inventory, user, inventoryFunctions, gameState, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+            currentEffectUser = user;
         },
         cd =>
         {
-            if(characterMenuPositionService.TryGetEntry(cd.CharacterSheet, out var characterMenuPosition))
-            {
-                cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
-                characterMenuPosition.FaceCamera();
-            }
+            MoveCamera(cd.CharacterSheet);
         });
     }
 
@@ -55,7 +53,9 @@ class TreasureMenu
             currentEffect.Update(clockService.Clock);
             if (currentEffect.Finished)
             {
+                MoveCamera(currentEffectUser);
                 currentEffect = null;
+                currentEffectUser = null;
             }
             return;
         }
@@ -67,6 +67,15 @@ class TreasureMenu
                 menu.RequestSubMenu(null, gamepad);
                 return;
             }
+        }
+    }
+
+    private void MoveCamera(CharacterSheet characterSheet)
+    {
+        if (characterMenuPositionService.TryGetEntry(characterSheet, out var characterMenuPosition))
+        {
+            cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
+            characterMenuPosition.FaceCamera();
         }
     }
 }
