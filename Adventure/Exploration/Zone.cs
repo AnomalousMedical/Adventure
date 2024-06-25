@@ -1151,6 +1151,7 @@ namespace Adventure
                 var keyAsset = biome.KeyAsset;
                 o.Sprite = keyAsset.CreateSprite();
                 o.SpriteMaterial = keyAsset.CreateMaterial();
+                o.Scale = new Vector3(1.5f, 1.5f, 1f);
             });
             this.placeables.Add(key);
             placeKey = false;
