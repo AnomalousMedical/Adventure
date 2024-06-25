@@ -62,7 +62,7 @@ namespace SharpGui
             buttonStyle = SharpStyle.CreateComplete(scaleHelper, colors);
 
             sliderStyle = SharpStyle.CreateComplete(scaleHelper, colors);
-            sliderStyle.Padding = new IntPad(8);
+            sliderStyle.Padding = scaleHelper.Scaled(new IntPad(4));
             sliderStyle.Focus.Color = colors.Colors[9];
             sliderStyle.HoverAndFocus.Color = colors.Colors[8];
             sliderStyle.Active.Color = colors.Colors[7];
