@@ -34,7 +34,18 @@ namespace Adventure.Services
         public void FaceCamera() => FaceCameraCb();
     }
 
-    class CharacterMenuPositionTracker
+    interface ICharacterMenuPositionTracker
+    {
+        void Remove(CharacterSheet sheet, ICharacterMenuPositionEntry entry);
+        void Set(CharacterSheet sheet, ICharacterMenuPositionEntry entry);
+        bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry);
+    }
+
+    interface ICharacterMenuPositionTracker<T> : ICharacterMenuPositionTracker
+    {
+    }
+
+    class CharacterMenuPositionTracker : ICharacterMenuPositionTracker
     {
         private Dictionary<CharacterSheet, ICharacterMenuPositionEntry> entries = new Dictionary<CharacterSheet, ICharacterMenuPositionEntry>();
 
@@ -45,7 +56,7 @@ namespace Adventure.Services
 
         public void Remove(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
         {
-            if(entries.TryGetValue(sheet, out var lookup))
+            if (entries.TryGetValue(sheet, out var lookup))
             {
                 if (entry == lookup)
                 {
@@ -54,23 +65,72 @@ namespace Adventure.Services
             }
         }
 
-        internal bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry)
+        public bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry)
         {
             return entries.TryGetValue(sheet, out entry);
         }
     }
 
-    class CharacterMenuPositionTracker<T> : CharacterMenuPositionTracker
+    class CharacterMenuPositionTracker<T> : CharacterMenuPositionTracker, ICharacterMenuPositionTracker<T>
     {
+    }
+
+    class WrappingCharacterMenuPositionTracker<T> : ICharacterMenuPositionTracker<T>
+    {
+        private readonly ICharacterMenuPositionTracker wrapped;
+        private ICharacterMenuPositionEntry overrideEntry;
+
+        public bool UseOverrideEntry { get; set; }
+
+        public WrappingCharacterMenuPositionTracker(ICharacterMenuPositionTracker wrapped)
+        {
+            this.wrapped = wrapped;
+        }
+
+        public void SetOverrideEntry(ICharacterMenuPositionEntry overrideEntry)
+        {
+            this.overrideEntry = overrideEntry;
+        }
+
+        public void UnsetOverrideEntry(ICharacterMenuPositionEntry overrideEntry)
+        {
+            if (overrideEntry == this.overrideEntry)
+            {
+                this.overrideEntry = null;
+            }
+        }
+
+        public void Remove(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
+        {
+            wrapped.Remove(sheet, entry);
+        }
+
+        public void Set(CharacterSheet sheet, ICharacterMenuPositionEntry entry)
+        {
+            wrapped.Set(sheet, entry);
+        }
+
+        public bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry)
+        {
+            if (UseOverrideEntry)
+            {
+                entry = overrideEntry;
+                return overrideEntry != null;
+            }
+            else
+            {
+                return wrapped.TryGetEntry(sheet, out entry);
+            }
+        }
     }
 
     class CharacterMenuPositionService
     (
-        CharacterMenuPositionTracker<WorldMapScene> worldMapCharacterPositionTracker,
-        CharacterMenuPositionTracker<ZoneScene> zoneSceneCharacterPositionTracker
+        ICharacterMenuPositionTracker<WorldMapScene> worldMapCharacterPositionTracker,
+        ICharacterMenuPositionTracker<ZoneScene> zoneSceneCharacterPositionTracker
     )
     {
-        private CharacterMenuPositionTracker currentTracker;
+        private ICharacterMenuPositionTracker currentTracker;
         private Type activeTrackerType;
 
         public Type ActiveTrackerType => activeTrackerType;

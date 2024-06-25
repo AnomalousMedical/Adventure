@@ -56,6 +56,8 @@ namespace Adventure.WorldMap
         private readonly IWorldMapManager worldMapManager;
         private readonly ILanguageService languageService;
         private readonly IAnimationService<WorldMapScene> animationService;
+        private readonly WrappingCharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
+        private readonly CharacterMenuPositionEntry characterMenuPositionEntry;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
@@ -105,13 +107,15 @@ namespace Adventure.WorldMap
             SpriteInstanceFactory spriteInstanceFactory,
             IWorldMapManager worldMapManager,
             ILanguageService languageService,
-            IAnimationService<WorldMapScene> animationService
+            IAnimationService<WorldMapScene> animationService,
+            WrappingCharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker
         )
         {
             this.sprite = new EventSprite(description.Sprite);
             this.worldMapManager = worldMapManager;
             this.languageService = languageService;
             this.animationService = animationService;
+            this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.gamepadId = description.GamepadId;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -135,6 +139,14 @@ namespace Adventure.WorldMap
             this.destructionRequest = destructionRequest;
             this.backgroundMusicPlayer = backgroundMusicPlayer;
             this.spriteInstanceFactory = spriteInstanceFactory;
+
+            characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + cameraOffset, () => this.cameraAngle, () =>
+            {
+                
+            },
+            GetMagicHitLocation: () => this.currentPosition + new Vector3(0f, 0f, -0.05f),
+            GetScale: () => this.currentScale);
+            this.characterMenuPositionTracker.SetOverrideEntry(characterMenuPositionEntry);
 
             //Events
             eventManager.addEvent(moveForward);
@@ -200,6 +212,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            this.characterMenuPositionTracker.UnsetOverrideEntry(characterMenuPositionEntry);
             animationService.RemoveListener(this);
             this.sprite.AnimationChanged -= Sprite_AnimationChanged;
             StopAirshipMode();
@@ -328,6 +341,7 @@ namespace Adventure.WorldMap
                     upDownAnimationAmount = 0.0f;
                     floatOffset = new Vector3(0f, 0f, 0f);
                     animationService.AddListener(this);
+                    characterMenuPositionTracker.UseOverrideEntry = true;
                 }
             }
         }
@@ -337,6 +351,7 @@ namespace Adventure.WorldMap
             if (active)
             {
                 persistence.Current.Player.InAirship = false;
+                characterMenuPositionTracker.UseOverrideEntry = false;
                 var cell = map.GetCellForLocation(currentPosition);
                 var center = map.GetCellCenterpoint(cell);
                 center.z += AirshipOffset;

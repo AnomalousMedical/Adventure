@@ -49,7 +49,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
-        private readonly CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
+        private readonly ICharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
@@ -119,7 +119,7 @@ namespace Adventure.WorldMap
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
-            CharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker,
+            ICharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu
         )
         {

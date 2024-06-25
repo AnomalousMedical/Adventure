@@ -39,7 +39,7 @@ namespace Adventure
         private readonly IScopedCoroutine coroutine;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IAssetFactory assetFactory;
-        private readonly CharacterMenuPositionTracker<T> characterMenuPositionTracker;
+        private readonly ICharacterMenuPositionTracker<T> characterMenuPositionTracker;
         private readonly FollowerManager followerManager;
         private readonly IObjectResolver objectResolver;
         private readonly Vector3 zoomedCameraOffset;
@@ -102,7 +102,7 @@ namespace Adventure
             FollowerDescription description,
             Persistence persistence,
             IAssetFactory assetFactory,
-            CharacterMenuPositionTracker<T> characterMenuPositionTracker
+            ICharacterMenuPositionTracker<T> characterMenuPositionTracker
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));

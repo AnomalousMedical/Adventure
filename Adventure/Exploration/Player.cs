@@ -47,7 +47,7 @@ namespace Adventure
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
-        private readonly CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
+        private readonly ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
@@ -116,7 +116,7 @@ namespace Adventure
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
-            CharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
+            ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu
         )
         {

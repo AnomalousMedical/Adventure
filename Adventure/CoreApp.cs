@@ -267,8 +267,9 @@ namespace Adventure
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();
 
-            services.AddSingleton<CharacterMenuPositionTracker<ZoneScene>>();
-            services.AddSingleton<CharacterMenuPositionTracker<WorldMapScene>>();
+            services.AddSingleton<ICharacterMenuPositionTracker<ZoneScene>, CharacterMenuPositionTracker<ZoneScene>>();
+            services.AddSingleton<ICharacterMenuPositionTracker<WorldMapScene>>(s => s.GetRequiredService<WrappingCharacterMenuPositionTracker<WorldMapScene>>());
+            services.AddSingleton<WrappingCharacterMenuPositionTracker<WorldMapScene>>(s => new WrappingCharacterMenuPositionTracker<WorldMapScene>(new CharacterMenuPositionTracker<WorldMapScene>()));
             services.AddSingleton<CharacterMenuPositionService>();
             services.AddSingleton<ICreditsService, CreditsService>();
             services.AddSingleton<UserInputMenu>();
