@@ -399,6 +399,13 @@ class PickUpTreasureMenu
         infos = null;
     }
 
+    public bool HasMoreTreasure => currentTreasure?.Count > 0;
+
+    public void RecenterCamera()
+    {
+        FireActiveCharacterChanged();
+    }
+
     private void FireActiveCharacterChanged()
     {
         if (activeCharacterChanged != null)

@@ -25,7 +25,6 @@ class TreasureMenu
 {
     private IObjectResolver objectResolver = objectResolverFactory.Create();
     private ISkillEffect currentEffect;
-    private CharacterSheet currentEffectUser;
 
     public void Dispose()
     {
@@ -38,7 +37,6 @@ class TreasureMenu
         (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
         {
             currentEffect = treasure.Use(inventory, user, inventoryFunctions, gameState, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
-            currentEffectUser = user;
         },
         cd =>
         {
@@ -53,9 +51,11 @@ class TreasureMenu
             currentEffect.Update(clockService.Clock);
             if (currentEffect.Finished)
             {
-                MoveCamera(currentEffectUser);
                 currentEffect = null;
-                currentEffectUser = null;
+                if (pickUpTreasureMenu.HasMoreTreasure)
+                {
+                    pickUpTreasureMenu.RecenterCamera();
+                }
             }
             return;
         }
