@@ -369,7 +369,7 @@ namespace RogueLikeMapBuilder
 
         }
 
-        public void AddPadding(int topRows, int bottomRows, int leftRows, int rightRows)
+        public void AddPadding(int topRows, int bottomRows, int leftRows, int rightRows, int minConnectorOffset = 5)
         {
             var oldWidth = Map_Size.Width;
             var newWidth = oldWidth + leftRows + rightRows;
@@ -409,24 +409,45 @@ namespace RogueLikeMapBuilder
             {
                 EastConnector = AddPadding(EastConnector.Value);
                 eastConnectorStart = AddPadding(eastConnectorStart.Value);
+                var diff = EastConnector.Value.x - eastConnectorStart.Value.x;
+                if (diff < minConnectorOffset)
+                {
+                    EastConnector = new Point(EastConnector.Value.x + (minConnectorOffset - diff), EastConnector.Value.y);
+                }
             }
 
             if (WestConnector != null)
             {
                 WestConnector = AddPadding(WestConnector.Value);
                 westConnectorStart = AddPadding(westConnectorStart.Value);
+                var diff = westConnectorStart.Value.x - WestConnector.Value.x;
+                if (diff < minConnectorOffset)
+                {
+                    WestConnector = new Point(WestConnector.Value.x - (minConnectorOffset - diff), WestConnector.Value.y);
+                }
             }
 
             if (NorthConnector != null)
             {
+
                 NorthConnector = AddPadding(NorthConnector.Value);
                 northConnectorStart = AddPadding(northConnectorStart.Value);
+                var diff = NorthConnector.Value.y - northConnectorStart.Value.y;
+                if(diff < minConnectorOffset)
+                {
+                    NorthConnector = new Point(NorthConnector.Value.x, NorthConnector.Value.y + (minConnectorOffset - diff));
+                }
             }
 
             if (SouthConnector != null)
             {
                 SouthConnector = AddPadding(SouthConnector.Value);
                 southConnectorStart = AddPadding(southConnectorStart.Value);
+                var diff = southConnectorStart.Value.y - SouthConnector.Value.y;
+                if (diff < minConnectorOffset)
+                {
+                    SouthConnector = new Point(SouthConnector.Value.x, SouthConnector.Value.y - (minConnectorOffset - diff));
+                }
             }
 
             rctBuiltRooms = rctBuiltRooms.Select(AddPaddingRect).ToList();
