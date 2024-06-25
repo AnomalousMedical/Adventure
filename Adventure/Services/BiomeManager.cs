@@ -281,6 +281,7 @@ namespace Adventure
                 WallTexture = "Graphics/Textures/AmbientCG/Lava004_1K",
                 BgMusic = "Music/freepd/Kevin MacLeod - Evil Incoming.ogg",
                 BgMusicNight = "Music/freepd/Kevin MacLeod - Evil Incoming.ogg",
+                BossBattleMusic = "Music/CreatorChords/Alexander Nakarada - Metalicious.ogg",
                 EntranceAsset = new VolcanoEntrance(),
                 Treasure = MakeDefaultTreasure(),
                 BackgroundItems = new List<BiomeBackgroundItem>
