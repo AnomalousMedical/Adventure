@@ -730,7 +730,7 @@ namespace Adventure.Services
                 {
                     areaBuilder.Monsters = areaBuilder.Monsters.Concat(monsters);
                 }
-                areaBuilder.Monsters = areaBuilder.Monsters.ToList();
+                areaBuilder.Monsters = areaBuilder.Monsters.Where(i => i.NativeBiome != BiomeType.FinalBoss).ToList();
                 areaBuilder.BossMonster = monsterInfo.Where(i => i.NativeBiome == BiomeType.FinalBoss).First();
                 areaBuilder.Treasure = phase4UniqueTreasures;
                 areaBuilder.StealTreasure = new[]

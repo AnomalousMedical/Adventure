@@ -52,7 +52,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new OrcKnightOld(), BiomeType.Mountain, OrcKnightOldSoundEffect.Instance));
 
-            monsterAssets.Add(new MonsterAssetInfo(new TinyDino(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Dragon(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
         }
 
         /// <summary>
