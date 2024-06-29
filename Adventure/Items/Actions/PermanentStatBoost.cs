@@ -16,7 +16,7 @@ namespace Adventure.Items.Actions
 {
     abstract class PermanentStatBoost : IInventoryAction
     {
-        public Color CastColor => Color.FromARGB(0xffff0ee4);
+        private static Color CastColor => Color.FromARGB(0xffff0ee4);
 
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
