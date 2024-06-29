@@ -454,7 +454,6 @@ namespace Adventure.Services
 
                 var phase2Potions = new List<Treasure>()
                 {
-                    new Treasure(PotionCreator.CreateFerrymansBribe(), TreasureType.Potion),
                     new Treasure(PotionCreator.CreateStrengthBoost(5), TreasureType.StatBoost),
                     new Treasure(PotionCreator.CreateMagicBoost(5), TreasureType.StatBoost),
                     new Treasure(PotionCreator.CreateSpiritBoost(4), TreasureType.StatBoost),
@@ -571,7 +570,6 @@ namespace Adventure.Services
 
                 var phase3Potions = new List<Treasure>
                 {
-                    new Treasure(PotionCreator.CreateFerrymansBribe(), TreasureType.Potion),
                     new Treasure(PotionCreator.CreateStrengthBoost(10), TreasureType.StatBoost),
                     new Treasure(PotionCreator.CreateMagicBoost(10), TreasureType.Accessory),
                     new Treasure(PotionCreator.CreateSpiritBoost(10), TreasureType.Accessory),
