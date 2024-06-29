@@ -25,7 +25,8 @@ class RootMenu
     OptionsMenu optionsMenu,
     CharacterStatsTextService characterStatsTextService,
     Persistence persistence,
-    FileMenu fileMenu
+    FileMenu fileMenu,
+    GameOptions gameOptions
 ) : IRootMenu
 {
     SharpButton skills = new SharpButton() { Text = "Skills" };
@@ -57,7 +58,10 @@ class RootMenu
         yield return items;
         yield return files;
         yield return options;
-        yield return debug;
+        if (gameOptions.Debug)
+        {
+            yield return debug;
+        }
         yield return close;
     }
 
@@ -126,18 +130,18 @@ class RootMenu
             fileMenu.PreviousMenu = this;
             explorationMenu.RequestSubMenu(fileMenu, gamepad);
         }
-        else if (sharpGui.Button(options, gamepad, navDown: debug.Id, navUp: files.Id))
+        else if (sharpGui.Button(options, gamepad, navDown: gameOptions.Debug ? debug.Id : close.Id, navUp: files.Id))
         {
             infos = null;
             optionsMenu.PreviousMenu = this;
             explorationMenu.RequestSubMenu(optionsMenu, gamepad);
         }
-        else if (sharpGui.Button(debug, gamepad, navDown: close.Id, navUp: options.Id))
+        else if (gameOptions.Debug && sharpGui.Button(debug, gamepad, navDown: close.Id, navUp: options.Id))
         {
             infos = null;
             explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
         }
-        else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: debug.Id) || sharpGui.IsStandardBackPressed(gamepad))
+        else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: gameOptions.Debug ? debug.Id : options.Id) || sharpGui.IsStandardBackPressed(gamepad))
         {
             infos = null;
             explorationMenu.RequestSubMenu(null, gamepad);

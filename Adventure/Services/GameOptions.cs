@@ -35,5 +35,8 @@ namespace Adventure.Services
         public float FSR1RenderPercentage { get; set; } = 0.75f;
 
         public uint PresentInterval { get; set; } = 1;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool Debug { get; set; } = false;
     }
 }
