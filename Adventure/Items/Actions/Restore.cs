@@ -113,6 +113,8 @@ namespace Adventure.Items.Actions
             target.ApplyDamage(attacker, battleManager.DamageCalculator, damage);
             battleManager.HandleDeath(target);
 
+            battleManager.SoundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+
             var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
                 var asset = new MagicBubbles();
@@ -235,6 +237,8 @@ namespace Adventure.Items.Actions
             battleManager.AddDamageNumber(target, damage);
             target.TakeMp(damage);
             battleManager.HandleDeath(target);
+
+            battleManager.SoundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
 
             var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
