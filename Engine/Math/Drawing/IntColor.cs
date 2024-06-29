@@ -166,6 +166,10 @@ namespace Engine
                 blue = Hue2Rgb(var1, var2, h - 1.0 / 3.0);
             }
 
+            red = Math.Max(0, red);
+            green = Math.Max(0, green);
+            blue = Math.Max(0, blue);
+
             var nRed = Convert.ToByte(red * 255.0);
             var nGreen = Convert.ToByte(green * 255.0);
             var nBlue = Convert.ToByte(blue * 255.0);
