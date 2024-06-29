@@ -139,7 +139,7 @@ namespace Adventure.Items.Actions
 
     class RestoreMp : IInventoryAction
     {
-        public Color CastColor => Color.FromARGB(0xff63c74c);
+        public Color CastColor => Color.FromARGB(0xff12e4ff);
 
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {
@@ -187,7 +187,7 @@ namespace Adventure.Items.Actions
                     var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
                     var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
                     {
-                        ISpriteAsset asset = new MagicBubbles();
+                        ISpriteAsset asset = new RestoreMpEffect();
                         o.RenderShadow = false;
                         o.Sprite = asset.CreateSprite();
                         o.SpriteMaterial = asset.CreateMaterial();
@@ -202,7 +202,7 @@ namespace Adventure.Items.Actions
                     applyEffect.SetPosition(characterEntry.MagicHitLocation, Quaternion.Identity, characterEntry.Scale);
                     applyEffects.Add(applyEffect);
 
-                    yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                    yield return coroutine.WaitSeconds(RestoreMpEffect.Duration);
                     foreach (var effect in applyEffects)
                     {
                         effect.RequestDestruction();
@@ -238,7 +238,7 @@ namespace Adventure.Items.Actions
 
             var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
             {
-                var asset = new MagicBubbles();
+                var asset = new RestoreMpEffect();
                 o.RenderShadow = false;
                 o.Sprite = asset.CreateSprite();
                 o.SpriteMaterial = asset.CreateMaterial();
@@ -253,7 +253,7 @@ namespace Adventure.Items.Actions
 
             IEnumerator<YieldAction> run()
             {
-                yield return coroutine.WaitSeconds(MagicBubbles.Duration);
+                yield return coroutine.WaitSeconds(RestoreMpEffect.Duration);
                 applyEffect.RequestDestruction();
             }
             coroutine.Run(run());
