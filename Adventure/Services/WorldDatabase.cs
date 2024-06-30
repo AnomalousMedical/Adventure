@@ -481,7 +481,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 0;
-                areaBuilder.PlotItem = PlotItems.AirshipKey0;
+                areaBuilder.PlotItem = PlotItems.AirshipFuel;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
@@ -512,7 +512,7 @@ namespace Adventure.Services
                 areaBuilder.EndZone = zoneCounter.GetZoneEnd(1);
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 1;
-                areaBuilder.PlotItem = PlotItems.AirshipKey1;
+                areaBuilder.PlotItem = PlotItems.AirshipWheel;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);

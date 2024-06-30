@@ -308,8 +308,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0)
-                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
+                if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
                 {
                     contextMenu.HandleContext(languageService.Current.Airship.TakeOff, TakeOff, player.GamepadId);
                 }
@@ -327,8 +326,7 @@ namespace Adventure.WorldMap
 
         private void TakeOff(ContextMenuArgs args)
         {
-            if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey0)
-                && persistence.Current.PlotItems.Contains(PlotItems.AirshipKey1))
+            if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
             {
                 if (!active)
                 {

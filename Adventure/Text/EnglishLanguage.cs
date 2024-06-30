@@ -59,6 +59,16 @@ namespace Adventure.Text
                     Check: "Check",
                     GiveUpgrade: "The gargoyle whispers ancient blacksmithing secrets into your ear..."
                 ),
+                AirshipEngineer: new AirshipEngineer.Text
+                (
+                    Greeting: "Hello",
+                    NoAirshipItems: "Find the wheel and some fuel and we can fix this thing and get to the volcano.",
+                    HasFuelOnly: "You found the fuel now just find the wheel and we can fly.",
+                    HasWheelOnly: "You found the wheel. We just need to fuel up and we can fly.",
+                    BothAirshipItems: "You found everything. Give me a minute and I will fix her right up.",
+                    AirshipFixed: "Got the wheel reattached and shes all fueled up. Here are the keys so you can fly whenever your ready.",
+                    FinalMessage: "Don't just rush to the volcano. See what else you can find if you explore around."
+                ),
                 ItemStorage: new ItemStorage.Text
                 (
                     Greeting: "Hello",

@@ -32,6 +32,7 @@ namespace Adventure.Services
         Alchemist.Text Alchemist,
         AlchemistUpgrade.Text AlchemistUpgrade,
         Blacksmith.Text Blacksmith,
+        AirshipEngineer.Text AirshipEngineer,
         BlacksmithUpgrade.Text BlacksmithUpgrade,
         ItemStorage.Text ItemStorage,
         ElementalStone.Text ElementalStone,

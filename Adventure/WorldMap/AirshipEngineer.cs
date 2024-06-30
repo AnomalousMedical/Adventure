@@ -26,9 +26,12 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
-            String SalesPitch,
-            String AncientSalesPitch,
-            String Goodbye
+            String NoAirshipItems,
+            String HasFuelOnly,
+            String HasWheelOnly,
+            String BothAirshipItems,
+            String AirshipFixed,
+            String FinalMessage
         );
 
         private readonly RTInstances<WorldMapScene> rtInstances;
@@ -44,6 +47,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly FadeScreenMenu fadeScreenMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -79,7 +83,8 @@ namespace Adventure.WorldMap
             IExplorationMenu explorationMenu,
             Persistence persistence,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            FadeScreenMenu fadeScreenMenu)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -97,6 +102,7 @@ namespace Adventure.WorldMap
             this.persistence = persistence;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.fadeScreenMenu = fadeScreenMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -192,7 +198,7 @@ namespace Adventure.WorldMap
             if (collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.A, out var player)
                || collidableIdentifier.TryGetIdentifier<WorldMapPlayer>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext(languageService.Current.Blacksmith.Greeting, Talk, player.GamepadId);
+                contextMenu.HandleContext(languageService.Current.AirshipEngineer.Greeting, Talk, player.GamepadId);
             }
         }
 
@@ -206,18 +212,42 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                var message = languageService.Current.Blacksmith.SalesPitch;
-                if (persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
+                String message;
+                if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
                 {
-                    message = languageService.Current.Blacksmith.AncientSalesPitch;
+                    message = languageService.Current.AirshipEngineer.FinalMessage;
                 }
+                else
+                {
+                    var hasFuel = persistence.Current.PlotItems.Contains(PlotItems.AirshipFuel);
+                    var hasWheel = persistence.Current.PlotItems.Contains(PlotItems.AirshipWheel);
+                    if (hasFuel && hasWheel)
+                    {
+                        await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.BothAirshipItems, args.GamepadId);
+                        await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, args.GamepadId);
+                        await Task.Delay(TimeSpan.FromSeconds(1.6));
+                        await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, args.GamepadId);
+
+                        persistence.Current.PlotItems.Add(PlotItems.AirshipKey);
+                        await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.AirshipFixed, args.GamepadId);
+
+                        message = languageService.Current.AirshipEngineer.FinalMessage;
+                    }
+                    else if (hasFuel)
+                    {
+                        message = languageService.Current.AirshipEngineer.HasFuelOnly;
+                    }
+                    else if (hasWheel)
+                    {
+                        message = languageService.Current.AirshipEngineer.HasWheelOnly;
+                    }
+                    else
+                    {
+                        message = languageService.Current.AirshipEngineer.NoAirshipItems;
+                    }
+                }
+
                 await textDialog.ShowTextAndWait(message, args.GamepadId);
-                buyMenu.PreviousMenu = null;
-                buyMenu.CurrentShopType = ShopType.Blacksmith;
-                explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
-                await buyMenu.WaitForClose();
-                cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Goodbye, args.GamepadId);
             });
         }
 

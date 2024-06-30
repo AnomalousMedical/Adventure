@@ -12,8 +12,9 @@ namespace Adventure.Services
     [JsonConverter(typeof(JsonStringEnumConverter<PlotItems>))]
     enum PlotItems
     {
-        AirshipKey0,
-        AirshipKey1,
+        AirshipFuel,
+        AirshipWheel,
+        AirshipKey,
         BlacksmithUpgrade,
         AlchemistUpgrade,
         RuneOfFire,
