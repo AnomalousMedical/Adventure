@@ -1,4 +1,5 @@
-﻿using Adventure.Menu;
+﻿using Adventure.Assets.Music;
+using Adventure.Menu;
 using Adventure.Services;
 using BepuPlugin;
 using DiligentEngine.RT;
@@ -59,7 +60,7 @@ class WorldMapGameState
                 worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             }
             worldMapManager.CenterCamera();
-            backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
+            backgroundMusicPlayer.SetBackgroundSong(WorldMapMusic.File);
         }
         typedLightManager.SetActive(active);
     }

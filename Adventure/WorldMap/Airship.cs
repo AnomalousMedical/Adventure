@@ -1,4 +1,5 @@
-﻿using Adventure.Assets.World;
+﻿using Adventure.Assets.Music;
+using Adventure.Assets.World;
 using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
@@ -335,7 +336,7 @@ namespace Adventure.WorldMap
                     eventLayer.makeFocusLayer();
                     active = true;
                     worldMapManager.SetPlayerVisible(false);
-                    backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Fireworks - Alexander Nakarada.ogg");
+                    backgroundMusicPlayer.SetBackgroundSong(AirshipMusic.File);
                     upDownAnimationAmount = 0.0f;
                     floatOffset = new Vector3(0f, 0f, 0f);
                     animationService.AddListener(this);
@@ -382,7 +383,7 @@ namespace Adventure.WorldMap
                 contextMenu.ClearContext(Land);
                 landEventLayer.makeFocusLayer();
                 worldMapManager.SetPlayerVisible(true);
-                backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Behind the Sword.ogg");
+                backgroundMusicPlayer.SetBackgroundSong(WorldMapMusic.File);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.Music;
 using Adventure.Assets.PixelEffects;
 using Adventure.Assets.SoundEffects;
 using Adventure.Services;
@@ -975,7 +976,7 @@ namespace Adventure.Battle
                         if(enemies.Count == 0)
                         {
                             yield return coroutine.WaitSeconds(0.4);
-                            backgroundMusicPlayer.SetBackgroundSong("Music/freepd/Alexander Nakarada - Fanfare X.ogg");
+                            backgroundMusicPlayer.SetBackgroundSong(VictoryMusic.File);
                             foreach (var player in players)
                             {
                                 player.SetVictorious();
