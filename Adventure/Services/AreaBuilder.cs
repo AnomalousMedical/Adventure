@@ -95,6 +95,8 @@ namespace Adventure.Services
 
         public Zone.Alignment Alignment { get; set; } = Zone.Alignment.WestEast;
 
+        public bool MakeRest { get; set; }
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -121,7 +123,7 @@ namespace Adventure.Services
             MonsterInfo bossMonster;
             IEnumerable<MonsterInfo> regularMonsters;
 
-            o.MakeRest = false;
+            o.MakeRest = MakeRest;
             o.MakeBoss = zoneIndex == EndZone;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
             o.MakeTorch = TorchZones?.Contains(zoneIndex) == true;

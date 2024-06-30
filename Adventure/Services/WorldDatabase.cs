@@ -414,6 +414,7 @@ namespace Adventure.Services
                 areaBuilder.BossMonster = firstBoss;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
                 areaBuilder.Treasure = phase0Treasures;
+                areaBuilder.MakeRest = true;
                 areaBuilder.StealTreasure = new[]
                 {
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel), TreasureType.Potion),

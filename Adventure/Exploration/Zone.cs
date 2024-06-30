@@ -1127,7 +1127,7 @@ namespace Adventure
                     CreateRestArea(mapLoc);
                 }
             }
-            else if(!goPrevious && mapLoc == startPointLocal)
+            else if(!goPrevious && mapLoc == startPointLocal && placeRestArea)
             {
                 //This is the start of the game, so place a rest area
                 placeRestArea = false;
