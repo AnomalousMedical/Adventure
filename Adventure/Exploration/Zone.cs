@@ -1124,19 +1124,30 @@ namespace Adventure
                 else if (placeRestArea)
                 {
                     placeRestArea = false;
-                    var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
-                    {
-                        o.InstanceId = restIndex++;
-                        o.ZoneIndex = index;
-                        o.MapOffset = mapLoc;
-                        o.Translation = currentPosition + o.MapOffset;
-                        var asset = biome.RestAsset;
-                        o.Sprite = asset.CreateSprite();
-                        o.SpriteMaterial = asset.CreateMaterial();
-                    });
-                    this.placeables.Add(restArea);
+                    CreateRestArea(mapLoc);
                 }
             }
+            else if(!goPrevious && mapLoc == startPointLocal)
+            {
+                //This is the start of the game, so place a rest area
+                placeRestArea = false;
+                CreateRestArea(mapLoc);
+            }
+        }
+
+        private void CreateRestArea(Vector3 mapLoc)
+        {
+            var restArea = objectResolver.Resolve<RestArea, RestArea.Description>(o =>
+            {
+                o.InstanceId = restIndex++;
+                o.ZoneIndex = index;
+                o.MapOffset = mapLoc;
+                o.Translation = currentPosition + o.MapOffset;
+                var asset = biome.RestAsset;
+                o.Sprite = asset.CreateSprite();
+                o.SpriteMaterial = asset.CreateMaterial();
+            });
+            this.placeables.Add(restArea);
         }
 
         private void PlaceKey(Point point)
