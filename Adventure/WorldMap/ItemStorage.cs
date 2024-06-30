@@ -207,7 +207,6 @@ namespace Adventure.WorldMap
 
         private void Talk(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(Talk);
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);

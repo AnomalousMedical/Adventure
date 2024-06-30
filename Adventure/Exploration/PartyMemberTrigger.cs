@@ -303,8 +303,6 @@ namespace Adventure.Exploration
 
         private void Recruit(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(Recruit);
-
             coroutine.RunTask(async () =>
             {
                 await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
@@ -316,6 +314,7 @@ namespace Adventure.Exploration
 
                 if (nameResult.Confirmed)
                 {
+                    contextMenu.ClearContext(Recruit);
                     partyMember.CharacterData.CharacterSheet.Name = nameResult.Value;
                     AddToParty();
                 }

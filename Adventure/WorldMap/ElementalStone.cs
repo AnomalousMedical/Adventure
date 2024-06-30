@@ -219,7 +219,6 @@ namespace Adventure.WorldMap
         {
             if (!persistence.Current.PlotItems.Contains(PlotItems.ElementalStone))
             {
-                contextMenu.ClearContext(Check);
                 if (persistence.Current.PlotItems.Contains(PlotItems.RuneOfFire)
                 && persistence.Current.PlotItems.Contains(PlotItems.RuneOfIce)
                 && persistence.Current.PlotItems.Contains(PlotItems.RuneOfElectricity))
@@ -232,6 +231,7 @@ namespace Adventure.WorldMap
                         var treasure = new Treasure(accessoryCreator.CreateDoublecast(), TreasureType.Accessory);
                         treasureMenu.GatherTreasures(new[] { treasure });
                         explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
+                        contextMenu.ClearContext(Check);
                         RequestDestruction();
                     });
                 }
