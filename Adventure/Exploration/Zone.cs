@@ -1121,7 +1121,7 @@ namespace Adventure
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);
                 }
-                else if (placeRestArea)
+                else if (goPrevious && placeRestArea) //Only place this way if you can go to a previous level, otherwise it goes in the start area
                 {
                     placeRestArea = false;
                     CreateRestArea(mapLoc);
