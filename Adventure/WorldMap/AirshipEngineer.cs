@@ -1,4 +1,5 @@
-﻿using Adventure.Menu;
+﻿using Adventure.Assets.SoundEffects;
+using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -42,12 +43,11 @@ namespace Adventure.WorldMap
         private readonly IWorldDatabase worldDatabase;
         private readonly TextDialog textDialog;
         private readonly ICoroutineRunner coroutineRunner;
-        private readonly BuyMenu buyMenu;
-        private readonly IExplorationMenu explorationMenu;
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
         private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly ISoundEffectPlayer soundEffectPlayer;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -79,12 +79,11 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             TextDialog textDialog,
             ICoroutineRunner coroutineRunner,
-            BuyMenu buyMenu,
-            IExplorationMenu explorationMenu,
             Persistence persistence,
             ILanguageService languageService,
             CameraMover cameraMover,
-            FadeScreenMenu fadeScreenMenu)
+            FadeScreenMenu fadeScreenMenu,
+            ISoundEffectPlayer soundEffectPlayer)
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -97,12 +96,11 @@ namespace Adventure.WorldMap
             this.worldDatabase = worldDatabase;
             this.textDialog = textDialog;
             this.coroutineRunner = coroutineRunner;
-            this.buyMenu = buyMenu;
-            this.explorationMenu = explorationMenu;
             this.persistence = persistence;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
             this.fadeScreenMenu = fadeScreenMenu;
+            this.soundEffectPlayer = soundEffectPlayer;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -224,8 +222,9 @@ namespace Adventure.WorldMap
                     if (hasFuel && hasWheel)
                     {
                         await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.BothAirshipItems, args.GamepadId);
+                        soundEffectPlayer.PlaySound(FixAirshipSoundEffect.Instance);
                         await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, args.GamepadId);
-                        await Task.Delay(TimeSpan.FromSeconds(1.6));
+                        await Task.Delay(TimeSpan.FromSeconds(2.4));
                         await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, args.GamepadId);
 
                         persistence.Current.PlotItems.Add(PlotItems.AirshipKey);
