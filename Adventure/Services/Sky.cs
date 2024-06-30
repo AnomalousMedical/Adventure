@@ -103,7 +103,7 @@ namespace Adventure
                 return;
             }
 
-            var rotation = new Quaternion(Vector3.UnitZ, timeClock.TimeFactor * 2 * MathF.PI);
+            var rotation = new Quaternion(Vector3.UnitZ, timeClock.TimePercent * 2 * MathF.PI);
             sunPosition = Quaternion.quatRotate(rotation, Vector3.Down) * LightDistance;
             sunPosition += new Vector3(0f, 0f, -LightDistance);
             sunPosition += CelestialOffset;

@@ -23,10 +23,12 @@ namespace Adventure
             this.zoneManager = zoneManager;
         }
 
+        public bool Active => active;
+
         public void Rest()
         {
             persistence.Current.BattleTriggers.ClearData();
-            timeClock.SetTimeRatio(100);
+            timeClock.SetTimeMultiplier(300);
             active = true;
             endTime = null;
         }
@@ -40,7 +42,8 @@ namespace Adventure
 
             if (endTime == null)
             {
-                endTime = clock.CurrentTimeMicro + (long)(Clock.SecondsToMicro * 1.3f);
+                var sleepEndGameTime = timeClock.IsDay ? timeClock.DayEnd : timeClock.DayStart;
+                endTime = clock.CurrentTimeMicro + timeClock.GetRealWallTimeUntil(sleepEndGameTime);
             }
 
             if (clock.CurrentTimeMicro > endTime)

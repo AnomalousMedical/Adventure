@@ -11,7 +11,7 @@ namespace Adventure
     interface ITimeClock
     {
         long CurrentTimeMicro { get; set; }
-        float TimeFactor { get; }
+        float TimePercent { get; }
         long DayEnd { get; set; }
         float DayFactor { get; }
         long DayStart { get; set; }
@@ -19,9 +19,10 @@ namespace Adventure
         float NightFactor { get; }
 
         void ResetTimeFactor();
-        void SetTimeRatio(long speedup);
+        void SetTimeMultiplier(long speedup);
         void Update(Clock clock);
         void ResetToPersistedTime();
+        long GetRealWallTimeUntil(long timeOfDay);
 
         public event Action<TimeClock> NightStarted;
 
@@ -41,7 +42,7 @@ namespace Adventure
         //long timeFactor = 25000L; //Pretty Fast
         //long timeFactor = 10000L;
         const long RegularTimeFactor = 100L;
-        long timeFactor = RegularTimeFactor;
+        long timeVelocity = RegularTimeFactor;
         long period = HoursPerDay * HoursToMicro;
         long halfPeriod;
         long dayStart = 6L * HoursToMicro;
@@ -73,7 +74,7 @@ namespace Adventure
         {
             bool wasDay = IsDay;
 
-            currentTime += clock.DeltaTimeMicro * timeFactor;
+            currentTime += clock.DeltaTimeMicro * timeVelocity;
             currentTime %= period;
             persistence.Current.Time.Current = currentTime;
 
@@ -83,12 +84,23 @@ namespace Adventure
 
         public void ResetTimeFactor()
         {
-            timeFactor = 100L;
+            timeVelocity = 100L;
         }
 
-        public void SetTimeRatio(long speedup)
+        public void SetTimeMultiplier(long speedup)
         {
-            timeFactor = RegularTimeFactor * speedup;
+            timeVelocity = RegularTimeFactor * speedup;
+        }
+
+        public long GetRealWallTimeUntil(long timeOfDay)
+        {
+            timeOfDay %= period;
+            if(currentTime > timeOfDay)
+            {
+                timeOfDay += period;
+            }
+            var delta = timeOfDay - currentTime;
+            return delta / timeVelocity;
         }
 
         public bool IsDay => currentTime > dayStart && currentTime <= dayEnd;
@@ -108,7 +120,7 @@ namespace Adventure
             }
         }
 
-        public float TimeFactor => currentTime / (float)period;
+        public float TimePercent => currentTime / (float)period;
 
         public long DayStart
         {

@@ -88,11 +88,7 @@ class WorldMapGameState
         restManager.Update(clock);
         animationService.Update(clock);
 
-        if (explorationMenu.Update())
-        {
-            //If menu did something
-        }
-        else
+        if (!restManager.Active && !explorationMenu.Update())
         {
             if (worldMapManager.PhysicsActive)
             {

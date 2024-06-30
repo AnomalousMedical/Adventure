@@ -176,11 +176,7 @@ namespace Adventure
             buffManager.Update(clock);
             restManager.Update(clock);
 
-            if (explorationMenu.Update())
-            {
-                //If menu did something
-            }
-            else
+            if (!restManager.Active && !explorationMenu.Update())
             {
                 if (zoneManager.Current?.PhysicsActive == true)
                 {
