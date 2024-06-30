@@ -149,6 +149,8 @@ namespace Adventure
             services.AddScoped<Innkeeper.Description>();
             services.AddScoped<Blacksmith>();
             services.AddScoped<Blacksmith.Description>();
+            services.AddScoped<AirshipEngineer>();
+            services.AddScoped<AirshipEngineer.Description>();
             services.AddScoped<Alchemist>();
             services.AddScoped<Alchemist.Description>();
             services.AddScoped<FortuneTeller>();

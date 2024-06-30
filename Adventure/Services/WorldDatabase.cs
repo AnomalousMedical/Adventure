@@ -243,6 +243,7 @@ namespace Adventure.Services
             usedIslands[islandIndex] = true;
             airshipStartSquare = GetUnusedSquare(usedSquares, island, placementRandom);
             usedSquares[airshipStartSquare.x, airshipStartSquare.y] = true;
+            PreventUsageNorthSouth(airshipStartSquare, usedSquares, 2);
 
             areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, usedSquares, usedIslands, map).ToList();
         }

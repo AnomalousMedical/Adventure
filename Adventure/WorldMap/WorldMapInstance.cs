@@ -480,6 +480,19 @@ namespace Adventure.WorldMap
             }
 
             {
+                var airshipEngineer = objectResolver.Resolve<AirshipEngineer, AirshipEngineer.Description>(o =>
+                {
+                    o.Transforms = transforms;
+                    var sprite = new Assets.NPC.Engineer();
+                    o.Sprite = sprite.CreateSprite();
+                    o.SpriteMaterial = sprite.CreateMaterial();
+                    o.Scale = new Vector3(0.35f, 0.35f, 1.0f);
+                });
+
+                placeables.Add(airshipEngineer);
+            }
+
+            {
                 var alchemist = objectResolver.Resolve<Alchemist, Alchemist.Description>(o =>
                 {
                     o.Transforms = transforms;
