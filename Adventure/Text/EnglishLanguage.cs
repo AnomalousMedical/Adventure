@@ -67,7 +67,7 @@ namespace Adventure.Text
                     HasWheelOnly: "You found the wheel. We just need to fuel up and we can fly.",
                     BothAirshipItems: "You found everything. Give me a minute and I will fix her right up.",
                     AirshipFixed: "Got the wheel reattached and shes all fueled up. Here are the keys so you can fly whenever your ready.",
-                    FinalMessage: "Don't just rush to the volcano. See what else you can find if you explore around."
+                    FinalMessage: "Don't just rush to the volcano. I'm sure the monsters there are very strong. See what else you can find if you explore around."
                 ),
                 ItemStorage: new ItemStorage.Text
                 (
