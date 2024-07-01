@@ -196,7 +196,6 @@ namespace Adventure
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private StaticHandle floorStaticHandle;
         private TypedIndex boundaryCubeShapeIndex;
-        private TypedIndex floorCubeShapeIndex;
         private TypedIndex floorShapeIndex;
         private MapMesh mapMesh;
         private bool physicsActive = false;
@@ -729,27 +728,9 @@ namespace Adventure
             var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
             boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
 
-            //This is extra and can be removed if you keep the mesh
-            var floorCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
-            floorCubeShapeIndex = bepuScene.Simulation.Shapes.Add(floorCubeShape);
-
             var boundaryOrientation = System.Numerics.Quaternion.Identity;
 
             //Floor
-
-            //foreach (var boundary in mapMesh.FloorCubeCenterPoints)
-            //{
-            //    //TODO: Figure out where nans are coming from
-            //    var orientation = boundary.Orientation.isNumber() ? boundary.Orientation : Quaternion.Identity;
-            //    var staticHandle = bepuScene.Simulation.Statics.Add(
-            //        new StaticDescription(
-            //            (boundary.Position + currentPosition).ToSystemNumerics(),
-            //            orientation.ToSystemNumerics(),
-            //            floorCubeShapeIndex));
-
-            //    staticHandles.Add(staticHandle);
-            //}
-
             {
                 floorStaticHandle = bepuScene.Simulation.Statics.Add(
                        new StaticDescription(
@@ -761,7 +742,6 @@ namespace Adventure
             }
 
             //Boundary cubes
-
             foreach (var boundary in mapMesh.BoundaryCubeCenterPoints)
             {
                 var staticHandle = bepuScene.Simulation.Statics.Add(
@@ -774,7 +754,6 @@ namespace Adventure
             }
 
             //Zone connectors
-
             Vector3 nextZoneConnectorOffset;
             Vector3 previousZoneConnectorOffset;
             switch (alignment)
@@ -1437,7 +1416,6 @@ namespace Adventure
             statics.Remove(floorStaticHandle);
 
             bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
-            bepuScene.Simulation.Shapes.Remove(floorCubeShapeIndex);
             staticHandles.Clear();
         }
 
