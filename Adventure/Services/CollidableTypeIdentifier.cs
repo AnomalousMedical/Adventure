@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    interface ICollidableTypeIdentifier<IdType>
+    interface ICollidableTypeIdentifier
     {
         void AddIdentifier<T>(CollidableReference collidable, T reference);
         void RemoveIdentifier(CollidableReference collidable);
         bool TryGetIdentifier(CollidableReference collidable, out object value);
         bool TryGetIdentifier<T>(CollidableReference collidable, out T value);
+    }
+
+    interface ICollidableTypeIdentifier<IdType> : ICollidableTypeIdentifier
+    {
     }
 
     class CollidableTypeIdentifier<IdType> : ICollidableTypeIdentifier<IdType>

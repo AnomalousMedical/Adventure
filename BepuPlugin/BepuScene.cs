@@ -209,5 +209,7 @@ namespace BepuPlugin
         }
 
         public Simulation Simulation => simulation;
+
+        public BufferPool BufferPool => bufferPool;
     }
 }

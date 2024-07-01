@@ -1,6 +1,7 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPlugin.Characters;
+using BepuUtilities.Memory;
 using Engine.Platform;
 using System;
 
@@ -9,6 +10,7 @@ namespace BepuPlugin
     public interface IBepuScene
     {
         Simulation Simulation { get; }
+        BufferPool BufferPool { get; }
 
         event System.Action<IBepuScene> OnUpdated;
 

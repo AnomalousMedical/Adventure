@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RpgMath;
 using Adventure.Menu;
+using BepuPhysics.Trees;
 
 namespace Adventure
 {
@@ -283,6 +284,83 @@ namespace Adventure
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             ChangeToStoppedAnimation();
             followerManager.LeaderMoved(this.currentPosition, IsMoving);
+        }
+
+        class RayHit
+        {
+            public RayHit(float t, in CollidableReference collidable)
+            {
+                this.T = t;
+                this.Collidable = collidable;
+            }
+
+            public float T;
+            public CollidableReference Collidable;
+        }
+
+        struct RayHitHandler : IRayHitHandler
+        {
+            class HitComparer : IComparer<RayHit>
+            {
+                public static readonly HitComparer Instance = new HitComparer();
+
+                public int Compare(RayHit x, RayHit y)
+                {
+                    if(x.T > y.T) { return -1; }
+                    if (x.T < y.T) { return 1; }
+                    return 0;
+                }
+            }
+
+            private SortedSet<RayHit> hits = new SortedSet<RayHit>(HitComparer.Instance);
+            public RayHitHandler() { }
+
+            public IEnumerable<RayHit> Hits => hits;
+
+
+            public bool AllowTest(CollidableReference collidable)
+            {
+                return true;
+            }
+
+            public bool AllowTest(CollidableReference collidable, int childIndex)
+            {
+                return true;
+            }
+
+            public void OnRayHit(in RayData ray, ref float maximumT, float t, in System.Numerics.Vector3 normal, CollidableReference collidable, int childIndex)
+            {
+                hits.Add(new RayHit(t, collidable));
+            }
+        }
+
+        public Vector3 FindCameraTerrainOffset(in Vector3 origin, in Vector3 direction, float maxT = float.MaxValue)
+        {
+            var hitOffset = Vector3.Zero;
+            var hitHandler = new RayHitHandler();
+            bepuScene.Simulation.RayCast(origin.ToSystemNumerics(), direction.ToSystemNumerics(), maxT, ref hitHandler);
+
+            var findPlayer = true;
+            foreach(var hit in hitHandler.Hits)
+            {
+                if (findPlayer)
+                {
+                    if(collidableIdentifier.TryGetIdentifier<Player>(hit.Collidable, out var _))
+                    {
+                        findPlayer = false;
+                    }
+                }
+                else
+                {
+                    if (collidableIdentifier.TryGetIdentifier<Zone>(hit.Collidable, out var _))
+                    {
+                        hitOffset = direction * hit.T + new Vector3(0f, 0f, 0.05f);
+                        break;
+                    }
+                }
+            }
+
+            return hitOffset;
         }
 
         private void SetupInput()
@@ -554,7 +632,9 @@ namespace Adventure
 
             var speedOffset = characterMover.LinearVelocity / characterMover.speed;
             speedOffset.y = 0;
-            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 1.15f, cameraAngle);
+            var camPos = this.currentPosition + cameraOffset + speedOffset * 1.15f;
+            var rayAdjust = FindCameraTerrainOffset(camPos, (currentPosition - camPos).normalized());
+            cameraMover.SetInterpolatedGoalPosition(camPos + rayAdjust, cameraAngle);
         }
 
         private void SetCurrentAnimation(string name)

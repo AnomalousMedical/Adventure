@@ -24,6 +24,7 @@ using Adventure.Services;
 using Adventure.Assets.World;
 using FreeImageAPI;
 using Adventure.Exploration;
+using BepuUtilities.Collections;
 
 namespace Adventure
 {
@@ -178,6 +179,7 @@ namespace Adventure
         private readonly RayTracingRenderer renderer;
         private readonly Persistence persistence;
         private readonly NoiseTextureManager noiseTextureManager;
+        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly TextureManager textureManager;
@@ -192,8 +194,10 @@ namespace Adventure
         private CC0TextureResult noiseTexture;
         private readonly TLASInstanceData floorInstanceData;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
+        private StaticHandle floorStaticHandle;
         private TypedIndex boundaryCubeShapeIndex;
         private TypedIndex floorCubeShapeIndex;
+        private TypedIndex floorShapeIndex;
         private MapMesh mapMesh;
         private bool physicsActive = false;
         private readonly IObjectResolver objectResolver;
@@ -280,7 +284,8 @@ namespace Adventure
             RayTracingRenderer renderer,
             Persistence persistence,
             NoiseTextureManager noiseTextureManager,
-            TerrainNoise terrainNoise
+            TerrainNoise terrainNoise,
+            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier
         )
         {
             this.plotItem = description.PlotItem;
@@ -306,6 +311,7 @@ namespace Adventure
             this.renderer = renderer;
             this.persistence = persistence;
             this.noiseTextureManager = noiseTextureManager;
+            this.collidableIdentifier = collidableIdentifier;
             this.goPrevious = description.GoPrevious;
             this.alignment = description.Alignment;
             this.biome = description.Biome;
@@ -458,6 +464,43 @@ namespace Adventure
 
                     startPointLocal = mapMesh.PointToVector(startPoint.x, startPoint.y);
                     endPointLocal = mapMesh.PointToVector(endPoint.x, endPoint.y);
+
+                    var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 4, bepuScene.BufferPool);
+                    foreach (var centerPt in mapMesh.CollisionMeshPositions)
+                    {
+                        //Commented order will probably work for camera, is clockwise
+                        triangles.AllocateUnsafely() = new Triangle
+                        (
+                            centerPt.TopLeft.ToSystemNumerics(),
+                            centerPt.TopRight.ToSystemNumerics(),
+                            centerPt.BottomRight.ToSystemNumerics()
+                        );
+
+                        triangles.AllocateUnsafely() = new Triangle
+                        (
+                            centerPt.BottomRight.ToSystemNumerics(),
+                            centerPt.BottomLeft.ToSystemNumerics(),
+                            centerPt.TopLeft.ToSystemNumerics()
+                        );
+
+                        //Counter clockwise for the actual physics objects
+                        triangles.AllocateUnsafely() = new Triangle
+                        (
+                           centerPt.TopRight.ToSystemNumerics(),
+                           centerPt.TopLeft.ToSystemNumerics(),
+                           centerPt.BottomLeft.ToSystemNumerics()
+                        );
+
+                        triangles.AllocateUnsafely() = new Triangle
+                        (
+                           centerPt.BottomLeft.ToSystemNumerics(),
+                           centerPt.BottomRight.ToSystemNumerics(),
+                           centerPt.TopRight.ToSystemNumerics()
+                        );
+                    }
+
+                    var meshShape = new Mesh(triangles, new System.Numerics.Vector3(1.0f, 1.0f, 1.0f), bepuScene.BufferPool);
+                    floorShapeIndex = bepuScene.Simulation.Shapes.Add(meshShape);
 
                     sw.Stop();
                     logger.LogInformation($"Generated zone {description.Index} seed {description.LevelSeed} in {sw.ElapsedMilliseconds} ms.");
@@ -612,6 +655,9 @@ namespace Adventure
             rtInstances.RemoveShaderTableBinder(Bind);
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
+
+            //This is made in the constructor, so remove it here
+            bepuScene.Simulation.Shapes.Remove(floorShapeIndex);
         }
 
         /// <summary>
@@ -683,23 +729,38 @@ namespace Adventure
             var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
             boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
 
+            //This is extra and can be removed if you keep the mesh
             var floorCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
             floorCubeShapeIndex = bepuScene.Simulation.Shapes.Add(floorCubeShape);
 
             var boundaryOrientation = System.Numerics.Quaternion.Identity;
 
-            foreach (var boundary in mapMesh.FloorCubeCenterPoints)
-            {
-                //TODO: Figure out where nans are coming from
-                var orientation = boundary.Orientation.isNumber() ? boundary.Orientation : Quaternion.Identity;
-                var staticHandle = bepuScene.Simulation.Statics.Add(
-                    new StaticDescription(
-                        (boundary.Position + currentPosition).ToSystemNumerics(),
-                        orientation.ToSystemNumerics(),
-                        floorCubeShapeIndex));
+            //Floor
 
-                staticHandles.Add(staticHandle);
+            //foreach (var boundary in mapMesh.FloorCubeCenterPoints)
+            //{
+            //    //TODO: Figure out where nans are coming from
+            //    var orientation = boundary.Orientation.isNumber() ? boundary.Orientation : Quaternion.Identity;
+            //    var staticHandle = bepuScene.Simulation.Statics.Add(
+            //        new StaticDescription(
+            //            (boundary.Position + currentPosition).ToSystemNumerics(),
+            //            orientation.ToSystemNumerics(),
+            //            floorCubeShapeIndex));
+
+            //    staticHandles.Add(staticHandle);
+            //}
+
+            {
+                floorStaticHandle = bepuScene.Simulation.Statics.Add(
+                       new StaticDescription(
+                           currentPosition.ToSystemNumerics(),
+                           System.Numerics.Quaternion.Identity,
+                           floorShapeIndex));
+
+                collidableIdentifier.AddIdentifier(new CollidableReference(floorStaticHandle), this);
             }
+
+            //Boundary cubes
 
             foreach (var boundary in mapMesh.BoundaryCubeCenterPoints)
             {
@@ -711,6 +772,8 @@ namespace Adventure
 
                 staticHandles.Add(staticHandle);
             }
+
+            //Zone connectors
 
             Vector3 nextZoneConnectorOffset;
             Vector3 previousZoneConnectorOffset;
@@ -1369,6 +1432,10 @@ namespace Adventure
             {
                 statics.Remove(staticHandle);
             }
+
+            collidableIdentifier.RemoveIdentifier(new CollidableReference(floorStaticHandle));
+            statics.Remove(floorStaticHandle);
+
             bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
             bepuScene.Simulation.Shapes.Remove(floorCubeShapeIndex);
             staticHandles.Clear();

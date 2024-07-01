@@ -16,6 +16,7 @@ namespace DungeonGenerator
 
         private MeshBLAS floorMesh;
         private List<MapMeshPosition> floorCubeCenterPoints;
+        private List<MapMeshCollisionPosition> collisionMeshPositions;
         private List<Vector3> boundaryCubeCenterPoints;
         private MapMeshSquareInfo[,] squareInfo; //This array is 1 larger in each dimension, use accessor to translate points
 
@@ -25,6 +26,8 @@ namespace DungeonGenerator
         public IEnumerable<MapMeshPosition> FloorCubeCenterPoints => floorCubeCenterPoints;
 
         public IEnumerable<Vector3> BoundaryCubeCenterPoints => boundaryCubeCenterPoints;
+
+        public IEnumerable<MapMeshCollisionPosition> CollisionMeshPositions => collisionMeshPositions;
 
         /// <summary>
         /// The number of units on the generated map to make on the real map in the X direction.
@@ -322,6 +325,7 @@ namespace DungeonGenerator
 
             boundaryCubeCenterPoints = new List<Vector3>((int)(numBoundaryCubes));
             floorCubeCenterPoints = new List<MapMeshPosition>((int)(numFloorCubes));
+            collisionMeshPositions = new List<MapMeshCollisionPosition>((int)(numFloorQuads + numWallQuads));
 
             float yUvBottom = 1.0f;
             if (MapUnitY < 1.0f)
@@ -862,6 +866,12 @@ namespace DungeonGenerator
 
                 floorCubeCenterPoints.Add(new MapMeshPosition(new Vector3(left + halfUnitX, centerY - halfUnitY, far - halfUnitZ), floorCubeRot));
 
+                collisionMeshPositions.Add(new MapMeshCollisionPosition(
+                    new Vector3(left, floorFarLeftY, far),
+                    new Vector3(right, floorFarRightY, far),
+                    new Vector3(right, floorNearRightY, near),
+                    new Vector3(left, floorNearLeftY, near)));
+
                 int test;
 
                 //South wall
@@ -1143,7 +1153,13 @@ namespace DungeonGenerator
                 globalLeftTop,
                 globalRightBottom,
                 wallTextureIndex,
-                wallTextureIndex2);
+                wallTextureIndex2); 
+            
+            collisionMeshPositions.Add(new MapMeshCollisionPosition(
+                leftFar,
+                rightFar,
+                rightNear,
+                leftNear));
         }
 
         private void GetUvs(int mapX, int mapY, out Vector2 leftTop, out Vector2 rightBottom, out Vector2 globalLeftTop, out Vector2 globalRightBottom, float mapWidth, float mapHeight)
