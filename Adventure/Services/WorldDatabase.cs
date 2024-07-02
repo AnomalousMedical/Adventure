@@ -723,7 +723,7 @@ namespace Adventure.Services
                 areaBuilder.IndexInPhase = 2;
                 areaBuilder.Biome = BiomeType.Volcano;
                 areaBuilder.MaxMainCorridorBattles = 4;
-                areaBuilder.Alignment = alignmentRandom.Next(2) == 0 ? Zone.Alignment.EastWest : Zone.Alignment.WestEast;
+                areaBuilder.Alignment = Zone.Alignment.SouthNorth;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.IsFinalArea = true;
 
