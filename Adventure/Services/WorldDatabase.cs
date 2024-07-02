@@ -725,6 +725,7 @@ namespace Adventure.Services
                 areaBuilder.MaxMainCorridorBattles = 4;
                 areaBuilder.Alignment = alignmentRandom.Next(2) == 0 ? Zone.Alignment.EastWest : Zone.Alignment.WestEast;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
+                areaBuilder.IsFinalArea = true;
 
                 //You get all the monsters in this zone
                 areaBuilder.Monsters = monsterInfo;

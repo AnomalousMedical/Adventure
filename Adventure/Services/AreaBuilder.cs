@@ -97,6 +97,8 @@ namespace Adventure.Services
 
         public bool MakeRest { get; set; }
 
+        public bool IsFinalArea { get; set; }
+
         public virtual void SetupZone(int zoneIndex, Zone.Description o, FIRandom initRandom)
         {
             //It is important to keep the random order here, or everything changes
@@ -125,6 +127,7 @@ namespace Adventure.Services
 
             o.MakeRest = MakeRest;
             o.MakeBoss = zoneIndex == EndZone;
+            o.IsFinalZone = o.MakeBoss && IsFinalArea;
             o.MakeGate = GateZones?.Contains(zoneIndex) == true;
             o.MakeTorch = TorchZones?.Contains(zoneIndex) == true;
             o.StartEnd = StartEnd;

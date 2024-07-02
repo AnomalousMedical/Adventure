@@ -173,6 +173,8 @@ namespace Adventure
             public int PadRight { get; set; } = 35;
 
             public Alignment Alignment { get; set; } = Alignment.WestEast;
+
+            public bool IsFinalZone { get; set; }
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -219,6 +221,7 @@ namespace Adventure
         private PlotItems? plotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
+        private bool isFinalZone;
 
         private Task zoneGenerationTask;
         private TaskCompletionSource zoneFullyLoadedTask = new TaskCompletionSource();
@@ -287,6 +290,7 @@ namespace Adventure
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier
         )
         {
+            this.isFinalZone = description.IsFinalZone;
             this.plotItem = description.PlotItem;
             this.StartEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
@@ -1086,6 +1090,7 @@ namespace Adventure
                     o.EnemyLevel = enemyLevel;
                     o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
                     o.IsBoss = true;
+                    o.IsFinalBoss = isFinalZone;
                     o.Scale = new Vector3(2f, 2f, 1f);
                 });
                 placeables.Add(bossBattleTrigger);

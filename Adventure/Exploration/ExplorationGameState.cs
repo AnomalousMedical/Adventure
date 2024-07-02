@@ -1,4 +1,5 @@
 ﻿using Adventure.Battle;
+using Adventure.GameOver;
 using Adventure.Menu;
 using Adventure.Services;
 using Adventure.WorldMap;
@@ -26,6 +27,7 @@ namespace Adventure
         void RequestBattle(BattleTrigger battleTrigger = null);
         void RequestWorldMap();
         void LevelUpWorld();
+        void RequestVictory();
     }
 
     class ExplorationGameState : IExplorationGameState, IDisposable
@@ -48,6 +50,7 @@ namespace Adventure
         private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly IScopedCoroutine coroutine;
         private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly IVictoryGameState victoryGameState;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -74,7 +77,8 @@ namespace Adventure
             TypedLightManager<ZoneScene> typedLightManager,
             CharacterMenuPositionService characterMenuPositionService,
             IScopedCoroutine coroutine,
-            FadeScreenMenu fadeScreenMenu
+            FadeScreenMenu fadeScreenMenu,
+            IVictoryGameState victoryGameState
         )
         {
             this.bepuScene = bepuScene;
@@ -95,6 +99,7 @@ namespace Adventure
             this.characterMenuPositionService = characterMenuPositionService;
             this.coroutine = coroutine;
             this.fadeScreenMenu = fadeScreenMenu;
+            this.victoryGameState = victoryGameState;
         }
 
         public void Dispose()
@@ -168,6 +173,11 @@ namespace Adventure
         public void RequestWorldMap()
         {
             nextState = worldMapState;
+        }
+
+        public void RequestVictory()
+        {
+            nextState = victoryGameState;
         }
 
         public IGameState Update(Clock clock)

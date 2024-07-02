@@ -277,6 +277,7 @@ namespace Adventure
             services.AddSingleton<ICreditsService, CreditsService>();
             services.AddSingleton<UserInputMenu>();
             services.AddSingleton<FontLoader>();
+            services.AddSingleton<IVictoryGameState, VictoryGameState>();
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();

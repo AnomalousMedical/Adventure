@@ -33,6 +33,8 @@ namespace Adventure
             public int EnemyLevel { get; set; }
 
             public bool IsBoss { get; set; }
+
+            public bool IsFinalBoss { get; set; }
         }
 
         public record struct BattleTriggerPersistenceData(bool Dead, bool StolenFrom);
@@ -67,6 +69,7 @@ namespace Adventure
         public int BattleSeed { get; }
         public int EnemyLevel { get; }
         public bool IsBoss { get; init; }
+        public bool IsFinalBoss { get; init; }
 
         public BiomeEnemy TriggerEnemy { get; set; }
         public int Index => description.Index;
@@ -85,6 +88,7 @@ namespace Adventure
             state = GetState(description, persistence);
 
             this.IsBoss = description.IsBoss;
+            this.IsFinalBoss = description.IsFinalBoss;
             this.EnemyLevel = description.EnemyLevel;
             this.BattleSeed = description.BattleSeed;
             this.sprite = description.TriggerEnemy.Asset.CreateSprite();
@@ -128,6 +132,10 @@ namespace Adventure
 
         public void BattleWon()
         {
+            if (IsFinalBoss)
+            {
+                explorationGameState.RequestVictory();
+            }
             if (IsBoss)
             {
                 persistence.Current.World.CompletedAreaLevels[description.Area] = EnemyLevel;
@@ -142,7 +150,7 @@ namespace Adventure
                 }
             }
 
-            state.Dead = true;
+            state.Dead = !IsFinalBoss; //Final boss can't perma die
             SetState(description, persistence, state);
             DestroyPhysics();
             RemoveGraphics();
