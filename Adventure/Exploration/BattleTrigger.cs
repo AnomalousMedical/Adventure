@@ -139,7 +139,10 @@ namespace Adventure
             if (IsBoss)
             {
                 persistence.Current.World.CompletedAreaLevels[description.Area] = EnemyLevel;
-                explorationGameState.LevelUpWorld();
+                if (!IsFinalBoss)
+                {
+                    explorationGameState.LevelUpWorld();
+                }
             }
 
             foreach (var sheet in persistence.Current.Party.Members)
