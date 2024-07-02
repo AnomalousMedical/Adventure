@@ -20,13 +20,13 @@ namespace Adventure.Text
                 WorldDatabase: new WorldDatabase.Text
                 (
                     FighterName: "Bolar",
-                    FighterGreeting: "My shield will guard us.",
+                    FighterGreeting: "Don't worry. My shield will guard us.",
                     MageName: "Rabras",
-                    MageGreeting: "Let's get moving.",
+                    MageGreeting: "Times a wasting. Let's get moving.",
                     ThiefName: "Malissa",
-                    ThiefGreeting: "I hope we find lots of great treasure!",
+                    ThiefGreeting: "If were going to fight a dragon hopefully it will have a big fat treasure hoarde.",
                     ClericName: "Adali",
-                    ClericGreeting: "I wonder what's made everything so agressive?"
+                    ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?"
                 ),
                 //World Map
                 Airship: new Airship.Text
@@ -183,6 +183,10 @@ namespace Adventure.Text
                     , Focus: new(Text: "Focus", Description: "Raise an ally's magic and spirit by 30.")
                     , IntenseFocus: new(Text: "Intense Focus", Description: "Raise an ally's magic and spirit by 45.")
                     , Haste: new(Text: "Haste", Description: "Raise an ally's dexterity by 100 and give their turns priority in battle.")
+                ),
+                PartyMemberTrigger: new Exploration.PartyMemberTrigger.Text
+                (
+                    GameIntroSetup: "It sounds like Kelzrut is getting closer to waking up."
                 )
             );
         }

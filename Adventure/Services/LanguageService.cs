@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Exploration;
+using Adventure.Items;
 using Adventure.Skills;
 using Adventure.WorldMap;
 using System;
@@ -41,6 +42,8 @@ namespace Adventure.Services
         ZoneEntrance.Text ZoneEntrance,
         //Items
         ItemText Items,
-        SkillText Skills
+        SkillText Skills,
+        //Zones
+        PartyMemberTrigger.Text PartyMemberTrigger
     );
 }

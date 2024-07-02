@@ -23,6 +23,12 @@ namespace Adventure.Services
         ElementalStone,
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter<PlotFlags>))]
+    enum PlotFlags
+    {
+        IntroQuake
+    }
+
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(Persistence))]
     internal partial class PersistenceWriterSourceGenerationContext : JsonSerializerContext
@@ -62,6 +68,8 @@ namespace Adventure.Services
             public PlayerData Player { get; init; } = new PlayerData();
 
             public HashSet<PlotItems> PlotItems { get; init; } = new HashSet<PlotItems>();
+
+            public HashSet<PlotFlags> PlotFlags { get; init; } = new HashSet<PlotFlags>();
 
             public TimeData Time { get; init; } = new TimeData();
 

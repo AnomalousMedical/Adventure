@@ -53,6 +53,7 @@ namespace Adventure.Exploration
         private readonly PartyMemberTriggerManager partyMemberTriggerManager;
         private readonly UserInputMenu userInputMenu;
         private readonly EarthquakeMenu earthquakeMenu;
+        private readonly ILanguageService languageService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -101,6 +102,11 @@ namespace Adventure.Exploration
             }
         }
 
+        public record Text
+        (
+            String GameIntroSetup
+        );
+
         public PartyMemberTrigger(
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
@@ -117,7 +123,8 @@ namespace Adventure.Exploration
             PartyMemberManager partyMemberManager,
             PartyMemberTriggerManager partyMemberTriggerManager,
             UserInputMenu userInputMenu,
-            EarthquakeMenu earthquakeMenu)
+            EarthquakeMenu earthquakeMenu,
+            ILanguageService languageService)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -140,6 +147,7 @@ namespace Adventure.Exploration
             this.partyMemberTriggerManager = partyMemberTriggerManager;
             this.userInputMenu = userInputMenu;
             this.earthquakeMenu = earthquakeMenu;
+            this.languageService = languageService;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -308,7 +316,13 @@ namespace Adventure.Exploration
         {
             coroutine.RunTask(async () =>
             {
-                await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.IntroQuake))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.IntroQuake);
+                    await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.PartyMemberTrigger.GameIntroSetup, args.GamepadId);
+                }
+
                 await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
 
                 var nameResult = await userInputMenu.ShowAndWait("Enter a name for this character...", null, args.GamepadId,
