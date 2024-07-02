@@ -144,11 +144,20 @@ internal class FileMenu
                     break;
                 }
 
+                var time = TimeSpan.FromMilliseconds(save.GameState.Time.Total * Clock.MicroToMilliseconds);
+                var timeText = $"{(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
+
                 var message =
 @$"{save.GameState.Party.Members.FirstOrDefault()?.CharacterSheet?.Name}
 Areas Cleared: {save.GameState.World.CompletedAreaLevels.Count}
 Level: {save.GameState.World.Level}
-Time: {TimeSpan.FromMicroseconds(save.GameState.Time.Total)}";
+Time: {timeText}";
+
+                if(save.GameState.Time.ClearTime != null)
+                {
+                    time = TimeSpan.FromMilliseconds(save.GameState.Time.ClearTime.Value * Clock.MicroToMilliseconds);
+                    message += $"\nCleared: {(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";   
+                }
 
                 if (save.GameState.Party.Undefeated)
                 {

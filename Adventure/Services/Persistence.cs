@@ -166,6 +166,8 @@ namespace Adventure.Services
             public long? Current { get; set; }
 
             public long Total { get; set; }
+
+            public long? ClearTime { get; set; }
         }
 
         public class WorldData
