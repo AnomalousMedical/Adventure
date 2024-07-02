@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Assets;
 
 namespace Adventure
 {
@@ -25,10 +26,6 @@ namespace Adventure
             public int InstanceId { get; set; }
 
             public Vector3 MapOffset { get; set; }
-
-            public ISprite Sprite { get; set; }
-
-            public SpriteMaterialDescription SpriteMaterial { get; set; }
 
             public PlotItems PlotItem { get; set; }
         }
@@ -69,7 +66,19 @@ namespace Adventure
             IContextMenu contextMenu,
             Persistence persistence)
         {
-            this.sprite = description.Sprite;
+            ISpriteAsset asset;
+
+            switch (description.PlotItem)
+            {
+                case PlotItems.AirshipWheel:
+                    asset = new Assets.World.ShipWheel();
+                    break;
+                default:
+                    asset = new Assets.World.RoundKey();
+                    break;
+            }
+
+            this.sprite = asset.CreateSprite();
             this.zoneIndex = description.ZoneIndex;
             this.instanceId = description.InstanceId;
             this.plotItem = description.PlotItem;
@@ -101,7 +110,7 @@ namespace Adventure
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
 
-                this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
+                this.spriteInstance = await spriteInstanceFactory.Checkout(asset.CreateMaterial(), sprite);
                 this.graphicsLoaded = true;
 
                 if (!taken)

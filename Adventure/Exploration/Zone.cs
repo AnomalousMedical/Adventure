@@ -1066,9 +1066,6 @@ namespace Adventure
                 {
                     o.MapOffset = endPointLocal;
                     o.Translation = currentPosition + o.MapOffset + 2.25f * endZoneItemOffset;
-                    var gateAsset = biome.KeyAsset;
-                    o.Sprite = gateAsset.CreateSprite();
-                    o.SpriteMaterial = gateAsset.CreateMaterial();
                     o.Scale = new Vector3(2f, 2f, 1f);
                     o.PlotItem = this.plotItem.Value;
                 });
