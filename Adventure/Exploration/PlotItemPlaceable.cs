@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Assets;
+using Adventure.Assets.World;
 
 namespace Adventure
 {
@@ -35,6 +36,7 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
+        private readonly TypedLightManager<ZoneScene> lightManager;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -50,6 +52,7 @@ namespace Adventure
         private int instanceId;
         private bool taken = false;
         private PlotItems plotItem;
+        private Light light;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -64,17 +67,21 @@ namespace Adventure
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            Persistence persistence)
+            Persistence persistence,
+            TypedLightManager<ZoneScene> lightManager)
         {
             ISpriteAsset asset;
 
             switch (description.PlotItem)
             {
                 case PlotItems.AirshipWheel:
-                    asset = new Assets.World.ShipWheel();
+                    asset = new ShipWheel();
+                    break;
+                case PlotItems.AirshipFuel:
+                    asset = new ShipFuel();
                     break;
                 default:
-                    asset = new Assets.World.RoundKey();
+                    asset = new RoundKey();
                     break;
             }
 
@@ -90,6 +97,7 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
+            this.lightManager = lightManager;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -101,10 +109,22 @@ namespace Adventure
 
             this.tlasData = new TLASInstanceData()
             {
-                InstanceName = RTId.CreateId("Key"),
+                InstanceName = RTId.CreateId("PlotItem"),
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
+
+            light = asset.CreateLight();
+            if (light != null)
+            {
+                var lightPosition = this.currentPosition;
+                if (asset.LightAttachmentChannel != null)
+                {
+                    var lightAttachment = sprite.GetCurrentFrame().Attachments[asset.LightAttachmentChannel.Value];
+                    lightPosition += lightAttachment.translate;
+                }
+                light.Position = lightPosition.ToVector4();
+            }
 
             coroutine.RunTask(async () =>
             {
@@ -178,6 +198,10 @@ namespace Adventure
                 rtInstances.AddTlasBuild(tlasData);
                 rtInstances.AddShaderTableBinder(Bind);
                 rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+                if (light != null)
+                {
+                    lightManager.AddLight(light);
+                }
 
                 graphicsCreated = true;
             }
@@ -190,6 +214,11 @@ namespace Adventure
                 rtInstances.RemoveSprite(sprite);
                 rtInstances.RemoveShaderTableBinder(Bind);
                 rtInstances.RemoveTlasBuild(tlasData);
+                if (light != null)
+                {
+                    lightManager.RemoveLight(light);
+                }
+
                 graphicsCreated = false;
             }
         }
