@@ -62,5 +62,9 @@ namespace Adventure
             }
             orientation = this.CurrentOrientation.Value;
         }
+
+        public Vector3 CameraPosition => CurrentPosition ?? Position;
+
+        public Quaternion CameraOrientation => CurrentOrientation ?? Orientation;
     }
 }

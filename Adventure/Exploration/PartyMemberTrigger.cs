@@ -52,6 +52,7 @@ namespace Adventure.Exploration
         private readonly PartyMemberManager partyMemberManager;
         private readonly PartyMemberTriggerManager partyMemberTriggerManager;
         private readonly UserInputMenu userInputMenu;
+        private readonly EarthquakeMenu earthquakeMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -115,7 +116,8 @@ namespace Adventure.Exploration
             TextDialog textDialog,
             PartyMemberManager partyMemberManager,
             PartyMemberTriggerManager partyMemberTriggerManager,
-            UserInputMenu userInputMenu)
+            UserInputMenu userInputMenu,
+            EarthquakeMenu earthquakeMenu)
         {
             objectResolver = objectResolverFactory.Create();
             playerSpriteInfo = assetFactory.CreatePlayer(description.Sprite ?? throw new InvalidOperationException($"You must include the {nameof(description.Sprite)} property in your description."));
@@ -137,6 +139,7 @@ namespace Adventure.Exploration
             this.partyMemberManager = partyMemberManager;
             this.partyMemberTriggerManager = partyMemberTriggerManager;
             this.userInputMenu = userInputMenu;
+            this.earthquakeMenu = earthquakeMenu;
             this.mapOffset = description.MapOffset;
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -305,6 +308,7 @@ namespace Adventure.Exploration
         {
             coroutine.RunTask(async () =>
             {
+                await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
                 await textDialog.ShowTextAndWait(this.partyMember.Greeting, args.GamepadId);
 
                 var nameResult = await userInputMenu.ShowAndWait("Enter a name for this character...", null, args.GamepadId,
