@@ -63,16 +63,19 @@ class VictoryGameState : IVictoryGameState
     {
         IGameState nextState = this;
 
-        var size = layout.GetDesiredSize(sharpGui);
-        layout.GetDesiredSize(sharpGui);
-        var rect = screenPositioner.GetCenterRect(size);
-        layout.SetRect(rect);
-
-        sharpGui.Text(youWin);
-
-        if (sharpGui.Button(file, GamepadId.Pad1))
+        if (!explorationMenu.Update())
         {
-            explorationMenu.RequestSubMenu(fileMenu, GamepadId.Pad1);
+            var size = layout.GetDesiredSize(sharpGui);
+            layout.GetDesiredSize(sharpGui);
+            var rect = screenPositioner.GetCenterRect(size);
+            layout.SetRect(rect);
+
+            sharpGui.Text(youWin);
+
+            if (sharpGui.Button(file, GamepadId.Pad1))
+            {
+                explorationMenu.RequestSubMenu(fileMenu, GamepadId.Pad1);
+            }
         }
 
         return nextState;
