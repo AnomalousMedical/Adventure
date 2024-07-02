@@ -1,5 +1,6 @@
 ﻿using Adventure.Menu;
 using Adventure.Services;
+using Anomalous.OSPlatform;
 using DiligentEngine.RT;
 using Engine;
 using Engine.Platform;
@@ -21,7 +22,9 @@ class VictoryGameState : IVictoryGameState
     private readonly IPersistenceWriter persistenceWriter;
     private readonly FileMenu fileMenu;
     private readonly IExplorationMenu explorationMenu;
+    private readonly App app;
     private SharpButton file = new SharpButton() { Text = "File" };
+    private SharpButton exit = new SharpButton() { Text = "Exit" };
     private SharpText youWin = new SharpText("You Win") { Color = Color.White };
     private SharpText clearTimeText = new SharpText() { Color = Color.White };
     private ILayoutItem layout;
@@ -37,7 +40,8 @@ class VictoryGameState : IVictoryGameState
         IPersistenceWriter persistenceWriter,
         FontLoader fontLoader,
         FileMenu fileMenu,
-        IExplorationMenu explorationMenu
+        IExplorationMenu explorationMenu,
+        App app
     )
     {
         youWin.Font = fontLoader.TitleFont;
@@ -49,7 +53,8 @@ class VictoryGameState : IVictoryGameState
         this.persistenceWriter = persistenceWriter;
         this.fileMenu = fileMenu;
         this.explorationMenu = explorationMenu;
-        layout = new ColumnLayout(new KeepWidthCenterLayout(youWin), new KeepWidthCenterLayout(clearTimeText), file) { Margin = new IntPad(10) };
+        this.app = app;
+        layout = new ColumnLayout(new KeepWidthCenterLayout(youWin), new KeepWidthCenterLayout(clearTimeText), file, exit) { Margin = new IntPad(10) };
     }
 
     public void SetActive(bool active)
@@ -81,10 +86,14 @@ class VictoryGameState : IVictoryGameState
             sharpGui.Text(youWin);
             sharpGui.Text(clearTimeText);
 
-            if (sharpGui.Button(file, GamepadId.Pad1))
+            if (sharpGui.Button(file, GamepadId.Pad1, navUp: exit.Id, navDown: exit.Id))
             {
                 fileMenu.PreviousMenu = null;
                 explorationMenu.RequestSubMenu(fileMenu, GamepadId.Pad1);
+            }
+            else if (sharpGui.Button(exit, GamepadId.Pad1, navUp: file.Id, navDown: file.Id))
+            {
+                app.Exit();
             }
         }
 
