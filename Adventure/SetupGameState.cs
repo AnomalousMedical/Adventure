@@ -36,6 +36,7 @@ namespace Adventure
         private readonly PartyMemberManager partyMemberManager;
         private readonly ChooseCharacterMenu chooseCharacterMenu;
         private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly IContextMenu contextMenu;
         private IGameState nextState;
         private bool showLogo = true;
 
@@ -67,7 +68,8 @@ namespace Adventure
             PartyMemberManager partyMemberManager,
             ChooseCharacterMenu chooseCharacterMenu,
             FontLoader fontLoader,
-            FadeScreenMenu fadeScreenMenu
+            FadeScreenMenu fadeScreenMenu,
+            IContextMenu contextMenu
         )
         {
             this.zoneManager = zoneManager;
@@ -86,6 +88,7 @@ namespace Adventure
             this.partyMemberManager = partyMemberManager;
             this.chooseCharacterMenu = chooseCharacterMenu;
             this.fadeScreenMenu = fadeScreenMenu;
+            this.contextMenu = contextMenu;
             this.loading.Font = fontLoader.TitleFont;
         }
 
@@ -103,6 +106,7 @@ namespace Adventure
         {
             if (active)
             {
+                contextMenu.ForceClearContext();
                 nextState = null;
                 showLogo = true;
 

@@ -13,8 +13,12 @@ namespace Adventure.Menu
     {
         void ClearContext(Action<ContextMenuArgs> activatedCallback);
         void HandleContext(String title, Action<ContextMenuArgs> activatedCallback, GamepadId gamepadId);
-
         void Update();
+
+        /// <summary>
+        /// Force the context to clear. This should only be used for things like changing to the new game.
+        /// </summary>
+        void ForceClearContext();
     }
 
     class ContextMenuArgs
@@ -55,6 +59,11 @@ namespace Adventure.Menu
             {
                 this.activatedCallback = null;
             }
+        }
+
+        public void ForceClearContext()
+        {
+            this.activatedCallback = null;
         }
 
         public void Update()
