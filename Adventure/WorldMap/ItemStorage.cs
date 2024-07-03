@@ -29,6 +29,8 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String Intro1,
+            String Intro2,
             String RecoverItems,
             String NoItems
         );
@@ -210,6 +212,13 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
+
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.ItemStorageIntro))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.ItemStorageIntro);
+                    await textDialog.ShowTextAndWait(languageService.Current.ItemStorage.Intro1, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.ItemStorage.Intro2, args.GamepadId);
+                }
 
                 if (persistence.Current.ItemVoid.Any())
                 {

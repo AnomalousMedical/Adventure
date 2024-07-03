@@ -34,6 +34,7 @@ namespace Adventure.Services
         AlchemistUpgradeDelivered,
         BlacksmithIntro,
         BlacksmithUpgradeDelivered,
+        ItemStorageIntro
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

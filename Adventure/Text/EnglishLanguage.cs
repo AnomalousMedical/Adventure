@@ -82,6 +82,8 @@ namespace Adventure.Text
                 ItemStorage: new ItemStorage.Text
                 (
                     Greeting: "Hello",
+                    Intro1: "This statue stares at you so intently you feel it piercing your very soul.",
+                    Intro2: "You feel that it could recreate important things you may have carelessly discarded on your journey. If they had enough value.",
                     RecoverItems: "The gargoyle whispers the echos of discarded power in your ear...",
                     NoItems: "The gargoyle whispers the sounds of an empty void in your ear..."
                 ),
