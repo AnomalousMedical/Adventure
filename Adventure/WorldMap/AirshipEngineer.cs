@@ -27,6 +27,10 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String InitialInfo,
+            String InitialInfo2,
+            String InitialInfo3,
+            String InitialInfo4,
             String NoAirshipItems,
             String HasFuelOnly,
             String HasWheelOnly,
@@ -48,6 +52,7 @@ namespace Adventure.WorldMap
         private readonly CameraMover cameraMover;
         private readonly FadeScreenMenu fadeScreenMenu;
         private readonly ISoundEffectPlayer soundEffectPlayer;
+        private readonly EarthquakeMenu earthquakeMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -66,7 +71,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public AirshipEngineer(
+        public AirshipEngineer
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -83,7 +89,9 @@ namespace Adventure.WorldMap
             ILanguageService languageService,
             CameraMover cameraMover,
             FadeScreenMenu fadeScreenMenu,
-            ISoundEffectPlayer soundEffectPlayer)
+            ISoundEffectPlayer soundEffectPlayer,
+            EarthquakeMenu earthquakeMenu
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -101,6 +109,7 @@ namespace Adventure.WorldMap
             this.cameraMover = cameraMover;
             this.fadeScreenMenu = fadeScreenMenu;
             this.soundEffectPlayer = soundEffectPlayer;
+            this.earthquakeMenu = earthquakeMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -210,6 +219,17 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
+
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.MeetAirshipEngineer))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.MeetAirshipEngineer);
+                    await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.InitialInfo, args.GamepadId);
+                    await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.InitialInfo2, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.InitialInfo3, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.InitialInfo4, args.GamepadId);
+                }
+
                 String message;
                 if (persistence.Current.PlotItems.Contains(PlotItems.AirshipKey))
                 {

@@ -62,7 +62,11 @@ namespace Adventure.Text
                 AirshipEngineer: new AirshipEngineer.Text
                 (
                     Greeting: "Hello",
-                    NoAirshipItems: "Find the wheel and some fuel and we can fix this thing and get to the volcano. Check the nearby wilderness areas. It seems like monsters are making off with our parts.",
+                    InitialInfo: "Hold on a second.",
+                    InitialInfo2: "Just as I suspected. These quakes are centered around the volcano that recently appeared.",
+                    InitialInfo3: "However, we won't be able to get there with the airship in its current condition.",
+                    InitialInfo4: "It seems like monsters are making off with our parts.",
+                    NoAirshipItems: "Find the ship's wheel and some fuel. Look in the nearby wilderness areas. The signposts will guide you.",
                     HasFuelOnly: "You found the fuel now just find the wheel and we can fly.",
                     HasWheelOnly: "You found the wheel. We just need to fuel up and we can fly.",
                     BothAirshipItems: "You found everything. Give me a minute and I will fix her right up.",

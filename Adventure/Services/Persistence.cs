@@ -26,7 +26,8 @@ namespace Adventure.Services
     [JsonConverter(typeof(JsonStringEnumConverter<PlotFlags>))]
     enum PlotFlags
     {
-        IntroQuake
+        IntroQuake,
+        MeetAirshipEngineer
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
