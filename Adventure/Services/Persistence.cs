@@ -28,7 +28,8 @@ namespace Adventure.Services
     {
         IntroQuake,
         MeetAirshipEngineer,
-        InnkeeperIntro
+        InnkeeperIntro,
+        FortuneTellerIntro
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

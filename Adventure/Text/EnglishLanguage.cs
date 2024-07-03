@@ -88,6 +88,7 @@ namespace Adventure.Text
                 FortuneTeller: new FortuneTeller.Text
                 (
                     Greeting: "Hello",
+                    Intro1: "Greetings. My cards can help you find things your thieving fingers may have missed.",
                     StartShufflePitch: "Lets see what the cards say about your fate.",
                     CardShuffleNarrator: "The fortune teller shuffles her deck of cards...",
                     ShowResultsNarrator: "The cards are arranged before you on the table.",

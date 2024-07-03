@@ -27,6 +27,7 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String Intro1,
             String StartShufflePitch,
             String CardShuffleNarrator,
             String ShowResultsNarrator,
@@ -202,6 +203,13 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
+
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.FortuneTellerIntro))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.FortuneTellerIntro);
+                    await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.Intro1, args.GamepadId);
+                }
+
                 await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.StartShufflePitch, args.GamepadId);
                 await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.CardShuffleNarrator, args.GamepadId);
 
