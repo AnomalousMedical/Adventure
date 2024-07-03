@@ -26,8 +26,11 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String Intro1,
+            String Intro2,
             String SalesPitch,
-            String AncientSalesPitch,
+            String Ancient1,
+            String Ancient2,
             String Goodbye
         );
 
@@ -206,12 +209,25 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                var message = languageService.Current.Blacksmith.SalesPitch;
+
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.BlacksmithIntro))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.BlacksmithIntro);
+                    await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Intro1, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Intro2, args.GamepadId);
+                }
+
                 if (persistence.Current.PlotItems.Contains(PlotItems.BlacksmithUpgrade))
                 {
-                    message = languageService.Current.Blacksmith.AncientSalesPitch;
+                    if (!persistence.Current.PlotFlags.Contains(PlotFlags.BlacksmithUpgradeDelivered))
+                    {
+                        persistence.Current.PlotFlags.Add(PlotFlags.BlacksmithUpgradeDelivered);
+                        await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Ancient1, args.GamepadId);
+                        await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Ancient2, args.GamepadId);
+                    }
                 }
-                await textDialog.ShowTextAndWait(message, args.GamepadId);
+
+                await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.SalesPitch, args.GamepadId);
                 buyMenu.PreviousMenu = null;
                 buyMenu.CurrentShopType = ShopType.Blacksmith;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);

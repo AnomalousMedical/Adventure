@@ -31,7 +31,9 @@ namespace Adventure.Services
         InnkeeperIntro,
         FortuneTellerIntro,
         AlchemistIntro,
-        AlchemistUpgradeDelivered
+        AlchemistUpgradeDelivered,
+        BlacksmithIntro,
+        BlacksmithUpgradeDelivered,
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]

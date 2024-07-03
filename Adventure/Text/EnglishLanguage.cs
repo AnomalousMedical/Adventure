@@ -53,8 +53,11 @@ namespace Adventure.Text
                 Blacksmith: new Blacksmith.Text
                 (
                     Greeting: "Hello",
-                    SalesPitch: "I have the best weapons around.",
-                    AncientSalesPitch: "With this knowledge I can make my weapons even better.",
+                    Intro1: "Hail adventurers. I have the best weapons around.",
+                    Intro2: "I can make you anything you need. For a small fee of course.",
+                    SalesPitch: "Let me know if anything catches your eye.",
+                    Ancient1: "Your telling me if I heat my steel just so and then strike it it will be even stronger?",
+                    Ancient2: "This is amazing! With this knowledge I can make my weapons even better.",
                     Goodbye: "Goodbye now."
                 ),
                 BlacksmithUpgrade: new BlacksmithUpgrade.Text
