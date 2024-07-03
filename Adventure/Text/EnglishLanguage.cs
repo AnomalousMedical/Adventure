@@ -24,7 +24,7 @@ namespace Adventure.Text
                     MageName: "Rabras",
                     MageGreeting: "Times a wasting. Let's get moving.",
                     ThiefName: "Malissa",
-                    ThiefGreeting: "If were going to fight a dragon hopefully it will have a big fat treasure hoarde.",
+                    ThiefGreeting: "If were going out, hopefully we will find some good treasure.",
                     ClericName: "Adali",
                     ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?"
                 ),
@@ -186,7 +186,7 @@ namespace Adventure.Text
                 ),
                 PartyMemberTrigger: new Exploration.PartyMemberTrigger.Text
                 (
-                    GameIntroSetup: "It sounds like Kelzrut is getting closer to waking up."
+                    GameIntroSetup: "Things seem to be getting worse. I wonder if there is anything we can do to help?"
                 )
             );
         }
