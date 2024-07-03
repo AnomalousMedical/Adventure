@@ -96,6 +96,11 @@ namespace Adventure.Text
                 Innkeeper: new Innkeeper.Text
                 (
                     Greeting: "Hello",
+                    Intro1: "You don't think all these quakes are caused by a monster thats going to come eat us, do you?",
+                    Intro2: "Eeek! I sure hope that isn't the case!",
+                    Intro3: "Sorry, I know I shouldn't scare people just looking for rest like that.",
+                    SleepQuestionDialog: "Would you like to get some sleep?",
+                    SleepQuestion: "Sleep?",
                     Sleep: "Have a good rest."
                 ),
                 ZoneEntrance: new ZoneEntrance.Text

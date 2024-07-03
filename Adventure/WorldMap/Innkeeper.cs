@@ -26,6 +26,11 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String Intro1,
+            String Intro2,
+            String Intro3,
+            String SleepQuestionDialog,
+            String SleepQuestion,
             String Sleep
         );
 
@@ -40,6 +45,10 @@ namespace Adventure.WorldMap
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly EarthquakeMenu earthquakeMenu;
+        private readonly Persistence persistence;
+        private readonly ConfirmMenu confirmMenu;
+        private readonly IExplorationMenu explorationMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -58,7 +67,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public Innkeeper(
+        public Innkeeper
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -73,7 +83,12 @@ namespace Adventure.WorldMap
             TextDialog textDialog,
             ICoroutineRunner coroutineRunner,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            EarthquakeMenu earthquakeMenu,
+            Persistence persistence,
+            ConfirmMenu confirmMenu,
+            IExplorationMenu explorationMenu
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -89,6 +104,10 @@ namespace Adventure.WorldMap
             this.coroutineRunner = coroutineRunner;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.earthquakeMenu = earthquakeMenu;
+            this.persistence = persistence;
+            this.confirmMenu = confirmMenu;
+            this.explorationMenu = explorationMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -199,8 +218,22 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Sleep, args.GamepadId);
-                restManager.Rest();
+
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.InnkeeperIntro))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.InnkeeperIntro);
+                    await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Intro1, args.GamepadId);
+                    await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Intro2, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Intro3, args.GamepadId);
+                }
+
+                await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.SleepQuestionDialog, args.GamepadId);
+                if (await confirmMenu.ShowAndWait(languageService.Current.Innkeeper.SleepQuestion, null, explorationMenu, args.GamepadId))
+                {
+                    await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Sleep, args.GamepadId);
+                    restManager.Rest();
+                }
             });
         }
 

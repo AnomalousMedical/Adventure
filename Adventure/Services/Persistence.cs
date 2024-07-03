@@ -27,7 +27,8 @@ namespace Adventure.Services
     enum PlotFlags
     {
         IntroQuake,
-        MeetAirshipEngineer
+        MeetAirshipEngineer,
+        InnkeeperIntro
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
