@@ -6,6 +6,7 @@ using Engine;
 using Engine.Platform;
 using SharpGui;
 using System;
+using System.Collections.Generic;
 
 namespace Adventure.GameOver;
 
@@ -13,49 +14,27 @@ interface IVictoryGameState : IGameState
 {
 }
 
-class VictoryGameState : IVictoryGameState
+class VictoryGameState
+(
+    ISharpGui sharpGui,
+    RTInstances<EmptyScene> rtInstances,
+    IScreenPositioner screenPositioner,
+    Persistence persistence,
+    IPersistenceWriter persistenceWriter,
+    FontLoader fontLoader,
+    FileMenu fileMenu,
+    IExplorationMenu explorationMenu,
+    App app
+) : IVictoryGameState
 {
-    private readonly ISharpGui sharpGui;
-    private readonly RTInstances rtInstances;
-    private readonly IScreenPositioner screenPositioner;
-    private readonly Persistence persistence;
-    private readonly IPersistenceWriter persistenceWriter;
-    private readonly FileMenu fileMenu;
-    private readonly IExplorationMenu explorationMenu;
-    private readonly App app;
     private SharpButton file = new SharpButton() { Text = "File" };
     private SharpButton exit = new SharpButton() { Text = "Exit" };
-    private SharpText youWin = new SharpText("You Win") { Color = Color.White };
+    private SharpText youWin = new SharpText("You Win") { Color = Color.White, Font = fontLoader.TitleFont };
     private SharpText clearTimeText = new SharpText() { Color = Color.White };
-    private ILayoutItem layout;
+    private SharpText undefeatedText = new SharpText("Undefeated") { Color = Color.White };
+    private SharpText oldSchoolText = new SharpText("Old School") { Color = Color.White };
 
     public RTInstances Instances => rtInstances;
-
-    public VictoryGameState
-    (
-        ISharpGui sharpGui,
-        RTInstances<EmptyScene> rtInstances,
-        IScreenPositioner screenPositioner,
-        Persistence persistence,
-        IPersistenceWriter persistenceWriter,
-        FontLoader fontLoader,
-        FileMenu fileMenu,
-        IExplorationMenu explorationMenu,
-        App app
-    )
-    {
-        youWin.Font = fontLoader.TitleFont;
-
-        this.sharpGui = sharpGui;
-        this.rtInstances = rtInstances;
-        this.screenPositioner = screenPositioner;
-        this.persistence = persistence;
-        this.persistenceWriter = persistenceWriter;
-        this.fileMenu = fileMenu;
-        this.explorationMenu = explorationMenu;
-        this.app = app;
-        layout = new ColumnLayout(new KeepWidthCenterLayout(youWin), new KeepWidthCenterLayout(clearTimeText), file, exit) { Margin = new IntPad(10) };
-    }
 
     public void SetActive(bool active)
     {
@@ -72,16 +51,43 @@ class VictoryGameState : IVictoryGameState
         }
     }
 
+    private IEnumerable<ILayoutItem> GetMenuItems()
+    {
+        yield return new KeepWidthCenterLayout(youWin);
+        yield return new KeepWidthCenterLayout(clearTimeText);
+        if (persistence.Current.Party.Undefeated)
+        {
+            yield return new KeepWidthCenterLayout(undefeatedText);
+        }
+        if (persistence.Current.Party.OldSchool)
+        {
+            yield return new KeepWidthCenterLayout(oldSchoolText);
+        }
+        yield return file;
+        yield return exit;
+    }
+
     public IGameState Update(Clock clock)
     {
         IGameState nextState = this;
 
         if (!explorationMenu.Update())
         {
+            var layout = new ColumnLayout(GetMenuItems()) { Margin = new IntPad(10) };
+
             var size = layout.GetDesiredSize(sharpGui);
             layout.GetDesiredSize(sharpGui);
             var rect = screenPositioner.GetCenterRect(size);
             layout.SetRect(rect);
+
+            if (persistence.Current.Party.Undefeated)
+            {
+                sharpGui.Text(undefeatedText);
+            }
+            if (persistence.Current.Party.OldSchool)
+            {
+                sharpGui.Text(oldSchoolText);
+            }
 
             sharpGui.Text(youWin);
             sharpGui.Text(clearTimeText);
