@@ -26,8 +26,11 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Greeting,
+            String Intro1,
+            String Intro2,
             String SalesPitch,
-            String AncientSalesPitch,
+            String Ancient1,
+            String Ancient2,
             String Goodbye
         );
 
@@ -206,12 +209,23 @@ namespace Adventure.WorldMap
             coroutineRunner.RunTask(async () =>
             {
                 cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                var message = languageService.Current.Alchemist.SalesPitch;
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.AlchemistIntro))
+                {
+                    persistence.Current.PlotFlags.Add(PlotFlags.AlchemistIntro);
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Intro1, args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Intro2, args.GamepadId);
+                }
+
                 if (persistence.Current.PlotItems.Contains(PlotItems.AlchemistUpgrade))
                 {
-                    message = languageService.Current.Alchemist.AncientSalesPitch;
+                    if(!persistence.Current.PlotFlags.Contains(PlotFlags.AlchemistUpgradeDelivered))
+                    {
+                        persistence.Current.PlotFlags.Add(PlotFlags.AlchemistUpgradeDelivered);
+                        await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Ancient1, args.GamepadId);
+                        await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Ancient2, args.GamepadId);
+                    }
                 }
-                await textDialog.ShowTextAndWait(message, args.GamepadId);
+                await textDialog.ShowTextAndWait(languageService.Current.Alchemist.SalesPitch, args.GamepadId);
                 buyMenu.PreviousMenu = null;
                 buyMenu.CurrentShopType = ShopType.Alchemist;
                 explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
