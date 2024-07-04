@@ -28,7 +28,9 @@ class RootMenu
     CharacterStatsTextService characterStatsTextService,
     Persistence persistence,
     FileMenu fileMenu,
-    GameOptions gameOptions
+    GameOptions gameOptions,
+    ConfirmMenu confirmMenu,
+    ICoroutineRunner coroutineRunner
 ) : IRootMenu
 {
     SharpButton skills = new SharpButton() { Text = "Skills" };
@@ -147,9 +149,16 @@ class RootMenu
         }
         else if(sharpGui.Button(feedback, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
         {
-            Process.Start(new ProcessStartInfo("https://docs.google.com/forms/d/e/1FAIpQLSd8TUYdRgNfZi6zIdTmRTC5IpoiHxHRaJtq0O8mOH1qlEnQ0A/viewform?usp=sf_link")
+            coroutineRunner.RunTask(async () =>
             {
-                UseShellExecute = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+                var open = await confirmMenu.ShowAndWait("This will open your browser. Do you want to continue?", null, explorationMenu, gamepad);
+                if (open)
+                {
+                    Process.Start(new ProcessStartInfo("https://docs.google.com/forms/d/e/1FAIpQLSd8TUYdRgNfZi6zIdTmRTC5IpoiHxHRaJtq0O8mOH1qlEnQ0A/viewform?usp=sf_link")
+                    {
+                        UseShellExecute = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+                    });
+                }
             });
         }
         else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: feedback.Id) || sharpGui.IsStandardBackPressed(gamepad))
