@@ -32,6 +32,7 @@
 		<OutputType>WinExe</OutputType>
 		<SelfContained>true</SelfContained>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='RelMDeb'">
