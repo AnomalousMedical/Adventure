@@ -151,7 +151,7 @@ class RootMenu
         {
             coroutineRunner.RunTask(async () =>
             {
-                var open = await confirmMenu.ShowAndWait("This will open your browser. Do you want to continue?", null, explorationMenu, gamepad);
+                var open = await confirmMenu.ShowAndWait("This will open your browser. Do you want to continue?", null, gamepad);
                 if (open)
                 {
                     Process.Start(new ProcessStartInfo("https://docs.google.com/forms/d/e/1FAIpQLSd8TUYdRgNfZi6zIdTmRTC5IpoiHxHRaJtq0O8mOH1qlEnQ0A/viewform?usp=sf_link")

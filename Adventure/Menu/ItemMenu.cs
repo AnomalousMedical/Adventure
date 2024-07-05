@@ -217,7 +217,7 @@ class UseItemMenu
                     {
                         coroutine.RunTask(async () =>
                         {
-                            if(await confirmMenu.ShowAndWait($"Discard the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", parentSubMenu, menu, gamepadId))
+                            if(await confirmMenu.ShowAndWait($"Discard the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", parentSubMenu, gamepadId))
                             {
                                 characterData.RemoveItem(SelectedItem);
                                 if (SelectedItem.Unique)

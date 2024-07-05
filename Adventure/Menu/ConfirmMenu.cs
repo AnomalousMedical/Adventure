@@ -23,8 +23,14 @@ class ConfirmMenu
     private IExplorationSubMenu previousMenu;
     private TaskCompletionSource<bool> currentTask;
     private bool confirmed = false;
+    private IExplorationMenu explorationMenu;
 
-    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, IExplorationMenu explorationMenu, GamepadId gamepadId)
+    public void Link(IExplorationMenu explorationMenu)
+    {
+        this.explorationMenu = explorationMenu;
+    }
+
+    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepadId)
     {
         this.confirmed = false;
         this.message.Text = message;

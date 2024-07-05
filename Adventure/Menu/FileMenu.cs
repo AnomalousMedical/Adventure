@@ -119,7 +119,7 @@ internal class FileMenu
     {
         coroutineRunner.RunTask(async () =>
         {
-            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete the save {saveInfo.SaveTime}?", this, menu, gamepadId))
+            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete the save {saveInfo.SaveTime}?", this, gamepadId))
             {
                 if (options.CurrentSave == saveInfo.FileName)
                 {

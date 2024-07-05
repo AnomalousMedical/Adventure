@@ -155,7 +155,7 @@ class ItemVoidMenu
             {
                 coroutine.RunTask(async () =>
                 {
-                    if (await confirmMenu.ShowAndWait($"Do you want to recover {languageService.Current.Items.GetText(newSelection.InfoId)}?", this, menu, gamepad))
+                    if (await confirmMenu.ShowAndWait($"Do you want to recover {languageService.Current.Items.GetText(newSelection.InfoId)}?", this, gamepad))
                     {
                         //The item should only be given to the player if it is removed
                         //The pick up menu will return the item to the void, so it does not need special tracking

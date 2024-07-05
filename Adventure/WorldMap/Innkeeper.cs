@@ -48,7 +48,6 @@ namespace Adventure.WorldMap
         private readonly EarthquakeMenu earthquakeMenu;
         private readonly Persistence persistence;
         private readonly ConfirmMenu confirmMenu;
-        private readonly IExplorationMenu explorationMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -86,8 +85,7 @@ namespace Adventure.WorldMap
             CameraMover cameraMover,
             EarthquakeMenu earthquakeMenu,
             Persistence persistence,
-            ConfirmMenu confirmMenu,
-            IExplorationMenu explorationMenu
+            ConfirmMenu confirmMenu
         )
         {
             this.sprite = description.Sprite;
@@ -107,7 +105,6 @@ namespace Adventure.WorldMap
             this.earthquakeMenu = earthquakeMenu;
             this.persistence = persistence;
             this.confirmMenu = confirmMenu;
-            this.explorationMenu = explorationMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -229,7 +226,7 @@ namespace Adventure.WorldMap
                 }
 
                 await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.SleepQuestionDialog, args.GamepadId);
-                if (await confirmMenu.ShowAndWait(languageService.Current.Innkeeper.SleepQuestion, null, explorationMenu, args.GamepadId))
+                if (await confirmMenu.ShowAndWait(languageService.Current.Innkeeper.SleepQuestion, null, args.GamepadId))
                 {
                     await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Sleep, args.GamepadId);
                     restManager.Rest();

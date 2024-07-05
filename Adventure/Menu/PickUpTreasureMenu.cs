@@ -287,7 +287,7 @@ class PickUpTreasureMenu
                     {
                         scopedCoroutine.RunTask(async () =>
                         {
-                            if (await confirmMenu.ShowAndWait($"Remove {languageService.Current.Items.GetText(removeItem.InfoId)} and take {languageService.Current.Items.GetText(treasure.InfoId)}?", parentSubMenu, menu, gamepadId))
+                            if (await confirmMenu.ShowAndWait($"Remove {languageService.Current.Items.GetText(removeItem.InfoId)} and take {languageService.Current.Items.GetText(treasure.InfoId)}?", parentSubMenu, gamepadId))
                             {
                                 equippingItem = treasure.CanEquipOnPickup;
                                 if (!equippingItem)
@@ -351,7 +351,7 @@ class PickUpTreasureMenu
                 {
                     scopedCoroutine.RunTask(async () =>
                     {
-                        if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, menu, gamepadId))
+                        if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, gamepadId))
                         {
                             NextTreasure();
                             if (treasure.Item?.Unique == true)
