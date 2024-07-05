@@ -44,6 +44,7 @@ namespace Adventure.Services
         ItemText Items,
         SkillText Skills,
         //Zones
-        PartyMemberTrigger.Text PartyMemberTrigger
+        PartyMemberTrigger.Text PartyMemberTrigger,
+        HelpBook.Text HelpBook
     );
 }

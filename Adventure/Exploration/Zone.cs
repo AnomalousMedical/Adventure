@@ -1188,9 +1188,12 @@ namespace Adventure
             }
             else if(!goPrevious && mapLoc == startPointLocal && placeRestArea)
             {
-                //This is the start of the game, so place a rest area
+                //This is the start of the game, so place a rest area and the help book
                 placeRestArea = false;
                 CreateRestArea(mapLoc);
+                var bookPoint = new Point(point.x + 1, point.y);
+                var bookMapLoc = mapMesh.PointToVector(bookPoint.x, bookPoint.y);
+                CreateHelpBook(bookMapLoc);
             }
         }
 
@@ -1207,6 +1210,17 @@ namespace Adventure
                 o.SpriteMaterial = asset.CreateMaterial();
             });
             this.placeables.Add(restArea);
+        }
+
+        private void CreateHelpBook(Vector3 mapLoc)
+        {
+            var helpBook = objectResolver.Resolve<HelpBook, HelpBook.Description>(o =>
+            {
+                o.MapOffset = mapLoc;
+                o.Translation = currentPosition + o.MapOffset;
+                o.PlotItem = PlotItems.GuideToPowerAndMayhem;
+            });
+            this.placeables.Add(helpBook);
         }
 
         private void PlaceKey(Point point)

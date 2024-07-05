@@ -1,4 +1,5 @@
-﻿using Adventure.Items;
+﻿using Adventure.Exploration;
+using Adventure.Items;
 using Adventure.Items.Creators;
 using Adventure.Services;
 using Adventure.Skills;
@@ -43,7 +44,10 @@ namespace Adventure.Text
                     SalesPitch: "What can I get you today?",
                     Ancient1: "Wow this information is amazing! You found this out exploring?",
                     Ancient2: "My potions will really pack a punch now.",
-                    Goodbye: "See you next time."
+                    Goodbye: "See you next time.",
+                    LevelPotion1: "Hmm this is interesting. The ingredients for this are quite rare, since they aren't used very often, but fortunately I have a large stockpile of them.",
+                    LevelPotion2: "Oh no! Almost all of it was ruined in that last one. I might have enough to make one if you still want to try.",
+                    LevelPotionReturn: "Do you want me to try to brew that mystery potion for you?"
                 ),
                 AlchemistUpgrade: new AlchemistUpgrade.Text
                 (
@@ -205,6 +209,53 @@ namespace Adventure.Text
                 PartyMemberTrigger: new Exploration.PartyMemberTrigger.Text
                 (
                     GameIntroSetup: "Things seem to be getting worse. I wonder if there is anything we can do to help?"
+                ),
+                HelpBook: new HelpBook.Text
+                (
+                    Greeting: "Check",
+                    BookIntro: "Before you lies \"The Guide to Power and Mayhem.\" Would you like to read it?",
+                    ReadBookPrompt: "Read \"The Guide to Power and Mayhem?\"",
+                    TakeBookPrompt: "Take \"The Guide to Power and Mayhem?\"",
+
+                    PageIntro: "Before you lies a missing page from \"The Guide to Power and Mayhem.\" Would you like to read it?",
+                    ReadPagePrompt: "Read the page from \"The Guide to Power and Mayhem?\"",
+                    TakePagePrompt: "Take the page from \"The Guide to Power and Mayhem?\"",
+
+                    Chapter1Title: "Chapter 1: Active Abilities",
+                    Chapter1: "Active abilities are used with the right trigger or spacebar. These will enhance your magic spells, allow you to use an offhand weapon or block during an enemy attack. Check the item descriptions for more information.",
+                    
+                    Chapter2Title: "Chapter 2: Precision Required",
+                    Chapter2: "When using your active abilities do not press the button multiple times or it will work against you. You also cannot block enemy magic attacks. If you try to do this their magic will be enhanced instead.",
+                    
+                    Chapter3Title: "Chapter 3: Weapon Damage and Weaknesses",
+                    Chapter3: "Each weapon does either slashing, piercing or bludgeoning damage to your opponents. Each enemy type will be strong, weak and neutral to these damage types. Exploit them to do even more damage.",
+                    
+                    Chapter4Title: "Chapter 4: Elemental Damage and Weaknesses",
+                    Chapter4: "You can cast spells of ice, fire and electricity. Enemies will be weak, strong and neutral to these types, which will cause the damage to increase or decrease accordingly. Some enemies can even shift their elements and absorb damage as healing instead.",
+                    Chapter4Part2Missing: "The rest of this chapter seems to be missing.",
+                    Chapter4Part2: "Some elemental spells can be applied to your own party's weapons causing the elemental multiplier to apply in addition to the weapon damage. Be careful though this could end up with weaker attacks or even attacks being absorbed and turned into hp.",
+                    
+                    Chapter5Title: "Chapter 5: Finding Weaknesses",
+                    Chapter5: "Enemies will have weaknesses you can see with the Target Scope item.",
+                    Chapter5Part2Missing: "The rest of this chapter seems to be missing.",
+                    Chapter5Part2: "If you pay attention during your attacks you can hear and see how effective they are.",
+                    
+                    Chapter6Title: "Chapter 6: Inventory and equipment",
+                    Chapter6: "Each character has their own inventory and can only use and equip items they are carrying.",
+                    Chapter6Part2Missing: "The rest of this chapter seems to be missing.",
+                    Chapter6Part2: "You can use anything in battle, even weapons. You can switch your equipment on the fly to adapt to what your fighting.",
+
+                    Chapter7Title: "Chapter 7: Exploration",
+                    Chapter7: "Be sure to explore as much as you can. If you can't beat one area go to another. You never know what you will find.",
+                    Chapter7Part2: "If you don't know where to go next, let the signposts guide you.",
+
+                    Chapter8Title: "Chapter 8: The Power of Friendship",
+                    Chapter8: "Everyone in your party has their own strengths and weaknesses. Look at each of their stats to determine their best role. Stats like Heal% and Item% improve how well that character heals or uses items. Block% determines how much damage is reduced when guarding with a shield.",
+
+                    BookTaken: "You pick up the book. Maybe you can find some of the pages that are missing from it later. You can read it any time from the Help section of the main menu.",
+                    Page1Found: "You pick up the page and add it to its chapter in the book. It seems to repair itself with some kind of magic.",
+                    Page2Found: "You pick up the page and add it back to the book. Like the first page this one also repairs itself.",
+                    AllPagesFound: "You put the last page into the book and then you hear a click. A small panel opens revealing an envelope labeled \"Potion of Experience.\" Inside it appears to be an alchemical recipe."
                 )
             );
         }

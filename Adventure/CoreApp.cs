@@ -178,6 +178,8 @@ namespace Adventure
             services.AddScoped<Torch.Description>();
             services.AddScoped<Key>();
             services.AddScoped<Key.Description>();
+            services.AddScoped<HelpBook>();
+            services.AddScoped<HelpBook.Description>();
             services.AddScoped<PlotItemPlaceable>();
             services.AddScoped<PlotItemPlaceable.Description>();
             services.AddScoped<BackgroundItem>();
@@ -269,6 +271,7 @@ namespace Adventure
             services.AddSingleton<App>(this);
             services.AddSingleton<Persistence>();
             services.AddSingleton<EarthquakeMenu>();
+            services.AddSingleton<HelpMenu>();
 
             services.AddSingleton<ICharacterMenuPositionTracker<ZoneScene>, CharacterMenuPositionTracker<ZoneScene>>();
             services.AddSingleton<ICharacterMenuPositionTracker<WorldMapScene>>(s => s.GetRequiredService<WrappingCharacterMenuPositionTracker<WorldMapScene>>());

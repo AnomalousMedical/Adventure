@@ -21,6 +21,10 @@ namespace Adventure.Services
         RuneOfIce,
         RuneOfElectricity,
         ElementalStone,
+        GuideToPowerAndMayhem,
+        GuideToPowerAndMayhemChapter4,
+        GuideToPowerAndMayhemChapter5,
+        GuideToPowerAndMayhemChapter6,
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<PlotFlags>))]

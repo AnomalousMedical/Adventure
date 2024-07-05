@@ -31,7 +31,10 @@ namespace Adventure.WorldMap
             String SalesPitch,
             String Ancient1,
             String Ancient2,
-            String Goodbye
+            String Goodbye,
+            String LevelPotion1,
+            String LevelPotion2,
+            String LevelPotionReturn
         );
 
         private readonly RTInstances<WorldMapScene> rtInstances;
