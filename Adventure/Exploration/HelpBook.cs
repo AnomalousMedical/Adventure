@@ -88,7 +88,8 @@ class HelpBook : IDisposable, IZonePlaceable
         String BookTaken,
         String Page1Found,
         String Page2Found,
-        String AllPagesFound
+        String AllPagesFound,
+        String CannotTakePage
     );
 
     public HelpBook
@@ -289,11 +290,11 @@ class HelpBook : IDisposable, IZonePlaceable
                         {
                             ++pageCount;
                         }
-                        else if (persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter5))
+                        if (persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter5))
                         {
                             ++pageCount;
                         }
-                        else if (persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter6))
+                        if (persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter6))
                         {
                             ++pageCount;
                         }
@@ -351,13 +352,20 @@ class HelpBook : IDisposable, IZonePlaceable
                 }
             }
 
-            if (takePrompt != null && await confirmMenu.ShowAndWait(takePrompt, null, args.GamepadId))
+            if (takePrompt != null)
             {
-                await textDialog.ShowTextAndWait(take, args.GamepadId);
-                contextMenu.ClearContext(Take);
-                persistence.Current.PlotItems.Add(plotItem);
-                DestroyGraphics();
-                DestroyPhysics();
+                if (await confirmMenu.ShowAndWait(takePrompt, null, args.GamepadId))
+                {
+                    await textDialog.ShowTextAndWait(take, args.GamepadId);
+                    contextMenu.ClearContext(Take);
+                    persistence.Current.PlotItems.Add(plotItem);
+                    DestroyGraphics();
+                    DestroyPhysics();
+                }
+            }
+            else
+            {
+                await textDialog.ShowTextAndWait(languageService.Current.HelpBook.CannotTakePage, args.GamepadId);
             }
         }));
     }

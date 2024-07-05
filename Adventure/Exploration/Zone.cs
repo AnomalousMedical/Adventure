@@ -164,6 +164,8 @@ namespace Adventure
 
             public PlotItems? PlotItem { get; set; }
 
+            public PlotItems? HelpBookPlotItem { get; set; }
+
             public IEnumerable<PartyMember> PartyMembers { get; set; }
 
             public int Area { get; set; }
@@ -219,6 +221,7 @@ namespace Adventure
         private IEnumerable<ITreasure> treasure;
         private IEnumerable<PartyMember> partyMembers;
         private PlotItems? plotItem;
+        private PlotItems? helpBookPlotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
         private bool isFinalZone;
@@ -292,6 +295,7 @@ namespace Adventure
         {
             this.isFinalZone = description.IsFinalZone;
             this.plotItem = description.PlotItem;
+            this.helpBookPlotItem = description.HelpBookPlotItem;
             this.StartEnd = description.StartEnd;
             this.maxMainCorridorBattles = description.MaxMainCorridorBattles > 0 ? description.MaxMainCorridorBattles : throw new InvalidOperationException("You must have a max main corridor fight count of at least 1.");
             this.enemyLevel = description.EnemyLevel;
@@ -558,6 +562,7 @@ namespace Adventure
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares);
                 PlaceKeySafety(enemyRandom, usedCorridors);
                 PlaceSignpost(description, startPoint, endPoint);
+                CreateHelpBook();
 
                 if (biome.BackgroundItems != null)
                 {
@@ -812,6 +817,7 @@ namespace Adventure
         private bool placeKey;
         private bool placeTorch;
         private bool placeFirstChest;
+        private Point? helpBookPoint;
 
         private void ResetPlacementData()
         {
@@ -823,6 +829,7 @@ namespace Adventure
             placeKey = placeGate = makeGate;
             placeTorch = this.makeTorch;
             placeFirstChest = true;
+            helpBookPoint = null;
         }
 
         private void ResetLootDrop()
@@ -1179,6 +1186,7 @@ namespace Adventure
                     });
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);
+                    SetHelpBookPoint(new Point(point.x + 1, point.y));
                 }
                 else if (goPrevious && placeRestArea) //Only place this way if you can go to a previous level, otherwise it goes in the start area
                 {
@@ -1191,9 +1199,7 @@ namespace Adventure
                 //This is the start of the game, so place a rest area and the help book
                 placeRestArea = false;
                 CreateRestArea(mapLoc);
-                var bookPoint = new Point(point.x + 1, point.y);
-                var bookMapLoc = mapMesh.PointToVector(bookPoint.x, bookPoint.y);
-                CreateHelpBook(bookMapLoc);
+                SetHelpBookPoint(new Point(point.x + 1, point.y), true);
             }
         }
 
@@ -1212,15 +1218,27 @@ namespace Adventure
             this.placeables.Add(restArea);
         }
 
-        private void CreateHelpBook(Vector3 mapLoc)
+        private void SetHelpBookPoint(in Point point, bool force = false)
         {
-            var helpBook = objectResolver.Resolve<HelpBook, HelpBook.Description>(o =>
+            if(helpBookPoint == null || force)
             {
-                o.MapOffset = mapLoc;
-                o.Translation = currentPosition + o.MapOffset;
-                o.PlotItem = PlotItems.GuideToPowerAndMayhem;
-            });
-            this.placeables.Add(helpBook);
+                helpBookPoint = point;
+            }
+        }
+
+        private void CreateHelpBook()
+        {
+            if (helpBookPlotItem != null && helpBookPoint != null)
+            {
+                var mapLoc = mapMesh.PointToVector(helpBookPoint.Value.x, helpBookPoint.Value.y);
+                var helpBook = objectResolver.Resolve<HelpBook, HelpBook.Description>(o =>
+                {
+                    o.MapOffset = mapLoc;
+                    o.Translation = currentPosition + o.MapOffset;
+                    o.PlotItem = helpBookPlotItem.Value;
+                });
+                this.placeables.Add(helpBook);
+            }
         }
 
         private void PlaceKey(Point point)

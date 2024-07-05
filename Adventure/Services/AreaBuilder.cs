@@ -67,6 +67,8 @@ namespace Adventure.Services
 
         public PlotItems? PlotItem { get; set; }
 
+        public PlotItems? HelpBookPlotItem { get; set; }
+
         public IEnumerable<ITreasure> Treasure { get; set; }
 
         public IEnumerable<ITreasure> StealTreasure { get; set; }
@@ -137,6 +139,11 @@ namespace Adventure.Services
             if(zoneIndex == EndZone && PlotItem != null)
             {
                 o.PlotItem = PlotItem;
+            }
+
+            if (zoneIndex == StartZone && HelpBookPlotItem != null)
+            {
+                o.HelpBookPlotItem = HelpBookPlotItem;
             }
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);

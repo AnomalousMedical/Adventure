@@ -20,7 +20,7 @@ namespace Adventure.Menu
         private readonly ISharpGui sharpGui;
         private readonly IScreenPositioner screenPositioner;
         private readonly IScaleHelper scaleHelper;
-        private readonly IExplorationMenu explorationMenu;
+        private IExplorationMenu explorationMenu;
         private SharpPanel panel = new SharpPanel();
         private SharpText text = new SharpText()
         {
@@ -36,13 +36,16 @@ namespace Adventure.Menu
         (
             ISharpGui sharpGui,
             IScreenPositioner screenPositioner,
-            IScaleHelper scaleHelper,
-            IExplorationMenu explorationMenu
+            IScaleHelper scaleHelper
         )
         {
             this.sharpGui = sharpGui;
             this.screenPositioner = screenPositioner;
             this.scaleHelper = scaleHelper;
+        }
+
+        public void Link(IExplorationMenu explorationMenu)
+        {
             this.explorationMenu = explorationMenu;
         }
 

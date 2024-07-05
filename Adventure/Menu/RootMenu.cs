@@ -30,12 +30,14 @@ class RootMenu
     FileMenu fileMenu,
     GameOptions gameOptions,
     ConfirmMenu confirmMenu,
-    ICoroutineRunner coroutineRunner
+    ICoroutineRunner coroutineRunner,
+    HelpMenu helpMenu
 ) : IRootMenu
 {
     SharpButton skills = new SharpButton() { Text = "Skills" };
     SharpButton items = new SharpButton() { Text = "Items" };
     SharpButton files = new SharpButton() { Text = "Files" };
+    SharpButton help = new SharpButton() { Text = "Help" };
     SharpButton options = new SharpButton() { Text = "Options" };
     SharpButton debug = new SharpButton() { Text = "Debug" };
     SharpButton feedback = new SharpButton() { Text = "Feedback" };
@@ -57,11 +59,17 @@ class RootMenu
         return currentTask.Task;
     }
 
+    private bool HasHelpBook => persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhem);
+
     private IEnumerable<SharpButton> GetMenuItems()
     {
         yield return skills;
         yield return items;
         yield return files;
+        if (HasHelpBook)
+        {
+            yield return help;
+        }
         yield return options;
         if (gameOptions.Debug)
         {
@@ -130,13 +138,19 @@ class RootMenu
             infos = null;
             explorationMenu.RequestSubMenu(itemMenu, gamepad);
         }
-        else if (sharpGui.Button(files, gamepad, navDown: options.Id, navUp: items.Id))
+        else if (sharpGui.Button(files, gamepad, navDown: HasHelpBook ? help.Id : options.Id, navUp: items.Id))
         {
             infos = null;
             fileMenu.PreviousMenu = this;
             explorationMenu.RequestSubMenu(fileMenu, gamepad);
         }
-        else if (sharpGui.Button(options, gamepad, navDown: gameOptions.Debug ? debug.Id : feedback.Id, navUp: files.Id))
+        else if (HasHelpBook && sharpGui.Button(help, gamepad, navDown: options.Id, navUp: files.Id))
+        {
+            infos = null;
+            helpMenu.PreviousMenu = this;
+            explorationMenu.RequestSubMenu(helpMenu, gamepad);
+        }
+        else if (sharpGui.Button(options, gamepad, navDown: gameOptions.Debug ? debug.Id : feedback.Id, navUp: HasHelpBook ? help.Id : files.Id))
         {
             infos = null;
             optionsMenu.PreviousMenu = this;

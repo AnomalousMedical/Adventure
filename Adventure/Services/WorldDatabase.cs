@@ -422,6 +422,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase0TreasureLevel), TreasureType.Potion)
                 };
                 areaBuilder.StartEnd = true;
+                areaBuilder.HelpBookPlotItem = PlotItems.GuideToPowerAndMayhem;
                 areaBuilder.MaxMainCorridorBattles = 1;
                 areaBuilder.PartyMembers = CreateParty();
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
@@ -482,6 +483,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 2;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.PlotItem = PlotItems.AirshipFuel;
+                areaBuilder.HelpBookPlotItem = PlotItems.GuideToPowerAndMayhemChapter4;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 2;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
@@ -603,6 +605,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 0;
                 areaBuilder.TorchZones = new[] { areaBuilder.StartZone };
+                areaBuilder.HelpBookPlotItem = PlotItems.GuideToPowerAndMayhemChapter5;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);
@@ -638,6 +641,7 @@ namespace Adventure.Services
                 areaBuilder.Phase = 3;
                 areaBuilder.IndexInPhase = 1;
                 areaBuilder.TorchZones = new[] { areaBuilder.StartZone };
+                areaBuilder.HelpBookPlotItem = PlotItems.GuideToPowerAndMayhemChapter6;
                 areaBuilder.Biome = biomeDistributor.GetNext(biomeRandom);
                 areaBuilder.MaxMainCorridorBattles = 3;
                 areaBuilder.Alignment = zoneAlignment.GetItem(alignmentRandom);

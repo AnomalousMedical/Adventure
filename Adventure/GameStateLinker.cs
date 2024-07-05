@@ -26,7 +26,8 @@ namespace Adventure
             IResetGameState resetGameState,
             IDebugGui debugGui,
             FadeScreenMenu fadeScreenMenu,
-            ConfirmMenu confirmMenu
+            ConfirmMenu confirmMenu,
+            TextDialog textDialog
         )
         {
             resetGameState.Link(setup, explorationMenu);
@@ -40,6 +41,7 @@ namespace Adventure
             debugGui.Link(exploration);
             fadeScreenMenu.Link(explorationMenu);
             confirmMenu.Link(explorationMenu);
+            textDialog.Link(explorationMenu);
         }
     }
 }

@@ -255,7 +255,8 @@ namespace Adventure.Text
                     BookTaken: "You pick up the book. Maybe you can find some of the pages that are missing from it later. You can read it any time from the Help section of the main menu.",
                     Page1Found: "You pick up the page and add it to its chapter in the book. It seems to repair itself with some kind of magic.",
                     Page2Found: "You pick up the page and add it back to the book. Like the first page this one also repairs itself.",
-                    AllPagesFound: "You put the last page into the book and then you hear a click. A small panel opens revealing an envelope labeled \"Potion of Experience.\" Inside it appears to be an alchemical recipe."
+                    AllPagesFound: "You put the last page into the book and then you hear a click. A small panel opens revealing an envelope labeled \"Potion of Experience.\" Inside it appears to be an alchemical recipe.",
+                    CannotTakePage: "If you had your copy of \"The Guide to Power and Mayhem\" you could add this page to it. But since you don't you must leave the page behind."
                 )
             );
         }
