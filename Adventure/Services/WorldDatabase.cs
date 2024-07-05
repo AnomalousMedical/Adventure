@@ -243,7 +243,7 @@ namespace Adventure.Services
             usedIslands[islandIndex] = true;
             airshipStartSquare = GetUnusedSquare(usedSquares, island, placementRandom);
             usedSquares[airshipStartSquare.x, airshipStartSquare.y] = true;
-            PreventUsageNorthSouth(airshipStartSquare, usedSquares, 2);
+            PreventUsageNorthSouth(airshipStartSquare, usedSquares);
 
             areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, usedSquares, usedIslands, map).ToList();
         }
@@ -747,22 +747,22 @@ namespace Adventure.Services
             }
             
             InnkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-            PreventUsageNorthSouth(InnkeeperPosition, usedSquares, 2);
+            PreventUsageNorthSouth(InnkeeperPosition, usedSquares);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-            PreventUsageNorthSouth(BlacksmithPosition, usedSquares, 2);
+            PreventUsageNorthSouth(BlacksmithPosition, usedSquares);
             AlchemistPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-            PreventUsageNorthSouth(AlchemistPosition, usedSquares, 2);
+            PreventUsageNorthSouth(AlchemistPosition, usedSquares);
             FortuneTellerPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-            PreventUsageNorthSouth(FortuneTellerPosition, usedSquares, 2);
+            PreventUsageNorthSouth(FortuneTellerPosition, usedSquares);
             ItemStoragePosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
-            PreventUsageNorthSouth(ItemStoragePosition, usedSquares, 2);
+            PreventUsageNorthSouth(ItemStoragePosition, usedSquares);
 
             BlacksmithUpgradePosition = GetUnusedSquare(usedSquares, blacksmithUpgradeIsland, placementRandom);
-            PreventUsageNorthSouth(BlacksmithUpgradePosition, usedSquares, 2);
+            PreventUsageNorthSouth(BlacksmithUpgradePosition, usedSquares);
             AlchemistUpgradePosition = GetUnusedSquare(usedSquares, alchemistUpgradeIsland, placementRandom);
-            PreventUsageNorthSouth(AlchemistUpgradePosition, usedSquares, 2);
+            PreventUsageNorthSouth(AlchemistUpgradePosition, usedSquares);
             ElementalStonePosition = GetUnusedSquare(usedSquares, elementalStoneIsland, placementRandom);
-            PreventUsageNorthSouth(ElementalStonePosition, usedSquares, 2);
+            PreventUsageNorthSouth(ElementalStonePosition, usedSquares);
 
             var biomePropLocations = new List<IntVector2>();
             foreach(var island in map.IslandInfo)
@@ -776,7 +776,7 @@ namespace Adventure.Services
             this.BiomePropLocations = biomePropLocations;
         }
 
-        private static void PreventUsageNorthSouth(IntVector2 startPos, bool[,] usedSquares, int num)
+        private static void PreventUsageNorthSouth(IntVector2 startPos, bool[,] usedSquares, int num = 4)
         {
             //South
             var x = startPos.x;
