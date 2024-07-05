@@ -551,16 +551,17 @@ namespace Adventure
                 ResetPlacementData();
                 var enemyRandom = new FIRandom(enemySeed);
                 var usedCorridors = new HashSet<int>();
+                var noBgSquares = new bool[mapMesh.MapBuilder.map.GetLength(0), mapMesh.MapBuilder.map.GetLength(1)];
 
                 var battleTriggers = new List<BattleTrigger>();
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
-                SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack);
+                SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares);
                 PlaceKeySafety(enemyRandom, usedCorridors);
                 PlaceSignpost(description, startPoint, endPoint);
 
                 if (biome.BackgroundItems != null)
                 {
-                    CreateBackgroundItems(enemyRandom, biome);
+                    CreateBackgroundItems(enemyRandom, biome, noBgSquares);
                 }
 
                 ResetLootDrop();
@@ -934,7 +935,7 @@ namespace Adventure
             }
         }
 
-        private void SetupRooms(FIRandom enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack)
+        private void SetupRooms(FIRandom enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack, bool[,] noBgSquares)
         {
             //The order of everything in this function is important to ensure all treasure can be distributed
 
@@ -985,6 +986,7 @@ namespace Adventure
                         throw new NotImplementedException("Currently only supports 4 characters in a zone.");
                 }
                 var mapLoc = mapMesh.PointToVector(point.x, point.y);
+                ReserveBgSquares(noBgSquares, point);
 
                 var partyMemberObject = objectResolver.Resolve<PartyMemberTrigger, PartyMemberTrigger.Description>(o =>
                 {
@@ -1136,6 +1138,16 @@ namespace Adventure
                     ++dropIndex;
                 }
                 treasureStack.Clear(); //Clear the stack since we visited everything in the foreach
+            }
+        }
+
+        private static void ReserveBgSquares(bool[,] noBgSquares, Point point, int numSquares = 4)
+        {
+            int max = 1 + numSquares;
+            int noY;
+            for (int i = 1; (noY = point.y - i) > 0 && i < max; ++i)
+            {
+                noBgSquares[point.x, noY] = true;
             }
         }
 
@@ -1315,7 +1327,7 @@ namespace Adventure
             }
         }
 
-        private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome)
+        private void CreateBackgroundItems(FIRandom bgItemsRandom, IBiome biome, bool[,] noBgSquares)
         {
             bool mustBeEven = false;
             for (var x = 0; x < mapMesh.MapBuilder.Map_Size.Width; ++x)
@@ -1323,7 +1335,7 @@ namespace Adventure
                 mustBeEven = !mustBeEven;
                 for (var y = mapMesh.MapBuilder.Map_Size.Height - 1; y > -1; --y)
                 {
-                    if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell)
+                    if (mapMesh.MapBuilder.map[x, y] == csMapbuilder.EmptyCell && !noBgSquares[x,y])
                     {
                         BiomeBackgroundItem add = null;
                         var roll = bgItemsRandom.Next(0, biome.MaxBackgroundItemRoll);
