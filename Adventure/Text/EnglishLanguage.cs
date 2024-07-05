@@ -248,7 +248,7 @@ namespace Adventure.Text
                     Chapter7: "Be sure to explore as much as you can. If you can't beat one area go to another. You never know what you will find.",
                     Chapter7Part2: "If you don't know where to go next, let the signposts guide you.",
 
-                    Chapter8Title: "Chapter 8: The Power of Friendship",
+                    Chapter8Title: "Chapter 8: Teamwork",
                     Chapter8: "Everyone in your party has their own strengths and weaknesses. Look at each of their stats to determine their best role. Stats like Heal% and Item% improve how well that character heals or uses items. Block% determines how much damage is reduced when guarding with a shield.",
 
                     BookTaken: "You pick up the book. Maybe you can find some of the pages that are missing from it later. You can read it any time from the Help section of the main menu.",
