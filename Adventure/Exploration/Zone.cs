@@ -1016,6 +1016,7 @@ namespace Adventure
                     point.x = room.Left;
                 }
                 PlaceKey(point);
+                ReserveBgSquares(noBgSquares, point);
             }
 
             if (placeTorch)
@@ -1045,6 +1046,7 @@ namespace Adventure
                     o.SpriteMaterial = asset.CreateMaterial();
                 });
                 this.placeables.Add(torch);
+                ReserveBgSquares(noBgSquares, point);
             }
 
             Vector3 endZoneItemOffset;
@@ -1117,7 +1119,7 @@ namespace Adventure
 
             foreach (var room in rooms.Skip(skipRooms).Select(i => mapMesh.MapBuilder.Rooms[i]))
             {
-                PopulateRoom(room, treasureStack, treasureChests);
+                PopulateRoom(room, treasureStack, treasureChests, noBgSquares);
             }
 
             //This really should not be able to happen, but track it anyway, if you had philip a key and only 2 rooms this would happen
@@ -1151,9 +1153,10 @@ namespace Adventure
             }
         }
 
-        private void PopulateRoom(Rectangle room, Stack<ITreasure> treasureStack, List<TreasureTrigger> treasureChests)
+        private void PopulateRoom(Rectangle room, Stack<ITreasure> treasureStack, List<TreasureTrigger> treasureChests, bool[,] noBgSquares)
         {
             var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+            ReserveBgSquares(noBgSquares, point);
 
             //Special case for first zone, a bit hacky, but the computation should work out the same as the start point
             var mapLoc = mapMesh.PointToVector(point.x, point.y);
