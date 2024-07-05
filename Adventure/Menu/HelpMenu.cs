@@ -55,11 +55,21 @@ internal class HelpMenu
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
+        var layout =
+           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+           new MaxWidthLayout(scaleHelper.Scaled(300),
+           new ColumnLayout(back) { Margin = new IntPad(10) }
+        ));
+
+        var desiredSize = layout.GetDesiredSize(sharpGui);
+        var backButtonRect = screenPositioner.GetBottomRightRect(desiredSize);
+        layout.SetRect(backButtonRect);
+
         chapters.Margin = scaleHelper.Scaled(10);
         chapters.MaxWidth = scaleHelper.Scaled(900);
-        chapters.Bottom = screenPositioner.ScreenSize.Height;
+        chapters.Bottom = backButtonRect.Top;
 
-        var selectedItem = chapters.Show<int?>(sharpGui, chapterButtons, 8, s => screenPositioner.GetTopRightRect(s), gamepadId, navRight: back.Id, navLeft: back.Id, navDown: back.Id, navUp: back.Id);
+        var selectedItem = chapters.Show<int?>(sharpGui, chapterButtons, 8, s => screenPositioner.GetTopRightRect(s), gamepadId, navDown: back.Id, navUp: back.Id);
         if(selectedItem != null)
         {
             coroutine.RunTask(async () =>
@@ -119,15 +129,6 @@ internal class HelpMenu
                 menu.RequestSubMenu(this, gamepadId);
             });
         }
-
-        var layout =
-           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(back) { Margin = new IntPad(10) }
-        ));
-
-        var desiredSize = layout.GetDesiredSize(sharpGui);
-        layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
         if (sharpGui.Button(back, gamepadId, navUp: chapters.BottomButton, navDown: chapters.TopButton, navLeft: chapters.TopButton, navRight: chapters.TopButton) || sharpGui.IsStandardBackPressed(gamepadId))
         {
