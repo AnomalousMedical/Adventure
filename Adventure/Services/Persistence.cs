@@ -36,6 +36,7 @@ namespace Adventure.Services
         FortuneTellerIntro,
         AlchemistIntro,
         AlchemistUpgradeDelivered,
+        AlchemistLevelPotionDelivered,
         BlacksmithIntro,
         BlacksmithUpgradeDelivered,
         ItemStorageIntro

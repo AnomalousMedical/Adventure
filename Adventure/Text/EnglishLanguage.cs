@@ -46,8 +46,7 @@ namespace Adventure.Text
                     Ancient2: "My potions will really pack a punch now.",
                     Goodbye: "See you next time.",
                     LevelPotion1: "Hmm this is interesting. The ingredients for this are quite rare, since they aren't used very often, but fortunately I have a large stockpile of them.",
-                    LevelPotion2: "Oh no! Almost all of it was ruined in that last one. I might have enough to make one if you still want to try.",
-                    LevelPotionReturn: "Do you want me to try to brew that mystery potion for you?"
+                    LevelPotion2: "Oh no! Almost all of it was ruined in that last one. I can still brew one up for you. Just a second."
                 ),
                 AlchemistUpgrade: new AlchemistUpgrade.Text
                 (

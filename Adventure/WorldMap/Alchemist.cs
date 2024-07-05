@@ -33,8 +33,7 @@ namespace Adventure.WorldMap
             String Ancient2,
             String Goodbye,
             String LevelPotion1,
-            String LevelPotion2,
-            String LevelPotionReturn
+            String LevelPotion2
         );
 
         private readonly RTInstances<WorldMapScene> rtInstances;
@@ -50,6 +49,8 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly EarthquakeMenu earthquakeMenu;
+        private readonly TreasureMenu treasureMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -68,7 +69,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public Alchemist(
+        public Alchemist
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -85,7 +87,10 @@ namespace Adventure.WorldMap
             IExplorationMenu explorationMenu,
             Persistence persistence,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            EarthquakeMenu earthquakeMenu,
+            TreasureMenu treasureMenu
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -103,6 +108,8 @@ namespace Adventure.WorldMap
             this.persistence = persistence;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.earthquakeMenu = earthquakeMenu;
+            this.treasureMenu = treasureMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -228,13 +235,33 @@ namespace Adventure.WorldMap
                         await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Ancient2, args.GamepadId);
                     }
                 }
-                await textDialog.ShowTextAndWait(languageService.Current.Alchemist.SalesPitch, args.GamepadId);
-                buyMenu.PreviousMenu = null;
-                buyMenu.CurrentShopType = ShopType.Alchemist;
-                explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
-                await buyMenu.WaitForClose();
-                cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Goodbye, args.GamepadId);
+
+                bool showStore = true;
+                if (!persistence.Current.PlotFlags.Contains(PlotFlags.AlchemistLevelPotionDelivered)
+                    && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhem)
+                    && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter4)
+                    && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter5)
+                    && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter6))
+                {
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.LevelPotion1, args.GamepadId);
+                    await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.LevelPotion2, args.GamepadId);
+                    persistence.Current.PlotFlags.Add(PlotFlags.AlchemistLevelPotionDelivered);
+                    treasureMenu.GatherTreasures(new[] { new Treasure(worldDatabase.PotionCreator.CreateLevelBoost(), TreasureType.Potion) });
+                    explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
+                    showStore = false;
+                }
+
+                if (showStore)
+                {
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.SalesPitch, args.GamepadId);
+                    buyMenu.PreviousMenu = null;
+                    buyMenu.CurrentShopType = ShopType.Alchemist;
+                    explorationMenu.RequestSubMenu(buyMenu, args.GamepadId);
+                    await buyMenu.WaitForClose();
+                    cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
+                    await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Goodbye, args.GamepadId);
+                }
             });
         }
 
