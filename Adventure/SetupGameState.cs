@@ -164,7 +164,7 @@ namespace Adventure
                             {
                                 chooseCharacterMenu.Reset();
                                 chooseCharacterMenu.MoveCameraToCurrentTrigger();
-                                fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, chooseCharacterMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
+                                await fadeScreenMenu.ShowAndWait(1.0f, 0.0f, 0.6f, GamepadId.Pad1, chooseCharacterMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
                                 this.nextState = explorationGameState;
                                 showLogo = false;
                             }
