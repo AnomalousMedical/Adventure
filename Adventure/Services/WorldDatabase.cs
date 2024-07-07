@@ -1058,7 +1058,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
-                        usedSquares[check.x, check.y] = usedSquareValue;
+                        usedSquares[check.x, check.y] = Math.Max(usedSquareValue, usedSquares[check.x, check.y]);
                     }
 
                     check = item;
@@ -1068,7 +1068,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
-                        usedSquares[check.x, check.y] = usedSquareValue;
+                        usedSquares[check.x, check.y] = Math.Max(usedSquareValue, usedSquares[check.x, check.y]);
                     }
 
                     check = item;
@@ -1078,7 +1078,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
-                        usedSquares[check.x, check.y] = usedSquareValue;
+                        usedSquares[check.x, check.y] = Math.Max(usedSquareValue, usedSquares[check.x, check.y]);
                     }
 
                     check = item;
@@ -1088,7 +1088,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
-                        usedSquares[check.x, check.y] = usedSquareValue;
+                        usedSquares[check.x, check.y] = Math.Max(usedSquareValue, usedSquares[check.x, check.y]);
                     }
                 }
                 currentGeneration = nextGeneration;
