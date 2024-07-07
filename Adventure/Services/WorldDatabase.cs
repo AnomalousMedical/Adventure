@@ -427,6 +427,7 @@ namespace Adventure.Services
                 areaBuilder.MaxMainCorridorBattles = 1;
                 areaBuilder.PartyMembers = CreateParty();
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
             }
 
@@ -507,6 +508,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion)
                 };
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
 
                 //Area 4
@@ -538,6 +540,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion)
                 };
                 FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
             }
 
@@ -631,6 +634,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel), TreasureType.Potion)
                 };
                 SetIslandBiome(island, map, areaBuilder.Biome);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
 
                 //Area 6
@@ -667,6 +671,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel), TreasureType.Potion)
                 };
                 SetIslandBiome(island, map, areaBuilder.Biome);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
 
                 //Area 7
@@ -703,6 +708,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase3TreasureLevel), TreasureType.Potion)
                 };
                 SetIslandBiome(island, map, areaBuilder.Biome);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
             }
 
@@ -748,6 +754,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase4TreasureLevel), TreasureType.Potion),
                 };
                 SetIslandBiome(island, map, areaBuilder.Biome);
+                PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
             }
             
