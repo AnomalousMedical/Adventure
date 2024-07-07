@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure.Menu;
@@ -31,24 +30,41 @@ class RootMenu
     GameOptions gameOptions,
     ConfirmMenu confirmMenu,
     ICoroutineRunner coroutineRunner,
-    HelpMenu helpMenu
+    HelpMenu helpMenu,
+    ILanguageService languageService
 ) : IRootMenu
 {
-    SharpButton skills = new SharpButton() { Text = "Skills" };
-    SharpButton items = new SharpButton() { Text = "Items" };
-    SharpButton files = new SharpButton() { Text = "Files" };
-    SharpButton help = new SharpButton() { Text = "Help" };
-    SharpButton options = new SharpButton() { Text = "Options" };
-    SharpButton debug = new SharpButton() { Text = "Debug" };
-    SharpButton feedback = new SharpButton() { Text = "Feedback" };
-    SharpButton close = new SharpButton() { Text = "Close" };
+    SharpButton skills = new SharpButton() { Text = languageService.Current.RootMenu.Skills };
+    SharpButton items = new SharpButton() { Text = languageService.Current.RootMenu.Items };
+    SharpButton files = new SharpButton() { Text = languageService.Current.RootMenu.Files };
+    SharpButton help = new SharpButton() { Text = languageService.Current.RootMenu.Help };
+    SharpButton options = new SharpButton() { Text = languageService.Current.RootMenu.Options };
+    SharpButton debug = new SharpButton() { Text = languageService.Current.RootMenu.Debug };
+    SharpButton feedback = new SharpButton() { Text = languageService.Current.RootMenu.Feedback };
+    SharpButton close = new SharpButton() { Text = languageService.Current.RootMenu.Close };
 
-    SharpText undefeated = new SharpText() { Text = "Undefeated", Color = Color.White };
-    SharpText oldSchool = new SharpText() { Text = "Old School", Color = Color.White };
+    SharpText undefeated = new SharpText() { Text = languageService.Current.RootMenu.Undefeated, Color = Color.White };
+    SharpText oldSchool = new SharpText() { Text = languageService.Current.RootMenu.OldSchool, Color = Color.White };
+    SharpText gold = new SharpText() { Color = Color.White };
     SharpText timePlayed = new SharpText() { Color = Color.White };
     List<SharpText> infos;
 
     private TaskCompletionSource currentTask;
+
+    public record Text
+    (
+        String Skills,
+        String Items,
+        String Files,
+        String Help,
+        String Options,
+        String Debug,
+        String Feedback,
+        String Close,
+        String Undefeated,
+        String OldSchool,
+        String Gold
+    );
 
     public Task WaitForClose()
     {
@@ -101,15 +117,18 @@ class RootMenu
             sharpGui.Text(info);
         }
 
+        gold.Text = persistence.Current.Party.Gold + languageService.Current.RootMenu.Gold;
+
         layout =
           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
           new MaxWidthLayout(scaleHelper.Scaled(300),
-          new ColumnLayout(undefeated, oldSchool, timePlayed) { Margin = new IntPad(10) }
+          new ColumnLayout(undefeated, oldSchool, gold, timePlayed) { Margin = new IntPad(10) }
         ));
         var infoDesiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
         sharpGui.Text(timePlayed);
+        sharpGui.Text(gold);
         if (persistence.Current.Party.Undefeated)
         {
             sharpGui.Text(undefeated);

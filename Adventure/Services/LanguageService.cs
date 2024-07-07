@@ -1,5 +1,6 @@
 ﻿using Adventure.Exploration;
 using Adventure.Items;
+using Adventure.Menu;
 using Adventure.Skills;
 using Adventure.WorldMap;
 using System;
@@ -46,6 +47,8 @@ namespace Adventure.Services
         SkillText Skills,
         //Zones
         PartyMemberTrigger.Text PartyMemberTrigger,
-        HelpBook.Text HelpBook
+        HelpBook.Text HelpBook,
+        //Menus
+        RootMenu.Text RootMenu
     );
 }

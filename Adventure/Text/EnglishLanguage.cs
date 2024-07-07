@@ -1,14 +1,9 @@
 ﻿using Adventure.Exploration;
 using Adventure.Items;
-using Adventure.Items.Creators;
+using Adventure.Menu;
 using Adventure.Services;
 using Adventure.Skills;
 using Adventure.WorldMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Text
 {
@@ -272,6 +267,20 @@ namespace Adventure.Text
                     Page2Found: "You pick up the page and add it back to the book. Like the first page this one also repairs itself.",
                     AllPagesFound: "You put the last page into the book and then you hear a click. A small panel opens revealing an envelope labeled \"Potion of Experience.\" Inside it appears to be an alchemical recipe.",
                     CannotTakePage: "If you had your copy of \"The Guide to Power and Mayhem\" you could add this page to it. But since you don't you must leave the page behind."
+                ),
+                RootMenu: new RootMenu.Text
+                (
+                    Skills: "Skills",
+                    Items: "Items",
+                    Files: "Files",
+                    Help: "Help",
+                    Options: "Options",
+                    Debug: "Debug",
+                    Feedback: "Feedback",
+                    Close: "Close",
+                    Undefeated: "Undefeated",
+                    OldSchool: "Old School",
+                    Gold: " Gold"
                 )
             );
         }
