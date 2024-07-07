@@ -182,6 +182,22 @@ namespace Adventure.Text
                     , LuckBoost: new(Text: "Luck Boost", Description: "Permanently increase the target's luck.")
                     , LevelBoost: new(Text: "Mysterious Bubbling Potion", Description: "Its sure to be safe...")
                 ),
+                PlotItems: new PlotItemText
+                (
+                    AirshipFuel: new(Text: "Airship Fuel", Description: "Pure elemental fire energy that has been captured and converted to an energy source."),
+                    AirshipWheel: new(Text: "Airship's Wheel", Description: "A sturdy wheel to control the flight path of an airship."),
+                    AirshipKey: new(Text: "Airship Keys", Description: "The keys to the airship. The final piece needed to fly."),
+                    BlacksmithUpgrade: new(Text: "Ancient Blacksmithing Secrets", Description: "Ancient blacksmithing recipes. Provides instructions for smithing powerful exotic weapons."),
+                    AlchemistUpgrade: new(Text: "Ancient Alchemy Secrets", Description: "Ancient alchemical recipes. Provides instructions for brewing powerful potions and tonics."),
+                    RuneOfFire: new(Text: "Rune of Fire", Description: "A rune showing power over fire."),
+                    RuneOfIce: new(Text: "Rune of Ice", Description: "A rune showing power over ice."),
+                    RuneOfElectricity: new(Text: "Rune of Electricity", Description: "A rune showing power over electricity."),
+                    ElementalStone: new(Text: "Elemental Stone", Description: "A stone that serves as proof of elemental mastery."),
+                    GuideToPowerAndMayhem: new(Text: "Guide to Power and Mayhem", Description: "A helpful guide to gaining power and causing destruction. Some of its pages are missing."),
+                    GuideToPowerAndMayhemChapter4: new(Text: "Guide to Power and Mayhem Chapter 4", Description: "The missing pages from Chapter 4."),
+                    GuideToPowerAndMayhemChapter5: new(Text: "Guide to Power and Mayhem Chapter 5", Description: "The missing pages from Chapter 5."),
+                    GuideToPowerAndMayhemChapter6: new(Text: "Guide to Power and Mayhem Chapter 6", Description: "The missing pages from Chapter 6.")
+                ),
                 Skills: new SkillText
                 (
                     Cure: new(Text: "Cure", Description: "Restore a small amount of hp. Use your active ability to restore more hp.")

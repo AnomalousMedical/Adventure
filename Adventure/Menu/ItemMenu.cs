@@ -275,6 +275,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
+    SharpButton plotItems = new SharpButton() { Text = "Plot Items" };
     SharpButton close = new SharpButton() { Text = "Close" };
     List<SharpText> infos = null;
     List<SharpText> descriptions = null;
@@ -286,6 +287,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private readonly EquipmentTextService equipmentTextService;
     private readonly CharacterStatsTextService characterStatsTextService;
     private readonly CharacterStyleService characterStyleService;
+    private readonly PlotItemMenu plotItemMenu;
     private List<ButtonColumnItem<InventoryItem>> currentItems;
 
     public ItemMenu
@@ -300,7 +302,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         CameraMover cameraMover,
         EquipmentTextService equipmentTextService,
         CharacterStatsTextService characterStatsTextService,
-        CharacterStyleService characterStyleService
+        CharacterStyleService characterStyleService,
+        PlotItemMenu plotItemMenu
     )
     {
         this.persistence = persistence;
@@ -314,6 +317,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         this.equipmentTextService = equipmentTextService;
         this.characterStatsTextService = characterStatsTextService;
         this.characterStyleService = characterStyleService;
+        this.plotItemMenu = plotItemMenu;
         useItemMenu.Closed += UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged += UseItemMenu_IsTransferStatusChanged;
     }
@@ -408,7 +412,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
            }
         ));
 
-        layout = new RowLayout(previous, next, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        layout = new RowLayout(previous, next, plotItems, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -435,22 +439,6 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
             var hasItems = characterData.Inventory.Items.Any();
 
-            if (sharpGui.Button(next, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: previous.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
-            {
-                if (allowChanges)
-                {
-                    itemButtons.ListIndex = 0;
-                    ++currentSheet;
-                    if (currentSheet >= persistence.Current.Party.Members.Count)
-                    {
-                        currentSheet = 0;
-                    }
-                    currentItems = null;
-                    descriptions = null;
-                    infos = null;
-                    itemButtons.FocusTop(sharpGui);
-                }
-            }
             if (sharpGui.Button(previous, gamepad, navUp: hasItems ? itemButtons.BottomButton : previous.Id, navDown: hasItems ? itemButtons.TopButton : previous.Id, navLeft: close.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 if (allowChanges)
@@ -467,7 +455,34 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(close, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: hasItems ? itemButtons.BottomButton : next.Id, navDown: hasItems ? itemButtons.TopButton : next.Id, navLeft: previous.Id, navRight: plotItems.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            {
+                if (allowChanges)
+                {
+                    itemButtons.ListIndex = 0;
+                    ++currentSheet;
+                    if (currentSheet >= persistence.Current.Party.Members.Count)
+                    {
+                        currentSheet = 0;
+                    }
+                    currentItems = null;
+                    descriptions = null;
+                    infos = null;
+                    itemButtons.FocusTop(sharpGui);
+                }
+            }
+            if (sharpGui.Button(plotItems, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: next.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            {
+                if (allowChanges)
+                {
+                    currentItems = null;
+                    descriptions = null;
+                    infos = null;
+                    plotItemMenu.PreviousMenu = this;
+                    menu.RequestSubMenu(plotItemMenu, gamepad);
+                }
+            }
+            if (sharpGui.Button(close, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: plotItems.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {

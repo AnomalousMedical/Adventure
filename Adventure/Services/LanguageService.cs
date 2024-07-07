@@ -42,6 +42,7 @@ namespace Adventure.Services
         ZoneEntrance.Text ZoneEntrance,
         //Items
         ItemText Items,
+        PlotItemText PlotItems,
         SkillText Skills,
         //Zones
         PartyMemberTrigger.Text PartyMemberTrigger,

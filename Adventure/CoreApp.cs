@@ -226,6 +226,7 @@ namespace Adventure
             services.AddSingleton<Party>();
             services.AddSingleton<ISetupGameState, SetupGameState>();
             services.AddSingleton<IExplorationMenu, ExplorationMenu>();
+            services.AddSingleton<PlotItemMenu>();
             services.AddSingleton<IClockService, ClockService>();
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IAnimationService<WorldMapScene>, AnimationService<WorldMapScene>>();
