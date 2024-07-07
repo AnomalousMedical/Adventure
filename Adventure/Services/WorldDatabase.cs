@@ -77,6 +77,7 @@ namespace Adventure.Services
         private readonly IInventoryFunctions inventoryFunctions;
         private readonly ILanguageService languageService;
         private IntVector2 airshipStartSquare;
+        private const byte MaxFillGeneration = 6;
 
         public IBiomeManager BiomeManager { get; }
         public SwordCreator SwordCreator { get; }
@@ -232,7 +233,7 @@ namespace Adventure.Services
             //World needs enough islands to cover all zones
 
             //Setup areas
-            var usedSquares = new bool[map.MapX, map.MapY];
+            var usedSquares = new byte[map.MapX, map.MapY];
             var usedIslands = new bool[map.NumIslands];
 
             //Reserve the 3 largest islands
@@ -242,7 +243,7 @@ namespace Adventure.Services
             var island = map.IslandInfo[islandIndex];
             usedIslands[islandIndex] = true;
             airshipStartSquare = GetUnusedSquare(usedSquares, island, placementRandom);
-            usedSquares[airshipStartSquare.x, airshipStartSquare.y] = true;
+            usedSquares[airshipStartSquare.x, airshipStartSquare.y] = byte.MaxValue;
             PreventUsageNorthSouth(airshipStartSquare, usedSquares);
 
             areaBuilders = SetupAreaBuilder(newSeed, biomeRandom, placementRandom, elementalRandom, treasureRandom, alignmentRandom, usedSquares, usedIslands, map).ToList();
@@ -343,7 +344,7 @@ namespace Adventure.Services
             treasure.Use(hero.Inventory, hero.CharacterSheet, inventoryFunctions, null);
         }
 
-        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, bool[,] usedSquares, bool[] usedIslands, csIslandMaze map)
+        private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, byte[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
             //BiomeType.Desert is not being used
             var biomeDistributor = new EnumerableDistributor<BiomeType>(new[] { BiomeType.Forest, BiomeType.Snowy, BiomeType.Swamp });//This is not all of the biomes, some are added later
@@ -425,7 +426,7 @@ namespace Adventure.Services
                 areaBuilder.HelpBookPlotItem = PlotItems.GuideToPowerAndMayhem;
                 areaBuilder.MaxMainCorridorBattles = 1;
                 areaBuilder.PartyMembers = CreateParty();
-                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
+                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
                 yield return areaBuilder;
             }
 
@@ -505,7 +506,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion),
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion)
                 };
-                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
+                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
                 yield return areaBuilder;
 
                 //Area 4
@@ -536,7 +537,7 @@ namespace Adventure.Services
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion),
                     new Treasure(PotionCreator.CreateManaPotion(phase2TreasureLevel), TreasureType.Potion)
                 };
-                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled);
+                FillSurroundings(map, areaBuilder.Biome, areaBuilder.Location, filled, usedSquares);
                 yield return areaBuilder;
             }
 
@@ -774,13 +775,13 @@ namespace Adventure.Services
                 var islandPropLocationCount = island.islandPoints.Count / 5;
                 for(int i = 0; i < islandPropLocationCount; i++)
                 {
-                    biomePropLocations.Add(GetUnusedSquare(usedSquares, island, placementRandom));
+                    biomePropLocations.Add(GetUnusedSquare(usedSquares, island, placementRandom, MaxFillGeneration));
                 }
             }
             this.BiomePropLocations = biomePropLocations;
         }
 
-        private static void PreventUsageNorthSouth(IntVector2 startPos, bool[,] usedSquares, int num = 4)
+        private static void PreventUsageNorthSouth(IntVector2 startPos, byte[,] usedSquares, int num = 4)
         {
             //South
             var x = startPos.x;
@@ -788,7 +789,7 @@ namespace Adventure.Services
             var endY = startPos.y;
             for(int y = startY; y < endY; ++y)
             {
-                usedSquares[x, y] = true;
+                usedSquares[x, y] = byte.MaxValue;
             }
 
             //North
@@ -796,7 +797,7 @@ namespace Adventure.Services
             endY = Math.Min(startPos.y + num + 1, usedSquares.GetLength(1));
             for (int y = startY; y < endY; ++y)
             {
-                usedSquares[x, y] = true;
+                usedSquares[x, y] = byte.MaxValue;
             }
         }
 
@@ -805,7 +806,7 @@ namespace Adventure.Services
         /// always be the same. The pairs returned will be at either extreme, northmost and southmost or eastmost and westmost, but you won't know 
         /// what is in what index.
         /// </summary>
-        private static List<List<IntVector2>> GetIslandExtremes(IslandInfo island, FIRandom placementRandom, bool[,] usedSquares)
+        private static List<List<IntVector2>> GetIslandExtremes(IslandInfo island, FIRandom placementRandom, byte[,] usedSquares)
         {
             const int Max = 100;
             const int HalfMax = Max / 100;
@@ -949,36 +950,41 @@ namespace Adventure.Services
             }
         }
 
-        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, FIRandom placementRandom, IntVector2 desired)
+        private static IntVector2 GetUnusedSquare(byte[,] usedSquares, IslandInfo island, FIRandom placementRandom, IntVector2 desired, byte startLevel = 1)
         {
-            if (!usedSquares[desired.x, desired.y])
+            if (usedSquares[desired.x, desired.y] == 0)
             {
-                usedSquares[desired.x, desired.y] = true;
+                usedSquares[desired.x, desired.y] = byte.MaxValue;
                 return desired;
             }
 
-            return GetUnusedSquare(usedSquares, island, placementRandom);
+            return GetUnusedSquare(usedSquares, island, placementRandom, startLevel);
         }
 
-        private static IntVector2 GetUnusedSquare(bool[,] usedSquares, IslandInfo island, FIRandom placementRandom)
+        private static IntVector2 GetUnusedSquare(byte[,] usedSquares, IslandInfo island, FIRandom placementRandom, byte startLevel = 1)
         {
-            for (var i = 0; i < 5; ++i)
+            //This will give you a square from level or below, so any lower levels can be included.
+            //This skips 255, but that is ok since you would never select one of those anyway
+            for (var level = startLevel; level < byte.MaxValue; ++level)
             {
-                var next = placementRandom.Next(0, island.Size);
-                var square = island.islandPoints[next];
-                if (!usedSquares[square.x, square.y])
+                for (var i = 0; i < 5; ++i)
                 {
-                    usedSquares[square.x, square.y] = true;
-                    return square;
+                    var next = placementRandom.Next(0, island.Size);
+                    var square = island.islandPoints[next];
+                    if (usedSquares[square.x, square.y] < level)
+                    {
+                        usedSquares[square.x, square.y] = byte.MaxValue;
+                        return square;
+                    }
                 }
-            }
 
-            foreach (var square in island.islandPoints)
-            {
-                if (!usedSquares[square.x, square.y])
+                foreach (var square in island.islandPoints)
                 {
-                    usedSquares[square.x, square.y] = true;
-                    return square;
+                    if (usedSquares[square.x, square.y] < level)
+                    {
+                        usedSquares[square.x, square.y] = byte.MaxValue;
+                        return square;
+                    }
                 }
             }
 
@@ -1030,7 +1036,7 @@ namespace Adventure.Services
             }
         }
 
-        private static void FillSurroundings(csIslandMaze map, BiomeType biome, IntVector2 startPoint, bool[,] filled)
+        private static void FillSurroundings(csIslandMaze map, BiomeType biome, IntVector2 startPoint, bool[,] filled, byte[,] usedSquares)
         {
             //The start point will always be filled out even if its already filled
             map.TextureOffsets[startPoint.x, startPoint.y] = GetBiomeIndex(biome);
@@ -1039,8 +1045,9 @@ namespace Adventure.Services
             var nextGeneration = new List<IntVector2>(25);
             var currentGeneration = new List<IntVector2>(25) { startPoint };
 
-            for (var gen = 0; gen < 6 && currentGeneration.Count > 0; ++gen)
+            for (byte gen = 0; gen < MaxFillGeneration && currentGeneration.Count > 0; ++gen)
             {
+                byte usedSquareValue = (byte)(MaxFillGeneration - gen);
                 foreach (var item in currentGeneration)
                 {
                     //Check each dir
@@ -1051,6 +1058,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
+                        usedSquares[check.x, check.y] = usedSquareValue;
                     }
 
                     check = item;
@@ -1060,6 +1068,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
+                        usedSquares[check.x, check.y] = usedSquareValue;
                     }
 
                     check = item;
@@ -1069,6 +1078,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
+                        usedSquares[check.x, check.y] = usedSquareValue;
                     }
 
                     check = item;
@@ -1078,6 +1088,7 @@ namespace Adventure.Services
                         nextGeneration.Add(check);
                         map.TextureOffsets[check.x, check.y] = GetBiomeIndex(biome);
                         filled[check.x, check.y] = true;
+                        usedSquares[check.x, check.y] = usedSquareValue;
                     }
                 }
                 currentGeneration = nextGeneration;
