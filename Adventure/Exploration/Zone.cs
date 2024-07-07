@@ -562,6 +562,12 @@ namespace Adventure
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares);
                 PlaceKeySafety(enemyRandom, usedCorridors);
                 PlaceSignpost(description, startPoint, endPoint);
+                ReserveBgSquares(noBgSquares, startPoint, 7);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x + 1, startPoint.y), 7);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x - 1, startPoint.y), 7);
+                ReserveBgSquares(noBgSquares, endPoint, 7);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x + 1, endPoint.y), 7);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x - 1, endPoint.y), 7);
                 CreateHelpBook();
 
                 if (biome.BackgroundItems != null)
