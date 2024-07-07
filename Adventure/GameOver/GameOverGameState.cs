@@ -9,13 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Menu;
 
 namespace Adventure.GameOver
 {
     interface IGameOverGameState : IGameState
     {
-        void Link(IGameState explorationState);
-
         void SaveDeathStatus();
     }
 
@@ -29,12 +28,15 @@ namespace Adventure.GameOver
         private readonly Persistence persistence;
         private readonly IPersistenceWriter persistenceWriter;
         private readonly ISetupGameState setupGameState;
-        private IGameState nextState;
+        private readonly ConfirmMenu confirmMenu;
+        private readonly IExplorationMenu explorationMenu;
+        private readonly ISetupRespawnGameState setupRespawnGameState;
+
         private SharpButton retry = new SharpButton() { Text = "Retry Battle" };
         private SharpButton restart = new SharpButton() { Text = "Restart Zone" };
         private SharpText gameOver = new SharpText("Game Over") { Color = Color.White };
-        private ILayoutItem layout;
         private readonly object saveBlock = new object();
+        private IGameState nextState;
 
         public RTInstances Instances => rtInstances;
 
@@ -48,7 +50,10 @@ namespace Adventure.GameOver
             Persistence persistence,
             IPersistenceWriter persistenceWriter,
             ISetupGameState setupGameState,
-            FontLoader fontLoader
+            FontLoader fontLoader,
+            ConfirmMenu confirmMenu,
+            IExplorationMenu explorationMenu,
+            ISetupRespawnGameState setupRespawnGameState
         )
         {
             gameOver.Font = fontLoader.TitleFont;
@@ -61,12 +66,9 @@ namespace Adventure.GameOver
             this.persistence = persistence;
             this.persistenceWriter = persistenceWriter;
             this.setupGameState = setupGameState;
-            layout = new ColumnLayout(new KeepWidthCenterLayout(gameOver), retry, restart) { Margin = new IntPad(10) };
-        }
-
-        public void Link(IGameState nextState)
-        {
-            this.nextState = nextState;
+            this.confirmMenu = confirmMenu;
+            this.explorationMenu = explorationMenu;
+            this.setupRespawnGameState = setupRespawnGameState;
         }
 
         public void SaveDeathStatus()
@@ -82,6 +84,7 @@ namespace Adventure.GameOver
 
         public void SetActive(bool active)
         {
+            nextState = this;
             if (active)
             {
                 persistenceWriter.AddSaveBlock(saveBlock);
@@ -96,42 +99,54 @@ namespace Adventure.GameOver
 
         public IGameState Update(Clock clock)
         {
-            IGameState nextState = this;
-
-            var size = layout.GetDesiredSize(sharpGui);
-            layout.GetDesiredSize(sharpGui);
-            var rect = screenPositioner.GetCenterRect(size);
-            layout.SetRect(rect);
-
-            sharpGui.Text(gameOver);
-
-            if (sharpGui.Button(retry, GamepadId.Pad1, navUp: restart.Id, navDown: restart.Id))
+            if (nextState == this)
             {
-                if (persistence.Current.Party.OldSchool)
+                if (!explorationMenu.Update())
                 {
-                    persistenceWriter.SaveNewSchool();
-                    persistence.Current.Party.OldSchool = false;
+                    var layout = new ColumnLayout(new KeepWidthCenterLayout(gameOver), retry, restart) { Margin = new IntPad(10) };
+
+                    var size = layout.GetDesiredSize(sharpGui);
+                    layout.GetDesiredSize(sharpGui);
+                    var rect = screenPositioner.GetCenterRect(size);
+                    layout.SetRect(rect);
+
+                    sharpGui.Text(gameOver);
+
+                    if (sharpGui.Button(retry, GamepadId.Pad1, navUp: restart.Id, navDown: restart.Id))
+                    {
+                        coroutineRunner.RunTask(async () =>
+                        {
+                            if (!persistence.Current.Party.OldSchool || await confirmMenu.ShowAndWait("Restart from current battle?", null, GamepadId.Pad1))
+                            {
+                                if (persistence.Current.Party.OldSchool)
+                                {
+                                    persistenceWriter.SaveNewSchool();
+                                    persistence.Current.Party.OldSchool = false;
+                                }
+
+                                nextState = setupGameState;
+                            }
+                        });
+                    }
+
+                    if (sharpGui.Button(restart, GamepadId.Pad1, navUp: retry.Id, navDown: retry.Id))
+                    {
+                        persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
+                        persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
+                        persistence.Current.BattleTriggers.ClearData();
+                        persistence.Current.Player.InBattle = false;
+
+                        foreach (var character in persistence.Current.Party.Members)
+                        {
+                            character.CharacterSheet.Rest();
+                        }
+
+                        persistenceWriter.Save();
+
+                        coroutineRunner.RunTask(zoneManager.Restart(() => Task.CompletedTask));
+                        nextState = setupRespawnGameState;
+                    }
                 }
-
-                nextState = setupGameState;
-            }
-
-            if (sharpGui.Button(restart, GamepadId.Pad1, navUp: retry.Id, navDown: retry.Id))
-            {
-                persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
-                persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
-                persistence.Current.BattleTriggers.ClearData();
-                persistence.Current.Player.InBattle = false;
-
-                foreach (var character in persistence.Current.Party.Members)
-                {
-                    character.CharacterSheet.Rest();
-                }
-
-                persistenceWriter.Save();
-
-                coroutineRunner.RunTask(zoneManager.Restart(() => Task.CompletedTask));
-                nextState = this.nextState;
             }
 
             return nextState;

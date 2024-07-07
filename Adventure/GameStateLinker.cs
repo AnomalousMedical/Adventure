@@ -34,7 +34,6 @@ namespace Adventure
             setup.Link(explorationMenu, rootMenu, exploration, worldMap, battle, gameOver);
             exploration.Link(battle, worldMap);
             battle.Link(exploration, gameOver);
-            gameOver.Link(setupRespawnGameState);
             setupRespawnGameState.Link(exploration);
             worldMap.Link(startExplorationGameState);
             startExplorationGameState.Link(exploration);
