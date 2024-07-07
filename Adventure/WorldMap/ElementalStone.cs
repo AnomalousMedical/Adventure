@@ -227,9 +227,8 @@ namespace Adventure.WorldMap
                     {
                         cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
                         await textDialog.ShowTextAndWait(languageService.Current.ElementalStone.ProvenWorthy, args.GamepadId);
-                        persistence.Current.PlotItems.Add(PlotItems.ElementalStone);
                         var treasure = new Treasure(accessoryCreator.CreateDoublecast(), TreasureType.Accessory);
-                        treasureMenu.GatherTreasures(new[] { treasure });
+                        treasureMenu.GatherTreasures(new[] { treasure }, treasureGivenCallback: t => persistence.Current.PlotItems.Add(PlotItems.ElementalStone));
                         explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
                         contextMenu.ClearContext(Check);
                         RequestDestruction();

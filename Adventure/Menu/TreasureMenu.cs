@@ -31,7 +31,7 @@ class TreasureMenu
         objectResolver.Dispose();
     }
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure)
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, Action<ITreasure> treasureGivenCallback = null)
     {
         pickUpTreasureMenu.GatherTreasures(treasure, TimeSpan.FromMilliseconds(500),
         (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
@@ -41,7 +41,7 @@ class TreasureMenu
         cd =>
         {
             MoveCamera(cd.CharacterSheet);
-        });
+        }, treasureGivenCallback: treasureGivenCallback);
     }
 
     public void Update(IExplorationMenu menu, GamepadId gamepad)

@@ -246,8 +246,7 @@ namespace Adventure.WorldMap
                     await textDialog.ShowTextAndWait(languageService.Current.Alchemist.LevelPotion1, args.GamepadId);
                     await earthquakeMenu.ShowAndWaitAndClose(args.GamepadId);
                     await textDialog.ShowTextAndWait(languageService.Current.Alchemist.LevelPotion2, args.GamepadId);
-                    persistence.Current.PlotFlags.Add(PlotFlags.AlchemistLevelPotionDelivered);
-                    treasureMenu.GatherTreasures(new[] { new Treasure(worldDatabase.PotionCreator.CreateLevelBoost(), TreasureType.Potion) });
+                    treasureMenu.GatherTreasures(new[] { new Treasure(worldDatabase.PotionCreator.CreateLevelBoost(), TreasureType.Potion) }, treasureGivenCallback: t => persistence.Current.PlotFlags.Add(PlotFlags.AlchemistLevelPotionDelivered));
                     explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
                     showStore = false;
                 }

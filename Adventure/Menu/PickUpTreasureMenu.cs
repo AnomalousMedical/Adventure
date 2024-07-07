@@ -58,11 +58,13 @@ class PickUpTreasureMenu
     public delegate void UseCallback(ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState);
     private UseCallback useCallback;
     private Action<Persistence.CharacterData> activeCharacterChanged;
+    private Action<ITreasure> treasureGivenCallback;
 
     private bool layoutNavigationRight = true;
 
-    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback, Action<Persistence.CharacterData> activeCharacterChanged = null, bool layoutNavigationRight = true)
+    public void GatherTreasures(IEnumerable<ITreasure> treasure, TimeSpan pickupDelay, UseCallback useCallback, Action<Persistence.CharacterData> activeCharacterChanged = null, bool layoutNavigationRight = true, Action<ITreasure> treasureGivenCallback = null)
     {
+        this.treasureGivenCallback = treasureGivenCallback;
         this.layoutNavigationRight = layoutNavigationRight;
         this.useCallback = useCallback;
         this.activeCharacterChanged = activeCharacterChanged;
@@ -299,6 +301,7 @@ class PickUpTreasureMenu
                                 {
                                     persistence.Current.ItemVoid.Add(removeItem);
                                 }
+                                treasureGivenCallback?.Invoke(treasure);
                                 treasure.GiveTo(sheet.Inventory, persistence.Current);
                             }
                         });
@@ -321,6 +324,7 @@ class PickUpTreasureMenu
                         {
                             NextTreasure();
                         }
+                        treasureGivenCallback?.Invoke(treasure);
                         treasure.GiveTo(sheet.Inventory, persistence.Current);
                     }
                     else
