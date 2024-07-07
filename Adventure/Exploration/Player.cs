@@ -204,10 +204,7 @@ namespace Adventure
             var bodyDesc =
                 BodyDescription.CreateDynamic(startPos.ToSystemNumerics(), new BodyInertia { InverseMass = 1f / mass },
                 new CollidableDescription(shapeIndex, moverDesc.SpeculativeMargin),
-                new BodyActivityDescription(shape.Radius * 0.02f)
-                {
-                    SleepThreshold = -1000.0f
-                });
+                new BodyActivityDescription(-1000.0f));
 
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
