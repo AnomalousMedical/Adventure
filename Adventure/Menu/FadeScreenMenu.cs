@@ -37,6 +37,7 @@ class FadeScreenMenu
     private bool tickThisFrame; //This is used to force 1 frame at the start value
 
     private TaskCompletionSource currentTask;
+    private Action<FadeScreenMenu> firstFrameDrawnCb;
 
     public void Link(IExplorationMenu explorationMenu)
     {
@@ -52,7 +53,7 @@ class FadeScreenMenu
         return currentTask.Task;
     }
 
-    public void Show(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
+    public void Show(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null, Action<FadeScreenMenu> firstFrameDrawnCb = null)
     {
         this.start = fadeStart;
         this.change = fadeEnd - fadeStart;
@@ -60,19 +61,20 @@ class FadeScreenMenu
         this.duration = durationSeconds;
         this.wrappedMenu = wrappedMenu;
         this.tickThisFrame = false;
+        this.firstFrameDrawnCb = firstFrameDrawnCb;
 
         explorationMenu.RequestSubMenu(this, gamepad);
     }
 
-    public Task ShowAndWait(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
+    public Task ShowAndWait(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null, Action<FadeScreenMenu> firstFrameDrawnCb = null)
     {
-        Show(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu);
+        Show(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu, firstFrameDrawnCb);
         return WaitForCurrentEffect();
     }
 
-    public async Task ShowAndWaitAndClose(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null)
+    public async Task ShowAndWaitAndClose(float fadeStart, float fadeEnd, float durationSeconds, GamepadId gamepad, IExplorationSubMenu wrappedMenu = null, Action<FadeScreenMenu> firstFrameDrawnCb = null)
     {
-        await ShowAndWait(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu);
+        await ShowAndWait(fadeStart, fadeEnd, durationSeconds, gamepad, wrappedMenu, firstFrameDrawnCb);
         Close();
     }
 
@@ -98,6 +100,7 @@ class FadeScreenMenu
         else
         {
             tickThisFrame = true;
+            firstFrameDrawnCb?.Invoke(this);
         }
 
         if (drawPanel)

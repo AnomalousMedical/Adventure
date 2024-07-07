@@ -27,6 +27,7 @@ namespace Adventure
         private readonly IScreenPositioner screenPositioner;
         private readonly RTInstances<ZoneScene> zoneInstances;
         private readonly RTInstances<WorldMapScene> worldInstances;
+        private readonly RTInstances<EmptyScene> emptySceneInstances;
         private RTInstances rtInstances;
         private readonly Persistence persistence;
         private readonly RayTracingRenderer rayTracingRenderer;
@@ -79,6 +80,7 @@ namespace Adventure
             this.screenPositioner = screenPositioner;
             this.zoneInstances = zoneInstances;
             this.worldInstances = worldInstances;
+            this.emptySceneInstances = emptySceneInstances;
             this.rtInstances = emptySceneInstances;
             this.persistence = persistence;
             this.rayTracingRenderer = rayTracingRenderer;
@@ -106,6 +108,8 @@ namespace Adventure
         {
             if (active)
             {
+                this.rtInstances = emptySceneInstances;
+
                 contextMenu.ForceClearContext();
                 nextState = null;
                 showLogo = true;
@@ -125,8 +129,7 @@ namespace Adventure
                     if (persistence.Current.Player.InWorld)
                     {
                         await mapLoadTask;
-                        rtInstances = worldInstances;
-                        await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                        await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1, firstFrameDrawnCb: _ => rtInstances = worldInstances);
                         this.nextState = worldMapGameState;
                         showLogo = false;
                         //No world battles
@@ -142,10 +145,9 @@ namespace Adventure
                         }
                         else
                         {
-                            rtInstances = zoneInstances;
                             if (persistence.Current.Player.InBattle)
                             {
-                                fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu);
+                                fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
                                 await rootMenu.WaitForClose();
                                 await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
                                 var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
@@ -162,13 +164,13 @@ namespace Adventure
                             {
                                 chooseCharacterMenu.Reset();
                                 chooseCharacterMenu.MoveCameraToCurrentTrigger();
-                                fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, chooseCharacterMenu);
+                                fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, chooseCharacterMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
                                 this.nextState = explorationGameState;
                                 showLogo = false;
                             }
                             else
                             {
-                                await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1);
+                                await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, GamepadId.Pad1, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
                                 this.nextState = explorationGameState;
                                 showLogo = false;
                             }
@@ -195,7 +197,7 @@ namespace Adventure
                 {
                     next = this.nextState;
                 }
-                
+
                 if(showLogo)
                 {
                     var size = loading.GetDesiredSize(sharpGui);
