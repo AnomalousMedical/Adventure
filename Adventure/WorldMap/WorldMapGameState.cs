@@ -60,7 +60,8 @@ class WorldMapGameState
                 worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             }
             worldMapManager.CenterCamera();
-            backgroundMusicPlayer.SetBackgroundSong(WorldMapMusic.File);
+            backgroundMusicPlayer.SetBackgroundSong(persistence.Current.Player.InAirship ? AirshipMusic.File : WorldMapMusic.File);
+            worldMapManager.AllowBackgroundMusicChange = true;
         }
         typedLightManager.SetActive(active);
     }

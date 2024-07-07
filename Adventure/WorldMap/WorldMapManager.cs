@@ -13,6 +13,8 @@ namespace Adventure.WorldMap
     interface IWorldMapManager
     {
         bool PhysicsActive { get; }
+        bool AllowBackgroundMusicChange { get; set; }
+
         void MovePlayerToArea(int area);
         Task SetupWorldMap();
         void Update(Clock clock);
@@ -63,7 +65,7 @@ namespace Adventure.WorldMap
         {
             Vector3 loc;
 
-            if(worldMapInstance != null)
+            if (worldMapInstance != null)
             {
                 loc = worldMapInstance.GetAreaLocation(area);
             }
@@ -88,7 +90,7 @@ namespace Adventure.WorldMap
 
         public void SetPlayerVisible(bool visible)
         {
-            player.SetGraphicsActive(visible);
+            player?.SetGraphicsActive(visible);
         }
 
         public void CenterCamera()
@@ -156,6 +158,12 @@ namespace Adventure.WorldMap
         private void PartyMemberManager_PartyChanged()
         {
             CreatePlayersAndFollowers();
+        }
+
+        public bool AllowBackgroundMusicChange
+        {
+            get => airship.AllowMusicChange;
+            set => airship.AllowMusicChange = value;
         }
     }
 }

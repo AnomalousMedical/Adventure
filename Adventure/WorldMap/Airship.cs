@@ -91,6 +91,8 @@ namespace Adventure.WorldMap
 
         public bool Active => active;
 
+        public bool AllowMusicChange { get; set; } = false;
+
         public Airship
         (
             Description description,
@@ -213,6 +215,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            AllowMusicChange = false;
             this.characterMenuPositionTracker.UnsetOverrideEntry(characterMenuPositionEntry);
             animationService.RemoveListener(this);
             this.sprite.AnimationChanged -= Sprite_AnimationChanged;
@@ -336,7 +339,10 @@ namespace Adventure.WorldMap
                     eventLayer.makeFocusLayer();
                     active = true;
                     worldMapManager.SetPlayerVisible(false);
-                    backgroundMusicPlayer.SetBackgroundSong(AirshipMusic.File);
+                    if (AllowMusicChange)
+                    {
+                        backgroundMusicPlayer.SetBackgroundSong(AirshipMusic.File);
+                    }
                     upDownAnimationAmount = 0.0f;
                     floatOffset = new Vector3(0f, 0f, 0f);
                     animationService.AddListener(this);
@@ -383,7 +389,10 @@ namespace Adventure.WorldMap
                 contextMenu.ClearContext(Land);
                 landEventLayer.makeFocusLayer();
                 worldMapManager.SetPlayerVisible(true);
-                backgroundMusicPlayer.SetBackgroundSong(WorldMapMusic.File);
+                if (AllowMusicChange)
+                {
+                    backgroundMusicPlayer.SetBackgroundSong(WorldMapMusic.File);
+                }
             }
         }
 
