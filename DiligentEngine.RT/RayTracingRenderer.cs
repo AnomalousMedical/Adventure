@@ -247,7 +247,7 @@ namespace DiligentEngine.RT
                 m_InstanceBuffer = null;
 
                 CreateRayTracingPSO();
-                pipelineRebuildTask.SetResult(); //Don't have to worry about exceptions since its gone at this point if that happens anyway
+                pipelineRebuildTask.SetResult();
                 rebuildPipeline = false;
                 rebindShaderResources = true;
             }
