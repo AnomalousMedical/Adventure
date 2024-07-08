@@ -85,8 +85,11 @@ namespace Adventure
             {
                 o.EventLayer = EventLayers.Exploration;
             });
-            services.AddBepuPlugin<ZoneScene>()
-                    .AddBepuSceneType<WorldMapScene>();
+            services.AddBepuPlugin<ZoneScene>(o =>
+            {
+                o.Gravity = new System.Numerics.Vector3(0f, -100f, 0f);
+            })
+            .AddBepuSceneType<WorldMapScene>();
 
             services.AddRpgMath();
 
