@@ -43,13 +43,13 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly EventManager eventManager;
-        private readonly CameraMover cameraMover;
         private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
         private readonly ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
+        private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
@@ -73,6 +73,7 @@ namespace Adventure
         private int secondaryHand;
         private GamepadId gamepadId;
         private bool allowJoystickInput = true;
+        private MultiCameraMoverEntry multiCameraMoverEntry;
 
         ButtonEvent moveForward;
         ButtonEvent moveBackward;
@@ -112,13 +113,13 @@ namespace Adventure
             IBepuScene<ZoneScene> bepuScene,
             EventManager eventManager,
             Description description,
-            CameraMover cameraMover,
             ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
             ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
-            IExplorationMenu explorationMenu
+            IExplorationMenu explorationMenu,
+            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -127,6 +128,7 @@ namespace Adventure
             this.followerManager = followerManager;
             this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.explorationMenu = explorationMenu;
+            this.multiCameraMover = multiCameraMover;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -168,7 +170,6 @@ namespace Adventure
             this.bepuScene = bepuScene;
             this.bepuScene.OnUpdated += BepuScene_OnUpdated;
             this.eventManager = eventManager;
-            this.cameraMover = cameraMover;
             this.collidableIdentifier = collidableIdentifier;
             this.persistence = persistence;
             this.assetFactory = assetFactory;
@@ -179,6 +180,13 @@ namespace Adventure
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
+
+            multiCameraMoverEntry = new MultiCameraMoverEntry()
+            {
+                Position = currentPosition,
+                SpeedOffset = Vector3.Zero,
+            };
+            multiCameraMover.Add(multiCameraMoverEntry);
 
             this.tlasData = new TLASInstanceData()
             {
@@ -271,6 +279,7 @@ namespace Adventure
             rtInstances.RemoveTlasBuild(tlasData);
             objectResolver.Dispose();
             characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
+            multiCameraMover.Remove(multiCameraMoverEntry);
         }
 
         public void StopMovement()
@@ -284,83 +293,6 @@ namespace Adventure
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             ChangeToStoppedAnimation();
             followerManager.LeaderMoved(this.currentPosition, IsMoving);
-        }
-
-        class RayHit
-        {
-            public RayHit(float t, in CollidableReference collidable)
-            {
-                this.T = t;
-                this.Collidable = collidable;
-            }
-
-            public float T;
-            public CollidableReference Collidable;
-        }
-
-        struct RayHitHandler : IRayHitHandler
-        {
-            class HitComparer : IComparer<RayHit>
-            {
-                public static readonly HitComparer Instance = new HitComparer();
-
-                public int Compare(RayHit x, RayHit y)
-                {
-                    if(x.T > y.T) { return -1; }
-                    if (x.T < y.T) { return 1; }
-                    return 0;
-                }
-            }
-
-            private SortedSet<RayHit> hits = new SortedSet<RayHit>(HitComparer.Instance);
-            public RayHitHandler() { }
-
-            public IEnumerable<RayHit> Hits => hits;
-
-
-            public bool AllowTest(CollidableReference collidable)
-            {
-                return true;
-            }
-
-            public bool AllowTest(CollidableReference collidable, int childIndex)
-            {
-                return true;
-            }
-
-            public void OnRayHit(in RayData ray, ref float maximumT, float t, in System.Numerics.Vector3 normal, CollidableReference collidable, int childIndex)
-            {
-                hits.Add(new RayHit(t, collidable));
-            }
-        }
-
-        public Vector3 FindCameraTerrainOffset(in Vector3 origin, in Vector3 direction, float maxT = float.MaxValue)
-        {
-            var hitOffset = Vector3.Zero;
-            var hitHandler = new RayHitHandler();
-            bepuScene.Simulation.RayCast(origin.ToSystemNumerics(), direction.ToSystemNumerics(), maxT, ref hitHandler);
-
-            var findPlayer = true;
-            foreach(var hit in hitHandler.Hits)
-            {
-                if (findPlayer)
-                {
-                    if(collidableIdentifier.TryGetIdentifier<Player>(hit.Collidable, out var _))
-                    {
-                        findPlayer = false;
-                    }
-                }
-                else
-                {
-                    if (collidableIdentifier.TryGetIdentifier<Zone>(hit.Collidable, out var _))
-                    {
-                        hitOffset = direction * hit.T + new Vector3(0f, 0f, 0.05f);
-                        break;
-                    }
-                }
-            }
-
-            return hitOffset;
         }
 
         private void SetupInput()
@@ -496,6 +428,7 @@ namespace Adventure
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
+            multiCameraMoverEntry.Position = this.currentPosition;
             this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             this.followerManager.LineUpBehindLeader(this.currentPosition, alignment);
@@ -518,20 +451,6 @@ namespace Adventure
             }
             this.sprite.SetAnimation(animation);
             Sprite_FrameChanged(sprite);
-        }
-
-        public void CenterCamera()
-        {
-            if (!persistence.Current.Player.InWorld)
-            {
-                cameraMover.SetPosition(currentPosition + cameraOffset, cameraAngle);
-            }
-        }
-
-        public void OffsetCamera(in Vector3 offset)
-        {
-            cameraMover.OffsetCurrentPosition(offset);
-            cameraMover.OffsetPosition(offset);
         }
 
         /// <summary>
@@ -566,6 +485,7 @@ namespace Adventure
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
                 this.currentPosition = location.Value;
+                multiCameraMoverEntry.Position = this.currentPosition;
                 this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
                 this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
@@ -630,11 +550,8 @@ namespace Adventure
             }
             this.movementDir = movementDir;
 
-            var speedOffset = characterMover.LinearVelocity / characterMover.speed;
-            speedOffset.y = 0;
-            var camPos = this.currentPosition + cameraOffset + speedOffset * 1.15f;
-            var rayAdjust = FindCameraTerrainOffset(camPos, (currentPosition - camPos).normalized());
-            cameraMover.SetInterpolatedGoalPosition(camPos + rayAdjust, cameraAngle);
+            multiCameraMoverEntry.Position = currentPosition;
+            multiCameraMoverEntry.SpeedOffset = characterMover.LinearVelocity / characterMover.speed;
         }
 
         private void SetCurrentAnimation(string name)

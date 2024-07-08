@@ -285,6 +285,7 @@ namespace Adventure
             services.AddSingleton<UserInputMenu>();
             services.AddSingleton<FontLoader>();
             services.AddSingleton<IVictoryGameState, VictoryGameState>();
+            services.AddSingleton<MultiCameraMover<ZoneScene, IExplorationGameState>>();
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();

@@ -46,6 +46,7 @@ namespace Adventure
         private readonly Sky sky;
         private readonly PartyMemberManager partyMemberManager;
         private readonly IGcService gcService;
+        private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -61,7 +62,8 @@ namespace Adventure
             IBepuScene<ZoneScene> bepuScene, //Inject this so it is created earlier and destroyed later
             Sky sky,
             PartyMemberManager partyMemberManager,
-            IGcService gcService
+            IGcService gcService,
+            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover
         )
         {
             objectResolver = objectResolverFactory.Create();
@@ -73,6 +75,7 @@ namespace Adventure
             this.sky = sky;
             this.partyMemberManager = partyMemberManager;
             this.gcService = gcService;
+            this.multiCameraMover = multiCameraMover;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
@@ -130,7 +133,11 @@ namespace Adventure
             foreach (var player in players)
             {
                 player?.RestorePersistedLocation(currentZone.GetPlayerStartPoint((int)player.GamepadId), currentZone.GetPlayerEndPoint((int)player.GamepadId), currentZone.StartEnd, currentZone.ZoneAlignment);
-                player?.CenterCamera();
+            }
+
+            if (!persistence.Current.Player.InWorld)
+            {
+                multiCameraMover.CenterCamera();
             }
 
             ZoneChanged?.Invoke(this);
@@ -153,12 +160,9 @@ namespace Adventure
 
         public void CenterCamera()
         {
-            foreach (var player in players)
+            if (!persistence.Current.Player.InWorld)
             {
-                if (player != null)
-                {
-                    player.CenterCamera();
-                }
+                multiCameraMover.CenterCamera();
             }
         }
 
@@ -170,8 +174,12 @@ namespace Adventure
                 {
                     player.SetLocation(currentZone.GetPlayerStartPoint((int)player.GamepadId), currentZone.ZoneAlignment);
                     player.StopMovement();
-                    player.CenterCamera();
                 }
+            }
+
+            if (!persistence.Current.Player.InWorld)
+            {
+                multiCameraMover.CenterCamera();
             }
         }
 
@@ -183,8 +191,12 @@ namespace Adventure
                 {
                     player.SetLocation(currentZone.GetPlayerEndPoint((int)player.GamepadId), Zone.GetEndAlignment(currentZone.ZoneAlignment));
                     player.StopMovement();
-                    player.CenterCamera();
                 }
+            }
+
+            if (!persistence.Current.Player.InWorld)
+            {
+                multiCameraMover.CenterCamera();
             }
         }
 
