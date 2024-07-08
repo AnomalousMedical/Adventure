@@ -172,6 +172,7 @@ namespace Adventure
 
         public void RequestWorldMap()
         {
+            resumeMusicToken = null;
             nextState = worldMapState;
         }
 
