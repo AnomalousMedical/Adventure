@@ -174,7 +174,7 @@ namespace Adventure
             this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
-            var startPos = persistence.Current.Player.Position ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            var startPos = persistence.Current.Player.Position[(int)gamepadId] ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
@@ -493,7 +493,7 @@ namespace Adventure
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
-            this.persistence.Current.Player.Position = this.currentPosition;
+            this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             this.followerManager.LineUpBehindLeader(this.currentPosition, alignment);
             string animation;
@@ -543,7 +543,7 @@ namespace Adventure
             {
                 alignment = Zone.GetEndAlignment(alignment);
             }
-            var location = persistence.Current.Player.Position;
+            var location = persistence.Current.Player.Position[(int)gamepadId];
             if (location == null)
             {
                 //Game has started and first zone is complete
@@ -563,7 +563,7 @@ namespace Adventure
                 this.characterMover.SetLocation(location.Value.ToSystemNumerics());
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
                 this.currentPosition = location.Value;
-                this.persistence.Current.Player.Position = this.currentPosition;
+                this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
                 this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
                 Sprite_FrameChanged(sprite);
@@ -585,7 +585,7 @@ namespace Adventure
         private void BepuScene_OnUpdated(IBepuScene obj)
         {
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
-            this.persistence.Current.Player.Position = this.currentPosition;
+            this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
             Sprite_FrameChanged(sprite);
@@ -867,6 +867,7 @@ namespace Adventure
                     c.FollowerManager = followerManager;
                     c.ZoomedCameraOffset = this.zoomedCameraOffset;
                     c.CameraAngle = this.cameraAngle;
+                    c.PlayerGamepadId = gamepadId;
                 });
                 this.followers.Add(followerInstance);
             }

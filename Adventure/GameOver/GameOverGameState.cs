@@ -132,7 +132,10 @@ namespace Adventure.GameOver
                     if (sharpGui.Button(restart, GamepadId.Pad1, navUp: retry.Id, navDown: retry.Id))
                     {
                         persistence.Current.Zone.CurrentIndex = persistence.Current.Player.RespawnZone ?? 0;
-                        persistence.Current.Player.Position = persistence.Current.Player.RespawnPosition;
+                        persistence.Current.Player.Position[0] = null;
+                        persistence.Current.Player.Position[1] = null;
+                        persistence.Current.Player.Position[2] = null;
+                        persistence.Current.Player.Position[3] = null;
                         persistence.Current.BattleTriggers.ClearData();
                         persistence.Current.Player.InBattle = false;
 

@@ -137,7 +137,7 @@ class ChooseCharacterMenu
                         var confirmChoice = await confirmMenu.ShowAndWait($"Are you sure you want to choose {nameResult.Value}?", this, gamepadId);
                         if (confirmChoice)
                         {
-                            persistence.Current.Player.Position = currentTrigger.SpawnPosition;
+                            persistence.Current.Player.Position[(int)gamepadId] = currentTrigger.SpawnPosition;
                             persistence.Current.Player.Started = true;
                             currentTrigger.CharacterData.CharacterSheet.Name = nameResult.Value;
                             currentTrigger.AddToParty();

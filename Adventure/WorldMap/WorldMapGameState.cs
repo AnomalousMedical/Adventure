@@ -55,7 +55,7 @@ class WorldMapGameState
             eventManager[EventLayers.WorldMap].makeFocusLayer();
             nextState = this;
             persistence.Current.BattleTriggers.ClearData();
-            if (persistence.Current.Player.WorldPosition == null)
+            if (persistence.Current.Player.WorldPosition[0] == null)
             {
                 worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             }
@@ -68,10 +68,12 @@ class WorldMapGameState
 
     public async Task SetupZone(Func<Task> waitForMainThreadWorkCb, int zoneIndex)
     {
-        persistence.Current.Player.Position = null;
+        persistence.Current.Player.Position[0] = null;
+        persistence.Current.Player.Position[1] = null;
+        persistence.Current.Player.Position[2] = null;
+        persistence.Current.Player.Position[3] = null;
         persistence.Current.Zone.CurrentIndex = zoneIndex;
         persistence.Current.Player.RespawnZone = zoneIndex;
-        persistence.Current.Player.RespawnPosition = null;
         persistence.Current.Player.LastArea = worldDatabase.GetAreaBuilder(zoneIndex).Index;
         await zoneManager.Restart(waitForMainThreadWorkCb);
     }

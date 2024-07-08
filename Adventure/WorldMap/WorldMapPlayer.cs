@@ -173,7 +173,7 @@ namespace Adventure.WorldMap
             this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
-            var startPos = persistence.Current.Player.WorldPosition ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            var startPos = persistence.Current.Player.WorldPosition[(int)gamepadId] ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
@@ -483,7 +483,7 @@ namespace Adventure.WorldMap
         private void BepuScene_OnUpdated(IBepuScene obj)
         {
             bepuScene.GetInterpolatedPosition(characterMover.BodyHandle, ref this.currentPosition, ref this.currentOrientation);
-            this.persistence.Current.Player.WorldPosition = this.currentPosition;
+            this.persistence.Current.Player.WorldPosition[(int)gamepadId] = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
             Sprite_FrameChanged(sprite);
@@ -753,6 +753,7 @@ namespace Adventure.WorldMap
                     c.StartVisible = this.graphicsActive;
                     c.ZoomedCameraOffset = this.zoomedCameraOffset;
                     c.CameraAngle = this.zoomedCameraAngle;
+                    c.PlayerGamepadId = gamepadId;
                 });
                 this.followers.Add(followerInstance);
             }

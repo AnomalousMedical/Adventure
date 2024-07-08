@@ -143,9 +143,9 @@ namespace Adventure.Services
 
         public class PlayerData
         {
-            public Vector3? Position { get; set; }
+            public Vector3?[] Position { get; init; } = new Vector3?[4];
 
-            public Vector3? WorldPosition { get; set; }
+            public Vector3?[] WorldPosition { get; init; } = new Vector3?[4];
 
             public Vector3? AirshipPosition { get; set; }
 
@@ -154,8 +154,6 @@ namespace Adventure.Services
             public int LastArea { get; set; }
 
             public bool InWorld { get; set; }
-
-            public Vector3? RespawnPosition { get; set; }
 
             public int? LootDropZone { get; set; }
 

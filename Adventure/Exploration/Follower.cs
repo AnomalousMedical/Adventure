@@ -29,6 +29,7 @@ namespace Adventure
         public Vector3 ZoomedCameraOffset { get; set; } = new Vector3(0, 1, -2);
 
         public Quaternion CameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
+        public GamepadId PlayerGamepadId { get; set; }
     }
 
     class Follower<T> : IDisposable
@@ -137,7 +138,7 @@ namespace Adventure
             this.assetFactory = assetFactory;
             var scale = description.Scale * sprite.BaseScale;
             var halfScale = scale.y / 2f;
-            var startPos = persistence.Current.Player.Position ?? description.Translation + new Vector3(0f, halfScale, 0f);
+            var startPos = persistence.Current.Player.Position[(int)description.PlayerGamepadId] ?? description.Translation + new Vector3(0f, halfScale, 0f);
 
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;

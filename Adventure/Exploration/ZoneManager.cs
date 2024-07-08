@@ -129,7 +129,7 @@ namespace Adventure
 
             foreach (var player in players)
             {
-                player?.RestorePersistedLocation(currentZone.StartPoint, currentZone.EndPoint, currentZone.StartEnd, currentZone.ZoneAlignment);
+                player?.RestorePersistedLocation(currentZone.GetPlayerStartPoint((int)player.GamepadId), currentZone.GetPlayerEndPoint((int)player.GamepadId), currentZone.StartEnd, currentZone.ZoneAlignment);
                 player?.CenterCamera();
             }
 
@@ -168,7 +168,7 @@ namespace Adventure
             {
                 if (player != null)
                 {
-                    player.SetLocation(currentZone.StartPoint, currentZone.ZoneAlignment);
+                    player.SetLocation(currentZone.GetPlayerStartPoint((int)player.GamepadId), currentZone.ZoneAlignment);
                     player.StopMovement();
                     player.CenterCamera();
                 }
@@ -181,7 +181,7 @@ namespace Adventure
             {
                 if (player != null)
                 {
-                    player.SetLocation(currentZone.EndPoint, Zone.GetEndAlignment(currentZone.ZoneAlignment));
+                    player.SetLocation(currentZone.GetPlayerEndPoint((int)player.GamepadId), Zone.GetEndAlignment(currentZone.ZoneAlignment));
                     player.StopMovement();
                     player.CenterCamera();
                 }
@@ -225,7 +225,7 @@ namespace Adventure
                     {
                         players[i] = this.objectResolver.Resolve<Player, Player.Description>(c =>
                         {
-                            c.Translation = currentZone.StartPoint;
+                            c.Translation = currentZone.GetPlayerStartPoint(i);
                             c.PlayerSprite = playerCharacter.PlayerSprite;
                             c.CharacterSheet = playerCharacter.CharacterSheet;
                             c.Gamepad = (GamepadId)i;

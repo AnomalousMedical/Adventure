@@ -609,6 +609,52 @@ namespace Adventure
             });
         }
 
+        public Vector3 GetPlayerStartPoint(int player)
+        {
+            var offset = player * 1.5f;
+            Vector3 startPointOffset;
+            switch (ZoneAlignment)
+            {
+                default:
+                case Alignment.WestEast:
+                    startPointOffset = new Vector3(-offset, 0f, 0f);
+                    break;
+                case Alignment.EastWest:
+                    startPointOffset = new Vector3(offset, 0f, 0f);
+                    break;
+                case Alignment.SouthNorth:
+                    startPointOffset = new Vector3(0f, 0f, -offset);
+                    break;
+                case Alignment.NorthSouth:
+                    startPointOffset = new Vector3(0f, 0f, offset);
+                    break;
+            }
+            return StartPoint + startPointOffset;
+        }
+
+        public Vector3 GetPlayerEndPoint(int player)
+        {
+            var offset = player * 1.5f;
+            Vector3 endPointOffset;
+            switch (ZoneAlignment)
+            {
+                default:
+                case Alignment.WestEast:
+                    endPointOffset = new Vector3(offset, 0f, 0f);
+                    break;
+                case Alignment.EastWest:
+                    endPointOffset = new Vector3(-offset, 0f, 0f);
+                    break;
+                case Alignment.SouthNorth:
+                    endPointOffset = new Vector3(0f, 0f, offset);
+                    break;
+                case Alignment.NorthSouth:
+                    endPointOffset = new Vector3(0f, 0f, -offset);
+                    break;
+            }
+            return EndPoint + endPointOffset;
+        }
+
         private void PlaceSignpost(Description description, Point startPoint, Point endPoint)
         {
             Vector3 startSignpostOffset;
@@ -835,24 +881,25 @@ namespace Adventure
             //Zone connectors
             Vector3 nextZoneConnectorOffset;
             Vector3 previousZoneConnectorOffset;
+            const float CONNECTOR_OFFSET = 1.6f;
             switch (alignment)
             {
                 default:
                 case Alignment.WestEast:
-                    nextZoneConnectorOffset = new Vector3(1f, 0f, 0f);
-                    previousZoneConnectorOffset = new Vector3(-1f, 0f, 0f);
+                    nextZoneConnectorOffset = new Vector3(CONNECTOR_OFFSET, 0f, 0f);
+                    previousZoneConnectorOffset = new Vector3(-CONNECTOR_OFFSET, 0f, 0f);
                     break;
                 case Alignment.EastWest:
-                    nextZoneConnectorOffset = new Vector3(-1f, 0f, 0f);
-                    previousZoneConnectorOffset = new Vector3(1f, 0f, 0f);
+                    nextZoneConnectorOffset = new Vector3(-CONNECTOR_OFFSET, 0f, 0f);
+                    previousZoneConnectorOffset = new Vector3(CONNECTOR_OFFSET, 0f, 0f);
                     break;
                 case Alignment.SouthNorth:
-                    nextZoneConnectorOffset = new Vector3(0f, 0f, 1f);
-                    previousZoneConnectorOffset = new Vector3(0f, 0f, -1f);
+                    nextZoneConnectorOffset = new Vector3(0f, 0f, CONNECTOR_OFFSET);
+                    previousZoneConnectorOffset = new Vector3(0f, 0f, -CONNECTOR_OFFSET);
                     break;
                 case Alignment.NorthSouth:
-                    nextZoneConnectorOffset = new Vector3(0f, 0f, -1f);
-                    previousZoneConnectorOffset = new Vector3(0f, 0f, 1f);
+                    nextZoneConnectorOffset = new Vector3(0f, 0f, -CONNECTOR_OFFSET);
+                    previousZoneConnectorOffset = new Vector3(0f, 0f, CONNECTOR_OFFSET);
                     break;
             }
 
