@@ -79,6 +79,8 @@ namespace RTBepuDemo
                     description.boxInertia, new CollidableDescription(bepuScene.Simulation.Shapes.Add(description.box), 0.1f), new BodyActivityDescription(0.01f));
 
             bodyHandle = bepuScene.Simulation.Bodies.Add(bodyDesc);
+            ref var collisionFilter = ref bepuScene.CollisionFilters.Allocate(bodyHandle);
+            collisionFilter = new SubgroupCollisionFilter(0, 0);
 
             bepuScene.AddToInterpolation(bodyHandle);
 

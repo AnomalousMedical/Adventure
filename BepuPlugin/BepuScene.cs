@@ -27,12 +27,15 @@ namespace BepuPlugin
         ThreadDispatcher threadDispatcher;
         BufferPool bufferPool;
         CharacterControllers characterControllers;
+        CollidableProperty<SubgroupCollisionFilter> collisionFilters;
         ContactEvents<CollisionEventHandler> events;
         private List<CharacterMover> characterMovers = new List<CharacterMover>();
         private FastIteratorMap<BodyHandle, BodyPosition> interpolatedPositions = new FastIteratorMap<BodyHandle, BodyPosition>();
         private CollisionEventHandler collisionEventHandler = new CollisionEventHandler(true);
 
         public event Action<IBepuScene> OnUpdated;
+
+        public CollidableProperty<SubgroupCollisionFilter> CollisionFilters => collisionFilters;
 
         private float timestepSeconds;
         private long timestepMicro;
@@ -54,12 +57,13 @@ namespace BepuPlugin
 
             characterControllers = new CharacterControllers(bufferPool);
             events = new ContactEvents<CollisionEventHandler>(collisionEventHandler, bufferPool, threadDispatcher);
+            collisionFilters = new CollidableProperty<SubgroupCollisionFilter>();
 
             //The PositionFirstTimestepper is the simplest timestepping mode, but since it integrates velocity into position at the start of the frame, directly modified velocities outside of the timestep
             //will be integrated before collision detection or the solver has a chance to intervene. That's fine in this demo. Other built-in options include the PositionLastTimestepper and the SubsteppingTimestepper.
             //Note that the timestepper also has callbacks that you can use for executing logic between processing stages, like BeforeCollisionDetection.
             simulation = Simulation.Create(bufferPool, 
-                new CharacterNarrowphaseCallbacks<CollisionEventHandler>(characterControllers, events), 
+                new CharacterNarrowphaseCallbacks<CollisionEventHandler>(collisionFilters, characterControllers, events), 
                 new DemoPoseIntegratorCallbacks(description.Gravity),
                 new SolveDescription(8, 1));
 

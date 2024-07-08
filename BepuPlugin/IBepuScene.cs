@@ -11,6 +11,7 @@ namespace BepuPlugin
     {
         Simulation Simulation { get; }
         BufferPool BufferPool { get; }
+        CollidableProperty<SubgroupCollisionFilter> CollisionFilters { get; }
 
         event System.Action<IBepuScene> OnUpdated;
 

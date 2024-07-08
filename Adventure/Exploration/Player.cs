@@ -209,6 +209,9 @@ namespace Adventure
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
+            ref var collisionFilter = ref bepuScene.CollisionFilters.Allocate(characterMover.BodyHandle); //Still not sure this doesn't leak, but no demos show a deallocate call
+            collisionFilter = new SubgroupCollisionFilter(10, 0);
+            collisionFilter.DisableCollision(0);
 
             characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.cameraAngle, () =>
             {

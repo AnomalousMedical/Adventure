@@ -11,11 +11,13 @@ namespace BepuPlugin.Characters
     /// </summary>
     struct CharacterNarrowphaseCallbacks<TEventHandler> : INarrowPhaseCallbacks where TEventHandler : IContactEventHandler
     {
+        public CollidableProperty<SubgroupCollisionFilter> CollisionFilters;
         public CharacterControllers Characters;
         ContactEvents<TEventHandler> events;
 
-        public CharacterNarrowphaseCallbacks(CharacterControllers characters, ContactEvents<TEventHandler> events)
+        public CharacterNarrowphaseCallbacks(CollidableProperty<SubgroupCollisionFilter> filters, CharacterControllers characters, ContactEvents<TEventHandler> events)
         {
+            this.CollisionFilters = filters;
             this.Characters = characters;
             this.events = events;
         }
@@ -23,6 +25,12 @@ namespace BepuPlugin.Characters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
         {
+            //It's impossible for two statics to collide, and pairs are sorted such that bodies always come before statics.
+            //This info comes straight from the demo
+            if (b.Mobility != CollidableMobility.Static)
+            {
+                return SubgroupCollisionFilter.AllowCollision(CollisionFilters[a.BodyHandle], CollisionFilters[b.BodyHandle]);
+            }
             return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
         }
 
@@ -50,12 +58,14 @@ namespace BepuPlugin.Characters
         public void Dispose()
         {
             Characters.Dispose();
+            CollisionFilters.Dispose();
         }
 
         public void Initialize(Simulation simulation)
         {
             Characters.Initialize(simulation);
             events.Initialize(simulation.Bodies);
+            CollisionFilters.Initialize(simulation);
         }
     }
 }
