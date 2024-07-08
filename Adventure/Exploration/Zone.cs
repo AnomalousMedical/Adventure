@@ -475,7 +475,7 @@ namespace Adventure
                     var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 4, bepuScene.BufferPool);
                     foreach (var centerPt in mapMesh.CollisionMeshPositions)
                     {
-                        //Commented order will probably work for camera, is clockwise
+                        //Clockwise order for camera collision
                         triangles.AllocateUnsafely() = new Triangle
                         (
                             centerPt.TopLeft.ToSystemNumerics(),
