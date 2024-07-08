@@ -53,6 +53,7 @@ namespace Adventure.WorldMap
         private bool physicsActive = false;
         private TypedIndex boundaryCubeShapeIndex;
         private TypedIndex floorShapeIndex;
+        private bool madeCollisionShapes = false;
         private StaticHandle floorStaticHandle;
         private List<StaticHandle> staticHandles = new List<StaticHandle>();
         private Vector3 currentPosition = Vector3.Zero;
@@ -221,28 +222,6 @@ namespace Adventure.WorldMap
                     floorBlasInstanceData.dispatchType = BlasInstanceDataConstants.GetShaderForDescription(true, true, false, false);
                     rtInstances.AddShaderTableBinder(Bind);
 
-                    var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 4, bepuScene.BufferPool);
-                    foreach (var centerPt in mapMesh.CollisionMeshPositions)
-                    {
-                        //Counter clockwise for the actual physics objects
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                           centerPt.TopRight.ToSystemNumerics(),
-                           centerPt.TopLeft.ToSystemNumerics(),
-                           centerPt.BottomLeft.ToSystemNumerics()
-                        );
-
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                           centerPt.BottomLeft.ToSystemNumerics(),
-                           centerPt.BottomRight.ToSystemNumerics(),
-                           centerPt.TopRight.ToSystemNumerics()
-                        );
-                    }
-
-                    var meshShape = new Mesh(triangles, new System.Numerics.Vector3(1.0f, 1.0f, 1.0f), bepuScene.BufferPool);
-                    floorShapeIndex = bepuScene.Simulation.Shapes.Add(meshShape);
-
                     SetupAreas(description.Areas, description.AirshipSquare, description.BiomePropLocations);
 
                     loadingTask.SetResult();
@@ -282,8 +261,11 @@ namespace Adventure.WorldMap
                 rtInstances.RemoveTlasBuild(data);
             }
 
-            //This is made in the constructor, so remove it here
-            bepuScene.Simulation.Shapes.Remove(floorShapeIndex);
+            if (madeCollisionShapes)
+            {
+                bepuScene.Simulation.Shapes.Remove(floorShapeIndex);
+                bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
+            }
         }
 
         public void SetupPhysics()
@@ -298,9 +280,35 @@ namespace Adventure.WorldMap
 
             float yBoundaryScale = 50f;
 
-            //Add stuff to physics scene
-            var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
-            boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
+            if (!madeCollisionShapes)
+            {
+                madeCollisionShapes = true;
+
+                var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
+                boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
+
+                var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 2, bepuScene.BufferPool);
+                foreach (var centerPt in mapMesh.CollisionMeshPositions)
+                {
+                    //Counter clockwise for the actual physics objects
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                       centerPt.TopRight.ToSystemNumerics(),
+                       centerPt.TopLeft.ToSystemNumerics(),
+                       centerPt.BottomLeft.ToSystemNumerics()
+                    );
+
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                       centerPt.BottomLeft.ToSystemNumerics(),
+                       centerPt.BottomRight.ToSystemNumerics(),
+                       centerPt.TopRight.ToSystemNumerics()
+                    );
+                }
+
+                var meshShape = new Mesh(triangles, new System.Numerics.Vector3(1.0f, 1.0f, 1.0f), bepuScene.BufferPool);
+                floorShapeIndex = bepuScene.Simulation.Shapes.Add(meshShape);
+            }
 
             var boundaryOrientation = System.Numerics.Quaternion.Identity;
 
@@ -310,6 +318,8 @@ namespace Adventure.WorldMap
                           currentPosition.ToSystemNumerics(),
                           System.Numerics.Quaternion.Identity,
                           floorShapeIndex));
+
+            staticHandles.Add(floorStaticHandle);
 
             //Boundary cubes
             foreach (var boundary in mapMesh.BoundaryCubeCenterPoints)
@@ -348,7 +358,6 @@ namespace Adventure.WorldMap
             {
                 statics.Remove(staticHandle);
             }
-            bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
             staticHandles.Clear();
         }
 
