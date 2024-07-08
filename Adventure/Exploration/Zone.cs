@@ -338,6 +338,31 @@ namespace Adventure
                 Transform = new InstanceMatrix(currentPosition, Quaternion.Identity)
             };
 
+            async Task<csMapbuilder> CreateZoneMapBg(int offset)
+            {
+                csMapbuilder mapBuilder = null;
+                await Task.Run(() =>
+                {
+                    var random = new FIRandom(description.LevelSeed + offset);
+                    mapBuilder = new csMapbuilder(random, description.Width, description.Height)
+                    {
+                        BreakOut = description.BreakOut,
+                        BuildProb = description.BuildProb,
+                        CorridorDistance = description.CorridorDistance,
+                        CorridorSpace = description.CorridorSpace,
+                        Corridor_Max = description.CorridorMaxLength,
+                        Corridor_MaxTurns = description.CorridorMaxTurns,
+                        Corridor_Min = description.CorridorMinLength,
+                        MaxRooms = description.MaxRooms,
+                        RoomDistance = description.RoomDistance,
+                        Room_Max = description.RoomMax,
+                        Room_Min = description.RoomMin
+                    };
+                    mapBuilder.Build_ConnectedStartRooms();
+                });
+                return mapBuilder;
+            }
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -359,26 +384,55 @@ namespace Adventure
                 Point startPoint = new Point();
                 Point endPoint = new Point();
 
-                this.zoneGenerationTask = Task.Run(() =>
+                this.zoneGenerationTask = Task.Run(async () =>
                 {
                     var sw = new Stopwatch();
                     sw.Start();
-                    var random = new FIRandom(description.LevelSeed);
-                    var mapBuilder = new csMapbuilder(random, description.Width, description.Height)
+
+                    csMapbuilder mapBuilder;
+                    
+                    //Figure out how many rooms would be created ideally
+                    var desiredNumRooms = description.Treasure.Count();
+                    if (description.MakeRest)
                     {
-                        BreakOut = description.BreakOut,
-                        BuildProb = description.BuildProb,
-                        CorridorDistance = description.CorridorDistance,
-                        CorridorSpace = description.CorridorSpace,
-                        Corridor_Max = description.CorridorMaxLength,
-                        Corridor_MaxTurns = description.CorridorMaxTurns,
-                        Corridor_Min = description.CorridorMinLength,
-                        MaxRooms = description.MaxRooms,
-                        RoomDistance = description.RoomDistance,
-                        Room_Max = description.RoomMax,
-                        Room_Min = description.RoomMin
-                    };
-                    mapBuilder.Build_ConnectedStartRooms();
+                        desiredNumRooms++;
+                    }
+                    if (description.MakeTorch)
+                    {
+                        desiredNumRooms++;
+                    }
+                    if (description.MakeGate)
+                    {
+                        desiredNumRooms++;
+                    }
+                    desiredNumRooms = Math.Min(description.MaxRooms, desiredNumRooms);
+                   
+                    //Create several maps
+                    const int numRolls = 10;
+                    var createZoneTasks = new List<Task<csMapbuilder>>(numRolls);
+                    for(int i = 0; i < numRolls; ++i)
+                    {
+                        createZoneTasks.Add(CreateZoneMapBg(i));
+                    }
+                    await Task.WhenAll(createZoneTasks);
+
+                    //Find the maps closest to the desired number of rooms
+                    mapBuilder = null;
+                    foreach(var task in createZoneTasks.Skip(1))
+                    {
+                        var roomCount = task.Result.Rooms.Count;
+                        if(roomCount - desiredNumRooms >= 0) //This means the room count is more or equal than the desired number of rooms
+                        {
+                            if (mapBuilder == null || task.Result.Rooms.Count < mapBuilder.Rooms.Count) //Filtered with the above add the room if it has less rooms than what we have already, since this approaches the desired number of rooms
+                            {
+                                mapBuilder = task.Result;
+                            }
+                        }
+                    }
+                    if(mapBuilder == null) //If nothing is found, just use the first result, this will be less than what is needed, but is the same as the old behavior
+                    {
+                        mapBuilder = createZoneTasks[0].Result;
+                    }
 
                     switch (alignment)
                     {
