@@ -20,6 +20,8 @@ namespace BepuPlugin
         public class Description
         {
             public float TimestepSeconds { get; set; } = 1f / 60f;
+
+            public Vector3 Gravity { get; set; } = new Vector3(0, -10, 0);
         }
         Simulation simulation;
         ThreadDispatcher threadDispatcher;
@@ -58,7 +60,7 @@ namespace BepuPlugin
             //Note that the timestepper also has callbacks that you can use for executing logic between processing stages, like BeforeCollisionDetection.
             simulation = Simulation.Create(bufferPool, 
                 new CharacterNarrowphaseCallbacks<CollisionEventHandler>(characterControllers, events), 
-                new DemoPoseIntegratorCallbacks(new Vector3(0, -10, 0)),
+                new DemoPoseIntegratorCallbacks(description.Gravity),
                 new SolveDescription(8, 1));
 
             events.EventHandler.Simulation = simulation;
