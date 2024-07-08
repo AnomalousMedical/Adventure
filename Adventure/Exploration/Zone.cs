@@ -201,6 +201,7 @@ namespace Adventure
         private StaticHandle floorStaticHandle;
         private TypedIndex boundaryCubeShapeIndex;
         private TypedIndex floorShapeIndex;
+        private bool madeCollisionShapes = false;
         private MapMesh mapMesh;
         private bool physicsActive = false;
         private readonly IObjectResolver objectResolver;
@@ -472,43 +473,6 @@ namespace Adventure
                     startPointLocal = mapMesh.PointToVector(startPoint.x, startPoint.y);
                     endPointLocal = mapMesh.PointToVector(endPoint.x, endPoint.y);
 
-                    var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 4, bepuScene.BufferPool);
-                    foreach (var centerPt in mapMesh.CollisionMeshPositions)
-                    {
-                        //Clockwise order for camera collision
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                            centerPt.TopLeft.ToSystemNumerics(),
-                            centerPt.TopRight.ToSystemNumerics(),
-                            centerPt.BottomRight.ToSystemNumerics()
-                        );
-
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                            centerPt.BottomRight.ToSystemNumerics(),
-                            centerPt.BottomLeft.ToSystemNumerics(),
-                            centerPt.TopLeft.ToSystemNumerics()
-                        );
-
-                        //Counter clockwise for the actual physics objects
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                           centerPt.TopRight.ToSystemNumerics(),
-                           centerPt.TopLeft.ToSystemNumerics(),
-                           centerPt.BottomLeft.ToSystemNumerics()
-                        );
-
-                        triangles.AllocateUnsafely() = new Triangle
-                        (
-                           centerPt.BottomLeft.ToSystemNumerics(),
-                           centerPt.BottomRight.ToSystemNumerics(),
-                           centerPt.TopRight.ToSystemNumerics()
-                        );
-                    }
-
-                    var meshShape = new Mesh(triangles, new System.Numerics.Vector3(1.0f, 1.0f, 1.0f), bepuScene.BufferPool);
-                    floorShapeIndex = bepuScene.Simulation.Shapes.Add(meshShape);
-
                     sw.Stop();
                     logger.LogInformation($"Generated zone {description.Index} seed {description.LevelSeed} in {sw.ElapsedMilliseconds} ms.");
                 });
@@ -671,8 +635,11 @@ namespace Adventure
             primaryHitShaderFactory.TryReturn(floorShader);
             rtInstances.RemoveTlasBuild(floorInstanceData);
 
-            //This is made in the constructor, so remove it here
-            bepuScene.Simulation.Shapes.Remove(floorShapeIndex);
+            if (madeCollisionShapes)
+            {
+                bepuScene.Simulation.Shapes.Remove(floorShapeIndex);
+                bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
+            }
         }
 
         /// <summary>
@@ -740,9 +707,51 @@ namespace Adventure
 
             float yBoundaryScale = 50f;
 
-            //Add stuff to physics scene
-            var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
-            boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
+            //Create shapes
+            if (!madeCollisionShapes)
+            {
+                madeCollisionShapes = true;
+
+                var boundaryCubeShape = new Box(mapMesh.MapUnitX, mapMesh.MapUnitY * yBoundaryScale, mapMesh.MapUnitZ); //Each one creates its own, try to load from resources
+                boundaryCubeShapeIndex = bepuScene.Simulation.Shapes.Add(boundaryCubeShape);
+
+                var triangles = new QuickList<Triangle>(mapMesh.CollisionMeshPositions.Count() * 4, bepuScene.BufferPool);
+                foreach (var centerPt in mapMesh.CollisionMeshPositions)
+                {
+                    //Clockwise order for camera collision
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                        centerPt.TopLeft.ToSystemNumerics(),
+                        centerPt.TopRight.ToSystemNumerics(),
+                        centerPt.BottomRight.ToSystemNumerics()
+                    );
+
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                        centerPt.BottomRight.ToSystemNumerics(),
+                        centerPt.BottomLeft.ToSystemNumerics(),
+                        centerPt.TopLeft.ToSystemNumerics()
+                    );
+
+                    //Counter clockwise for the actual physics objects
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                       centerPt.TopRight.ToSystemNumerics(),
+                       centerPt.TopLeft.ToSystemNumerics(),
+                       centerPt.BottomLeft.ToSystemNumerics()
+                    );
+
+                    triangles.AllocateUnsafely() = new Triangle
+                    (
+                       centerPt.BottomLeft.ToSystemNumerics(),
+                       centerPt.BottomRight.ToSystemNumerics(),
+                       centerPt.TopRight.ToSystemNumerics()
+                    );
+                }
+
+                var meshShape = new Mesh(triangles, new System.Numerics.Vector3(1.0f, 1.0f, 1.0f), bepuScene.BufferPool);
+                floorShapeIndex = bepuScene.Simulation.Shapes.Add(meshShape);
+            }
 
             var boundaryOrientation = System.Numerics.Quaternion.Identity;
 
@@ -1470,7 +1479,6 @@ namespace Adventure
             collidableIdentifier.RemoveIdentifier(new CollidableReference(floorStaticHandle));
             statics.Remove(floorStaticHandle);
 
-            bepuScene.Simulation.Shapes.Remove(boundaryCubeShapeIndex);
             staticHandles.Clear();
         }
 
