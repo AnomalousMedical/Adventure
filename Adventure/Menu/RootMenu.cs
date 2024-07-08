@@ -180,7 +180,7 @@ class RootMenu
             infos = null;
             explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
         }
-        else if(sharpGui.Button(feedback, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
+        else if(sharpGui.Button(feedback, gamepad, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
         {
             coroutineRunner.RunTask(async () =>
             {
