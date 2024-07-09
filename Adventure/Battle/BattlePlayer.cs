@@ -162,7 +162,7 @@ namespace Adventure.Battle
             CharacterStyleService characterStyleService)
         {
             this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
-            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger });
+            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger }) { Pad = description.Gamepad };
             eventManager.addEvent(contextTriggerKeyboard);
             eventManager.addEvent(contextTriggerJoystick);
 
