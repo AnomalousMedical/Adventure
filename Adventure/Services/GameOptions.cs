@@ -37,6 +37,11 @@ namespace Adventure.Services
         public uint PresentInterval { get; set; } = 1;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool Debug { get; set; } = false;
+        public bool Debug { get; set; } =
+            #if RELEASE
+                false;
+            #else
+                true;
+            #endif
     }
 }
