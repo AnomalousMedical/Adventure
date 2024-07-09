@@ -21,15 +21,22 @@ class MultiCameraMoverEntry
 
 class MultiCameraMover<T>
 (
+    MultiCameraMover<T>.Description description,
     CameraMover cameraMover,
     IBepuScene<T> bepuScene,
     ICollidableTypeIdentifier<T> collidableIdentifier
 )
 {
+    public class Description
+    {
+        public Vector3 cameraOffset = new Vector3(0, 4, -12);
+        public Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 10f);
+    }
+
     private List<MultiCameraMoverEntry> entries = new List<MultiCameraMoverEntry>();
 
-    private Vector3 cameraOffset = new Vector3(0, 4, -12);
-    private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 10f);
+    private Vector3 cameraOffset = description.cameraOffset;
+    private Quaternion cameraAngle = description.cameraAngle;
 
     public void Add(MultiCameraMoverEntry entry)
     {

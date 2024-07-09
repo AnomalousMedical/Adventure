@@ -34,7 +34,9 @@ class WorldMapGameState
     BuffManager buffManager,
     TypedLightManager<WorldMapScene> typedLightManager,
     CharacterMenuPositionService characterMenuPositionService,
-    IAnimationService<WorldMapScene> animationService
+    IAnimationService<WorldMapScene> animationService,
+    MultiCameraMover<WorldMapScene> multiCameraMover,
+    PlayerCage<WorldMapScene> playerCage
 ) : IWorldMapGameState
 {
     private IGameState startExplorationGameState;
@@ -98,6 +100,11 @@ class WorldMapGameState
             if (worldMapManager.PhysicsActive)
             {
                 bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
+                if (!persistence.Current.Player.InAirship)
+                {
+                    multiCameraMover.Update();
+                }
+                playerCage.Update();
             }
             worldMapManager.Update(clock);
             contextMenu.Update();

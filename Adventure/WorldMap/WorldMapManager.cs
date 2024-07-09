@@ -33,6 +33,7 @@ namespace Adventure.WorldMap
         private readonly Party party;
         private readonly PartyMemberManager partyMemberManager;
         private readonly Persistence persistence;
+        private readonly MultiCameraMover<WorldMapScene> multiCameraMover;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer[] players = new WorldMapPlayer[4];
@@ -45,7 +46,8 @@ namespace Adventure.WorldMap
             IBepuScene<WorldMapScene> bepuScene, //Inject this here so it is created earlier and destroyed later
             Party party,
             PartyMemberManager partyMemberManager,
-            Persistence persistence
+            Persistence persistence,
+            MultiCameraMover<WorldMapScene> multiCameraMover
         )
         {
             this.objectResolver = objectResolverFactory.Create();
@@ -53,6 +55,7 @@ namespace Adventure.WorldMap
             this.party = party;
             this.partyMemberManager = partyMemberManager;
             this.persistence = persistence;
+            this.multiCameraMover = multiCameraMover;
             this.bepuScene = bepuScene;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
@@ -111,11 +114,14 @@ namespace Adventure.WorldMap
 
         public void CenterCamera()
         {
-            foreach (var player in players)
+            if (persistence.Current.Player.InAirship)
             {
-                player?.CenterCamera();
+                airship.CenterCamera();
             }
-            airship.CenterCamera();
+            else
+            {
+                multiCameraMover.CenterCamera();
+            }
         }
 
         public async Task SetupWorldMap()
@@ -185,6 +191,11 @@ namespace Adventure.WorldMap
                         players[i] = null;
                     }
                 }
+            }
+
+            if(persistence.Current.Player.InWorld && !persistence.Current.Player.InAirship)
+            {
+                multiCameraMover.CenterCamera();
             }
         }
 

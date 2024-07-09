@@ -277,6 +277,7 @@ namespace Adventure
             services.AddSingleton<EarthquakeMenu>();
             services.AddSingleton<HelpMenu>();
             services.AddSingleton<PlayerCage<ZoneScene>>();
+            services.AddSingleton<PlayerCage<WorldMapScene>>();
 
             services.AddSingleton<ICharacterMenuPositionTracker<ZoneScene>, CharacterMenuPositionTracker<ZoneScene>>();
             services.AddSingleton<ICharacterMenuPositionTracker<WorldMapScene>>(s => s.GetRequiredService<WrappingCharacterMenuPositionTracker<WorldMapScene>>());
@@ -287,6 +288,13 @@ namespace Adventure
             services.AddSingleton<FontLoader>();
             services.AddSingleton<IVictoryGameState, VictoryGameState>();
             services.AddSingleton<MultiCameraMover<ZoneScene>>();
+            services.AddSingleton<MultiCameraMover<ZoneScene>.Description>(new MultiCameraMover<ZoneScene>.Description());
+            services.AddSingleton<MultiCameraMover<WorldMapScene>>();
+            services.AddSingleton<MultiCameraMover<WorldMapScene>.Description>(new MultiCameraMover<WorldMapScene>.Description() 
+            {
+                cameraOffset = new Vector3(0, 3, -12),
+                cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 15f) 
+            });
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();

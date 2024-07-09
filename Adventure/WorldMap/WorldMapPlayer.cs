@@ -44,13 +44,14 @@ namespace Adventure.WorldMap
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private readonly EventManager eventManager;
-        private readonly CameraMover cameraMover;
         private readonly ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
         private readonly ICharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
+        private readonly MultiCameraMover<WorldMapScene> multiCameraMover;
+        private readonly PlayerCage<WorldMapScene> playerCage;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
@@ -74,6 +75,8 @@ namespace Adventure.WorldMap
         private int secondaryHand;
         private GamepadId gamepadId;
         private bool allowJoystickInput = true;
+        private MultiCameraMoverEntry multiCameraMoverEntry;
+        private PlayerCageEntry playerCageEntry;
 
         ButtonEvent moveForward;
         ButtonEvent moveBackward;
@@ -81,9 +84,7 @@ namespace Adventure.WorldMap
         ButtonEvent moveLeft;
 
         private bool disposed;
-        private Vector3 cameraOffset = new Vector3(0, 3, -12);
         private Vector3 zoomedCameraOffset = new Vector3(0f, 1.7f * 0.35f, -2.8f * 0.35f);
-        private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 15f);
         private Quaternion zoomedCameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 10f);
 
         private Vector3 currentPosition;
@@ -116,13 +117,14 @@ namespace Adventure.WorldMap
             IBepuScene<WorldMapScene> bepuScene,
             EventManager eventManager,
             Description description,
-            CameraMover cameraMover,
             ICollidableTypeIdentifier<WorldMapScene> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
             ICharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker,
-            IExplorationMenu explorationMenu
+            IExplorationMenu explorationMenu,
+            MultiCameraMover<WorldMapScene> multiCameraMover,
+            PlayerCage<WorldMapScene> playerCage
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -131,6 +133,8 @@ namespace Adventure.WorldMap
             this.followerManager = followerManager;
             this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.explorationMenu = explorationMenu;
+            this.multiCameraMover = multiCameraMover;
+            this.playerCage = playerCage;
             this.followerManager.CharacterDistance = this.followerManager.CharacterDistance * description.Scale.x;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
@@ -169,7 +173,6 @@ namespace Adventure.WorldMap
             this.bepuScene = bepuScene;
             this.bepuScene.OnUpdated += BepuScene_OnUpdated;
             this.eventManager = eventManager;
-            this.cameraMover = cameraMover;
             this.collidableIdentifier = collidableIdentifier;
             this.persistence = persistence;
             this.assetFactory = assetFactory;
@@ -180,6 +183,19 @@ namespace Adventure.WorldMap
             this.currentPosition = startPos;
             this.currentOrientation = description.Orientation;
             this.currentScale = scale;
+
+            multiCameraMoverEntry = new MultiCameraMoverEntry()
+            {
+                Position = currentPosition,
+                SpeedOffset = Vector3.Zero,
+            };
+            multiCameraMover.Add(multiCameraMoverEntry);
+
+            playerCageEntry = new PlayerCageEntry()
+            {
+                Position = currentPosition
+            };
+            playerCage.Add(playerCageEntry);
 
             OnMainHandModified(characterSheet);
             OnOffHandModified(characterSheet);
@@ -212,10 +228,9 @@ namespace Adventure.WorldMap
             characterMover = bepuScene.CreateCharacterMover(bodyDesc, moverDesc);
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             collidableIdentifier.AddIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle), this);
-            if (!persistence.Current.Player.InAirship && persistence.Current.Player.InWorld)
-            {
-                cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
-            }
+            ref var collisionFilter = ref bepuScene.CollisionFilters.Allocate(characterMover.BodyHandle); //Still not sure this doesn't leak, but no demos show a deallocate call
+            collisionFilter = new SubgroupCollisionFilter(10, 0);
+            collisionFilter.DisableCollision(0);
 
             characterMenuPositionEntry = new CharacterMenuPositionEntry(() => this.currentPosition + zoomedCameraOffset, () => this.zoomedCameraAngle, () =>
             {
@@ -271,6 +286,8 @@ namespace Adventure.WorldMap
             SetGraphicsActive(false);
             characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
             objectResolver.Dispose();
+            multiCameraMover.Remove(multiCameraMoverEntry);
+            playerCage.Remove(playerCageEntry);
         }
 
         public void SetGraphicsActive(bool active)
@@ -313,14 +330,6 @@ namespace Adventure.WorldMap
             this.followerManager.LineUpBehindLeader(this.currentPosition);
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             Sprite_FrameChanged(sprite);
-        }
-
-        public void CenterCamera()
-        {
-            if (!persistence.Current.Player.InAirship)
-            {
-                cameraMover.SetPosition(this.currentPosition + this.cameraOffset, cameraAngle);
-            }
         }
 
         public void StopMovement()
@@ -469,7 +478,8 @@ namespace Adventure.WorldMap
             this.characterMover.SetVelocity(new System.Numerics.Vector3(0f, 0f, 0f));
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
-            cameraMover.SetPosition(this.currentPosition + cameraOffset, cameraAngle);
+            multiCameraMoverEntry.Position = this.currentPosition;
+            playerCageEntry.Position = this.currentPosition;
             this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             Sprite_FrameChanged(sprite);
@@ -527,9 +537,10 @@ namespace Adventure.WorldMap
             }
             this.movementDir = movementDir;
 
-            var speedOffset = characterMover.LinearVelocity / characterMover.speed;
-            speedOffset.y = 0;
-            cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset + speedOffset * 0.55f, cameraAngle);
+
+            multiCameraMoverEntry.Position = this.currentPosition;
+            multiCameraMoverEntry.SpeedOffset = characterMover.LinearVelocity / characterMover.speed;
+            playerCageEntry.Position = this.currentPosition;
         }
 
         private void SetCurrentAnimation(string name)
