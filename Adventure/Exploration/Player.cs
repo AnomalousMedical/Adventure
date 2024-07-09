@@ -50,6 +50,7 @@ namespace Adventure
         private readonly ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
         private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
+        private readonly PlayerCage<ZoneScene> playerCage;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
@@ -74,6 +75,7 @@ namespace Adventure
         private GamepadId gamepadId;
         private bool allowJoystickInput = true;
         private MultiCameraMoverEntry multiCameraMoverEntry;
+        private PlayerCageEntry playerCageEntry;
 
         ButtonEvent moveForward;
         ButtonEvent moveBackward;
@@ -119,7 +121,8 @@ namespace Adventure
             FollowerManager followerManager,
             ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu,
-            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover
+            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover,
+            PlayerCage<ZoneScene> playerCage
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -129,6 +132,7 @@ namespace Adventure
             this.characterMenuPositionTracker = characterMenuPositionTracker;
             this.explorationMenu = explorationMenu;
             this.multiCameraMover = multiCameraMover;
+            this.playerCage = playerCage;
             this.characterSheet = description.CharacterSheet;
             this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
             this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
@@ -187,6 +191,12 @@ namespace Adventure
                 SpeedOffset = Vector3.Zero,
             };
             multiCameraMover.Add(multiCameraMoverEntry);
+
+            playerCageEntry = new PlayerCageEntry()
+            {
+                Position = currentPosition
+            };
+            playerCage.Add(playerCageEntry);
 
             this.tlasData = new TLASInstanceData()
             {
@@ -280,6 +290,7 @@ namespace Adventure
             objectResolver.Dispose();
             characterMenuPositionTracker.Remove(characterSheet, characterMenuPositionEntry);
             multiCameraMover.Remove(multiCameraMoverEntry);
+            playerCage.Remove(playerCageEntry);
         }
 
         public void StopMovement()
@@ -429,6 +440,7 @@ namespace Adventure
             bepuScene.AddToInterpolation(characterMover.BodyHandle);
             this.currentPosition = finalLoc;
             multiCameraMoverEntry.Position = this.currentPosition;
+            playerCageEntry.Position = this.currentPosition;
             this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
             this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
             this.followerManager.LineUpBehindLeader(this.currentPosition, alignment);
@@ -486,6 +498,7 @@ namespace Adventure
                 bepuScene.AddToInterpolation(characterMover.BodyHandle);
                 this.currentPosition = location.Value;
                 multiCameraMoverEntry.Position = this.currentPosition;
+                playerCageEntry.Position = this.currentPosition;
                 this.persistence.Current.Player.Position[(int)gamepadId] = this.currentPosition;
                 this.tlasData.Transform = new InstanceMatrix(this.currentPosition, this.currentOrientation, this.currentScale);
                 this.followerManager.LeaderMoved(this.currentPosition, IsMoving);
@@ -552,6 +565,7 @@ namespace Adventure
 
             multiCameraMoverEntry.Position = currentPosition;
             multiCameraMoverEntry.SpeedOffset = characterMover.LinearVelocity / characterMover.speed;
+            playerCageEntry.Position = this.currentPosition;
         }
 
         private void SetCurrentAnimation(string name)

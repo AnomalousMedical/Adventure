@@ -52,6 +52,7 @@ namespace Adventure
         private readonly FadeScreenMenu fadeScreenMenu;
         private readonly IVictoryGameState victoryGameState;
         private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
+        private readonly PlayerCage<ZoneScene> playerCage;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
         private IGameState nextState; //This is changed per update to be the next game state
@@ -80,7 +81,8 @@ namespace Adventure
             IScopedCoroutine coroutine,
             FadeScreenMenu fadeScreenMenu,
             IVictoryGameState victoryGameState,
-            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover
+            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover,
+            PlayerCage<ZoneScene> playerCage
         )
         {
             this.bepuScene = bepuScene;
@@ -103,6 +105,7 @@ namespace Adventure
             this.fadeScreenMenu = fadeScreenMenu;
             this.victoryGameState = victoryGameState;
             this.multiCameraMover = multiCameraMover;
+            this.playerCage = playerCage;
         }
 
         public void Dispose()
@@ -197,6 +200,7 @@ namespace Adventure
                     bepuScene.Update(clock, new System.Numerics.Vector3(0, 0, 1));
                     zoneManager.Update();
                     multiCameraMover.Update();
+                    playerCage.Update();
                 }
                 contextMenu.Update();
             }
