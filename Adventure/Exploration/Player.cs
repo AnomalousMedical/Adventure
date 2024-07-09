@@ -566,7 +566,7 @@ namespace Adventure
             this.movementDir = movementDir;
 
             multiCameraMoverEntry.Position = currentPosition;
-            multiCameraMoverEntry.SpeedOffset = characterMover.LinearVelocity / characterMover.speed;
+            multiCameraMoverEntry.SpeedOffset = (characterMover.LinearVelocity / characterMover.speed) * 1.15f;
             playerCageEntry.Position = this.currentPosition;
         }
 

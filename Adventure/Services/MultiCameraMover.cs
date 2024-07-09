@@ -66,7 +66,7 @@ class MultiCameraMover<T>
         speedOffset /= entries.Count;
 
         speedOffset.y = 0;
-        var camPos = currentPosition + cameraOffset + speedOffset * 1.15f;
+        var camPos = currentPosition + cameraOffset + speedOffset;
         var rayAdjust = FindCameraTerrainOffset(camPos, (currentPosition - camPos).normalized());
         cameraMover.SetInterpolatedGoalPosition(camPos + rayAdjust, cameraAngle);
     }

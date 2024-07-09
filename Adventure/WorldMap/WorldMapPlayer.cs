@@ -539,7 +539,7 @@ namespace Adventure.WorldMap
 
 
             multiCameraMoverEntry.Position = this.currentPosition;
-            multiCameraMoverEntry.SpeedOffset = characterMover.LinearVelocity / characterMover.speed;
+            multiCameraMoverEntry.SpeedOffset = (characterMover.LinearVelocity / characterMover.speed) * 0.55f;
             playerCageEntry.Position = this.currentPosition;
         }
 
