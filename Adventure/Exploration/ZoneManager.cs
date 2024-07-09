@@ -255,6 +255,8 @@ namespace Adventure
                 }
                 else
                 {
+                    //Despawning a player so clear its location
+                    persistence.Current.Player.Position[i] = null;
                     if (players[i] != null)
                     {
                         players[i].RequestDestruction();

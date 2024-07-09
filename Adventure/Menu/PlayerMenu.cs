@@ -72,6 +72,7 @@ namespace Adventure.Menu
                 if (sharpGui.Button(buttons[0], gamepadId, navUp: back.Id, navDown: buttons[1].Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 0;
+                    EnsurePosition(0);
                     selectedCharacter = NoSelectedCharacter;
                     zoneManager.ManagePlayers();
                 }
@@ -79,6 +80,7 @@ namespace Adventure.Menu
                 if (sharpGui.Button(buttons[1], gamepadId, navUp: buttons[0].Id, navDown: buttons[2].Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 1;
+                    EnsurePosition(1);
                     selectedCharacter = NoSelectedCharacter;
                     zoneManager.ManagePlayers();
                 }
@@ -86,6 +88,7 @@ namespace Adventure.Menu
                 if (sharpGui.Button(buttons[2], gamepadId, navUp: buttons[1].Id, navDown: buttons[3].Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 2;
+                    EnsurePosition(2);
                     selectedCharacter = NoSelectedCharacter;
                     zoneManager.ManagePlayers();
                 }
@@ -93,6 +96,7 @@ namespace Adventure.Menu
                 if (sharpGui.Button(buttons[3], gamepadId, navUp: buttons[2].Id, navDown: back.Id))
                 {
                     persistence.Current.Party.Members[selectedCharacter].Player = 3;
+                    EnsurePosition(3);
                     selectedCharacter = NoSelectedCharacter;
                     zoneManager.ManagePlayers();
                 }
@@ -150,6 +154,14 @@ namespace Adventure.Menu
                 {
                     menu.RequestSubMenu(PreviousMenu, gamepadId);
                 }
+            }
+        }
+
+        private void EnsurePosition(int index)
+        {
+            if (persistence.Current.Player.Position[index] == null)
+            {
+                persistence.Current.Player.Position[index] = persistence.Current.Player.Position.FirstOrDefault(i => i != null);
             }
         }
     }
