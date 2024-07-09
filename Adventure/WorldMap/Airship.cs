@@ -334,6 +334,7 @@ namespace Adventure.WorldMap
             {
                 if (!active)
                 {
+                    gamepadId = args?.GamepadId ?? GamepadId.Pad1;
                     persistence.Current.Player.InAirship = true;
                     contextMenu.ClearContext(TakeOff);
                     eventLayer.makeFocusLayer();
