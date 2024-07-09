@@ -23,6 +23,7 @@ namespace Adventure.WorldMap
         void CenterCamera();
         Vector3 GetCellCenterpoint(in IntVector2 cell);
         void MakePlayerIdle();
+        void CreatePlayersAndFollowers();
     }
 
     class WorldMapManager : IDisposable, IWorldMapManager
@@ -31,9 +32,10 @@ namespace Adventure.WorldMap
         private readonly IWorldDatabase worldDatabase;
         private readonly Party party;
         private readonly PartyMemberManager partyMemberManager;
+        private readonly Persistence persistence;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private WorldMapInstance worldMapInstance;
-        private WorldMapPlayer player;
+        private WorldMapPlayer[] players = new WorldMapPlayer[4];
         private Airship airship;
 
         public WorldMapManager
@@ -42,13 +44,15 @@ namespace Adventure.WorldMap
             IWorldDatabase worldDatabase,
             IBepuScene<WorldMapScene> bepuScene, //Inject this here so it is created earlier and destroyed later
             Party party,
-            PartyMemberManager partyMemberManager
+            PartyMemberManager partyMemberManager,
+            Persistence persistence
         )
         {
             this.objectResolver = objectResolverFactory.Create();
             this.worldDatabase = worldDatabase;
             this.party = party;
             this.partyMemberManager = partyMemberManager;
+            this.persistence = persistence;
             this.bepuScene = bepuScene;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
@@ -79,30 +83,48 @@ namespace Adventure.WorldMap
 
         public void MovePlayer(in Vector3 loc)
         {
-            player.SetLocation(loc);
-            MakePlayerIdle();
+            foreach(var player in players)
+            {
+                if(player != null)
+                {
+                    player.SetLocation(loc);
+                    player.MakeIdle();
+                }
+            }
         }
 
         public void MakePlayerIdle()
         {
-            player.MakeIdle();
+            foreach (var player in players)
+            {
+                player?.MakeIdle();
+            }
         }
 
         public void SetPlayerVisible(bool visible)
         {
-            player?.SetGraphicsActive(visible);
+            foreach (var player in players)
+            {
+                player?.SetGraphicsActive(visible);
+            }
         }
 
         public void CenterCamera()
         {
-            player.CenterCamera();
+            foreach (var player in players)
+            {
+                player?.CenterCamera();
+            }
             airship.CenterCamera();
         }
 
         public async Task SetupWorldMap()
         {
-            player?.RequestDestruction();
-            player = null;
+            for(int i = 0; i < players.Length; ++i)
+            {
+                players[i]?.RequestDestruction();
+                players[i] = null;
+            }
             worldMapInstance?.RequestDestruction();
             airship?.RequestDestruction();
 
@@ -126,22 +148,43 @@ namespace Adventure.WorldMap
             worldMapInstance.SetupPhysics();
         }
 
-        private void CreatePlayersAndFollowers()
+        public void CreatePlayersAndFollowers()
         {
-            if (party.ActiveCharacters.Any())
+            for (int i = 0; i < players.Length; i++)
             {
-                if (player == null)
+                var currentPlayerCharacters = party.ActiveCharacters.Where(c => c.Player == i);
+                var playerCharacter = currentPlayerCharacters.FirstOrDefault();
+                if (playerCharacter != null)
                 {
-                    var playerCharacter = party.ActiveCharacters.FirstOrDefault();
-                    player = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
+                    //Is the player now a new character? If so delete the current instance
+                    if (players[i] != null && players[i].CharacterSheet != playerCharacter.CharacterSheet)
                     {
-                        o.PlayerSprite = playerCharacter.PlayerSprite;
-                        o.CharacterSheet = playerCharacter.CharacterSheet;
-                        o.Gamepad = GamepadId.Pad1;
-                    });
-                }
+                        players[i].RequestDestruction();
+                        players[i] = null;
+                    }
 
-                player?.CreateFollowers(party.ActiveCharacters.Skip(1));
+                    if (players[i] == null)
+                    {
+                        players[i] = objectResolver.Resolve<WorldMapPlayer, WorldMapPlayer.Description>(o =>
+                        {
+                            o.PlayerSprite = playerCharacter.PlayerSprite;
+                            o.CharacterSheet = playerCharacter.CharacterSheet;
+                            o.Gamepad = (GamepadId)i;
+                        });
+                    }
+
+                    players[i].CreateFollowers(currentPlayerCharacters.Skip(1));
+                }
+                else
+                {
+                    //Despawning a player so clear its location
+                    persistence.Current.Player.WorldPosition[i] = null;
+                    if (players[i] != null)
+                    {
+                        players[i].RequestDestruction();
+                        players[i] = null;
+                    }
+                }
             }
         }
 

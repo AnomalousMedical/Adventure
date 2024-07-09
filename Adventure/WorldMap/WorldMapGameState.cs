@@ -5,6 +5,7 @@ using BepuPlugin;
 using DiligentEngine.RT;
 using Engine.Platform;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Adventure.WorldMap;
@@ -55,7 +56,7 @@ class WorldMapGameState
             eventManager[EventLayers.WorldMap].makeFocusLayer();
             nextState = this;
             persistence.Current.BattleTriggers.ClearData();
-            if (persistence.Current.Player.WorldPosition[0] == null)
+            if (persistence.Current.Player.WorldPosition.All(i => i == null))
             {
                 worldMapManager.MovePlayerToArea(persistence.Current.Player.LastArea);
             }

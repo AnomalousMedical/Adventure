@@ -97,6 +97,8 @@ namespace Adventure.WorldMap
         public bool IsMoving => !(movementDir.X < MovingBoundary && movementDir.X > -MovingBoundary
                              && movementDir.Y < MovingBoundary && movementDir.Y > -MovingBoundary);
 
+        public CharacterSheet CharacterSheet => characterSheet;
+
         public record struct PersistedData
         {
             public Vector3? Location { get; set; }
