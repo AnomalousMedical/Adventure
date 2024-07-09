@@ -737,6 +737,7 @@ namespace Adventure.Services
                 areaBuilder.Alignment = Zone.Alignment.SouthNorth;
                 areaBuilder.Location = GetUnusedSquare(usedSquares, island, placementRandom);
                 areaBuilder.IsFinalArea = true;
+                areaBuilder.NumEmptyRooms = 5;
 
                 //You get all the monsters in this zone
                 areaBuilder.Monsters = monsterInfo;

@@ -177,6 +177,8 @@ namespace Adventure
             public Alignment Alignment { get; set; } = Alignment.WestEast;
 
             public bool IsFinalZone { get; set; }
+
+            public int NumEmptyRooms { get; set; }
         }
 
         private readonly RTInstances<ZoneScene> rtInstances;
@@ -390,9 +392,13 @@ namespace Adventure
                     sw.Start();
 
                     csMapbuilder mapBuilder;
-                    
+
                     //Figure out how many rooms would be created ideally
-                    var desiredNumRooms = description.Treasure.Count();
+                    var desiredNumRooms = description.NumEmptyRooms;
+                    if(description.Treasure != null)
+                    {
+                        desiredNumRooms += description.Treasure.Count();
+                    }
                     if (description.MakeRest)
                     {
                         desiredNumRooms++;
