@@ -105,6 +105,8 @@ namespace Adventure
 
         private CharacterMenuPositionEntry characterMenuPositionEntry;
 
+        public CharacterSheet CharacterSheet => characterSheet;
+
         public Player
         (
             RTInstances<ZoneScene> rtInstances,

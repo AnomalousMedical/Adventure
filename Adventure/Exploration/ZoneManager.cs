@@ -233,6 +233,13 @@ namespace Adventure
                 var playerCharacter = currentPlayerCharacters.FirstOrDefault();
                 if (playerCharacter != null)
                 {
+                    //Is the player now a new character? If so delete the current instance
+                    if (players[i] != null && players[i].CharacterSheet != playerCharacter.CharacterSheet)
+                    {
+                        players[i].RequestDestruction();
+                        players[i] = null;
+                    }
+
                     if (players[i] == null)
                     {
                         players[i] = this.objectResolver.Resolve<Player, Player.Description>(c =>
