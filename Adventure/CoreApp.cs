@@ -277,7 +277,12 @@ namespace Adventure
             services.AddSingleton<EarthquakeMenu>();
             services.AddSingleton<HelpMenu>();
             services.AddSingleton<PlayerCage<ZoneScene>>();
+            services.AddSingleton<PlayerCage<ZoneScene>.Description>(new PlayerCage<ZoneScene>.Description());
             services.AddSingleton<PlayerCage<WorldMapScene>>();
+            services.AddSingleton<PlayerCage<WorldMapScene>.Description>(new PlayerCage<WorldMapScene>.Description()
+            {
+                PlayerAreaSize = 3.0f
+            });
 
             services.AddSingleton<ICharacterMenuPositionTracker<ZoneScene>, CharacterMenuPositionTracker<ZoneScene>>();
             services.AddSingleton<ICharacterMenuPositionTracker<WorldMapScene>>(s => s.GetRequiredService<WrappingCharacterMenuPositionTracker<WorldMapScene>>());

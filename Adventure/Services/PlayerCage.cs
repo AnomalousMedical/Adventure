@@ -36,27 +36,33 @@ class PlayerCage<T> : IDisposable
 
     private readonly IBepuScene<T> bepuScene;
 
-    private const float BoxSize = 300f;
-    private const float HalfBoxSize = BoxSize / 2f;
-    private const float PlayerAreaSize = 6.0f;
+    public class Description
+    {
+        public float BoxSize = 300f;
+        public float PlayerAreaSize = 6.0f;
+    }
 
-    public PlayerCage(IBepuScene<T> bepuScene)
+    public PlayerCage(IBepuScene<T> bepuScene, Description description)
     {
         this.bepuScene = bepuScene;
-        var shape = new Box(BoxSize, 1000f, BoxSize); //Each character creates a shape, try to load from resources somehow
+
+        var playerAreaSize = description.PlayerAreaSize;
+        var boxSize = description.BoxSize;
+        var halfBoxSize = boxSize / 2f;
+        var shape = new Box(boxSize, 1000f, boxSize); //Each character creates a shape, try to load from resources somehow
         boxShapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
         left = bepuScene.Simulation.Bodies.Add(BodyDescription.CreateKinematic(new System.Numerics.Vector3(0f, 0f, 0f), boxShapeIndex, -1000f));
-        leftOffset = new Vector3(-HalfBoxSize - PlayerAreaSize, 0f, 0f);
+        leftOffset = new Vector3(-halfBoxSize - playerAreaSize, 0f, 0f);
 
         right = bepuScene.Simulation.Bodies.Add(BodyDescription.CreateKinematic(new System.Numerics.Vector3(0f, 0f, 0f), boxShapeIndex, -1000f));
-        rightOffset = new Vector3(HalfBoxSize + PlayerAreaSize, 0f, 0f);
+        rightOffset = new Vector3(halfBoxSize + playerAreaSize, 0f, 0f);
 
         far = bepuScene.Simulation.Bodies.Add(BodyDescription.CreateKinematic(new System.Numerics.Vector3(0f, 0f, 0f), boxShapeIndex, -1000f));
-        farOffset = new Vector3(0f, 0f, HalfBoxSize + PlayerAreaSize);
+        farOffset = new Vector3(0f, 0f, halfBoxSize + playerAreaSize);
 
         near = bepuScene.Simulation.Bodies.Add(BodyDescription.CreateKinematic(new System.Numerics.Vector3(0f, 0f, 0f), boxShapeIndex, -1000f));
-        nearOffset = new Vector3(0f, 0f, -HalfBoxSize - PlayerAreaSize);
+        nearOffset = new Vector3(0f, 0f, -halfBoxSize - playerAreaSize);
     }
 
     public void Dispose()
