@@ -38,7 +38,7 @@ namespace Adventure
         private readonly IContextMenu contextMenu;
         private readonly RestManager restManager;
         private readonly IExplorationGameState explorationGameState;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -65,7 +65,7 @@ namespace Adventure
             IContextMenu contextMenu,
             RestManager restManager,
             IExplorationGameState explorationGameState,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier
         )
         {
             this.sprite = description.Sprite;

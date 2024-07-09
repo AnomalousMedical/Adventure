@@ -46,7 +46,7 @@ namespace Adventure
         private readonly Sky sky;
         private readonly PartyMemberManager partyMemberManager;
         private readonly IGcService gcService;
-        private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
+        private readonly MultiCameraMover<ZoneScene> multiCameraMover;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -63,7 +63,7 @@ namespace Adventure
             Sky sky,
             PartyMemberManager partyMemberManager,
             IGcService gcService,
-            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover
+            MultiCameraMover<ZoneScene> multiCameraMover
         )
         {
             objectResolver = objectResolverFactory.Create();

@@ -51,7 +51,7 @@ namespace Adventure
         private readonly IScopedCoroutine coroutine;
         private readonly FadeScreenMenu fadeScreenMenu;
         private readonly IVictoryGameState victoryGameState;
-        private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
+        private readonly MultiCameraMover<ZoneScene> multiCameraMover;
         private readonly PlayerCage<ZoneScene> playerCage;
         private IBattleGameState battleState;
         private IWorldMapGameState worldMapState;
@@ -81,7 +81,7 @@ namespace Adventure
             IScopedCoroutine coroutine,
             FadeScreenMenu fadeScreenMenu,
             IVictoryGameState victoryGameState,
-            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover,
+            MultiCameraMover<ZoneScene> multiCameraMover,
             PlayerCage<ZoneScene> playerCage
         )
         {

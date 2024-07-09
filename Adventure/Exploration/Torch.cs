@@ -38,7 +38,7 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly IExplorationGameState explorationGameState;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly TypedLightManager<ZoneScene> lightManager;
         private readonly TextDialog textDialog;
@@ -71,7 +71,7 @@ namespace Adventure
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
             IExplorationGameState explorationGameState,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             Persistence persistence,
             TypedLightManager<ZoneScene> lightManager,
             TextDialog textDialog

@@ -19,11 +19,11 @@ class MultiCameraMoverEntry
     public Vector3 SpeedOffset;
 }
 
-class MultiCameraMover<T, CollideT>
+class MultiCameraMover<T>
 (
     CameraMover cameraMover,
     IBepuScene<T> bepuScene,
-    ICollidableTypeIdentifier<CollideT> collidableIdentifier
+    ICollidableTypeIdentifier<T> collidableIdentifier
 )
 {
     private List<MultiCameraMoverEntry> entries = new List<MultiCameraMoverEntry>();

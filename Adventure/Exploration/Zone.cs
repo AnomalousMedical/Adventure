@@ -183,7 +183,7 @@ namespace Adventure
         private readonly RayTracingRenderer renderer;
         private readonly Persistence persistence;
         private readonly NoiseTextureManager noiseTextureManager;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly IDestructionRequest destructionRequest;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly TextureManager textureManager;
@@ -291,7 +291,7 @@ namespace Adventure
             Persistence persistence,
             NoiseTextureManager noiseTextureManager,
             TerrainNoise terrainNoise,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier
         )
         {
             this.isFinalZone = description.IsFinalZone;

@@ -50,7 +50,7 @@ namespace Adventure
         private readonly TLASInstanceData tlasData;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly Description description;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
         private readonly Persistence persistence;
         private readonly Vector3 mapOffset;
@@ -80,7 +80,7 @@ namespace Adventure
             IScopedCoroutine coroutine,
             IBepuScene<ZoneScene> bepuScene,
             Description description,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IExplorationGameState explorationGameState,
             Persistence persistence)

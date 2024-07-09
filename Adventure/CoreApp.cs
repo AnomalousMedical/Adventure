@@ -214,7 +214,7 @@ namespace Adventure
             services.AddSingleton<IBiomeManager, BiomeManager>();
             services.AddSingleton<IGameStateLinker, GameStateLinker>();
             services.AddSingleton<CameraMover>();
-            services.AddSingleton<ICollidableTypeIdentifier<IExplorationGameState>, CollidableTypeIdentifier<IExplorationGameState>>();
+            services.AddSingleton<ICollidableTypeIdentifier<ZoneScene>, CollidableTypeIdentifier<ZoneScene>>();
             services.AddSingleton<ICollidableTypeIdentifier<WorldMapScene>, CollidableTypeIdentifier<WorldMapScene>>();
             services.AddSingleton<IBackgroundMusicPlayer, BackgroundMusicPlayer>();
             services.AddSingleton<ICameraProjector, CameraProjector>();
@@ -286,7 +286,7 @@ namespace Adventure
             services.AddSingleton<UserInputMenu>();
             services.AddSingleton<FontLoader>();
             services.AddSingleton<IVictoryGameState, VictoryGameState>();
-            services.AddSingleton<MultiCameraMover<ZoneScene, IExplorationGameState>>();
+            services.AddSingleton<MultiCameraMover<ZoneScene>>();
 
             //Add Item Actions
             services.AddTransient<EquipMainHand>();

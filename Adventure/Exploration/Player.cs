@@ -43,13 +43,13 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly EventManager eventManager;
-        private readonly ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier;
+        private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly Persistence persistence;
         private readonly IAssetFactory assetFactory;
         private readonly FollowerManager followerManager;
         private readonly ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker;
         private readonly IExplorationMenu explorationMenu;
-        private readonly MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover;
+        private readonly MultiCameraMover<ZoneScene> multiCameraMover;
         private readonly PlayerCage<ZoneScene> playerCage;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
@@ -117,13 +117,13 @@ namespace Adventure
             IBepuScene<ZoneScene> bepuScene,
             EventManager eventManager,
             Description description,
-            ICollidableTypeIdentifier<IExplorationGameState> collidableIdentifier,
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             Persistence persistence,
             IAssetFactory assetFactory,
             FollowerManager followerManager,
             ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu,
-            MultiCameraMover<ZoneScene, IExplorationGameState> multiCameraMover,
+            MultiCameraMover<ZoneScene> multiCameraMover,
             PlayerCage<ZoneScene> playerCage
         )
         {
