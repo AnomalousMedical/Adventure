@@ -164,7 +164,7 @@ namespace Adventure.Menu
             sharpGui.Panel(panel);
             sharpGui.Text(text);
 
-            if (sharpGui.Button(nextButton) || sharpGui.IsStandardNextPressed(gamepadId))
+            if (sharpGui.Button(nextButton, gamepadId) || sharpGui.IsStandardNextPressed(gamepadId))
             {
                 if (!UpdateText())
                 {
