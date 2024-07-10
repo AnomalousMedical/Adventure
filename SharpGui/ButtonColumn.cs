@@ -42,7 +42,12 @@ namespace SharpGui
             }
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
-            layout.SetRect(GetLayoutPosition(desiredSize));
+            var layoutRect = GetLayoutPosition(desiredSize);
+            if(layoutRect.Bottom > Bottom)
+            {
+                layoutRect.Height = Bottom - layoutRect.Top;
+            }
+            layout.SetRect(layoutRect);
 
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
