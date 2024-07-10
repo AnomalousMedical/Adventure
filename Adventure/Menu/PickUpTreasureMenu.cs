@@ -51,6 +51,10 @@ class PickUpTreasureMenu
     private bool equippingItem = false;
     private DateTime allowPickupTime;
     private List<ButtonColumnItem<Action>> characterChoices = null;
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpPanel infoPanel = new SharpPanel();
+    private SharpPanel characterPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0x55020202) };
 
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
     private ButtonColumn characterButtons = new ButtonColumn(5, ChooseTargetLayer);
@@ -154,14 +158,14 @@ class PickUpTreasureMenu
 
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(infoPanel,
            new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
         layout =
             new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-            new MaxWidthLayout(scaleHelper.Scaled(600),
+            new PanelLayout(descriptionPanel,
             new ColumnLayout(descriptions)
             {
                 Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
@@ -190,47 +194,44 @@ class PickUpTreasureMenu
         if (equippingItem)
         {
             layout =
-              new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-              new MaxWidthLayout(scaleHelper.Scaled(600),
               new ColumnLayout(
-                  new CenterHorizontalLayout(currentCharacter),
-                  new CenterHorizontalLayout(inventoryInfo),
-                  new CenterHorizontalLayout(itemInfo),
+                  new PanelLayout(characterPanel, new ColumnLayout(
+                      new CenterHorizontalLayout(currentCharacter),
+                      new CenterHorizontalLayout(inventoryInfo),
+                      new CenterHorizontalLayout(itemInfo))
+                  { Margin = new IntPad(scaleHelper.Scaled(10)) }),
                   new CenterHorizontalLayout(equip),
                   new CenterHorizontalLayout(continueButton))
-              { Margin = new IntPad(scaleHelper.Scaled(10)) }
-            ));
+              { Margin = new IntPad(scaleHelper.Scaled(10)) };
         }
         else
         {
             if (treasure.CanUseOnPickup)
             {
                 layout =
-                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                   new MaxWidthLayout(scaleHelper.Scaled(600),
                    new ColumnLayout(
-                       new CenterHorizontalLayout(currentCharacter),
-                       new CenterHorizontalLayout(inventoryInfo),
-                       new CenterHorizontalLayout(itemInfo),
+                       new PanelLayout(characterPanel, new ColumnLayout(
+                           new CenterHorizontalLayout(currentCharacter),
+                           new CenterHorizontalLayout(inventoryInfo),
+                           new CenterHorizontalLayout(itemInfo))
+                       { Margin = new IntPad(scaleHelper.Scaled(10)) }),
                        new CenterHorizontalLayout(take),
                        new CenterHorizontalLayout(use),
                        new CenterHorizontalLayout(discard))
-                   { Margin = new IntPad(scaleHelper.Scaled(10)) }
-                ));
+                   { Margin = new IntPad(scaleHelper.Scaled(10)) };
             }
             else
             {
                 layout =
-                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                   new MaxWidthLayout(scaleHelper.Scaled(600),
                    new ColumnLayout(
-                       new CenterHorizontalLayout(currentCharacter),
-                       new CenterHorizontalLayout(inventoryInfo),
-                       new CenterHorizontalLayout(itemInfo),
+                       new PanelLayout(characterPanel, new ColumnLayout(
+                           new CenterHorizontalLayout(currentCharacter),
+                           new CenterHorizontalLayout(inventoryInfo),
+                           new CenterHorizontalLayout(itemInfo))
+                       { Margin = new IntPad(scaleHelper.Scaled(10)) }),
                        new CenterHorizontalLayout(take),
                        new CenterHorizontalLayout(discard))
-                   { Margin = new IntPad(scaleHelper.Scaled(10)) }
-                ));
+                   { Margin = new IntPad(scaleHelper.Scaled(10)) };
             }
         }
 
@@ -238,16 +239,19 @@ class PickUpTreasureMenu
 
         if (!replacingItem)
         {
+            sharpGui.Panel(characterPanel, panelStyle);
             sharpGui.Text(currentCharacter);
             sharpGui.Text(inventoryInfo);
             sharpGui.Text(itemInfo);
         }
 
+        sharpGui.Panel(descriptionPanel, panelStyle);
         foreach (var description in descriptions)
         {
             sharpGui.Text(description);
         }
 
+        sharpGui.Panel(infoPanel, panelStyle);
         foreach (var info in infos)
         {
             sharpGui.Text(info);
