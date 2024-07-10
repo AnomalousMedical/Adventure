@@ -36,7 +36,6 @@ namespace Adventure.Menu
         SharpButton goWorld = new SharpButton() { Text = "Go World" };
         SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
         SharpButton levelWorld = new SharpButton() { Text = "Level World" };
-        SharpButton battle = new SharpButton() { Text = "Battle" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.White };
         SharpSliderHorizontal currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
@@ -55,20 +54,14 @@ namespace Adventure.Menu
             var layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                 new MaxWidthLayout(scaleHelper.Scaled(800),
-                new ColumnLayout(averageLevel, new RowLayout(battle, allowBattle), new RowLayout(levelWorld), new RowLayout(goStart, goEnd, goWorld), toggleCamera) { Margin = new IntPad(10) }
+                new ColumnLayout(averageLevel, new RowLayout(allowBattle), new RowLayout(levelWorld), new RowLayout(goStart, goEnd, goWorld), toggleCamera) { Margin = new IntPad(10) }
             ));
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
             sharpGui.Text(averageLevel);
 
-            if (sharpGui.Button(battle, gamepad, navUp: toggleCamera.Id, navDown: goStart.Id, navRight: allowBattle.Id, navLeft: allowBattle.Id))
-            {
-                explorationGameState.RequestBattle();
-                explorationMenu.RequestSubMenu(null, gamepad);
-            }
-
-            if (sharpGui.Button(allowBattle, gamepad, navUp: toggleCamera.Id, navDown: levelWorld.Id, navRight: battle.Id, navLeft: battle.Id))
+            if (sharpGui.Button(allowBattle, gamepad, navUp: toggleCamera.Id, navDown: levelWorld.Id, navLeft: currentHour.Id))
             {
                 explorationGameState.AllowBattles = !explorationGameState.AllowBattles;
             }
@@ -78,7 +71,7 @@ namespace Adventure.Menu
                 explorationGameState.LevelUpWorld();
             }
 
-            if (sharpGui.Button(goStart, gamepad, navUp: battle.Id, navDown: toggleCamera.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
+            if (sharpGui.Button(goStart, gamepad, navUp: levelWorld.Id, navDown: toggleCamera.Id, navLeft: goWorld.Id, navRight: goEnd.Id))
             {
                 zoneManager.GoStartPoint();
                 explorationMenu.RequestSubMenu(null, gamepad);
@@ -96,13 +89,13 @@ namespace Adventure.Menu
                 explorationMenu.RequestSubMenu(null, gamepad);
             }
 
-            if (sharpGui.Button(toggleCamera, gamepad, navUp: goStart.Id, navDown: battle.Id))
+            if (sharpGui.Button(toggleCamera, gamepad, navUp: goEnd.Id, navDown: allowBattle.Id))
             {
                 flyCameraManager.Enabled = !flyCameraManager.Enabled;
             }
 
             int currentTime = (int)(timeClock.CurrentTimeMicro * Clock.MicroToSeconds / (60 * 60));
-            if (sharpGui.Slider(currentHour, ref currentTime, gamepad) || sharpGui.ActiveItem == currentHour.Id)
+            if (sharpGui.Slider(currentHour, ref currentTime, gamepad, navUp: allowBattle.Id, navDown: allowBattle.Id) || sharpGui.ActiveItem == currentHour.Id)
             {
                 timeClock.CurrentTimeMicro = (long)currentTime * 60L * 60L * Clock.SecondsToMicro;
             }
