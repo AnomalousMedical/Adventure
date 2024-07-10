@@ -73,11 +73,7 @@ namespace Adventure.Menu
                 return;
             }
 
-            var layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(300),
-               new ColumnLayout(contextButton) { Margin = new IntPad(10) }
-            ));
+            var layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), contextButton);
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
