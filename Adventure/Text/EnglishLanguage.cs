@@ -281,6 +281,21 @@ namespace Adventure.Text
                     Undefeated: "Undefeated",
                     OldSchool: "Old School",
                     Gold: " Gold"
+                ),
+                Levels: new LevelText
+                (
+                    l17: "Scout",
+                    l29: "Hunter",
+                    l36: "Adventurer",
+                    l44: "Pilot",
+                    l51: "World Traveler",
+                    l56: "Slayer",
+                    l61: "Dragon Slayer",
+                    l64: "Reaper",
+                    l67: "Unstoppable",
+                    l70: "Lesser God",
+                    l73: "Boundary Breaker",
+                    l77: "The One"
                 )
             );
         }

@@ -49,6 +49,7 @@ namespace Adventure.Services
         PartyMemberTrigger.Text PartyMemberTrigger,
         HelpBook.Text HelpBook,
         //Menus
-        RootMenu.Text RootMenu
+        RootMenu.Text RootMenu,
+        LevelText Levels
     );
 }

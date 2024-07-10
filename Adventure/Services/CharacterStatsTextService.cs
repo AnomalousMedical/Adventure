@@ -57,13 +57,8 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
 
             var text =
     $@"{characterSheetDisplay.CharacterSheet.Name}
- 
-Lvl: {characterSheetDisplay.CharacterSheet.Level}
-
-Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}
- 
-";
-
+{languageService.Current.Levels.GetText(characterSheetDisplay.CharacterSheet.Level)}
+ ";
             yield return new SharpText(text) { Color = Color.White };
 
             yield return new SharpText($"HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}")
@@ -74,6 +69,8 @@ Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.C
             {
                 Color = GetMpColor(characterSheetDisplay.CharacterSheet)
             };
+
+            yield return new SharpText($"Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}\n ") { Color = Color.White };
 
             text = 
 $@"Att:   {characterSheetDisplay.CharacterSheet.Attack}
