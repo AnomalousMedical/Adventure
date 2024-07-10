@@ -20,6 +20,8 @@ class PlotItemMenu
     SharpButton close = new SharpButton() { Text = "Close" };
     List<SharpText> descriptions = null;
     private List<ButtonColumnItem<PlotItems>> currentItems;
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
@@ -50,7 +52,7 @@ class PlotItemMenu
 
         var descriptionLayout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(descriptionPanel,
            new ColumnLayout(columnItems)
            {
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
@@ -70,7 +72,7 @@ class PlotItemMenu
             currentItems = persistence.Current.PlotItems.Select(i => new ButtonColumnItem<PlotItems>(languageService.Current.PlotItems.GetText(i), i)).ToList();
         }
         var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-        itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+        itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
 
         if (sharpGui.Button(close, gamepadId) || sharpGui.IsStandardBackPressed(gamepadId))
         {
@@ -81,6 +83,7 @@ class PlotItemMenu
 
         if (descriptions != null)
         {
+            sharpGui.Panel(descriptionPanel, panelStyle);
             foreach (var description in descriptions)
             {
                 sharpGui.Text(description);
