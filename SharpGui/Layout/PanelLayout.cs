@@ -38,4 +38,27 @@ namespace SharpGui
                 ));
         }
     }
+
+    public class PanelLayoutNoPad : ILayoutItem
+    {
+        public SharpPanel Panel;
+        public ILayoutItem Child;
+
+        public PanelLayoutNoPad(SharpPanel panel, ILayoutItem child)
+        {
+            this.Panel = panel;
+            this.Child = child;
+        }
+
+        public IntSize2 GetDesiredSize(ISharpGui sharpGui)
+        {
+            return Child.GetDesiredSize(sharpGui);
+        }
+
+        public void SetRect(in IntRect rect)
+        {
+            Panel.Rect = rect;
+            Child.SetRect(rect);
+        }
+    }
 }

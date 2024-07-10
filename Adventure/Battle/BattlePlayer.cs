@@ -70,6 +70,9 @@ namespace Adventure.Battle
 
         private bool victorious = false;
 
+        private SharpPanel infoPanel = new SharpPanel();
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+
         public IBattleStats Stats => this.characterSheet;
 
         private Vector3 currentPosition;
@@ -195,13 +198,16 @@ namespace Adventure.Battle
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
             powerProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
-            infoRowLayout = new RowLayout(
-                new FixedWidthLayout(scaleHelper.Scaled(240), currentBuffs),
-                new FixedWidthLayout(scaleHelper.Scaled(240), name),
-                new FixedWidthLayout(scaleHelper.Scaled(165), currentHp),
-                new FixedWidthLayout(scaleHelper.Scaled(125), currentMp),
-                new FixedWidthLayout(scaleHelper.Scaled(210), powerProgress),
-                new FixedWidthLayout(scaleHelper.Scaled(210), turnProgress));
+            infoRowLayout =
+                new PanelLayoutNoPad(infoPanel,
+                new KeepWidthRightLayout(new RowLayout(
+                    currentBuffs,
+                    name,
+                    new FixedWidthLayout(scaleHelper.Scaled(165), currentHp),
+                    new FixedWidthLayout(scaleHelper.Scaled(125), currentMp),
+                    new FixedWidthLayout(scaleHelper.Scaled(210), powerProgress),
+                    new FixedWidthLayout(scaleHelper.Scaled(210), turnProgress)
+                ) { Margin = new IntPad(scaleHelper.Scaled(9)) }));
             battleScreenLayout.InfoColumn.Add(infoRowLayout);
 
             currentBuffs.Text = GetCurrentBuffsText();
@@ -360,6 +366,7 @@ namespace Adventure.Battle
                 }
             }
 
+            sharpGui.Panel(infoPanel, panelStyle);
             sharpGui.Text(currentBuffs);
             sharpGui.Text(name);
             sharpGui.Text(currentHp);

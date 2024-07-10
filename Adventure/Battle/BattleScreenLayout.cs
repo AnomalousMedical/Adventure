@@ -48,11 +48,8 @@ namespace Adventure.Battle
                 battleMenuColumn
                 ));
 
-            infoColumn = new ColumnLayout() { Margin = new IntPad(scaleHelper.Scaled(10)) };
-            infoColumnLayout =
-                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                infoColumn
-                );
+            infoColumn = new ColumnLayout();
+            infoColumnLayout = infoColumn;
         }
 
         public void LayoutBattleMenu(params ILayoutItem[] items)
