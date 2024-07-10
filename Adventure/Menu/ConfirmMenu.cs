@@ -19,6 +19,8 @@ class ConfirmMenu
     private SharpText message = new SharpText() { Color = Color.White };
     private SharpButton yesButton = new SharpButton() { Text = "Yes" };
     private SharpButton noButton = new SharpButton() { Text = "No" };
+    private SharpPanel promptPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     private IExplorationSubMenu previousMenu;
     private TaskCompletionSource<bool> currentTask;
@@ -52,12 +54,14 @@ class ConfirmMenu
     {
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new ColumnLayout(new KeepWidthCenterLayout(message), yesButton, noButton) { Margin = new IntPad(10) }
-        );
+           new ColumnLayout(new KeepWidthCenterLayout(new PanelLayout(promptPanel, message)),
+               new KeepWidthCenterLayout(new ColumnLayout(yesButton, noButton) { Margin = new IntPad(10) }
+        )));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
-        layout.SetRect(screenPositioner.GetCenterRect(desiredSize));
+        layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
 
+        sharpGui.Panel(promptPanel, panelStyle);
         sharpGui.Text(message);
 
         if (sharpGui.Button(yesButton, gamepadId, navUp: noButton.Id, navDown: noButton.Id))

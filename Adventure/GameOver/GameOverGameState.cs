@@ -103,7 +103,7 @@ namespace Adventure.GameOver
             {
                 if (!explorationMenu.Update())
                 {
-                    var layout = new ColumnLayout(new KeepWidthCenterLayout(gameOver), retry, restart) { Margin = new IntPad(10) };
+                    var layout = new ColumnLayout(new KeepWidthCenterLayout(gameOver), new KeepWidthCenterLayout(retry), new KeepWidthCenterLayout(restart)) { Margin = new IntPad(10) };
 
                     var size = layout.GetDesiredSize(sharpGui);
                     layout.GetDesiredSize(sharpGui);

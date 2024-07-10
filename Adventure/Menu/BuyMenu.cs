@@ -21,6 +21,8 @@ namespace Adventure.Menu
         SharpText prompt = new SharpText() { Color = Color.White, Layer = BuyMenu.UseItemMenuLayer };
         SharpButton buy = new SharpButton() { Text = "Yes", Layer = BuyMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "No", Layer = BuyMenu.UseItemMenuLayer };
+        private SharpPanel promptPanel = new SharpPanel();
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
         public event Action Closed;
 
@@ -40,13 +42,14 @@ namespace Adventure.Menu
 
             var layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new KeepWidthCenterLayout(prompt), buy, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
+               new ColumnLayout(new KeepWidthCenterLayout(new PanelLayout(promptPanel, prompt)),
+                   new KeepWidthCenterLayout(new ColumnLayout(buy, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) })
             ));
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
 
+            sharpGui.Panel(promptPanel, panelStyle);
             sharpGui.Text(prompt);
 
             if (sharpGui.Button(buy, gamepadId, navUp: cancel.Id, navDown: cancel.Id))
