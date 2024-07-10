@@ -291,7 +291,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private List<ButtonColumnItem<InventoryItem>> currentItems;
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0x55020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     public ItemMenu
     (

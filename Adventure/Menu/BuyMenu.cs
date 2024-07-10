@@ -105,7 +105,7 @@ namespace Adventure.Menu
         private int currentSheet;
         private SharpPanel descriptionPanel = new SharpPanel();
         private SharpPanel infoPanel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0x55020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
         private TaskCompletionSource menuClosedTask;
 
