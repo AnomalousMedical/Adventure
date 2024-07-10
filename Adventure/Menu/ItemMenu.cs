@@ -38,6 +38,8 @@ class UseItemMenu
     SharpText swapItemPrompt = new SharpText() { Color = Color.White };
     private List<ButtonColumnItem<Action>> characterChoices = null;
     private List<ButtonColumnItem<Action>> swapItemChoices = null;
+    private SharpPanel promptPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     private ButtonColumn characterButtons = new ButtonColumn(5, ItemMenu.ChooseTargetLayer);
     private ButtonColumn replaceButtons = new ButtonColumn(25, ItemMenu.ReplaceButtonsLayer);
@@ -93,7 +95,7 @@ class UseItemMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
-            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(characterChooserPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
+            var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new PanelLayout(promptPanel, new KeepWidthCenterLayout(characterChooserPrompt)), new KeepWidthCenterLayout(l)) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
             if (action != null)
             {
                 action.Invoke();
@@ -110,6 +112,7 @@ class UseItemMenu
                 characterChoices = null;
             }
 
+            sharpGui.Panel(promptPanel, panelStyle);
             sharpGui.Text(characterChooserPrompt);
         }
         else
@@ -123,7 +126,7 @@ class UseItemMenu
                 replaceButtons.MaxWidth = scaleHelper.Scaled(900);
                 replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
 
-                var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(swapItemPrompt), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
+                var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new PanelLayout(promptPanel, new KeepWidthCenterLayout(swapItemPrompt)), new KeepWidthCenterLayout(l)) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
                 if (swapItem != null)
                 {
                     swapItem.Invoke();
@@ -138,21 +141,27 @@ class UseItemMenu
                     swapItemChoices = null;
                 }
 
+                sharpGui.Panel(promptPanel, panelStyle);
                 sharpGui.Text(swapItemPrompt);
             }
             else
             {
                 var layout =
                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                   new MaxWidthLayout(scaleHelper.Scaled(600),
-                   new ColumnLayout(new KeepWidthCenterLayout(itemPrompt), use, transfer, discard, cancel) { Margin = new IntPad(scaleHelper.Scaled(10)) }
-                ));
+                   new ColumnLayout(new KeepWidthCenterLayout(new PanelLayout(promptPanel, itemPrompt)), 
+                       new KeepWidthCenterLayout(
+                           new ColumnLayout(use, transfer, discard, cancel) 
+                           { 
+                               Margin = new IntPad(scaleHelper.Scaled(10)) 
+                           }
+                )));
 
                 var desiredSize = layout.GetDesiredSize(sharpGui);
                 layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
 
                 use.Text = SelectedItem.Equipment != null ? "Equip" : "Use";
 
+                sharpGui.Panel(promptPanel, panelStyle);
                 sharpGui.Text(itemPrompt);
 
                 if (sharpGui.Button(use, gamepadId, navUp: cancel.Id, navDown: transfer.Id, style: style))
