@@ -51,6 +51,10 @@ class RootMenu
 
     private TaskCompletionSource currentTask;
 
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpPanel infoPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+
     public record Text
     (
         String Skills,
@@ -107,11 +111,12 @@ class RootMenu
 
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(infoPanel,
            new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
+        sharpGui.Panel(infoPanel, panelStyle);
         foreach(var info in infos)
         {
             sharpGui.Text(info);
@@ -121,12 +126,13 @@ class RootMenu
 
         layout =
           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-          new MaxWidthLayout(scaleHelper.Scaled(300),
+          new PanelLayout(descriptionPanel,
           new ColumnLayout(undefeated, oldSchool, gold, timePlayed) { Margin = new IntPad(10) }
         ));
         var infoDesiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
 
+        sharpGui.Panel(descriptionPanel, panelStyle);
         sharpGui.Text(timePlayed);
         sharpGui.Text(gold);
         if (persistence.Current.Party.Undefeated)
