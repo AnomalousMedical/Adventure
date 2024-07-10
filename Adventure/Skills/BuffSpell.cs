@@ -31,6 +31,8 @@ namespace Adventure.Skills
 
         public bool MultiTarget { get; set; }
 
+        public bool UseInField => true;
+
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
             if (source.CurrentMp == 0)

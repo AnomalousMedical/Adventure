@@ -14,6 +14,8 @@ namespace Adventure.Skills
     {
         public long GetMpCost(bool triggered, bool triggerSpammed) => MpCost;
 
+        public bool UseInField => true;
+
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
             if (source.CurrentMp == 0)

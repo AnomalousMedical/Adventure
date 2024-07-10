@@ -29,6 +29,8 @@ namespace Adventure.Skills
 
         bool QueueFront => false;
 
+        bool UseInField => false;
+
         string Name { get; }
 
         long GetMpCost(bool triggered, bool triggerSpammed);

@@ -192,13 +192,16 @@ class SkillMenu
                     if (characterData.CharacterSheet.CurrentHp > 0)
                     {
                         var selectedSkill = skillFactory.CreateSkill(newSelection);
-                        characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                        if (selectedSkill.UseInField)
                         {
-                            currentEffect = selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
-                            infos = null;
-                            descriptions = null;
-                        }))
-                        .ToList();
+                            characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
+                            {
+                                currentEffect = selectedSkill.Apply(damageCalculator, characterData.CharacterSheet, i.CharacterSheet, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+                                infos = null;
+                                descriptions = null;
+                            }))
+                            .ToList();
+                        }
                     }
                 }
             }
