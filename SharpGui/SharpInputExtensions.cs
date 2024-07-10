@@ -99,7 +99,7 @@ namespace SharpGui
                     var cursorRight = cursorLeft + Math.Max(look.Border.Left / 2, 1);
                     var cursorBottom = cursorTop + tallestChar;
 
-                    buffer.DrawQuad(cursorLeft, cursorTop, cursorRight, cursorBottom, look.BorderColor, input.Layer);
+                    buffer.DrawQuad(cursorLeft, cursorTop, cursorRight, cursorBottom, look.Color, input.Layer);
                 }
 
                 //Handle input

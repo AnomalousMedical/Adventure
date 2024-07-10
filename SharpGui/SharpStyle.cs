@@ -117,38 +117,38 @@ namespace SharpGui
         {
             var style = new SharpStyle()
             {
-                Background = Color.FromARGB(0xffdedede).ToSrgb(),
-                Color = Color.FromARGB(0xff000000).ToSrgb(),
-                BorderColor = Color.FromARGB(0xff000000).ToSrgb(),
+                Background = Color.FromARGB(0xff202429).ToSrgb(),
+                Color = Color.FromARGB(0xffffffff).ToSrgb(),
+                BorderColor = Color.FromARGB(0xff181b1e).ToSrgb(),
                 ShadowColor = Color.FromARGB(0x80000000).ToSrgb(),
                 ShadowOffset = scaleHelper.Scaled(new IntVector2(6, 6)),
-                Padding = scaleHelper.Scaled(new IntPad(22)),
-                Border = scaleHelper.Scaled(new IntPad(5)),
+                Padding = scaleHelper.Scaled(new IntPad(19)),
+                Border = scaleHelper.Scaled(new IntPad(2)),
                 Hover =
                 {
-                    Background = spec.Colors[7],
+                    Background = spec.Colors[9],
                 },
                 Active =
                 {
-                    Background = spec.Colors[3],
+                    Background = spec.Colors[8],
                 },
                 HoverAndActive =
                 {
-                    Background = spec.Colors[3],
+                    Background = spec.Colors[7],
                 },
                 Focus =
                 {
-                    Background = spec.Colors[5],
+                    Background = spec.Colors[8],
                     BorderColor = spec.Colors[9],
                 },
                 HoverAndFocus =
                 {
-                    Background = spec.Colors[6],
+                    Background = spec.Colors[7],
                     BorderColor = spec.Colors[9],
                 },
                 HoverAndActiveAndFocus =
                 {
-                    Background = spec.Colors[4],
+                    Background = spec.Colors[6],
                     BorderColor = spec.Colors[9],
                 }
             };
