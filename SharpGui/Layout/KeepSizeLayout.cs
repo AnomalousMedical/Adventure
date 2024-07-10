@@ -18,7 +18,7 @@ namespace SharpGui
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             lastCalculatedSize = Child.GetDesiredSize(sharpGui);
-            return new IntSize2(0, lastCalculatedSize.Height);
+            return lastCalculatedSize;
         }
 
         public void SetRect(in IntRect rect)
@@ -46,7 +46,7 @@ namespace SharpGui
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             lastCalculatedSize = Child.GetDesiredSize(sharpGui);
-            return new IntSize2(0, lastCalculatedSize.Height);
+            return lastCalculatedSize;
         }
 
         public void SetRect(in IntRect rect)
@@ -74,7 +74,7 @@ namespace SharpGui
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             lastCalculatedSize = Child.GetDesiredSize(sharpGui);
-            return new IntSize2(0, lastCalculatedSize.Height);
+            return lastCalculatedSize;
         }
 
         public void SetRect(in IntRect rect)
@@ -83,6 +83,32 @@ namespace SharpGui
                 rect.Left + rect.Width / 2 - lastCalculatedSize.Width / 2,
                 rect.Top,
                 lastCalculatedSize.Width,
+                lastCalculatedSize.Height
+            ));
+        }
+    }
+    public class KeepHeightLayout : ILayoutItem
+    {
+        public ILayoutItem Child;
+        private IntSize2 lastCalculatedSize;
+
+        public KeepHeightLayout(ILayoutItem child)
+        {
+            this.Child = child;
+        }
+
+        public IntSize2 GetDesiredSize(ISharpGui sharpGui)
+        {
+            lastCalculatedSize = Child.GetDesiredSize(sharpGui);
+            return lastCalculatedSize;
+        }
+
+        public void SetRect(in IntRect rect)
+        {
+            Child.SetRect(new IntRect(
+                rect.Left,
+                rect.Top,
+                rect.Width,
                 lastCalculatedSize.Height
             ));
         }

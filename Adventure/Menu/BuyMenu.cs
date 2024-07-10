@@ -103,6 +103,9 @@ namespace Adventure.Menu
         List<SharpText> infos;
         List<SharpText> descriptions;
         private int currentSheet;
+        private SharpPanel descriptionPanel = new SharpPanel();
+        private SharpPanel infoPanel = new SharpPanel();
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0x55020202) };
 
         private TaskCompletionSource menuClosedTask;
 
@@ -213,39 +216,36 @@ namespace Adventure.Menu
 
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(new ILayoutItem[] { new KeepWidthLeftLayout(previous) }.Concat(infos)) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
+               new PanelLayout(infoPanel,
+               new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
-            IEnumerable<ILayoutItem> columnItems = new[] { new KeepWidthRightLayout(next) };
-            if (descriptions != null)
-            {
-                columnItems = columnItems.Concat(descriptions.Select(i => new KeepWidthRightLayout(i)));
-            }
-
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
-               new ColumnLayout(columnItems)
+               new PanelLayout(descriptionPanel,
+               new ColumnLayout(descriptions.Select(i => new KeepWidthRightLayout(i)))
                {
                    Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
                }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
-            layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), back);
+            layout = new RowLayout(previous, next, back) { Margin = new IntPad(scaleHelper.Scaled(10)) };
             layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
 
+            sharpGui.Panel(infoPanel, panelStyle);
             foreach (var info in infos)
             {
                 sharpGui.Text(info);
             }
-            foreach(var description in descriptions)
+
+            sharpGui.Panel(descriptionPanel, panelStyle);
+            foreach (var description in descriptions)
             {
                 sharpGui.Text(description);
             }
@@ -255,7 +255,7 @@ namespace Adventure.Menu
             if (allowChanges)
             {
                 var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-                var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: previous.Id, navRight: next.Id, style: currentCharacterStyle);
+                var selectedItem = itemButtons.Show(sharpGui, shopItems, shopItems.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navDown: previous.Id, navUp: previous.Id, style: currentCharacterStyle);
                 if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
                 {
                     descriptions = null;
@@ -270,7 +270,7 @@ namespace Adventure.Menu
                     }
                 }
 
-                if (sharpGui.Button(previous, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: next.Id, navRight: itemButtons.TopButton, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
+                if (sharpGui.Button(previous, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton, navLeft: back.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
                     if (allowChanges)
                     {
@@ -283,7 +283,7 @@ namespace Adventure.Menu
                         infos = null;
                     }
                 }
-                if (sharpGui.Button(next, gamepadId, navUp: back.Id, navDown: back.Id, navLeft: itemButtons.TopButton, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepadId))
+                if (sharpGui.Button(next, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton, navLeft: previous.Id, navRight: back.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
                     if (allowChanges)
                     {
@@ -296,7 +296,7 @@ namespace Adventure.Menu
                         infos = null;
                     }
                 }
-                if (sharpGui.Button(back, gamepadId, navUp: next.Id, navDown: next.Id, navLeft: itemButtons.TopButton, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepadId))
+                if (sharpGui.Button(back, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepadId))
                 {
                     if (allowChanges)
                     {

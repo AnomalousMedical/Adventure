@@ -289,6 +289,9 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private readonly CharacterStyleService characterStyleService;
     private readonly PlotItemMenu plotItemMenu;
     private List<ButtonColumnItem<InventoryItem>> currentItems;
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpPanel infoPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0x55020202) };
 
     public ItemMenu
     (
@@ -392,9 +395,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
-           new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
-        ));
+           new PanelLayout(infoPanel,
+           new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) } ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
         IEnumerable<ILayoutItem> columnItems = Enumerable.Empty<ILayoutItem>();
@@ -405,12 +407,11 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
         var descriptionLayout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(descriptionPanel, 
            new ColumnLayout(columnItems)
            {
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
-           }
-        ));
+           } ));
 
         layout = new RowLayout(previous, next, plotItems, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
@@ -422,6 +423,9 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
         useItemMenu.Update(characterData, gamepad, currentCharacterStyle, this, menu);
 
+        var currentInfos = infos;
+        var currentDescriptions = descriptions;
+
         if (allowChanges)
         {
             if (currentItems == null)
@@ -429,7 +433,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
             var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
             if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
             {
                 descriptions = null;
@@ -498,17 +502,19 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             descriptionLayout.SetRect(screenPositioner.GetTopRightRect(descriptionLayout.GetDesiredSize(sharpGui)));
         }
 
-        if (infos != null)
+        if (currentInfos != null)
         {
-            foreach (var info in infos)
+            sharpGui.Panel(infoPanel, panelStyle);
+            foreach (var info in currentInfos)
             {
                 sharpGui.Text(info);
             }
         }
 
-        if (descriptions != null)
+        if (currentDescriptions != null)
         {
-            foreach (var description in descriptions)
+            sharpGui.Panel(descriptionPanel, panelStyle);
+            foreach (var description in currentDescriptions)
             {
                 sharpGui.Text(description);
             }
