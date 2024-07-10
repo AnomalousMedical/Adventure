@@ -43,6 +43,11 @@ class ChooseCharacterMenu
     private List<SharpText> infos = null;
     private List<SharpText> descriptions = null;
 
+    private SharpPanel promptPanel = new SharpPanel();
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpPanel infoPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+
     public void Reset()
     {
         descriptions = null;
@@ -66,8 +71,9 @@ class ChooseCharacterMenu
 
         if (partyMemberTriggerManager.Count > 0)
         {
-            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), prompt);
+            layout = new MarginLayout(scaleHelper.Scaled(new IntPad(10)), new PanelLayout(promptPanel, prompt));
             layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+            sharpGui.Panel(promptPanel, panelStyle);
             sharpGui.Text(prompt);
 
             var currentTrigger = partyMemberTriggerManager.Get(currentPlayerIndex);
@@ -168,11 +174,12 @@ class ChooseCharacterMenu
         {
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new PanelLayout(infoPanel,
                new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
             layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
+            sharpGui.Panel(infoPanel, panelStyle);
             foreach (var info in infos)
             {
                 sharpGui.Text(info);
@@ -183,11 +190,12 @@ class ChooseCharacterMenu
         {
             layout =
                new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new MaxWidthLayout(scaleHelper.Scaled(600),
+               new PanelLayout(descriptionPanel,
                new ColumnLayout(descriptions.Select(i => new KeepWidthRightLayout(i))) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
             layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
+            sharpGui.Panel(descriptionPanel, panelStyle);
             foreach (var description in descriptions)
             {
                 sharpGui.Text(description);
