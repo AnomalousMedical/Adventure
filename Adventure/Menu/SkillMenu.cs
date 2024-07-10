@@ -46,6 +46,9 @@ class SkillMenu
     List<SharpText> descriptions;
     private int currentSheet;
     private ISkillEffect currentEffect;
+    private SharpPanel descriptionPanel = new SharpPanel();
+    private SharpPanel infoPanel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
     private List<ButtonColumnItem<Action>> characterChoices = null;
@@ -138,7 +141,7 @@ class SkillMenu
 
         layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(infoPanel,
            new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
@@ -151,7 +154,7 @@ class SkillMenu
 
         var descriptionLayout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new MaxWidthLayout(scaleHelper.Scaled(600),
+           new PanelLayout(descriptionPanel,
            new ColumnLayout(columnItems)
            {
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
@@ -162,6 +165,9 @@ class SkillMenu
         layout = new RowLayout(previous, next, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonLayoutRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonLayoutRect);
+
+        var currentInfos = infos;
+        var currentDescriptions = descriptions;
 
         if (!choosingCharacter)
         {
@@ -175,7 +181,7 @@ class SkillMenu
                 skillButtons.Bottom = backButtonLayoutRect.Top;
 
                 var lastSkillIndex = skillButtons.FocusedIndex(sharpGui);
-                var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+                var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
                 descriptionNeedsLayout = false; //Layout happens as part of showing the skill buttons
                 if (lastSkillIndex != skillButtons.FocusedIndex(sharpGui))
                 {
@@ -232,17 +238,19 @@ class SkillMenu
             descriptionLayout.SetRect(screenPositioner.GetTopRightRect(descriptionLayout.GetDesiredSize(sharpGui)));
         }
 
-        if (infos != null)
+        if (currentInfos != null)
         {
-            foreach (var info in infos)
+            sharpGui.Panel(infoPanel, panelStyle);
+            foreach (var info in currentInfos)
             {
                 sharpGui.Text(info);
             }
         }
 
-        if (descriptions != null)
+        if (currentDescriptions != null && currentDescriptions.Count > 0)
         {
-            foreach (var description in descriptions)
+            sharpGui.Panel(descriptionPanel, panelStyle);
+            foreach (var description in currentDescriptions)
             {
                 sharpGui.Text(description);
             }
