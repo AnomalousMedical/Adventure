@@ -477,7 +477,14 @@ namespace Adventure
 
                     if (mapBuilder.NorthConnector.HasValue)
                     {
-                        mapBuilder.BuildNorthConnector();
+                        if (isFinalZone && alignment == Alignment.SouthNorth)
+                        {
+                            mapBuilder.BuildNorthFinalCorridorAndRoom();
+                        }
+                        else
+                        {
+                            mapBuilder.BuildNorthConnector();
+                        }
                     }
 
                     if (mapBuilder.SouthConnector.HasValue)
@@ -700,6 +707,7 @@ namespace Adventure
                 this.placeables.Add(bgItem);
             }
 
+            if(!isFinalZone)
             {
                 var bgItem = objectResolver.Resolve<BackgroundItem, BackgroundItem.Description>(o =>
                 {
@@ -918,11 +926,14 @@ namespace Adventure
                 });
             }
 
-            this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+            if (!isFinalZone)
             {
-                o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
-                o.Translation = EndPoint + mapUnits.x * 2f * nextZoneConnectorOffset;
-            });
+                this.nextZoneConnector = objectResolver.Resolve<ZoneConnector, ZoneConnector.Description>(o =>
+                {
+                    o.Scale = new Vector3(mapUnits.x, 50f, mapUnits.z);
+                    o.Translation = EndPoint + mapUnits.x * 2f * nextZoneConnectorOffset;
+                });
+            }
 
             foreach (var placeable in placeables)
             {

@@ -139,70 +139,79 @@ namespace DungeonGenerator
                 var west = GetWestSquare(mapX, mapY, map);
 
                 //New corridor, find new starting point
-                if (cellType != currentCorridor)
+                //Do a special check for the north, south, east, west connecting corridors
+                if (cellType == mapbuilder.WestConnectorIndex || cellType == mapbuilder.EastConnectorIndex || cellType == mapbuilder.NorthConnectorIndex || cellType == mapbuilder.SouthConnectorIndex)
                 {
-                    corridorSlope = halfUnitY * corridorSlopeMultiple;
-                    currentCorridor = cellType;
-
-                    if (north != currentCorridor && north != csMapbuilder.EmptyCell)
+                    var roomId = mapbuilder.GetCorridorTerminatingRoom(cellType);
+                    if (roomId != csMapbuilder.CorridorCell)
                     {
-                        previousCorridor = new IntVector2(mapX, mapY + 1);
+                        var room = mapbuilder.Rooms[roomId];
+                        previousCorridor = new IntVector2(room.Left, room.Top);
                     }
                     else
                     {
-                        if (south != currentCorridor && south != csMapbuilder.EmptyCell)
+                        //Look for the connection from the last cell, we know more about what to expect here
+                        var lastCorridorPoint = mapbuilder.Corridors.Where(i => map[i.x, i.y] == cellType).Last();
+                        if (cellType == mapbuilder.WestConnectorIndex)
                         {
-                            previousCorridor = new IntVector2(mapX, mapY - 1);
+                            previousCorridor = new IntVector2(lastCorridorPoint.x + 1, lastCorridorPoint.y); //Get east
+                        }
+                        else if (cellType == mapbuilder.EastConnectorIndex)
+                        {
+                            previousCorridor = new IntVector2(lastCorridorPoint.x - 1, lastCorridorPoint.y); //Get west
+                        }
+                        else if (cellType == mapbuilder.NorthConnectorIndex)
+                        {
+                            previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y - 1); //Get south
+                        }
+                        else if (cellType == mapbuilder.SouthConnectorIndex)
+                        {
+                            previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y + 1); //Get north
                         }
                         else
                         {
-                            if (east != currentCorridor && east != csMapbuilder.EmptyCell)
+                            //This is really an error condition
+                            previousCorridor = lastCorridorPoint;
+                        }
+                    }
+
+                    //Special check for final room / corridor, this won't get slopes under the normal logic, since the connector corridors
+                    //have their termination points on the level, either as a corridor or a room, where normal corridors go corridor -> next room
+                    if (cellType == mapbuilder.FinalCorridor
+                        && mapbuilder.FinalCorridor != csMapbuilder.NullCell
+                        && mapbuilder.FinalRoom != csMapbuilder.NullCell)
+                    {
+                        SetRoomPrevious(mapbuilder.Rooms[mapbuilder.FinalRoom - csMapbuilder.RoomCell], previousCorridor, slopeMap);
+                    }
+                }
+                else
+                {
+                    if (cellType != currentCorridor)
+                    {
+                        corridorSlope = halfUnitY * corridorSlopeMultiple;
+                        currentCorridor = cellType;
+
+                        if (north != currentCorridor && north != csMapbuilder.EmptyCell)
+                        {
+                            previousCorridor = new IntVector2(mapX, mapY + 1);
+                        }
+                        else
+                        {
+                            if (south != currentCorridor && south != csMapbuilder.EmptyCell)
                             {
-                                previousCorridor = new IntVector2(mapX + 1, mapY);
+                                previousCorridor = new IntVector2(mapX, mapY - 1);
                             }
                             else
                             {
-                                if (west != currentCorridor && west != csMapbuilder.EmptyCell)
+                                if (east != currentCorridor && east != csMapbuilder.EmptyCell)
                                 {
-                                    previousCorridor = new IntVector2(mapX - 1, mapY);
+                                    previousCorridor = new IntVector2(mapX + 1, mapY);
                                 }
                                 else
                                 {
-                                    //Do a special check for the north, south, east, west connecting corridors
-                                    if (cellType == mapbuilder.WestConnectorIndex || cellType == mapbuilder.EastConnectorIndex || cellType == mapbuilder.NorthConnectorIndex || cellType == mapbuilder.SouthConnectorIndex)
+                                    if (west != currentCorridor && west != csMapbuilder.EmptyCell)
                                     {
-                                        var roomId = mapbuilder.GetCorridorTerminatingRoom(cellType);
-                                        if (roomId != csMapbuilder.CorridorCell)
-                                        {
-                                            var room = mapbuilder.Rooms[roomId];
-                                            previousCorridor = new IntVector2(room.Left, room.Top);
-                                        }
-                                        else
-                                        {                                            
-                                            //Look for the connection from the last cell, we know more about what to expect here
-                                            var lastCorridorPoint = mapbuilder.Corridors.Where(i => map[i.x, i.y] == cellType).Last();
-                                            if (cellType == mapbuilder.WestConnectorIndex)
-                                            {
-                                                previousCorridor = new IntVector2(lastCorridorPoint.x + 1, lastCorridorPoint.y); //Get east
-                                            }
-                                            else if (cellType == mapbuilder.EastConnectorIndex)
-                                            {
-                                                previousCorridor = new IntVector2(lastCorridorPoint.x - 1, lastCorridorPoint.y); //Get west
-                                            }
-                                            else if (cellType == mapbuilder.NorthConnectorIndex)
-                                            {
-                                                previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y - 1); //Get south
-                                            }
-                                            else if (cellType == mapbuilder.SouthConnectorIndex)
-                                            {
-                                                previousCorridor = new IntVector2(lastCorridorPoint.x, lastCorridorPoint.y + 1); //Get north
-                                            }
-                                            else
-                                            {
-                                                //This is really an error condition
-                                                previousCorridor = lastCorridorPoint;
-                                            }
-                                        }
+                                        previousCorridor = new IntVector2(mapX - 1, mapY);
                                     }
                                 }
                             }

@@ -82,6 +82,9 @@ namespace RogueLikeMapBuilder
 
         public UInt16 SouthConnectorRoom { get; private set; } = NullCell;
 
+        public UInt16 FinalCorridor { get; private set; } = NullCell;
+
+        public UInt16 FinalRoom { get; private set; } = NullCell;
         #region builder public properties
 
         //room properties
@@ -508,6 +511,48 @@ namespace RogueLikeMapBuilder
             }
 
             
+            NorthConnectorIndex = map[x, yStart];
+        }
+
+        public void BuildNorthFinalCorridorAndRoom()
+        {
+            //This is written with the assumption that the level was padded out
+
+            var x = northConnectorStart.Value.x;
+            var y = northConnectorStart.Value.y;
+            var yStart = northConnectorStart.Value.y + 15;
+
+            FinalCorridor = currentCorridorCell;
+            FinalRoom = currentRoomCell;
+
+            //Make sure there was nothing left over
+            lPotentialCorridor.Clear();
+
+            for (var fillY = yStart; fillY > y; --fillY)
+            {
+                if (map[x, fillY] == csMapbuilder.EmptyCell)
+                {
+                    lPotentialCorridor.Add(new Point(x, fillY));
+                }
+            }
+
+            if (lPotentialCorridor.Count > 0)
+            {
+                corridorTerminatingRooms[currentCorridorCell] = map[x, y];
+                Corridor_Build(true);
+            }
+
+            //Make final room
+            rctCurrentRoom = new Rectangle()
+            {
+                Width = 4,
+                Height = 4
+            };
+            rctCurrentRoom.Left = x - 2;
+            rctCurrentRoom.Top = yStart + 1;
+            Room_Build();
+
+
             NorthConnectorIndex = map[x, yStart];
         }
 
