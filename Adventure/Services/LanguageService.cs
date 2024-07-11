@@ -50,6 +50,7 @@ namespace Adventure.Services
         HelpBook.Text HelpBook,
         //Menus
         RootMenu.Text RootMenu,
-        LevelText Levels
+        LevelText Levels,
+        EndGameTrigger.Text EndGameTrigger
     );
 }

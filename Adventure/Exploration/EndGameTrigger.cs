@@ -26,6 +26,7 @@ class EndGameTrigger : IDisposable, IZonePlaceable
 
     private readonly RTInstances<ZoneScene> rtInstances;
     private readonly IDestructionRequest destructionRequest;
+    private readonly IScopedCoroutine coroutine;
     private readonly SpriteInstanceFactory spriteInstanceFactory;
     private readonly IContextMenu contextMenu;
     private readonly IExplorationGameState explorationGameState;
@@ -33,6 +34,10 @@ class EndGameTrigger : IDisposable, IZonePlaceable
     private readonly CubeBLAS cubeBLAS;
     private readonly PrimaryHitShader.Factory primaryHitShaderFactory;
     private readonly TypedLightManager<ZoneScene> lightManager;
+    private readonly TextDialog textDialog;
+    private readonly ILanguageService languageService;
+    private readonly ConfirmMenu confirmMenu;
+    private readonly FadeScreenMenu fadeScreenMenu;
     private PrimaryHitShader primaryHitShader;
     private bool graphicsLoaded = false;
     private readonly TLASInstanceData tlasData;
@@ -54,6 +59,13 @@ class EndGameTrigger : IDisposable, IZonePlaceable
 
     private Light light;
 
+    public record Text
+    (
+        string Warning,
+        string Prompt,
+        string FinalText
+    );
+
     public EndGameTrigger
     (
         RTInstances<ZoneScene> rtInstances,
@@ -68,12 +80,17 @@ class EndGameTrigger : IDisposable, IZonePlaceable
         Persistence persistence,
         CubeBLAS cubeBLAS,
         PrimaryHitShader.Factory primaryHitShaderFactory,
-        TypedLightManager<ZoneScene> lightManager
+        TypedLightManager<ZoneScene> lightManager,
+        TextDialog textDialog,
+        ILanguageService languageService,
+        ConfirmMenu confirmMenu,
+        FadeScreenMenu fadeScreenMenu
     )
     {
         this.zoneIndex = description.ZoneIndex;
         this.rtInstances = rtInstances;
         this.destructionRequest = destructionRequest;
+        this.coroutine = coroutine;
         this.bepuScene = bepuScene;
         this.collidableIdentifier = collidableIdentifier;
         this.spriteInstanceFactory = spriteInstanceFactory;
@@ -83,6 +100,10 @@ class EndGameTrigger : IDisposable, IZonePlaceable
         this.cubeBLAS = cubeBLAS;
         this.primaryHitShaderFactory = primaryHitShaderFactory;
         this.lightManager = lightManager;
+        this.textDialog = textDialog;
+        this.languageService = languageService;
+        this.confirmMenu = confirmMenu;
+        this.fadeScreenMenu = fadeScreenMenu;
         this.mapOffset = description.MapOffset;
         this.respawnBossIndex = description.RespawnBossIndex;
 
@@ -217,17 +238,27 @@ class EndGameTrigger : IDisposable, IZonePlaceable
 
     private void EndGame(ContextMenuArgs args)
     {
-        contextMenu.ClearContext(EndGame);
+        coroutine.RunTask(async () =>
+        {
+            await textDialog.ShowTextAndWait(languageService.Current.EndGameTrigger.Warning, args.GamepadId);
+            if(!await confirmMenu.ShowAndWait(languageService.Current.EndGameTrigger.Prompt, null, args.GamepadId, confirmText: "No", rejectText: "Yes"))
+            {
+                await textDialog.ShowTextAndWait(languageService.Current.EndGameTrigger.FinalText, args.GamepadId);
+                await fadeScreenMenu.ShowAndWaitAndClose(0.0f, 1.0f, 0.6f, args.GamepadId);
 
-        //Respawn final boss
-        var bossState = persistence.Current.BossBattleTriggers.GetData(zoneIndex, 0);
-        bossState.Dead = false;
-        persistence.Current.BossBattleTriggers.SetData(zoneIndex, respawnBossIndex, bossState);
+                contextMenu.ClearContext(EndGame);
 
-        //Reset gold piles, this is worldwide, but only used in final area
-        persistence.Current.GoldPiles.ClearData();
+                //Respawn final boss
+                var bossState = persistence.Current.BossBattleTriggers.GetData(zoneIndex, 0);
+                bossState.Dead = false;
+                persistence.Current.BossBattleTriggers.SetData(zoneIndex, respawnBossIndex, bossState);
 
-        explorationGameState.RequestVictory();
+                //Reset gold piles, this is worldwide, but only used in final area
+                persistence.Current.GoldPiles.ClearData();
+
+                explorationGameState.RequestVictory();
+            }
+        });
     }
 
     private unsafe void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

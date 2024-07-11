@@ -24,6 +24,12 @@ namespace Adventure.Text
                     ClericName: "Adali",
                     ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?"
                 ),
+                EndGameTrigger: new EndGameTrigger.Text
+                (
+                    Warning: "You feel that interacting with this artifact will end your time in this realm.",
+                    Prompt: "Touch the artifact?",
+                    FinalText: "You reach out to touch the artifact. As you do your vision goes black..."
+                ),
                 //World Map
                 Airship: new Airship.Text
                 (

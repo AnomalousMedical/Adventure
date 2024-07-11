@@ -32,8 +32,10 @@ class ConfirmMenu
         this.explorationMenu = explorationMenu;
     }
 
-    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepadId)
+    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepadId, string confirmText = "Yes", string rejectText = "No")
     {
+        this.yesButton.Text = confirmText;
+        this.noButton.Text = rejectText;
         this.confirmed = false;
         this.message.Text = message;
         this.previousMenu = previousMenu;
