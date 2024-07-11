@@ -24,9 +24,11 @@ class VictoryGameState
     FontLoader fontLoader,
     FileMenu fileMenu,
     IExplorationMenu explorationMenu,
-    App app
+    App app,
+    CreditsMenu creditsMenu
 ) : IVictoryGameState
 {
+    private SharpButton credits = new SharpButton() { Text = "Credits" };
     private SharpButton file = new SharpButton() { Text = "File" };
     private SharpButton exit = new SharpButton() { Text = "Exit" };
     private SharpText youWin = new SharpText("The End") { Color = Color.White, Font = fontLoader.TitleFont };
@@ -63,6 +65,7 @@ class VictoryGameState
         {
             yield return new KeepWidthCenterLayout(oldSchoolText);
         }
+        yield return new KeepWidthCenterLayout(credits);
         yield return new KeepWidthCenterLayout(file);
         yield return new KeepWidthCenterLayout(exit);
     }
@@ -92,12 +95,17 @@ class VictoryGameState
             sharpGui.Text(youWin);
             sharpGui.Text(clearTimeText);
 
-            if (sharpGui.Button(file, GamepadId.Pad1, navUp: exit.Id, navDown: exit.Id))
+            if (sharpGui.Button(credits, GamepadId.Pad1, navUp: exit.Id, navDown: file.Id))
+            {
+                creditsMenu.Previous = null;
+                explorationMenu.RequestSubMenu(creditsMenu, GamepadId.Pad1);
+            }
+            else if (sharpGui.Button(file, GamepadId.Pad1, navUp: credits.Id, navDown: exit.Id))
             {
                 fileMenu.PreviousMenu = null;
                 explorationMenu.RequestSubMenu(fileMenu, GamepadId.Pad1);
             }
-            else if (sharpGui.Button(exit, GamepadId.Pad1, navUp: file.Id, navDown: file.Id))
+            else if (sharpGui.Button(exit, GamepadId.Pad1, navUp: file.Id, navDown: credits.Id))
             {
                 app.Exit();
             }
