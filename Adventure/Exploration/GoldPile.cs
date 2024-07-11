@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Assets.SoundEffects;
 
 namespace Adventure
 {
@@ -38,6 +39,7 @@ namespace Adventure
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
         private readonly Persistence persistence;
+        private readonly ISoundEffectPlayer soundEffectPlayer;
         private SpriteInstance spriteInstance;
         private bool graphicsLoaded = false;
         private readonly ISprite sprite;
@@ -57,7 +59,8 @@ namespace Adventure
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public GoldPile(
+        public GoldPile
+        (
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -66,7 +69,9 @@ namespace Adventure
             ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            Persistence persistence)
+            Persistence persistence,
+            ISoundEffectPlayer soundEffectPlayer
+        )
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
@@ -79,6 +84,7 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
             this.persistence = persistence;
+            this.soundEffectPlayer = soundEffectPlayer;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -214,6 +220,7 @@ namespace Adventure
 
         private void Take(ContextMenuArgs args)
         {
+            soundEffectPlayer.PlaySound(GoldPickupSoundEffect.Instance);
             contextMenu.ClearContext(Take);
             state.Taken = true;
             persistence.Current.Party.Gold += 100;
