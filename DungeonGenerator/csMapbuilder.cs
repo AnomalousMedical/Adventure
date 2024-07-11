@@ -514,13 +514,13 @@ namespace RogueLikeMapBuilder
             NorthConnectorIndex = map[x, yStart];
         }
 
-        public void BuildNorthFinalCorridorAndRoom()
+        public void BuildNorthFinalCorridorAndRoom(int corridorSize, int roomWidth, int roomHeight)
         {
             //This is written with the assumption that the level was padded out
 
             var x = northConnectorStart.Value.x;
             var y = northConnectorStart.Value.y;
-            var yStart = northConnectorStart.Value.y + 15;
+            var yStart = northConnectorStart.Value.y + corridorSize;
 
             FinalCorridor = currentCorridorCell;
             FinalRoom = currentRoomCell;
@@ -545,10 +545,10 @@ namespace RogueLikeMapBuilder
             //Make final room
             rctCurrentRoom = new Rectangle()
             {
-                Width = 4,
-                Height = 4
+                Width = roomWidth,
+                Height = roomHeight
             };
-            rctCurrentRoom.Left = x - 2;
+            rctCurrentRoom.Left = x - roomWidth / 2;
             rctCurrentRoom.Top = yStart + 1;
             Room_Build();
 

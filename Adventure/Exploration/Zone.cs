@@ -480,7 +480,7 @@ namespace Adventure
                     {
                         if (isFinalZone && alignment == Alignment.SouthNorth)
                         {
-                            mapBuilder.BuildNorthFinalCorridorAndRoom();
+                            mapBuilder.BuildNorthFinalCorridorAndRoom(15, 8, 8);
                         }
                         else
                         {
@@ -1292,7 +1292,7 @@ namespace Adventure
             {
                 placeEndGameTrigger = false;
                 var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
-                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height);
                 int instanceId = 0;
                 for(var x = room.Left; x <= room.Right; ++x)
                 {
