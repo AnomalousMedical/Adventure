@@ -34,6 +34,7 @@ namespace Adventure.WorldMap
         private readonly PartyMemberManager partyMemberManager;
         private readonly Persistence persistence;
         private readonly MultiCameraMover<WorldMapScene> multiCameraMover;
+        private readonly PlayerCage<WorldMapScene> playerCage;
         private readonly IBepuScene<WorldMapScene> bepuScene;
         private WorldMapInstance worldMapInstance;
         private WorldMapPlayer[] players = new WorldMapPlayer[4];
@@ -47,7 +48,8 @@ namespace Adventure.WorldMap
             Party party,
             PartyMemberManager partyMemberManager,
             Persistence persistence,
-            MultiCameraMover<WorldMapScene> multiCameraMover
+            MultiCameraMover<WorldMapScene> multiCameraMover,
+            PlayerCage<WorldMapScene> playerCage
         )
         {
             this.objectResolver = objectResolverFactory.Create();
@@ -56,6 +58,7 @@ namespace Adventure.WorldMap
             this.partyMemberManager = partyMemberManager;
             this.persistence = persistence;
             this.multiCameraMover = multiCameraMover;
+            this.playerCage = playerCage;
             this.bepuScene = bepuScene;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
@@ -121,6 +124,7 @@ namespace Adventure.WorldMap
             else
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
         }
 
@@ -196,6 +200,7 @@ namespace Adventure.WorldMap
             if(persistence.Current.Player.InWorld && !persistence.Current.Player.InAirship)
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
         }
 

@@ -47,6 +47,7 @@ namespace Adventure
         private readonly PartyMemberManager partyMemberManager;
         private readonly IGcService gcService;
         private readonly MultiCameraMover<ZoneScene> multiCameraMover;
+        private readonly PlayerCage<ZoneScene> playerCage;
 
         public event Action<IZoneManager> ZoneChanged;
 
@@ -63,7 +64,8 @@ namespace Adventure
             Sky sky,
             PartyMemberManager partyMemberManager,
             IGcService gcService,
-            MultiCameraMover<ZoneScene> multiCameraMover
+            MultiCameraMover<ZoneScene> multiCameraMover,
+            PlayerCage<ZoneScene> playerCage
         )
         {
             objectResolver = objectResolverFactory.Create();
@@ -76,6 +78,7 @@ namespace Adventure
             this.partyMemberManager = partyMemberManager;
             this.gcService = gcService;
             this.multiCameraMover = multiCameraMover;
+            this.playerCage = playerCage;
             this.partyMemberManager.PartyChanged += PartyMemberManager_PartyChanged;
         }
 
@@ -138,6 +141,7 @@ namespace Adventure
             if (!persistence.Current.Player.InWorld)
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
 
             ZoneChanged?.Invoke(this);
@@ -163,6 +167,7 @@ namespace Adventure
             if (!persistence.Current.Player.InWorld)
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
         }
 
@@ -180,6 +185,7 @@ namespace Adventure
             if (!persistence.Current.Player.InWorld)
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
         }
 
@@ -197,6 +203,7 @@ namespace Adventure
             if (!persistence.Current.Player.InWorld)
             {
                 multiCameraMover.CenterCamera();
+                playerCage.Update();
             }
         }
 
