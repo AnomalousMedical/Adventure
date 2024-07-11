@@ -1292,7 +1292,7 @@ namespace Adventure
             {
                 placeEndGameTrigger = false;
                 var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
-                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height);
+                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
                 int instanceId = 0;
                 for(var x = room.Left; x <= room.Right; ++x)
                 {
@@ -1304,9 +1304,6 @@ namespace Adventure
                             {
                                 o.MapOffset = mapMesh.PointToVector(endTriggerPoint.x, endTriggerPoint.y);
                                 o.Translation = currentPosition + o.MapOffset;
-                                var asset = biome.Treasure.PlotItem;
-                                o.Sprite = asset.CreateSprite();
-                                o.SpriteMaterial = asset.CreateMaterial();
                                 o.ZoneIndex = index;
                                 o.RespawnBossIndex = 0; //Only ever 1 boss
                             });
