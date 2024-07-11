@@ -29,7 +29,7 @@ class VictoryGameState
 {
     private SharpButton file = new SharpButton() { Text = "File" };
     private SharpButton exit = new SharpButton() { Text = "Exit" };
-    private SharpText youWin = new SharpText("You Win") { Color = Color.White, Font = fontLoader.TitleFont };
+    private SharpText youWin = new SharpText("The End") { Color = Color.White, Font = fontLoader.TitleFont };
     private SharpText clearTimeText = new SharpText() { Color = Color.White };
     private SharpText undefeatedText = new SharpText("Undefeated") { Color = Color.White };
     private SharpText oldSchoolText = new SharpText("Old School") { Color = Color.White };
