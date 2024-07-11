@@ -238,6 +238,8 @@ namespace Adventure
             services.AddScoped<EndGameTrigger.Description>();
             services.AddScoped<ItemStorage>();
             services.AddScoped<ItemStorage.Description>();
+            services.AddScoped<GoldPile>();
+            services.AddScoped<GoldPile.Description>();
             services.AddSingleton<ILanguageService>(s => new LanguageService(EnglishLanguage.Create()));
 #if !RELEASE
             services.AddSingleton<ISeedProvider>(s => new ConstantSeedProvider(0)); //Set to 0 for debugging

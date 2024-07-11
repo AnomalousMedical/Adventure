@@ -76,6 +76,8 @@ namespace Adventure.Services
 
             public PersistenceEntry<Torch.TorchPersistenceData> Torches { get; init; } = new PersistenceEntry<Torch.TorchPersistenceData>();
 
+            public PersistenceEntry<GoldPile.GoldPilePersistenceData> GoldPiles { get; set; } = new PersistenceEntry<GoldPile.GoldPilePersistenceData>();
+
             public ZoneData Zone { get; init; } = new ZoneData();
 
             public PlayerData Player { get; init; } = new PlayerData();

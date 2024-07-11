@@ -984,7 +984,7 @@ namespace Adventure
                 {
                     o.MapOffset = persistence.Current.Player.LootDropPosition.Value;
                     o.Translation = currentPosition + o.MapOffset;
-                    var treasure = new GoldPile();
+                    var treasure = new Assets.World.GoldPile();
                     o.Sprite = treasure.CreateSprite();
                     o.SpriteMaterial = treasure.CreateMaterial();
                 });
@@ -1287,23 +1287,47 @@ namespace Adventure
                 treasureStack.Clear(); //Clear the stack since we visited everything in the foreach
             }
 
-            //Place EndGameTrigger
+            //Create End Game
             if (placeEndGameTrigger && finalRoomIndex != csMapbuilder.NullCell)
             {
                 placeEndGameTrigger = false;
                 var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
-                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                var endGameTrigger = objectResolver.Resolve<EndGameTrigger, EndGameTrigger.Description>(o =>
+                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                int instanceId = 0;
+                for(var x = room.Left; x <= room.Right; ++x)
                 {
-                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
-                    o.Translation = currentPosition + o.MapOffset;
-                    var asset = biome.Treasure.PlotItem;
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
-                    o.ZoneIndex = index;
-                    o.RespawnBossIndex = 0; //Only ever 1 boss
-                });
-                placeables.Add(endGameTrigger);
+                    for(var y = room.Top; y <= room.Bottom; ++y)
+                    {
+                        if(x == endTriggerPoint.x && y == endTriggerPoint.y)
+                        {
+                            var endGameTrigger = objectResolver.Resolve<EndGameTrigger, EndGameTrigger.Description>(o =>
+                            {
+                                o.MapOffset = mapMesh.PointToVector(endTriggerPoint.x, endTriggerPoint.y);
+                                o.Translation = currentPosition + o.MapOffset;
+                                var asset = biome.Treasure.PlotItem;
+                                o.Sprite = asset.CreateSprite();
+                                o.SpriteMaterial = asset.CreateMaterial();
+                                o.ZoneIndex = index;
+                                o.RespawnBossIndex = 0; //Only ever 1 boss
+                            });
+                            placeables.Add(endGameTrigger);
+                        }
+                        else
+                        {
+                            var goldPile = objectResolver.Resolve<GoldPile, GoldPile.Description>(o =>
+                            {
+                                o.MapOffset = mapMesh.PointToVector(x, y);
+                                o.Translation = currentPosition + o.MapOffset;
+                                var asset = new Assets.World.GoldPile();
+                                o.Sprite = asset.CreateSprite();
+                                o.SpriteMaterial = asset.CreateMaterial();
+                                o.ZoneIndex = index;
+                                o.InstanceId = instanceId++;
+                            });
+                            placeables.Add(goldPile);
+                        }
+                    }
+                }
             }
         }
 

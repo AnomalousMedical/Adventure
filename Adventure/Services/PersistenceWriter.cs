@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Adventure.Assets.World;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -121,7 +122,9 @@ namespace Adventure.Services
             {
                 logger.LogInformation($"Loading save from '{outFile}'.");
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+                var save = JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+                UpdateSave(save);
+                return save;
             }
         }
 
@@ -177,11 +180,21 @@ namespace Adventure.Services
                 var outDir = GetSaveDirectory();
                 var outFile = Path.Combine(outDir, Path.GetFileName(file));
                 using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                var save = await JsonSerializer.DeserializeAsync<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+                UpdateSave(save);
                 yield return new SaveDataInfo()
                 {
-                    GameState = await JsonSerializer.DeserializeAsync<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState),
+                    GameState = save,
                     FileName = file,
                 };
+            }
+        }
+
+        private void UpdateSave(Persistence.GameState state)
+        {
+            if(state.GoldPiles == null)
+            {
+                state.GoldPiles = new Persistence.PersistenceEntry<GoldPile.GoldPilePersistenceData>();
             }
         }
 

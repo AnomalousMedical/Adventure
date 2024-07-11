@@ -16,26 +16,27 @@ using System.Threading.Tasks;
 
 namespace Adventure
 {
-    class EndGameTrigger : IDisposable, IZonePlaceable
+    class GoldPile : IDisposable, IZonePlaceable
     {
         public class Description : SceneObjectDesc
         {
             public int ZoneIndex { get; set; }
+
+            public int InstanceId { get; set; }
 
             public Vector3 MapOffset { get; set; }
 
             public ISprite Sprite { get; set; }
 
             public SpriteMaterialDescription SpriteMaterial { get; set; }
-
-            public int RespawnBossIndex { get; set; }
         }
+
+        public record struct GoldPilePersistenceData(bool Taken);
 
         private readonly RTInstances<ZoneScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
-        private readonly IExplorationGameState explorationGameState;
         private readonly Persistence persistence;
         private SpriteInstance spriteInstance;
         private bool graphicsLoaded = false;
@@ -44,19 +45,19 @@ namespace Adventure
         private readonly IBepuScene<ZoneScene> bepuScene;
         private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly Vector3 mapOffset;
-        private readonly int respawnBossIndex;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
         private bool graphicsCreated = false;
         private int zoneIndex;
+        private int instanceId;
+        private GoldPilePersistenceData state;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
         private Vector3 currentScale;
 
-        public EndGameTrigger
-        (
+        public GoldPile(
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -65,22 +66,20 @@ namespace Adventure
             ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            IExplorationGameState explorationGameState,
-            Persistence persistence
-        )
+            Persistence persistence)
         {
             this.sprite = description.Sprite;
             this.zoneIndex = description.ZoneIndex;
+            this.instanceId = description.InstanceId;
+            this.state = persistence.Current.GoldPiles.GetData(zoneIndex, instanceId);
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
             this.bepuScene = bepuScene;
             this.collidableIdentifier = collidableIdentifier;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
-            this.explorationGameState = explorationGameState;
             this.persistence = persistence;
             this.mapOffset = description.MapOffset;
-            this.respawnBossIndex = description.RespawnBossIndex;
 
             this.currentPosition = description.Translation;
             this.currentOrientation = description.Orientation;
@@ -103,18 +102,29 @@ namespace Adventure
                 this.spriteInstance = await spriteInstanceFactory.Checkout(description.SpriteMaterial, sprite);
                 this.graphicsLoaded = true;
 
-                AddGraphics();
+                if (!state.Taken)
+                {
+                    AddGraphics();
+                }
             });
         }
 
         public void Reset()
         {
-            //Does nothing, no state to reset
+            state = persistence.Current.GoldPiles.GetData(zoneIndex, instanceId);
+            if (!state.Taken)
+            {
+                AddGraphics();
+            }
+            else
+            {
+                DestroyGraphics();
+            }
         }
 
         public void CreatePhysics()
         {
-            if (!physicsCreated)
+            if (!state.Taken && !physicsCreated)
             {
                 physicsCreated = true;
                 var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
@@ -150,6 +160,8 @@ namespace Adventure
 
         private void AddGraphics()
         {
+            if (!graphicsLoaded || state.Taken) { return; }
+
             if (!graphicsCreated)
             {
                 rtInstances.AddTlasBuild(tlasData);
@@ -188,31 +200,26 @@ namespace Adventure
             if (collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.A, out var player)
              || collidableIdentifier.TryGetIdentifier<Player>(evt.Pair.B, out player))
             {
-                contextMenu.HandleContext("End Game", EndGame, player.GamepadId);
+                if (!state.Taken)
+                {
+                    contextMenu.HandleContext("Take", Take, player.GamepadId);
+                }
             }
         }
 
         private void HandleCollisionEnd(CollisionEvent evt)
         {
-            contextMenu.ClearContext(EndGame);
+            contextMenu.ClearContext(Take);
         }
 
-        private void EndGame(ContextMenuArgs args)
+        private void Take(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(EndGame);
-
-            //Respawn final boss
-            var bossState = persistence.Current.BossBattleTriggers.GetData(zoneIndex, 0);
-            bossState.Dead = false;
-            persistence.Current.BossBattleTriggers.SetData(zoneIndex, respawnBossIndex, bossState);
-
-            //Reset gold piles, this is worldwide, but only used in final area
-            persistence.Current.GoldPiles.ClearData();
-
-            explorationGameState.RequestVictory();
-
-            //DestroyGraphics();
-            //DestroyPhysics();
+            contextMenu.ClearContext(Take);
+            state.Taken = true;
+            persistence.Current.Party.Gold += 100;
+            persistence.Current.GoldPiles.SetData(zoneIndex, instanceId, state);
+            DestroyGraphics();
+            DestroyPhysics();
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
