@@ -132,10 +132,6 @@ namespace Adventure
 
         public void BattleWon()
         {
-            if (IsFinalBoss)
-            {
-                explorationGameState.RequestVictory();
-            }
             if (IsBoss)
             {
                 persistence.Current.World.CompletedAreaLevels[description.Area] = EnemyLevel;
@@ -153,7 +149,7 @@ namespace Adventure
                 }
             }
 
-            state.Dead = !IsFinalBoss; //Final boss can't perma die
+            state.Dead = true;
             SetState(description, persistence, state);
             DestroyPhysics();
             RemoveGraphics();

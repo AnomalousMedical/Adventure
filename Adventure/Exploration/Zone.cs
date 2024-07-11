@@ -227,6 +227,7 @@ namespace Adventure
         private PlotItems? helpBookPlotItem;
         private LootDropTrigger lootDropTrigger;
         private ushort startRoomIndex = ushort.MaxValue;
+        private ushort finalRoomIndex = csMapbuilder.NullCell;
         private bool isFinalZone;
 
         private Task zoneGenerationTask;
@@ -534,6 +535,8 @@ namespace Adventure
                             endPoint = mapBuilder.SouthConnector.Value;
                             break;
                     }
+
+                    finalRoomIndex = mapBuilder.FinalRoom;
 
                     mapMesh = new MapMesh(mapBuilder, floorMesh, mapUnitX: description.MapUnitX, mapUnitY: description.MapUnitY, mapUnitZ: description.MapUnitZ, corridorSlopeMultiple: description.CorridorSlopeMultiple);
 
@@ -949,6 +952,7 @@ namespace Adventure
         private bool placeGate;
         private bool placeKey;
         private bool placeTorch;
+        private bool placeEndGameTrigger;
         private bool placeFirstChest;
         private Point? helpBookPoint;
 
@@ -961,6 +965,7 @@ namespace Adventure
             placeBoss = this.makeBoss;
             placeKey = placeGate = makeGate;
             placeTorch = this.makeTorch;
+            placeEndGameTrigger = this.isFinalZone;
             placeFirstChest = true;
             helpBookPoint = null;
         }
@@ -1083,7 +1088,7 @@ namespace Adventure
             var treasureChests = new List<TreasureTrigger>();
             treasureStack = new Stack<ITreasure>(this.treasure.Reverse());
 
-            var rooms = mapMesh.MapBuilder.GetDesiredRooms().ToList();
+            var rooms = mapMesh.MapBuilder.GetDesiredRooms().Where(i => i != finalRoomIndex).ToList();
             var skipRooms = 0;
 
             int GetRoom()
@@ -1280,6 +1285,25 @@ namespace Adventure
                     ++dropIndex;
                 }
                 treasureStack.Clear(); //Clear the stack since we visited everything in the foreach
+            }
+
+            //Place EndGameTrigger
+            if (placeEndGameTrigger && finalRoomIndex != csMapbuilder.NullCell)
+            {
+                placeEndGameTrigger = false;
+                var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
+                var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                var endGameTrigger = objectResolver.Resolve<EndGameTrigger, EndGameTrigger.Description>(o =>
+                {
+                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
+                    o.Translation = currentPosition + o.MapOffset;
+                    var asset = biome.Treasure.PlotItem;
+                    o.Sprite = asset.CreateSprite();
+                    o.SpriteMaterial = asset.CreateMaterial();
+                    o.ZoneIndex = index;
+                    o.RespawnBossIndex = 0; //Only ever 1 boss
+                });
+                placeables.Add(endGameTrigger);
             }
         }
 

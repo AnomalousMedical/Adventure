@@ -234,6 +234,8 @@ namespace Adventure
             services.AddSingleton<IContextMenu, ContextMenu>();
             services.AddSingleton<IAnimationService<WorldMapScene>, AnimationService<WorldMapScene>>();
             services.AddSingleton<ItemVoidMenu>();
+            services.AddScoped<EndGameTrigger>();
+            services.AddScoped<EndGameTrigger.Description>();
             services.AddScoped<ItemStorage>();
             services.AddScoped<ItemStorage.Description>();
             services.AddSingleton<ILanguageService>(s => new LanguageService(EnglishLanguage.Create()));
