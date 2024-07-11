@@ -63,8 +63,8 @@ class VictoryGameState
         {
             yield return new KeepWidthCenterLayout(oldSchoolText);
         }
-        yield return file;
-        yield return exit;
+        yield return new KeepWidthCenterLayout(file);
+        yield return new KeepWidthCenterLayout(exit);
     }
 
     public IGameState Update(Clock clock)
