@@ -12,7 +12,7 @@ namespace Adventure.Items.Actions
 {
     internal class LevelBoost(ILevelCalculator levelCalculator) : IInventoryAction
     {
-        private static Color CastColor => Color.FromARGB(0xffff0ee4);
+        public static Color CastColor => Color.FromARGB(0xffff0ee4);
 
         public void Use(InventoryItem item, Inventory inventory, CharacterSheet attacker, CharacterSheet target)
         {

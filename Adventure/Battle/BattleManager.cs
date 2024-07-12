@@ -110,6 +110,8 @@ namespace Adventure.Battle
 
         private SharpButton endBattle = new SharpButton() { Text = "End Battle" };
         private SharpText goldRewardText = new SharpText() { Color = Color.White };
+        private SharpPanel goldRewardPanel = new SharpPanel();
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
         private List<Enemy> enemies = new List<Enemy>(20);
         private List<Enemy> killedEnemies = new List<Enemy>(20);
@@ -118,6 +120,7 @@ namespace Adventure.Battle
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
         bool allowBattleFinish = false;
         bool showEndBattleButton = false;
+        bool isBossBattle;
         long startBattleDelay;
 
 
@@ -191,6 +194,7 @@ namespace Adventure.Battle
 
         public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy)
         {
+            isBossBattle = boss;
             startBattleDelay = (long)(0.7f * Clock.SecondsToMicro);
             this.stealCb = stealCb;
             var currentZ = 3;
@@ -344,14 +348,16 @@ namespace Adventure.Battle
                 cursor.Visible = false;
 
                 var layout =
-                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-                    new MaxWidthLayout(scaleHelper.Scaled(300),
-                    new ColumnLayout(goldRewardText, endBattle) { Margin = new IntPad(10) }
-                    ));
+                    new MarginLayout(new IntPad(scaleHelper.Scaled(17)),
+                    new ColumnLayout(
+                        new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new PanelLayout(goldRewardPanel, goldRewardText)), 
+                        endBattle) 
+                    { Margin = new IntPad(3) });
                 var desiredSize = layout.GetDesiredSize(sharpGui);
 
                 layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
 
+                sharpGui.Panel(goldRewardPanel, panelStyle);
                 sharpGui.Text(goldRewardText);
 
                 //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
@@ -983,7 +989,47 @@ namespace Adventure.Battle
                             }
                             BattleEnded();
                             allowBattleFinish = true;
-                            yield return coroutine.WaitSeconds(1.85);
+
+                            if (isBossBattle)
+                            {
+                                const double REMAINING_TIME = 1.85 - 0.4 - RestoreMpEffect.Duration;
+
+                                yield return coroutine.WaitSeconds(0.4);
+
+                                var applyEffects = new List<Attachment<BattleScene>>();
+                                foreach (var player in players)
+                                {
+                                    var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
+                                    {
+                                        var asset = new StatBoostEffect();
+                                        o.RenderShadow = false;
+                                        o.Sprite = asset.CreateSprite();
+                                        o.SpriteMaterial = asset.CreateMaterial();
+                                        o.Light = new Light
+                                        {
+                                            Color = Items.Actions.LevelBoost.CastColor,
+                                            Length = 2.3f,
+                                        };
+                                        o.LightOffset = new Vector3(0, 0, -0.1f);
+                                    });
+                                    applyEffect.SetPosition(player.MagicHitLocation, Quaternion.Identity, Vector3.ScaleIdentity);
+                                    applyEffects.Add(applyEffect);
+                                }
+
+                                yield return coroutine.WaitSeconds(RestoreMpEffect.Duration);
+
+                                foreach (var effect in applyEffects)
+                                {
+                                    effect.RequestDestruction();
+                                }
+
+                                yield return coroutine.WaitSeconds(REMAINING_TIME);
+                            }
+                            else
+                            {
+                                yield return coroutine.WaitSeconds(1.85);
+                            }
+
                             showEndBattleButton = true;
                             fanfareDone = true;
                         }
