@@ -449,10 +449,7 @@ namespace Adventure
                             break;
                         case Alignment.WestEast:
                             mapBuilder.FindEastConnector();
-                            if (description.GoPrevious)
-                            {
-                                mapBuilder.FindWestConnector();
-                            }
+                            mapBuilder.FindWestConnector();
                             break;
                         case Alignment.SouthNorth:
                             mapBuilder.FindSouthConnector();
@@ -473,7 +470,14 @@ namespace Adventure
 
                     if (mapBuilder.WestConnector.HasValue)
                     {
-                        mapBuilder.BuildWestConnector();
+                        if (!goPrevious)
+                        {
+                            mapBuilder.BuildWestFinalCorridorAndRoom(3, 2, 2);
+                        }
+                        else
+                        {
+                            mapBuilder.BuildWestConnector();
+                        }
                     }
 
                     if (mapBuilder.NorthConnector.HasValue)
@@ -954,7 +958,7 @@ namespace Adventure
         private bool placeTorch;
         private bool placeEndGameTrigger;
         private bool placeFirstChest;
-        private Point? helpBookPoint;
+        private Vector3? helpBookLoc;
 
         private void ResetPlacementData()
         {
@@ -967,7 +971,7 @@ namespace Adventure
             placeTorch = this.makeTorch;
             placeEndGameTrigger = this.isFinalZone;
             placeFirstChest = true;
-            helpBookPoint = null;
+            helpBookLoc = null;
         }
 
         private void ResetLootDrop()
@@ -1364,7 +1368,7 @@ namespace Adventure
                     });
                     this.placeables.Add(treasureTrigger);
                     treasureChests.Add(treasureTrigger);
-                    SetHelpBookPoint(new Point(point.x + 1, point.y));
+                    SetHelpBookPoint(mapMesh.PointToVector(point.x + 1, point.y));
                 }
                 else if (goPrevious && placeRestArea) //Only place this way if you can go to a previous level, otherwise it goes in the start area
                 {
@@ -1376,8 +1380,9 @@ namespace Adventure
             {
                 //This is the start of the game, so place a rest area and the help book
                 placeRestArea = false;
-                CreateRestArea(mapLoc);
-                SetHelpBookPoint(new Point(point.x + 1, point.y), true);
+                var restLoc = mapMesh.PointToVector(point.x, room.Bottom);
+                CreateRestArea(restLoc + new Vector3(0.0f, 0.0f, 0.3f));
+                SetHelpBookPoint(restLoc + new Vector3(0.8f, 0.0f, -0.3f), true);
             }
         }
 
@@ -1396,22 +1401,21 @@ namespace Adventure
             this.placeables.Add(restArea);
         }
 
-        private void SetHelpBookPoint(in Point point, bool force = false)
+        private void SetHelpBookPoint(in Vector3 loc, bool force = false)
         {
-            if(helpBookPoint == null || force)
+            if(helpBookLoc == null || force)
             {
-                helpBookPoint = point;
+                helpBookLoc = loc;
             }
         }
 
         private void CreateHelpBook()
         {
-            if (helpBookPlotItem != null && helpBookPoint != null)
+            if (helpBookPlotItem != null && helpBookLoc != null)
             {
-                var mapLoc = mapMesh.PointToVector(helpBookPoint.Value.x, helpBookPoint.Value.y);
                 var helpBook = objectResolver.Resolve<HelpBook, HelpBook.Description>(o =>
                 {
-                    o.MapOffset = mapLoc;
+                    o.MapOffset = helpBookLoc.Value;
                     o.Translation = currentPosition + o.MapOffset;
                     o.PlotItem = helpBookPlotItem.Value;
                 });

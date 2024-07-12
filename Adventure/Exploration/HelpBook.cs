@@ -176,7 +176,7 @@ class HelpBook : IDisposable, IZonePlaceable
         if (!Taken && !physicsCreated)
         {
             physicsCreated = true;
-            var shape = new Box(currentScale.x, 1000, currentScale.z); //TODO: Each one creates its own, try to load from resources
+            var shape = new Box(currentScale.x, 1000, 0.3f); //TODO: Each one creates its own, try to load from resources
             shapeIndex = bepuScene.Simulation.Shapes.Add(shape);
 
             staticHandle = bepuScene.Simulation.Statics.Add(

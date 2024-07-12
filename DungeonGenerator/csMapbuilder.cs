@@ -660,6 +660,45 @@ namespace RogueLikeMapBuilder
             WestConnectorIndex = map[0, y];
         }
 
+        public void BuildWestFinalCorridorAndRoom(int corridorSize, int roomWidth, int roomHeight)
+        {
+            var x = westConnectorStart.Value.x;
+            var y = westConnectorStart.Value.y;
+            var startX = x - corridorSize;
+
+            FinalCorridor = currentCorridorCell;
+            FinalRoom = currentRoomCell;
+
+            //Make sure there was nothing left over
+            lPotentialCorridor.Clear();
+
+            for (var fillX = startX; fillX < x; ++fillX)
+            {
+                if (map[fillX, y] == csMapbuilder.EmptyCell)
+                {
+                    lPotentialCorridor.Add(new Point(fillX, y));
+                }
+            }
+
+            if (lPotentialCorridor.Count > 0)
+            {
+                corridorTerminatingRooms[currentCorridorCell] = map[x, y];
+                Corridor_Build(true);
+            }
+
+            //Make final room
+            rctCurrentRoom = new Rectangle()
+            {
+                Width = roomWidth,
+                Height = roomHeight
+            };
+            rctCurrentRoom.Left = startX - roomWidth;
+            rctCurrentRoom.Top = y - roomHeight / 2;
+            Room_Build();
+
+            WestConnectorIndex = map[startX + 1, y];
+        }
+
         public void FindEastConnector()
         {
             var width = Map_Size.Width;
