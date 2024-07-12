@@ -58,7 +58,7 @@ class UserInputMenu
     {
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-           new ColumnLayout(new KeepWidthCenterLayout(message), new FixedWidthLayout(scaleHelper.Scaled(200), input), new KeepWidthCenterLayout(yesButton), new KeepWidthCenterLayout(noButton)) { Margin = new IntPad(10) }
+           new ColumnLayout(new KeepWidthCenterLayout(message), new KeepWidthCenterLayout(new FixedWidthLayout(scaleHelper.Scaled(200), input)), new KeepWidthCenterLayout(yesButton), new KeepWidthCenterLayout(noButton)) { Margin = new IntPad(10) }
         );
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
