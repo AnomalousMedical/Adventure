@@ -53,3 +53,12 @@ class CureSpellSoundEffect : ISoundEffect
 
     public bool Streaming => false;
 }
+
+class LevelBoostSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new LevelBoostSoundEffect();
+
+    public string File => "SoundEffects/shyguy014/458533__shyguy014__healpop.ogg";
+
+    public bool Streaming => false;
+}

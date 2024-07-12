@@ -39,7 +39,7 @@ namespace Adventure.Items.Actions
 
                     var applyEffects = new List<IAttachment>();
 
-                    soundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+                    soundEffectPlayer.PlaySound(LevelBoostSoundEffect.Instance);
 
                     var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
                     var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
@@ -85,7 +85,7 @@ namespace Adventure.Items.Actions
                 var characterSheet = target.Stats as CharacterSheet;
                 LevelUpSheet(item, characterSheet);
 
-                battleManager.SoundEffectPlayer.PlaySound(CureSpellSoundEffect.Instance);
+                battleManager.SoundEffectPlayer.PlaySound(LevelBoostSoundEffect.Instance);
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {

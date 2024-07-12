@@ -1023,11 +1023,16 @@ namespace Adventure.Battle
                             BattleEnded();
                             allowBattleFinish = true;
 
+                            const double END_BATTLE_WAIT_TIME = 1.85;
+
                             if (nextLevel != null)
                             {
-                                const double REMAINING_TIME = 1.85 - 0.4 - RestoreMpEffect.Duration;
+                                const double EFFECT_WAIT_TIME = 0.4;
+                                const double REMAINING_TIME = END_BATTLE_WAIT_TIME - EFFECT_WAIT_TIME - RestoreMpEffect.Duration;
 
-                                yield return coroutine.WaitSeconds(0.4);
+                                yield return coroutine.WaitSeconds(EFFECT_WAIT_TIME);
+
+                                soundEffectPlayer.PlaySound(LevelBoostSoundEffect.Instance);
 
                                 var applyEffects = new List<Attachment<BattleScene>>();
                                 foreach (var player in players)
@@ -1060,7 +1065,7 @@ namespace Adventure.Battle
                             }
                             else
                             {
-                                yield return coroutine.WaitSeconds(1.85);
+                                yield return coroutine.WaitSeconds(END_BATTLE_WAIT_TIME);
                             }
 
                             showEndBattleButton = true;
