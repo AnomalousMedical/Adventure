@@ -579,9 +579,9 @@ namespace Adventure.Services
                 var phase3Potions = new List<Treasure>
                 {
                     new Treasure(PotionCreator.CreateStrengthBoost(10), TreasureType.StatBoost),
-                    new Treasure(PotionCreator.CreateMagicBoost(10), TreasureType.Accessory),
-                    new Treasure(PotionCreator.CreateSpiritBoost(10), TreasureType.Accessory),
-                    new Treasure(PotionCreator.CreateVitalityBoost(10), TreasureType.Accessory),
+                    new Treasure(PotionCreator.CreateMagicBoost(10), TreasureType.StatBoost),
+                    new Treasure(PotionCreator.CreateSpiritBoost(10), TreasureType.StatBoost),
+                    new Treasure(PotionCreator.CreateVitalityBoost(10), TreasureType.StatBoost),
                 };
 
                 var phase3UniqueStolenTreasures = new List<ITreasure>
