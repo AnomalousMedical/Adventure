@@ -1092,7 +1092,8 @@ namespace Adventure
             var treasureChests = new List<TreasureTrigger>();
             treasureStack = new Stack<ITreasure>(this.treasure.Reverse());
 
-            var rooms = mapMesh.MapBuilder.GetDesiredRooms().Where(i => i != finalRoomIndex).ToList();
+            var finalRoomIndexAdjusted = finalRoomIndex - csMapbuilder.RoomCell;
+            var rooms = mapMesh.MapBuilder.GetDesiredRooms().Where(i => i != finalRoomIndexAdjusted).ToList();
             var skipRooms = 0;
 
             int GetRoom()
@@ -1266,12 +1267,60 @@ namespace Adventure
                 placeables.Add(gate);
             }
 
+            //Populate the special final room skipped above first
+            if (finalRoomIndex != csMapbuilder.NullCell)
+            {
+                if (placeEndGameTrigger)
+                {
+                    placeEndGameTrigger = false;
+                    var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
+                    var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                    int instanceId = 0;
+                    for(var x = room.Left; x <= room.Right; ++x)
+                    {
+                        for(var y = room.Top; y <= room.Bottom; ++y)
+                        {
+                            if(x == endTriggerPoint.x && y == endTriggerPoint.y)
+                            {
+                                var endGameTrigger = objectResolver.Resolve<EndGameTrigger, EndGameTrigger.Description>(o =>
+                                {
+                                    o.MapOffset = mapMesh.PointToVector(endTriggerPoint.x, endTriggerPoint.y);
+                                    o.Translation = currentPosition + o.MapOffset;
+                                    o.ZoneIndex = index;
+                                    o.RespawnBossIndex = 0; //Only ever 1 boss
+                                });
+                                placeables.Add(endGameTrigger);
+                            }
+                            else
+                            {
+                                var goldPile = objectResolver.Resolve<GoldPile, GoldPile.Description>(o =>
+                                {
+                                    o.MapOffset = mapMesh.PointToVector(x, y);
+                                    o.Translation = currentPosition + o.MapOffset;
+                                    var asset = new Assets.World.GoldPile();
+                                    o.Sprite = asset.CreateSprite();
+                                    o.SpriteMaterial = asset.CreateMaterial();
+                                    o.ZoneIndex = index;
+                                    o.InstanceId = instanceId++;
+                                });
+                                placeables.Add(goldPile);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //Make sure to populate the final room before any below
+                    PopulateRoom(mapMesh.MapBuilder.Rooms[finalRoomIndexAdjusted], treasureStack, treasureChests, noBgSquares);
+                }
+            }
+
             foreach (var room in rooms.Skip(skipRooms).Select(i => mapMesh.MapBuilder.Rooms[i]))
             {
                 PopulateRoom(room, treasureStack, treasureChests, noBgSquares);
             }
 
-            //This really should not be able to happen, but track it anyway, if you had philip a key and only 2 rooms this would happen
+            //This really should not be able to happen, but track it anyway, if you had a rest area a key and only 2 rooms this would happen
             if (treasureChests.Count == 0 && treasureStack.Count > 0)
             {
                 logger.LogWarning("No treasure chests. All loot for this zone will be converted to stolen treasure.");
@@ -1289,46 +1338,6 @@ namespace Adventure
                     ++dropIndex;
                 }
                 treasureStack.Clear(); //Clear the stack since we visited everything in the foreach
-            }
-
-            //Create End Game
-            if (placeEndGameTrigger && finalRoomIndex != csMapbuilder.NullCell)
-            {
-                placeEndGameTrigger = false;
-                var room = mapMesh.MapBuilder.Rooms[finalRoomIndex - csMapbuilder.RoomCell];
-                var endTriggerPoint = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
-                int instanceId = 0;
-                for(var x = room.Left; x <= room.Right; ++x)
-                {
-                    for(var y = room.Top; y <= room.Bottom; ++y)
-                    {
-                        if(x == endTriggerPoint.x && y == endTriggerPoint.y)
-                        {
-                            var endGameTrigger = objectResolver.Resolve<EndGameTrigger, EndGameTrigger.Description>(o =>
-                            {
-                                o.MapOffset = mapMesh.PointToVector(endTriggerPoint.x, endTriggerPoint.y);
-                                o.Translation = currentPosition + o.MapOffset;
-                                o.ZoneIndex = index;
-                                o.RespawnBossIndex = 0; //Only ever 1 boss
-                            });
-                            placeables.Add(endGameTrigger);
-                        }
-                        else
-                        {
-                            var goldPile = objectResolver.Resolve<GoldPile, GoldPile.Description>(o =>
-                            {
-                                o.MapOffset = mapMesh.PointToVector(x, y);
-                                o.Translation = currentPosition + o.MapOffset;
-                                var asset = new Assets.World.GoldPile();
-                                o.Sprite = asset.CreateSprite();
-                                o.SpriteMaterial = asset.CreateMaterial();
-                                o.ZoneIndex = index;
-                                o.InstanceId = instanceId++;
-                            });
-                            placeables.Add(goldPile);
-                        }
-                    }
-                }
             }
         }
 
