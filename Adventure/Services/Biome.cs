@@ -39,6 +39,7 @@ namespace Adventure
         ISpriteAsset EntranceAsset { get; set; }
         Func<int, FastNoiseLite> CreateNoise { get; set; }
         float CorridorSlopeMultiple { get; set; }
+        Zone.Alignment? OverrideAlignment { get; set; }
     }
 
     class Biome : IBiome
@@ -99,6 +100,8 @@ namespace Adventure
         public int MaxBackgroundItemRoll { get; set; } = 100;
 
         public Func<int, FastNoiseLite> CreateNoise { get; set; }
+
+        public Zone.Alignment? OverrideAlignment { get; set; }
     }
 
     record BiomeBackgroundItem(int Chance, ISpriteAsset Asset, float ScaleMin = 1.0f, float ScaleRange = 0.0f, float XPlacementRange = 0.5f, float ZPlacementRange = 0.9f);

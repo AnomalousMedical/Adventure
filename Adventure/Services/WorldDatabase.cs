@@ -361,7 +361,7 @@ namespace Adventure.Services
             int area = 0;
             AreaBuilder areaBuilder;
             var zoneCounter = new ZoneCounter();
-            var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth, Zone.Alignment.SouthNorth });
+            var zoneAlignment = new RandomItemDistributor<Zone.Alignment>(new[] { Zone.Alignment.EastWest, Zone.Alignment.WestEast, Zone.Alignment.NorthSouth });
 
             List<int> specialIslands = new List<int>() { 0, 1, 2 }; //This is used to select from the items below
             IslandInfo blacksmithUpgradeIsland = null;

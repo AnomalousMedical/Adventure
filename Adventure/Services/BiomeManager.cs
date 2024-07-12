@@ -262,6 +262,7 @@ namespace Adventure
                 MapUnitY = 0.8f,
                 RandomizeMapUnitYDirection = false,
                 Treasure = MakeDefaultTreasure(),
+                OverrideAlignment = Zone.Alignment.SouthNorth,
                 BackgroundItems = new List<BiomeBackgroundItem>
                 {
 
@@ -292,7 +293,8 @@ namespace Adventure
                 CreateNoise = seed => terrainNoise.CreateLavaNoise(seed),
                 MapUnitY = 0.4f,
                 RandomizeMapUnitYDirection = false,
-                CorridorSlopeMultiple = -1.0f
+                CorridorSlopeMultiple = -1.0f,
+                OverrideAlignment = Zone.Alignment.SouthNorth
             };
 
             return biome;

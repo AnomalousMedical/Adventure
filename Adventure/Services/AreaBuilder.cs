@@ -137,7 +137,6 @@ namespace Adventure.Services
             o.MakeTorch = TorchZones?.Contains(zoneIndex) == true;
             o.StartEnd = StartEnd;
             o.Area = Index;
-            o.Alignment = Alignment;
 
             if(zoneIndex == EndZone && PlotItem != null)
             {
@@ -150,6 +149,7 @@ namespace Adventure.Services
             }
 
             o.Biome = worldDatabase.BiomeManager.GetBiome(Biome);
+            o.Alignment = o.Biome.OverrideAlignment ?? Alignment;
             o.MapUnitY = o.Biome.MapUnitY;
             if (o.Biome.RandomizeMapUnitYDirection)
             {
