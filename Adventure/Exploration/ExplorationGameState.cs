@@ -28,6 +28,7 @@ namespace Adventure
         void RequestWorldMap();
         void LevelUpWorld();
         void RequestVictory();
+        int GetNextWorldLevel();
     }
 
     class ExplorationGameState : IExplorationGameState, IDisposable
@@ -206,6 +207,14 @@ namespace Adventure
             }
 
             return nextState;
+        }
+
+        public int GetNextWorldLevel()
+        {
+            var current = persistence.Current.World.Level;
+            var levelDelta = worldDatabase.GetLevelDelta(current);
+            current += levelDelta;
+            return current;
         }
 
         public void LevelUpWorld()

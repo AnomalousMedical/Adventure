@@ -47,7 +47,7 @@ namespace Adventure.Battle
         /// </summary>
         /// <param name="active"></param>
         void SetActive(bool active);
-        void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> Steal, BiomeEnemy triggerEnemy);
+        void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> Steal, BiomeEnemy triggerEnemy, int? nextLevel);
         Result Update(Clock clock);
         IBattleTarget ValidateTarget(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetRandomPlayer();
@@ -120,7 +120,7 @@ namespace Adventure.Battle
         private Queue<BattlePlayer> activePlayers = new Queue<BattlePlayer>(4);
         bool allowBattleFinish = false;
         bool showEndBattleButton = false;
-        bool isBossBattle;
+        int? nextLevel;
         long startBattleDelay;
 
 
@@ -192,9 +192,9 @@ namespace Adventure.Battle
             objectResolver.Dispose();
         }
 
-        public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy)
+        public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy, int? nextLevel)
         {
-            isBossBattle = boss;
+            this.nextLevel = nextLevel;
             startBattleDelay = (long)(0.7f * Clock.SecondsToMicro);
             this.stealCb = stealCb;
             var currentZ = 3;
@@ -990,7 +990,7 @@ namespace Adventure.Battle
                             BattleEnded();
                             allowBattleFinish = true;
 
-                            if (isBossBattle)
+                            if (nextLevel != null)
                             {
                                 const double REMAINING_TIME = 1.85 - 0.4 - RestoreMpEffect.Duration;
 

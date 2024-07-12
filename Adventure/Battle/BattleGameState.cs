@@ -81,44 +81,14 @@ namespace Adventure.Battle
                 persistenceWriter.Save();
                 persistenceWriter.AddSaveBlock(saveBlock);
                 eventManager[EventLayers.Battle].makeFocusLayer();
-                int battleSeed;
-                int level;
-                bool boss = false;
-                Func<IEnumerable<ITreasure>> stealCb;
-                BiomeEnemy triggerEnemy = null;
-                if (battleTrigger == null) //This is the test battle setup
-                {
-                    level = party.GetAverageLevel() * 4 / 5;
-                    if (level < 1)
-                    {
-                        level = 1;
-                    }
-                    battleSeed = noTriggerRandom.Next(int.MinValue, int.MaxValue);
-                    boss = true;
-                    var hasTreasure = true;
-                    stealCb = () =>
-                    {
-                        if (hasTreasure)
-                        {
-                            hasTreasure = false;
-                            return new[] { new Treasure(potionCreator.CreateManaPotion(level), TreasureType.Potion) };
-                        }
-                        else
-                        {
-                            return Enumerable.Empty<Treasure>();
-                        }
-                    };
-                }
-                else
-                {
-                    level = battleTrigger.EnemyLevel;
-                    battleSeed = battleTrigger.BattleSeed;
-                    boss = battleTrigger.IsBoss;
-                    stealCb = battleTrigger.StealTreasure;
-                    triggerEnemy = battleTrigger.TriggerEnemy;
-                }
 
-                battleManager.SetupBattle(battleSeed, level, boss, stealCb, triggerEnemy);
+                var level = battleTrigger.EnemyLevel;
+                var battleSeed = battleTrigger.BattleSeed;
+                var boss = battleTrigger.IsBoss;
+                var stealCb = battleTrigger.StealTreasure;
+                var triggerEnemy = battleTrigger.TriggerEnemy;
+
+                battleManager.SetupBattle(battleSeed, level, boss, stealCb, triggerEnemy, battleTrigger.NextLevel);
             }
             else
             {

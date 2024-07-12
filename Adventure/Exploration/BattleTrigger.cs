@@ -74,7 +74,10 @@ namespace Adventure
         public BiomeEnemy TriggerEnemy { get; set; }
         public int Index => description.Index;
 
-        public BattleTrigger(
+        public int? NextLevel { get; private set; }
+
+        public BattleTrigger
+        (
             RTInstances<ZoneScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -83,7 +86,8 @@ namespace Adventure
             ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IExplorationGameState explorationGameState,
-            Persistence persistence)
+            Persistence persistence
+        )
         {
             state = GetState(description, persistence);
 
@@ -117,6 +121,11 @@ namespace Adventure
                 Mask = RtStructures.OPAQUE_GEOM_MASK,
                 Transform = new InstanceMatrix(finalPosition, currentOrientation, currentScale)
             };
+
+            if(IsBoss && !IsFinalBoss)
+            {
+                NextLevel = explorationGameState.GetNextWorldLevel();
+            }
 
             coroutine.RunTask(async () =>
             {
