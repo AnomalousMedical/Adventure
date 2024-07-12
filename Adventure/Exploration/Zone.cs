@@ -597,7 +597,7 @@ namespace Adventure
 
                 var battleTriggers = new List<BattleTrigger>();
                 SetupCorridors(enemyRandom, usedCorridors, battleTriggers);
-                SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares);
+                SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares, battleTriggers);
                 PlaceKeySafety(enemyRandom, usedCorridors);
                 PlaceSignpost(description, startPoint, endPoint);
                 ReserveBgSquares(noBgSquares, startPoint, 7);
@@ -1067,24 +1067,29 @@ namespace Adventure
                 usedCorridors.Add(corridorIndex);
                 var point = mapMesh.MapBuilder.Corridors[corridorIndex];
 
-                var battleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
-                {
-                    o.MapOffset = mapMesh.PointToVector(point.x, point.y);
-                    o.Translation = currentPosition + o.MapOffset;
-                    var enemy = biome.RegularEnemies[enemyRandom.Next(biome.RegularEnemies.Count)];
-                    o.TriggerEnemy = enemy;
-                    o.Zone = index;
-                    o.Area = Area;
-                    o.Index = enemyIndex++;
-                    o.EnemyLevel = enemyLevel;
-                    o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
-                });
-                battleTriggers.Add(battleTrigger);
-                placeables.Add(battleTrigger);
+                CreateEnemyTrigger(enemyRandom, battleTriggers, mapMesh.PointToVector(point.x, point.y));
             }
         }
 
-        private void SetupRooms(FIRandom enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack, bool[,] noBgSquares)
+        private void CreateEnemyTrigger(FIRandom enemyRandom, List<BattleTrigger> battleTriggers, Vector3 mapOffset)
+        {
+            var battleTrigger = objectResolver.Resolve<BattleTrigger, BattleTrigger.Description>(o =>
+            {
+                o.MapOffset = mapOffset;
+                o.Translation = currentPosition + o.MapOffset;
+                var enemy = biome.RegularEnemies[enemyRandom.Next(biome.RegularEnemies.Count)];
+                o.TriggerEnemy = enemy;
+                o.Zone = index;
+                o.Area = Area;
+                o.Index = enemyIndex++;
+                o.EnemyLevel = enemyLevel;
+                o.BattleSeed = enemyRandom.Next(int.MinValue, int.MaxValue);
+            });
+            battleTriggers.Add(battleTrigger);
+            placeables.Add(battleTrigger);
+        }
+
+        private void SetupRooms(FIRandom enemyRandom, out BattleTrigger bossBattleTrigger, out Stack<ITreasure> treasureStack, bool[,] noBgSquares, List<BattleTrigger> battleTriggers)
         {
             //The order of everything in this function is important to ensure all treasure can be distributed
 
@@ -1310,8 +1315,27 @@ namespace Adventure
                 }
                 else
                 {
-                    //Make sure to populate the final room before any below
-                    PopulateRoom(mapMesh.MapBuilder.Rooms[finalRoomIndexAdjusted], treasureStack, treasureChests, noBgSquares);
+                    if (placeRestArea)
+                    {
+                        placeRestArea = false;
+
+                        //This is the start of the game, so place a rest area and the help book
+                        var room = mapMesh.MapBuilder.Rooms[finalRoomIndexAdjusted];
+                        var point = new Point(room.Left + room.Width / 2, room.Top + room.Height / 2);
+                        var restLoc = mapMesh.PointToVector(point.x, room.Bottom);
+                        CreateRestArea(restLoc + new Vector3(0.0f, 0.0f, 0.3f));
+                        SetHelpBookPoint(restLoc + new Vector3(0.8f, 0.0f, -0.3f), true);
+
+                        //This first enemy trigger is placed carefully based on the known start point
+                        CreateEnemyTrigger(enemyRandom, battleTriggers, mapMesh.PointToVector(point.x + 3, point.y));
+
+                        //Make sure the player can see it clearly
+                        ReserveBgSquares(noBgSquares, point);
+                        ReserveBgSquares(noBgSquares, new Point(point.x + 1, point.y));
+                        ReserveBgSquares(noBgSquares, new Point(point.x + 2, point.y));
+                        ReserveBgSquares(noBgSquares, new Point(point.x + 3, point.y));
+                        ReserveBgSquares(noBgSquares, new Point(point.x + 4, point.y));
+                    }
                 }
             }
 
@@ -1384,14 +1408,6 @@ namespace Adventure
                     placeRestArea = false;
                     CreateRestArea(mapLoc);
                 }
-            }
-            else if(!goPrevious && mapLoc == startPointLocal && placeRestArea)
-            {
-                //This is the start of the game, so place a rest area and the help book
-                placeRestArea = false;
-                var restLoc = mapMesh.PointToVector(point.x, room.Bottom);
-                CreateRestArea(restLoc + new Vector3(0.0f, 0.0f, 0.3f));
-                SetHelpBookPoint(restLoc + new Vector3(0.8f, 0.0f, -0.3f), true);
             }
         }
 
