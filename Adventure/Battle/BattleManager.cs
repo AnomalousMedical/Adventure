@@ -104,13 +104,16 @@ namespace Adventure.Battle
         private readonly IScopedCoroutine coroutine;
         private readonly BattleAssetLoader battleAssetLoader;
         private readonly ISoundEffectPlayer soundEffectPlayer;
+        private readonly ILanguageService languageService;
         private readonly IObjectResolver objectResolver;
         private BattleArena battleArena;
         private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
 
         private SharpButton endBattle = new SharpButton() { Text = "End Battle" };
         private SharpText goldRewardText = new SharpText() { Color = Color.White };
-        private SharpPanel goldRewardPanel = new SharpPanel();
+        private SharpText victoryText = new SharpText() { Color = Color.White };
+        private SharpText nextRankText = new SharpText() { Color = Color.White };
+        private SharpPanel victoryPanel = new SharpPanel();
         private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
         private List<Enemy> enemies = new List<Enemy>(20);
@@ -122,6 +125,7 @@ namespace Adventure.Battle
         bool showEndBattleButton = false;
         int? nextLevel;
         long startBattleDelay;
+        bool isBoss;
 
 
         class TurnQueueEntry
@@ -143,7 +147,9 @@ namespace Adventure.Battle
 
         public bool AllowActivePlayerGui { get; set; } = true;
 
-        public BattleManager(EventManager eventManager,
+        public BattleManager
+        (
+            EventManager eventManager,
             ISharpGui sharpGui,
             IScaleHelper scaleHelper,
             IObjectResolverFactory objectResolverFactory,
@@ -160,8 +166,12 @@ namespace Adventure.Battle
             BuffManager buffManager,
             IScopedCoroutine coroutine,
             BattleAssetLoader battleAssetLoader,
-            ISoundEffectPlayer soundEffectPlayer)
+            ISoundEffectPlayer soundEffectPlayer,
+            FontLoader fontLoader,
+            ILanguageService languageService
+        )
         {
+            victoryText.Font = fontLoader.TitleFont;
             this.eventManager = eventManager;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
@@ -179,6 +189,7 @@ namespace Adventure.Battle
             this.coroutine = coroutine;
             this.battleAssetLoader = battleAssetLoader;
             this.soundEffectPlayer = soundEffectPlayer;
+            this.languageService = languageService;
             this.objectResolver = objectResolverFactory.Create();
 
             cursor = this.objectResolver.Resolve<TargetCursor>();
@@ -194,6 +205,7 @@ namespace Adventure.Battle
 
         public void SetupBattle(int battleSeed, int level, bool boss, Func<IEnumerable<ITreasure>> stealCb, BiomeEnemy triggerEnemy, int? nextLevel)
         {
+            this.isBoss = boss;
             this.nextLevel = nextLevel;
             startBattleDelay = (long)(0.7f * Clock.SecondsToMicro);
             this.stealCb = stealCb;
@@ -343,22 +355,43 @@ namespace Adventure.Battle
                     goldReward += killed.GoldReward;
                 }
 
-                goldRewardText.Text = $"Gold: {goldReward}";
+                goldRewardText.Text = "Gold: " + goldReward;
 
                 cursor.Visible = false;
 
-                var layout =
-                    new MarginLayout(new IntPad(scaleHelper.Scaled(17)),
-                    new ColumnLayout(
-                        new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new PanelLayout(goldRewardPanel, goldRewardText)), 
-                        endBattle) 
-                    { Margin = new IntPad(3) });
-                var desiredSize = layout.GetDesiredSize(sharpGui);
+                {
+                    var layout =
+                        new MarginLayout(new IntPad(scaleHelper.Scaled(17)),
+                        new ColumnLayout(endBattle)
+                        { Margin = new IntPad(3) });
 
-                layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
+                    var desiredSize = layout.GetDesiredSize(sharpGui);
+                    layout.SetRect(screenPositioner.GetBottomRightRect(desiredSize));
+                }
 
-                sharpGui.Panel(goldRewardPanel, panelStyle);
+                {
+                    victoryText.Text = isBoss ? "Boss Terminated" : "Enemies Defeated";
+
+                    var columns = new ColumnLayout(victoryText, new KeepWidthCenterLayout(goldRewardText)) { Margin = scaleHelper.Scaled(new IntPad(10)) };
+                    var layout = new PanelLayout(victoryPanel, columns);
+
+                    if (nextLevel != null)
+                    {
+                        columns.Add(new KeepWidthCenterLayout(nextRankText));
+                        nextRankText.Text = "New Rank: " + languageService.Current.Levels.GetText(nextLevel.Value);
+                    }
+
+                    var desiredSize = layout.GetDesiredSize(sharpGui);
+                    layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
+                }
+
+                sharpGui.Panel(victoryPanel, panelStyle);
+                sharpGui.Text(victoryText);
                 sharpGui.Text(goldRewardText);
+                if(nextLevel != null)
+                {
+                    sharpGui.Text(nextRankText);
+                }
 
                 //TODO: Hacky to just use the button 4 times, add a way to process multiple pads
                 if (showEndBattleButton &&
