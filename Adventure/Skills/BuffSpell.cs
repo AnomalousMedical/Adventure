@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets;
+using Adventure.Assets.PixelEffects;
 using Adventure.Assets.SoundEffects;
 using Adventure.Battle;
 using Adventure.Services;
@@ -32,6 +33,8 @@ namespace Adventure.Skills
         public bool MultiTarget { get; set; }
 
         public bool UseInField => true;
+
+        public ISpriteAsset EffectSpriteAsset { get; set; } = new BuffEffect();
 
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
@@ -83,10 +86,9 @@ namespace Adventure.Skills
                     var attachmentType = typeof(Attachment<>).MakeGenericType(characterMenuPositionService.ActiveTrackerType);
                     var applyEffect = objectResolver.Resolve<IAttachment, IAttachment.Description>(attachmentType, o =>
                     {
-                        ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
                         o.RenderShadow = false;
-                        o.Sprite = asset.CreateSprite();
-                        o.SpriteMaterial = asset.CreateMaterial();
+                        o.Sprite = EffectSpriteAsset.CreateSprite();
+                        o.SpriteMaterial = EffectSpriteAsset.CreateMaterial();
                         o.Light = new Light
                         {
                             Color = CastColor,
@@ -148,10 +150,9 @@ namespace Adventure.Skills
 
                 var applyEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                 {
-                    ISpriteAsset asset = new Assets.PixelEffects.BuffEffect();
                     o.RenderShadow = false;
-                    o.Sprite = asset.CreateSprite();
-                    o.SpriteMaterial = asset.CreateMaterial();
+                    o.Sprite = EffectSpriteAsset.CreateSprite();
+                    o.SpriteMaterial = EffectSpriteAsset.CreateMaterial();
                     o.Light = new Light
                     {
                         Color = CastColor,
@@ -258,6 +259,8 @@ namespace Adventure.Skills
             Amount = 20;
             Name = "Focus";
             MpCost = 30;
+            SoundEffect = FocusSpellSoundEffect.Instance;
+            EffectSpriteAsset = new BuffMagicEffect();
         }
     }
 
@@ -269,6 +272,8 @@ namespace Adventure.Skills
             Name = "Intense Focus";
             MpCost = 48;
             MultiTarget = true;
+            SoundEffect = FocusSpellSoundEffect.Instance;
+            EffectSpriteAsset = new BuffMagicEffect();
         }
     }
 

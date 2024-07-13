@@ -16,11 +16,14 @@ internal class BattleAssetLoader : IDisposable
     public ISpriteAsset Fire { get; } = new Assets.PixelEffects.FireEffect();
     public ISpriteAsset Ice { get; } = new Assets.PixelEffects.IceEffect();
     public ISpriteAsset Buff { get; } = new Assets.PixelEffects.BuffEffect();
+    public ISpriteAsset BuffMagic { get; } = new Assets.PixelEffects.BuffMagicEffect();
     public ISpriteAsset Electric { get; } = new Assets.PixelEffects.ElectricEffect();
     public ISpriteAsset Heal { get; } = new Assets.PixelEffects.MagicBubbles();
     public ISpriteAsset EnemyDeath { get; } = new Assets.PixelEffects.EnemyDeathEffect();
     public ISpriteAsset RestoreMp { get; } = new Assets.PixelEffects.RestoreMpEffect();
     public ISpriteAsset StatBoost { get; } = new Assets.PixelEffects.StatBoostEffect();
+
+    public ISpriteAsset Cast { get; } = new Assets.PixelEffects.Nebula();
 
     private readonly SpriteInstanceFactory spriteInstanceFactory;
 
@@ -44,10 +47,12 @@ internal class BattleAssetLoader : IDisposable
                 this.spriteInstanceFactory.Checkout(Ice.CreateMaterial(), Ice.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(Electric.CreateMaterial(), Electric.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(Buff.CreateMaterial(), Buff.CreateSprite()),
+                this.spriteInstanceFactory.Checkout(BuffMagic.CreateMaterial(), BuffMagic.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(Heal.CreateMaterial(), Heal.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(EnemyDeath.CreateMaterial(), EnemyDeath.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(RestoreMp.CreateMaterial(), RestoreMp.CreateSprite()),
                 this.spriteInstanceFactory.Checkout(StatBoost.CreateMaterial(), StatBoost.CreateSprite()),
+                this.spriteInstanceFactory.Checkout(Cast.CreateMaterial(), Cast.CreateSprite()),
             };
 
             foreach(var task in spriteLoadTasks)

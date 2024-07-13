@@ -45,6 +45,15 @@ class WarCrySpellSoundEffect : ISoundEffect
     public bool Streaming => false;
 }
 
+class FocusSpellSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new FocusSpellSoundEffect();
+
+    public string File => "SoundEffects/Kostas17/542825__kostas17__magic-spell.ogg";
+
+    public bool Streaming => false;
+}
+
 class CureSpellSoundEffect : ISoundEffect
 {
     public static readonly ISoundEffect Instance = new CureSpellSoundEffect();

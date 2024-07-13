@@ -37,7 +37,7 @@ namespace Adventure.Skills
 
         SkillAttackStyle AttackStyle { get; }
 
-        ISpriteAsset SpriteAsset => new Assets.PixelEffects.Nebula();
+        ISpriteAsset CastSpriteAsset => new Assets.PixelEffects.Nebula();
 
         Color CastColor => Color.FromARGB(0xff639cff);
     }

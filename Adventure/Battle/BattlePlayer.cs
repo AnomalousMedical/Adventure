@@ -554,7 +554,7 @@ namespace Adventure.Battle
                     castEffect?.RequestDestruction();
                     castEffect = objectResolver.Resolve<Attachment<BattleScene>, IAttachment.Description>(o =>
                     {
-                        ISpriteAsset asset = skill.SpriteAsset;
+                        ISpriteAsset asset = skill.CastSpriteAsset;
                         o.RenderShadow = false;
                         o.Sprite = asset.CreateSprite();
                         o.SpriteMaterial = asset.CreateMaterial();
