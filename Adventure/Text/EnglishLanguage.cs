@@ -52,6 +52,9 @@ namespace Adventure.Text
                 AlchemistUpgrade: new AlchemistUpgrade.Text
                 (
                     Check: "Check",
+                    TeaseUpgrade: "For 200 gold I will share ancient and powerful alchemical recipes with you.",
+                    UpgradePrompt: "Pay 200 gold?",
+                    NotEnoughGold: "You do not have enough gold.",
                     GiveUpgrade: "The gargoyle shows you ancient alchemical techniques..."
                 ),
                 Blacksmith: new Blacksmith.Text
@@ -67,6 +70,9 @@ namespace Adventure.Text
                 BlacksmithUpgrade: new BlacksmithUpgrade.Text
                 (
                     Check: "Check",
+                    TeaseUpgrade: "For 200 gold I will share ancient and powerful blacksmithing techniques with you.",
+                    UpgradePrompt: "Pay 200 gold?",
+                    NotEnoughGold: "You do not have enough gold.",
                     GiveUpgrade: "The gargoyle whispers ancient blacksmithing secrets into your ear..."
                 ),
                 AirshipEngineer: new AirshipEngineer.Text

@@ -26,6 +26,9 @@ namespace Adventure.WorldMap
         public record Text
         (
             String Check,
+            String TeaseUpgrade,
+            String UpgradePrompt,
+            String NotEnoughGold,
             String GiveUpgrade
         );
 
@@ -40,6 +43,7 @@ namespace Adventure.WorldMap
         private readonly TextDialog textDialog;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly ConfirmMenu confirmMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -58,7 +62,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public AlchemistUpgrade(
+        public AlchemistUpgrade
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -73,7 +78,9 @@ namespace Adventure.WorldMap
             ICoroutineRunner coroutineRunner,
             TextDialog textDialog,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            ConfirmMenu confirmMenu
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -89,6 +96,7 @@ namespace Adventure.WorldMap
             this.textDialog = textDialog;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.confirmMenu = confirmMenu;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -216,9 +224,22 @@ namespace Adventure.WorldMap
                 coroutineRunner.RunTask(async () =>
                 {
                     cameraMover.SetInterpolatedGoalPosition(this.currentPosition + cameraOffset, cameraAngle);
-                    await textDialog.ShowTextAndWait(languageService.Current.AlchemistUpgrade.GiveUpgrade, args.GamepadId);
-                    persistence.Current.PlotItems.Add(PlotItems.AlchemistUpgrade);
-                    RequestDestruction();
+                    await textDialog.ShowTextAndWait(languageService.Current.AlchemistUpgrade.TeaseUpgrade, args.GamepadId);
+
+                    if (persistence.Current.Party.Gold < 200)
+                    {
+                        await textDialog.ShowTextAndWait(languageService.Current.AlchemistUpgrade.NotEnoughGold, args.GamepadId);
+                    }
+                    else
+                    {
+                        if (await confirmMenu.ShowAndWait(languageService.Current.AlchemistUpgrade.UpgradePrompt, null, args.GamepadId))
+                        {
+                            await textDialog.ShowTextAndWait(languageService.Current.AlchemistUpgrade.GiveUpgrade, args.GamepadId);
+                            persistence.Current.PlotItems.Add(PlotItems.AlchemistUpgrade);
+                            persistence.Current.Party.Gold -= 200;
+                            RequestDestruction();
+                        }
+                    }
                 });
             }
 
