@@ -54,6 +54,15 @@ class FocusSpellSoundEffect : ISoundEffect
     public bool Streaming => false;
 }
 
+class HasteSpellSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new HasteSpellSoundEffect();
+
+    public string File => "SoundEffects/IwanGabovitch/211997__qubodup__synth-power-change.ogg";
+
+    public bool Streaming => false;
+}
+
 class CureSpellSoundEffect : ISoundEffect
 {
     public static readonly ISoundEffect Instance = new CureSpellSoundEffect();

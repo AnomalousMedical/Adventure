@@ -288,6 +288,8 @@ namespace Adventure.Skills
             MpCost = 87;
             HealingItemsOnly = false;
             Duration = 2 * 60 * Clock.SecondsToMicro;
+            EffectSpriteAsset = new BuffHasteEffect();
+            SoundEffect = HasteSpellSoundEffect.Instance;
         }
 
         public override string DamageNumberText => "Haste";
