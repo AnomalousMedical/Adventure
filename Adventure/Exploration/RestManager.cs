@@ -5,11 +5,20 @@ namespace Adventure
 {
     class RestManager
     {
+        public enum RestTarget
+        {
+            Dawn,
+            Noon,
+            Dusk,
+            Midnight
+        }
+
         private readonly Persistence persistence;
         private readonly ITimeClock timeClock;
         private readonly IZoneManager zoneManager;
         private long? endTime = null;
         private bool active = false;
+        private RestTarget restTarget;
 
         public RestManager
         (
@@ -25,8 +34,9 @@ namespace Adventure
 
         public bool Active => active;
 
-        public void Rest()
+        public void Rest(RestTarget restTarget)
         {
+            this.restTarget = restTarget;
             persistence.Current.BattleTriggers.ClearData();
             timeClock.SetTimeMultiplier(300);
             active = true;
@@ -42,7 +52,23 @@ namespace Adventure
 
             if (endTime == null)
             {
-                var sleepEndGameTime = timeClock.IsDay ? timeClock.DayEnd : timeClock.DayStart;
+                long sleepEndGameTime;
+                switch (restTarget)
+                {
+                    default:
+                    case RestTarget.Dawn:
+                        sleepEndGameTime = timeClock.DayStart;
+                        break;
+                    case RestTarget.Noon:
+                        sleepEndGameTime = 12L * 60 * 60 * Clock.SecondsToMicro;
+                        break;
+                    case RestTarget.Dusk:
+                        sleepEndGameTime = timeClock.DayEnd;
+                        break;
+                    case RestTarget.Midnight:
+                        sleepEndGameTime = 0L;
+                        break;
+                }
                 endTime = clock.CurrentTimeMicro + timeClock.GetRealWallTimeUntil(sleepEndGameTime);
             }
 

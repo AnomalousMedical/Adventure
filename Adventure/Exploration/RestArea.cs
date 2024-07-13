@@ -36,9 +36,9 @@ namespace Adventure
         private readonly IDestructionRequest destructionRequest;
         private readonly SpriteInstanceFactory spriteInstanceFactory;
         private readonly IContextMenu contextMenu;
-        private readonly RestManager restManager;
         private readonly IExplorationGameState explorationGameState;
         private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
+        private readonly RestMenu restMenu;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData tlasData;
@@ -63,9 +63,9 @@ namespace Adventure
             Description description,
             SpriteInstanceFactory spriteInstanceFactory,
             IContextMenu contextMenu,
-            RestManager restManager,
             IExplorationGameState explorationGameState,
-            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier
+            ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
+            RestMenu restMenu
         )
         {
             this.sprite = description.Sprite;
@@ -76,9 +76,9 @@ namespace Adventure
             this.bepuScene = bepuScene;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.contextMenu = contextMenu;
-            this.restManager = restManager;
             this.explorationGameState = explorationGameState;
             this.collidableIdentifier = collidableIdentifier;
+            this.restMenu = restMenu;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -178,8 +178,7 @@ namespace Adventure
 
         private void Rest(ContextMenuArgs args)
         {
-            contextMenu.ClearContext(Rest);
-            restManager.Rest();
+            restMenu.Show(args.GamepadId);
         }
 
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)

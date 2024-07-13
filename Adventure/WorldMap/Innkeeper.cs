@@ -29,9 +29,7 @@ namespace Adventure.WorldMap
             String Intro1,
             String Intro2,
             String Intro3,
-            String SleepQuestionDialog,
-            String SleepQuestion,
-            String Sleep
+            String SleepQuestionDialog
         );
 
         private readonly RTInstances<WorldMapScene> rtInstances;
@@ -40,7 +38,7 @@ namespace Adventure.WorldMap
         private readonly IContextMenu contextMenu;
         private readonly IWorldMapManager worldMapManager;
         private readonly IWorldDatabase worldDatabase;
-        private readonly RestManager restManager;
+        private readonly RestMenu restMenu;
         private readonly TextDialog textDialog;
         private readonly ICoroutineRunner coroutineRunner;
         private readonly ILanguageService languageService;
@@ -78,7 +76,7 @@ namespace Adventure.WorldMap
             IContextMenu contextMenu,
             IWorldMapManager worldMapManager,
             IWorldDatabase worldDatabase,
-            RestManager restManager,
+            RestMenu restMenu,
             TextDialog textDialog,
             ICoroutineRunner coroutineRunner,
             ILanguageService languageService,
@@ -97,7 +95,7 @@ namespace Adventure.WorldMap
             this.contextMenu = contextMenu;
             this.worldMapManager = worldMapManager;
             this.worldDatabase = worldDatabase;
-            this.restManager = restManager;
+            this.restMenu = restMenu;
             this.textDialog = textDialog;
             this.coroutineRunner = coroutineRunner;
             this.languageService = languageService;
@@ -226,11 +224,7 @@ namespace Adventure.WorldMap
                 }
 
                 await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.SleepQuestionDialog, args.GamepadId);
-                if (await confirmMenu.ShowAndWait(languageService.Current.Innkeeper.SleepQuestion, null, args.GamepadId))
-                {
-                    await textDialog.ShowTextAndWait(languageService.Current.Innkeeper.Sleep, args.GamepadId);
-                    restManager.Rest();
-                }
+                restMenu.Show(args.GamepadId);
             });
         }
 

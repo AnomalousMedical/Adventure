@@ -135,6 +135,7 @@ namespace Adventure
             services.AddSingleton<RTInstances<EmptyScene>>();
             services.AddSingleton<IGameStateRequestor, GameStateRequestor>();
             services.AddSingleton<EquipmentTextService>();
+            services.AddSingleton<RestMenu>();
             services.AddScoped<IAttachment.Description>();
             services.AddScoped<Attachment<ZoneScene>>();
             services.AddScoped<Attachment<BattleScene>>();
