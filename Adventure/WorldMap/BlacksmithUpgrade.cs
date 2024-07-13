@@ -1,4 +1,6 @@
-﻿using Adventure.Menu;
+﻿using Adventure.Assets.PixelEffects;
+using Adventure.Assets.SoundEffects;
+using Adventure.Menu;
 using Adventure.Services;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -44,6 +46,7 @@ namespace Adventure.WorldMap
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
         private readonly ConfirmMenu confirmMenu;
+        private readonly ISoundEffectPlayer soundEffectPlayer;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -54,6 +57,7 @@ namespace Adventure.WorldMap
         private bool physicsCreated = false;
         private bool graphicsCreated = false;
         private readonly Vector3[] transforms;
+        private IObjectResolver objectResolver;
 
         private Vector3 currentPosition;
         private Quaternion currentOrientation;
@@ -79,9 +83,12 @@ namespace Adventure.WorldMap
             TextDialog textDialog,
             ILanguageService languageService,
             CameraMover cameraMover,
-            ConfirmMenu confirmMenu
+            ConfirmMenu confirmMenu,
+            IObjectResolverFactory objectResolverFactory,
+            ISoundEffectPlayer soundEffectPlayer
         )
         {
+            this.objectResolver = objectResolverFactory.Create();
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
             this.destructionRequest = destructionRequest;
@@ -97,6 +104,7 @@ namespace Adventure.WorldMap
             this.languageService = languageService;
             this.cameraMover = cameraMover;
             this.confirmMenu = confirmMenu;
+            this.soundEffectPlayer = soundEffectPlayer;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -180,8 +188,16 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            DestroyGraphics();
+            DestroyPhysics();
+            this.objectResolver.Dispose();
+        }
+
+        private void DestroyGraphics()
+        {
             if (graphicsCreated)
             {
+                graphicsCreated = false;
                 spriteInstanceFactory.TryReturn(spriteInstance);
                 rtInstances.RemoveSprite(sprite);
                 rtInstances.RemoveShaderTableBinder(Bind);
@@ -190,7 +206,6 @@ namespace Adventure.WorldMap
                     rtInstances.RemoveTlasBuild(data);
                 }
             }
-            DestroyPhysics();
         }
 
         public void RequestDestruction()
@@ -237,7 +252,26 @@ namespace Adventure.WorldMap
                             await textDialog.ShowTextAndWait(languageService.Current.BlacksmithUpgrade.GiveUpgrade, args.GamepadId);
                             persistence.Current.PlotItems.Add(PlotItems.BlacksmithUpgrade);
                             persistence.Current.Party.Gold -= 200;
-                            RequestDestruction();
+
+                            DestroyGraphics();
+                            DestroyPhysics();
+                            contextMenu.ClearContext(Talk);
+
+                            var applyEffect = objectResolver.Resolve<Attachment<WorldMapScene>, IAttachment.Description>(o =>
+                            {
+                                var asset = new EnemyDeathEffect();
+                                o.Sprite = asset.CreateSprite();
+                                o.SpriteMaterial = asset.CreateMaterial();
+                            });
+                            var finalPosition = currentPosition;
+                            finalPosition.y += currentScale.y / 2.0f;
+                            applyEffect.SetPosition(finalPosition, Quaternion.Identity, currentScale);
+                            soundEffectPlayer.PlaySound(DeathSoundEffect.Instance);
+
+                            await Task.Delay(TimeSpan.FromSeconds(.95));
+
+                            applyEffect.RequestDestruction();
+                            this.RequestDestruction();
                         }
                     }
                 });
