@@ -32,6 +32,7 @@ class VictoryGameState
     private SharpButton file = new SharpButton() { Text = "File" };
     private SharpButton exit = new SharpButton() { Text = "Exit" };
     private SharpText youWin = new SharpText("The End") { Color = Color.White, Font = fontLoader.TitleFont };
+    private SharpText worldSeedText = new SharpText() { Color = Color.White };
     private SharpText clearTimeText = new SharpText() { Color = Color.White };
     private SharpText undefeatedText = new SharpText("Undefeated") { Color = Color.White };
     private SharpText oldSchoolText = new SharpText("Old School") { Color = Color.White };
@@ -47,6 +48,7 @@ class VictoryGameState
                 persistence.Current.Time.ClearTime = persistence.Current.Time.Total;
             }
             var time = TimeSpan.FromMilliseconds(persistence.Current.Time.ClearTime.Value * Clock.MicroToMilliseconds);
+            worldSeedText.Text = "World Seed: " + persistence.Current.World.Seed;
             clearTimeText.Text = $"Cleared in: {(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
             persistence.Current.Player.InWorld = true;
             persistenceWriter.Save();
@@ -56,6 +58,7 @@ class VictoryGameState
     private IEnumerable<ILayoutItem> GetMenuItems()
     {
         yield return new KeepWidthCenterLayout(youWin);
+        yield return new KeepWidthCenterLayout(worldSeedText);
         yield return new KeepWidthCenterLayout(clearTimeText);
         if (persistence.Current.Party.Undefeated)
         {
@@ -93,6 +96,7 @@ class VictoryGameState
             }
 
             sharpGui.Text(youWin);
+            sharpGui.Text(worldSeedText);
             sharpGui.Text(clearTimeText);
 
             if (sharpGui.Button(credits, GamepadId.Pad1, navUp: exit.Id, navDown: file.Id))
