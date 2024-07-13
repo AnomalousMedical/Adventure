@@ -1,4 +1,5 @@
-﻿using Adventure.Services;
+﻿using Adventure.Assets.SoundEffects;
+using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using SharpGui;
@@ -15,7 +16,8 @@ namespace Adventure.Menu
         ISharpGui sharpGui,
         IScaleHelper scaleHelper,
         IScreenPositioner screenPositioner,
-        ILanguageService languageService
+        ILanguageService languageService,
+        ISoundEffectPlayer soundEffectPlayer
     )
     {
         SharpText prompt = new SharpText() { Color = Color.White, Layer = BuyMenu.UseItemMenuLayer };
@@ -56,6 +58,7 @@ namespace Adventure.Menu
             {
                 if (persistence.Current.Party.Gold - SelectedItem.Cost > 0)
                 {
+                    soundEffectPlayer.PlaySound(BuySoundEffect.Instance);
                     persistence.Current.Party.Gold -= SelectedItem.Cost;
                     var item = SelectedItem.CreateItem?.Invoke();
                     if (item != null)
