@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Assets.Equipment;
+using Adventure.Assets.SoundEffects;
 
 namespace Adventure.Exploration;
 
@@ -36,6 +37,7 @@ class HelpBook : IDisposable, IZonePlaceable
     private readonly ConfirmMenu confirmMenu;
     private readonly IExplorationMenu explorationMenu;
     private readonly HelpMenu helpMenu;
+    private readonly ISoundEffectPlayer soundEffectPlayer;
     private SpriteInstance spriteInstance;
     private bool graphicsLoaded = false;
     private readonly ISprite sprite;
@@ -107,7 +109,8 @@ class HelpBook : IDisposable, IZonePlaceable
         TextDialog textDialog,
         ConfirmMenu confirmMenu,
         IExplorationMenu explorationMenu,
-        HelpMenu helpMenu
+        HelpMenu helpMenu,
+        ISoundEffectPlayer soundEffectPlayer
     )
     {
         var asset = new Book3();
@@ -127,6 +130,7 @@ class HelpBook : IDisposable, IZonePlaceable
         this.confirmMenu = confirmMenu;
         this.explorationMenu = explorationMenu;
         this.helpMenu = helpMenu;
+        this.soundEffectPlayer = soundEffectPlayer;
         this.mapOffset = description.MapOffset;
 
         this.currentPosition = description.Translation;
@@ -266,6 +270,7 @@ class HelpBook : IDisposable, IZonePlaceable
         coroutine.RunTask((Func<Task>)(async () =>
         {
             string intro, read, takePrompt, take, text;
+            ISoundEffect takeSoundEffect = null;
             switch (plotItem)
             {
                 case PlotItems.GuideToPowerAndMayhem:
@@ -302,12 +307,15 @@ class HelpBook : IDisposable, IZonePlaceable
                         switch (pageCount)
                         {
                             case 0:
+                                takeSoundEffect = PageFixSoundEffect.Instance;
                                 take = languageService.Current.HelpBook.Page1Found;
                                 break;
                             case 1:
+                                takeSoundEffect = PageFixSoundEffect.Instance;
                                 take = languageService.Current.HelpBook.Page2Found;
                                 break;
                             default:
+                                takeSoundEffect = PageFixSoundEffect.Instance;
                                 take = languageService.Current.HelpBook.AllPagesFound;
                                 break;
                         }
@@ -356,6 +364,10 @@ class HelpBook : IDisposable, IZonePlaceable
             {
                 if (await confirmMenu.ShowAndWait(takePrompt, null, args.GamepadId))
                 {
+                    if (takeSoundEffect != null)
+                    {
+                        soundEffectPlayer.PlaySound(takeSoundEffect);
+                    }
                     await textDialog.ShowTextAndWait(take, args.GamepadId);
                     contextMenu.ClearContext(Take);
                     persistence.Current.PlotItems.Add(plotItem);
