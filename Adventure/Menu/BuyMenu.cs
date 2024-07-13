@@ -70,6 +70,10 @@ namespace Adventure.Menu
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
                     }
                 }
+                else
+                {
+                    soundEffectPlayer.PlaySound(ErrorSoundEffect.Instance);
+                }
                 FireClosed();
             }
             if (sharpGui.Button(cancel, gamepadId, navUp: buy.Id, navDown: buy.Id) || sharpGui.IsStandardBackPressed(gamepadId))
@@ -102,6 +106,7 @@ namespace Adventure.Menu
         private readonly CameraMover cameraMover;
         private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly CharacterStyleService characterStyleService;
+        private readonly ISoundEffectPlayer soundEffectPlayer;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
@@ -128,7 +133,8 @@ namespace Adventure.Menu
             EquipmentTextService equipmentTextService,
             CameraMover cameraMover,
             CharacterMenuPositionService characterMenuPositionService,
-            CharacterStyleService characterStyleService
+            CharacterStyleService characterStyleService,
+            ISoundEffectPlayer soundEffectPlayer
         )
         {
             this.persistence = persistence;
@@ -143,6 +149,7 @@ namespace Adventure.Menu
             this.cameraMover = cameraMover;
             this.characterMenuPositionService = characterMenuPositionService;
             this.characterStyleService = characterStyleService;
+            this.soundEffectPlayer = soundEffectPlayer;
             this.confirmBuyMenu.Closed += ConfirmBuyMenu_Closed;
         }
 
@@ -273,6 +280,10 @@ namespace Adventure.Menu
                     if (canBuy)
                     {
                         confirmBuyMenu.SelectedItem = selectedItem;
+                    }
+                    else
+                    {
+                        soundEffectPlayer.PlaySound(ErrorSoundEffect.Instance);
                     }
                 }
 
