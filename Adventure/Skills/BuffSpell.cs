@@ -24,17 +24,17 @@ namespace Adventure.Skills
 
         public bool DefaultTargetPlayers => true;
 
-        public Color CastColor => Color.FromARGB(0xffffff74);
+        public Color CastColor { get; init; }
 
-        public bool HealingItemsOnly { get; set; } = true;
+        public bool HealingItemsOnly { get; init; } = true;
 
-        public ISoundEffect SoundEffect { get; set; }
+        public ISoundEffect SoundEffect { get; init; }
 
-        public bool MultiTarget { get; set; }
+        public bool MultiTarget { get; init; }
 
         public bool UseInField => true;
 
-        public ISpriteAsset EffectSpriteAsset { get; set; } = new BuffEffect();
+        public ISpriteAsset EffectSpriteAsset { get; init; }
 
         public ISkillEffect Apply(IDamageCalculator damageCalculator, CharacterSheet source, CharacterSheet target, CharacterMenuPositionService characterMenuPositionService, IObjectResolver objectResolver, IScopedCoroutine coroutine, CameraMover cameraMover, ISoundEffectPlayer soundEffectPlayer)
         {
@@ -218,6 +218,8 @@ namespace Adventure.Skills
             Name = "Battle Cry";
             MpCost = 35;
             SoundEffect = WarCrySpellSoundEffect.Instance;
+            EffectSpriteAsset = new BuffEffect();
+            CastColor = Color.FromARGB(0xffde2609);
         }
     }
 
@@ -229,7 +231,9 @@ namespace Adventure.Skills
             Name = "War Cry";
             MpCost = 48;
             SoundEffect = WarCrySpellSoundEffect.Instance;
+            EffectSpriteAsset = new BuffEffect();
             MultiTarget = true;
+            CastColor = Color.FromARGB(0xffde2609);
         }
     }
 
@@ -261,6 +265,7 @@ namespace Adventure.Skills
             MpCost = 30;
             SoundEffect = FocusSpellSoundEffect.Instance;
             EffectSpriteAsset = new BuffMagicEffect();
+            CastColor = Color.FromARGB(0xffe109bb);
         }
     }
 
@@ -274,6 +279,7 @@ namespace Adventure.Skills
             MultiTarget = true;
             SoundEffect = FocusSpellSoundEffect.Instance;
             EffectSpriteAsset = new BuffMagicEffect();
+            CastColor = Color.FromARGB(0xffe109bb);
         }
     }
 
@@ -290,6 +296,7 @@ namespace Adventure.Skills
             Duration = 2 * 60 * Clock.SecondsToMicro;
             EffectSpriteAsset = new BuffHasteEffect();
             SoundEffect = HasteSpellSoundEffect.Instance;
+            CastColor = Color.FromARGB(0xffffff74);
         }
 
         public override string DamageNumberText => "Haste";
