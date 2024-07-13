@@ -148,7 +148,13 @@ namespace Adventure
                             if (persistence.Current.Player.InBattle)
                             {
                                 fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
+                                var beforeMenuSave = persistence.Current;
                                 await rootMenu.WaitForClose();
+                                if(beforeMenuSave != persistence.Current)
+                                {
+                                    //Got a new save game, stop doing anything
+                                    return;
+                                }
                                 await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
                                 var battleTrigger = await zoneManager.FindTrigger(persistence.Current.Player.LastBattleIndex, persistence.Current.Player.LastBattleIsBoss);
                                 battleGameState.SetBattleTrigger(battleTrigger);
