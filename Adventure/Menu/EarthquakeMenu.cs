@@ -16,7 +16,10 @@ internal class EarthquakeMenu
     IClockService clockService,
     IExplorationMenu explorationMenu,
     CameraMover cameraMover,
-    ISoundEffectPlayer soundEffectPlayer
+    ISoundEffectPlayer soundEffectPlayer,
+    ISharpGui sharpGui,
+    IScaleHelper scaleHelper,
+    IScreenPositioner screenPositioner
 ) : IExplorationSubMenu
 {
     private const float ShakeDelta = 0.1f;
@@ -29,6 +32,8 @@ internal class EarthquakeMenu
     private Quaternion cameraRot;
 
     private TaskCompletionSource currentTask;
+
+    private SharpButton skipButton = new SharpButton() { Text = "Skip" };
 
     public Task WaitForCurrentEffect()
     {
@@ -92,6 +97,15 @@ internal class EarthquakeMenu
             cameraMover.SetPosition(cameraPos + offset, cameraRot);
             this.shakeTime += ShakeDelta;
         }
+
+        var layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), skipButton);
+        layout.SetRect(screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui)));
+
+        if (sharpGui.Button(skipButton, gamepadId))
+        {
+            time = duration + 1;
+        }
+
         if (time > duration)
         {
             cameraMover.SetPosition(cameraPos, cameraRot);
