@@ -1369,7 +1369,7 @@ namespace Adventure
             }
         }
 
-        private static void ReserveBgSquares(bool[,] noBgSquares, Point point, int numSquares = 4)
+        private static void ReserveBgSquares(bool[,] noBgSquares, Point point, int numSquares = 10)
         {
             int max = 1 + numSquares;
             int noY;
