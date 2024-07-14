@@ -179,12 +179,12 @@ namespace Adventure.Text
                     , Health2: new(Text: "Health Potion", Description: "A potion that restores 300 hp.")
                     , Health3: new(Text: "Giant Health Potion", Description: "A large potion that restores 1500 hp.")
                     , FerrymansBribe: new(Text: "Ferryman's Bribe", Description: "Call back an ally from the brink of death.")
-                    , StrengthBoost: new(Text: "Strength Boost", Description: "Permanently increase the target's strength.")
-                    , MagicBoost: new(Text: "Magic Boost", Description: "Permanently increase the target's magic.")
-                    , VitalityBoost: new(Text: "Vitality Boost", Description: "Permanently increase the target's vitality.")
-                    , SpiritBoost: new(Text: "Spirit Boost", Description: "Permanently increase the target's spirit.")
-                    , DexterityBoost: new(Text: "Dexterity Boost", Description: "Permanently increase the target's dexterity.")
-                    , LuckBoost: new(Text: "Luck Boost", Description: "Permanently increase the target's luck.")
+                    , StrengthBoost: new(Text: "Strength Boost", Description: "Permanently increase the target's strength. This will make them do more damage with attacks.")
+                    , MagicBoost: new(Text: "Magic Boost", Description: "Permanently increase the target's magic. This will make them do more damage and healing with magic.")
+                    , VitalityBoost: new(Text: "Vitality Boost", Description: "Permanently increase the target's vitality. This will make them take less damage from physical attacks.")
+                    , SpiritBoost: new(Text: "Spirit Boost", Description: "Permanently increase the target's spirit. This will make them take less damage from magic attacks.")
+                    , DexterityBoost: new(Text: "Dexterity Boost", Description: "Permanently increase the target's dexterity. This will make them faster in battle.")
+                    , LuckBoost: new(Text: "Luck Boost", Description: "Permanently increase the target's luck. This will make them do more critical hits.")
                     , LevelBoost: new(Text: "Mysterious Bubbling Potion", Description: "Its sure to be safe...")
                 ),
                 PlotItems: new PlotItemText
