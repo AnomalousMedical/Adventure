@@ -202,6 +202,14 @@ class SkillMenu
                             }))
                             .ToList();
                         }
+                        else
+                        {
+                            soundEffectPlayer.PlaySound(Assets.SoundEffects.ErrorSoundEffect.Instance);
+                        }
+                    }
+                    else
+                    {
+                        soundEffectPlayer.PlaySound(Assets.SoundEffects.ErrorSoundEffect.Instance);
                     }
                 }
             }
