@@ -1,14 +1,14 @@
 ﻿using Engine;
+using Engine.Platform;
 using SharpGui;
 
 namespace Adventure.Battle
 {
     class DamageNumber
     {
-        public DamageNumber(string number, long timeRemaining, Vector2 position, IScaleHelper scaleHelper, Color color)
+        public DamageNumber(string number, in Vector2 position, IScaleHelper scaleHelper, Color color, long timeRemaining = (long)(0.9f * Clock.SecondsToMicro))
         {
-            this.StartPosition = position;
-            this.EndPosition = position + new Vector2(0, scaleHelper.Scaled(-15));
+            UpdatePosition(position, scaleHelper);
             TimeRemaining = timeRemaining;
             HalfDuration = timeRemaining / 2;
             this.Text = new SharpText(number.ToString()) { Rect = new IntRect(0, 0, 10000, 10000), Color = color };
@@ -30,13 +30,19 @@ namespace Adventure.Battle
             this.Text.Rect.Top = (int)position.y;
         }
 
+        public void UpdatePosition(in Vector2 position, IScaleHelper scaleHelper)
+        {
+            this.StartPosition = position;
+            this.EndPosition = position + new Vector2(0, scaleHelper.Scaled(-15));
+        }
+
         public long HalfDuration { get; }
 
         public long TimeRemaining { get; set; }
 
-        public Vector2 EndPosition { get; }
+        public Vector2 EndPosition { get; private set; }
 
-        public Vector2 StartPosition { get; }
+        public Vector2 StartPosition { get; private set; }
 
         public SharpText Text { get; }
     }

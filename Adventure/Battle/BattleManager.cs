@@ -83,8 +83,6 @@ namespace Adventure.Battle
 
     class BattleManager : IDisposable, IBattleManager
     {
-        const long NumberDisplayTime = (long)(0.9f * Clock.SecondsToMicro);
-
         public ISoundEffectPlayer SoundEffectPlayer => soundEffectPlayer;
 
         private readonly EventManager eventManager;
@@ -1112,7 +1110,7 @@ namespace Adventure.Battle
             var targetPos = target.DamageDisplayLocation;
             var screenPos = cameraProjector.Project(targetPos);
 
-            numbers.Add(new DamageNumber(damage.ToString(), NumberDisplayTime, screenPos, scaleHelper, color));
+            numbers.Add(new DamageNumber(damage.ToString(), screenPos, scaleHelper, color));
         }
 
         public void DeactivateCurrentPlayer()

@@ -6,6 +6,7 @@ using Adventure.Services;
 using Engine;
 using Engine.Platform;
 using RpgMath;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,8 @@ namespace Adventure.Skills
                 source.CurrentMp = 0;
             }
 
-            var buff = CreateBuff(DamageEffectScaler.ApplyEffect(Amount, effectScale));
+            var scaledAmount = DamageEffectScaler.ApplyEffect(Amount, effectScale);
+            var buff = CreateBuff(scaledAmount);
             target.UpdateBuffs(buff);
 
             //Effect
@@ -71,7 +73,22 @@ namespace Adventure.Skills
                 cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
                 characterEntry.FaceCamera();
 
-                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                var sharpGui = objectResolver.Resolve<ISharpGui>();
+                var scaleHelper = objectResolver.Resolve<IScaleHelper>();
+                var cameraProjector = objectResolver.Resolve<ICameraProjector>();
+                var targetPos = characterEntry.MagicHitLocation;
+                var screenPos = cameraProjector.Project(targetPos);
+                var damageNumber = new DamageNumber(String.Format(DamageNumberText, scaledAmount), screenPos, scaleHelper, Color.White);
+
+                var skillEffect = new CallbackSkillEffect(c =>
+                {
+                    cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                    var screenPos = cameraProjector.Project(targetPos);
+                    damageNumber.UpdatePosition(screenPos, scaleHelper);
+                    sharpGui.Text(damageNumber.Text);
+                    damageNumber.TimeRemaining -= c.DeltaTimeMicro;
+                    damageNumber.UpdatePosition();
+                });
                 IEnumerator<YieldAction> run()
                 {
                     yield return coroutine.WaitSeconds(0.3f);

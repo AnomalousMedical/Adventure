@@ -5,6 +5,7 @@ using Adventure.Battle;
 using Adventure.Services;
 using Engine;
 using RpgMath;
+using SharpGui;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,7 +62,29 @@ namespace Adventure.Skills
                 cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
                 characterEntry.FaceCamera();
 
-                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                var sharpGui = objectResolver.Resolve<ISharpGui>();
+                var scaleHelper = objectResolver.Resolve<IScaleHelper>();
+                var cameraProjector = objectResolver.Resolve<ICameraProjector>();
+                var targetPos = characterEntry.MagicHitLocation;
+                var screenPos = cameraProjector.Project(targetPos);
+                int damageDisplayMultiplier = 1;
+                Color damageDisplayColor = Color.White;
+                if(damage < 0)
+                {
+                    damageDisplayColor = Color.Green;
+                    damageDisplayMultiplier = -1;
+                }
+                var damageNumber = new DamageNumber((damage * damageDisplayMultiplier).ToString(), screenPos, scaleHelper, damageDisplayColor);
+
+                var skillEffect = new CallbackSkillEffect(c =>
+                {
+                    cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                    var screenPos = cameraProjector.Project(targetPos);
+                    damageNumber.UpdatePosition(screenPos, scaleHelper);
+                    sharpGui.Text(damageNumber.Text);
+                    damageNumber.TimeRemaining -= c.DeltaTimeMicro;
+                    damageNumber.UpdatePosition();
+                });
                 IEnumerator<YieldAction> run()
                 {
                     yield return coroutine.WaitSeconds(0.3f);
