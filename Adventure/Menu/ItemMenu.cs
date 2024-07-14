@@ -7,6 +7,7 @@ using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Adventure.Menu;
 
@@ -44,13 +45,20 @@ class UseItemMenu
     private ButtonColumn characterButtons = new ButtonColumn(5, ItemMenu.ChooseTargetLayer);
     private ButtonColumn replaceButtons = new ButtonColumn(25, ItemMenu.ReplaceButtonsLayer);
 
-    public InventoryItem SelectedItem { get; set; }
+    public InventoryItem SelectedItem { get; private set; }
+    private IExplorationSubMenu previousMenu;
     private String itemName;
     private ISkillEffect currentEffect;
 
     public event Action Closed;
     public event Action ItemUsed;
     public event Action IsTransferStatusChanged;
+
+    public void Setup(InventoryItem selectedItem, IExplorationSubMenu previousMenu)
+    {
+        this.SelectedItem = selectedItem;
+        this.previousMenu = previousMenu;
+    }
 
     public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style, IExplorationSubMenu parentSubMenu, IExplorationMenu menu)
     {
@@ -201,21 +209,33 @@ class UseItemMenu
                             .Where(i => i != characterData)
                             .Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                             {
+                                var localSelectedItem = SelectedItem;
                                 if (i.HasRoom)
                                 {
-                                    characterData.RemoveItem(SelectedItem);
-                                    i.Inventory.Items.Add(SelectedItem);
+                                    characterData.RemoveItem(localSelectedItem);
+                                    i.Inventory.Items.Add(localSelectedItem);
+
+                                    coroutine.RunTask(async () =>
+                                    {
+                                        await PromptEquip(localSelectedItem, i, gamepadId);
+                                    });
                                 }
                                 else
                                 {
                                     SwapTarget = i;
                                     swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(languageService.Current.Items.GetText(swapTarget.InfoId), () =>
                                     {
-                                        characterData.RemoveItem(SelectedItem);
-                                        i.Inventory.Items.Add(SelectedItem);
+                                        characterData.RemoveItem(localSelectedItem);
+                                        i.Inventory.Items.Add(localSelectedItem);
 
                                         i.RemoveItem(swapTarget);
                                         characterData.Inventory.Items.Add(swapTarget);
+
+                                        coroutine.RunTask(async () =>
+                                        {
+                                            await PromptEquip(localSelectedItem, i, gamepadId);
+                                            await PromptEquip(swapTarget, characterData, gamepadId);
+                                        });
                                     })).Append(new ButtonColumnItem<Action>("Cancel", () => { })).ToList();
                                 }
                             }))
@@ -248,6 +268,22 @@ class UseItemMenu
                         Close();
                     }
                 }
+            }
+        }
+    }
+
+    private async Task PromptEquip(InventoryItem selectedItem, Persistence.CharacterData charData, GamepadId gamepadId)
+    {
+        if (selectedItem.Equipment != null)
+        {
+            if (characterMenuPositionService.TryGetEntry(charData.CharacterSheet, out var entry))
+            {
+                entry.FaceCamera();
+                cameraMover.SetInterpolatedGoalPosition(entry.CameraPosition, entry.CameraRotation);
+            }
+            if (await confirmMenu.ShowAndWait("Should " + charData.CharacterSheet.Name + " equip the " + languageService.Current.Items.GetText(selectedItem.InfoId), previousMenu, gamepadId))
+            {
+                inventoryFunctions.Use(selectedItem, charData.Inventory, charData.CharacterSheet, charData.CharacterSheet);
             }
         }
     }
@@ -462,7 +498,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     descriptions = null;
                     infos = null;
                 }
-                useItemMenu.SelectedItem = newSelection;
+                useItemMenu.Setup(newSelection, this);
             }
             else
             {
