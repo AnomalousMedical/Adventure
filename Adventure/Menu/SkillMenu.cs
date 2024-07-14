@@ -42,6 +42,8 @@ class SkillMenu
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
     SharpButton close = new SharpButton() { Text = "Close" };
+    SharpText noSkills = new SharpText() { Text = "No Skills", Color = Color.White };
+    SharpPanel noSkillsPanel = new SharpPanel();
     List<SharpText> infos;
     List<SharpText> descriptions;
     private int currentSheet;
@@ -212,6 +214,18 @@ class SkillMenu
                         soundEffectPlayer.PlaySound(Assets.SoundEffects.ErrorSoundEffect.Instance);
                     }
                 }
+            }
+            else
+            {
+                var noSkillsLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), 
+                    new PanelLayout(noSkillsPanel, 
+                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)), 
+                    noSkills
+                )));
+                noSkillsLayout.SetRect(screenPositioner.GetTopRightRect(noSkillsLayout.GetDesiredSize(sharpGui)));
+
+                sharpGui.Panel(noSkillsPanel, panelStyle);
+                sharpGui.Text(noSkills);
             }
 
             if (sharpGui.Button(next, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: previous.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
