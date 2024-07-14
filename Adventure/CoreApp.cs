@@ -112,6 +112,7 @@ namespace Adventure
             services.AddSingleton<PartyMemberManager>();
             services.AddSingleton<CharacterStatsTextService>();
             services.AddSingleton<CharacterStyleService>();
+            services.AddSingleton<ZoneEntranceService>();
             services.AddSingleton<IGcService, GcService>();
             services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<FollowerManager>();

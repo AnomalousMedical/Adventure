@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.WorldMap;
 
 namespace Adventure
 {
@@ -53,6 +54,7 @@ namespace Adventure
         private readonly ICollidableTypeIdentifier<ZoneScene> collidableIdentifier;
         private readonly IExplorationGameState explorationGameState;
         private readonly Persistence persistence;
+        private readonly ZoneEntranceService zoneEntranceService;
         private readonly Vector3 mapOffset;
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
@@ -86,7 +88,8 @@ namespace Adventure
             ICollidableTypeIdentifier<ZoneScene> collidableIdentifier,
             SpriteInstanceFactory spriteInstanceFactory,
             IExplorationGameState explorationGameState,
-            Persistence persistence
+            Persistence persistence,
+            ZoneEntranceService zoneEntranceService
         )
         {
             state = GetState(description, persistence);
@@ -105,6 +108,7 @@ namespace Adventure
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.explorationGameState = explorationGameState;
             this.persistence = persistence;
+            this.zoneEntranceService = zoneEntranceService;
             this.mapOffset = description.MapOffset;
             this.TriggerEnemy = description.TriggerEnemy;
 
@@ -336,11 +340,12 @@ namespace Adventure
             return result;
         }
 
-        private static void SetState(Description description, Persistence persistence, BattleTriggerPersistenceData data)
+        private void SetState(Description description, Persistence persistence, BattleTriggerPersistenceData data)
         {
             if (description.IsBoss)
             {
                 persistence.Current.BossBattleTriggers.SetData(description.Zone, description.Index, data);
+                zoneEntranceService.UpdateDisplay();
             }
             else
             {

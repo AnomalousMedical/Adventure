@@ -46,6 +46,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
         private readonly FadeScreenMenu fadeScreenMenu;
+        private readonly ZoneEntranceService zoneEntranceService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -55,6 +56,7 @@ namespace Adventure.WorldMap
         private StaticHandle staticHandle;
         private TypedIndex shapeIndex;
         private bool physicsCreated = false;
+        private bool graphicsLoaded = false;
         private int zoneIndex;
 
         private Vector3 currentPosition;
@@ -74,7 +76,8 @@ namespace Adventure.WorldMap
             IWorldMapGameState worldMapGameState,
             Persistence persistence,
             ILanguageService languageService,
-            FadeScreenMenu fadeScreenMenu
+            FadeScreenMenu fadeScreenMenu,
+            ZoneEntranceService zoneEntranceService
         )
         {
             this.sprite = description.Sprite;
@@ -90,6 +93,7 @@ namespace Adventure.WorldMap
             this.persistence = persistence;
             this.languageService = languageService;
             this.fadeScreenMenu = fadeScreenMenu;
+            this.zoneEntranceService = zoneEntranceService;
             this.mapOffset = description.MapOffset;
 
             this.currentPosition = description.Translation;
@@ -110,6 +114,8 @@ namespace Adventure.WorldMap
                 };
             }
 
+            zoneEntranceService.Add(this);
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -124,7 +130,25 @@ namespace Adventure.WorldMap
 
                 rtInstances.AddShaderTableBinder(Bind);
                 rtInstances.AddSprite(sprite);
+
+                graphicsLoaded = true;
+                UpdateDisplay();
             });
+        }
+
+        public void UpdateDisplay()
+        {
+            if (graphicsLoaded)
+            {
+                if (persistence.Current.IsBossDead(zoneIndex))
+                {
+                    sprite.SetAnimation("complete");
+                }
+                else
+                {
+                    sprite.SetAnimation("default");
+                }
+            }
         }
 
         public void CreatePhysics()
@@ -158,6 +182,7 @@ namespace Adventure.WorldMap
 
         public void Dispose()
         {
+            zoneEntranceService.Remove(this);
             spriteInstanceFactory.TryReturn(spriteInstance);
             rtInstances.RemoveSprite(sprite);
             rtInstances.RemoveShaderTableBinder(Bind);
