@@ -600,12 +600,16 @@ namespace Adventure
                 SetupRooms(enemyRandom, out var bossBattleTrigger, out var treasureStack, noBgSquares, battleTriggers);
                 PlaceKeySafety(enemyRandom, usedCorridors);
                 PlaceSignpost(description, startPoint, endPoint);
-                ReserveBgSquares(noBgSquares, startPoint, 7);
-                ReserveBgSquares(noBgSquares, new Point(startPoint.x + 1, startPoint.y), 7);
-                ReserveBgSquares(noBgSquares, new Point(startPoint.x - 1, startPoint.y), 7);
-                ReserveBgSquares(noBgSquares, endPoint, 7);
-                ReserveBgSquares(noBgSquares, new Point(endPoint.x + 1, endPoint.y), 7);
-                ReserveBgSquares(noBgSquares, new Point(endPoint.x - 1, endPoint.y), 7);
+                ReserveBgSquares(noBgSquares, startPoint, 10);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x + 2, startPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x + 1, startPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x - 1, startPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(startPoint.x - 2, startPoint.y), 10);
+                ReserveBgSquares(noBgSquares, endPoint, 10);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x + 2, endPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x + 1, endPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x - 1, endPoint.y), 10);
+                ReserveBgSquares(noBgSquares, new Point(endPoint.x - 2, endPoint.y), 10);
                 CreateHelpBook();
 
                 if (biome.BackgroundItems != null)
