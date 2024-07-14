@@ -306,6 +306,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpText noItems = new SharpText() { Text = "No Items", Color = Color.White };
+    private SharpPanel noItemsPanel = new SharpPanel();
 
     public ItemMenu
     (
@@ -448,16 +450,32 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             {
                 currentItems = characterData.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).ToList();
             }
-            var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-            var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
-            if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
-            {
-                descriptions = null;
-                infos = null;
-            }
-            useItemMenu.SelectedItem = newSelection;
 
             var hasItems = characterData.Inventory.Items.Any();
+
+            if (hasItems)
+            {
+                var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
+                var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+                if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
+                {
+                    descriptions = null;
+                    infos = null;
+                }
+                useItemMenu.SelectedItem = newSelection;
+            }
+            else
+            {
+                var noSkillsLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                    new PanelLayout(noItemsPanel,
+                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                    noItems
+                )));
+                noSkillsLayout.SetRect(screenPositioner.GetTopRightRect(noSkillsLayout.GetDesiredSize(sharpGui)));
+
+                sharpGui.Panel(noItemsPanel, panelStyle);
+                sharpGui.Text(noItems);
+            }
 
             if (sharpGui.Button(previous, gamepad, navUp: hasItems ? itemButtons.BottomButton : previous.Id, navDown: hasItems ? itemButtons.TopButton : previous.Id, navLeft: close.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
