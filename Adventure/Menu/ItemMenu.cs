@@ -49,6 +49,7 @@ class UseItemMenu
     private ISkillEffect currentEffect;
 
     public event Action Closed;
+    public event Action ItemUsed;
     public event Action IsTransferStatusChanged;
 
     public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, SharpStyle style, IExplorationSubMenu parentSubMenu, IExplorationMenu menu)
@@ -173,6 +174,7 @@ class UseItemMenu
                         if (SelectedItem.Equipment != null)
                         {
                             inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
+                            ItemUsed?.Invoke();
                             Close();
                         }
                         else
@@ -181,6 +183,7 @@ class UseItemMenu
                             characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                             {
                                 currentEffect = inventoryFunctions.Use(SelectedItem, characterData.Inventory, characterData.CharacterSheet, i.CharacterSheet, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+                                ItemUsed?.Invoke();
                             }))
                             .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
                             .ToList();
@@ -250,6 +253,8 @@ class UseItemMenu
     }
 
     public bool IsChoosingCharacters => this.SelectedItem != null && this.characterChoices != null;
+
+    public bool HasEffect => this.currentEffect != null;
 
     public bool IsSwappingItems => this.SelectedItem != null && this.swapItemChoices != null;
 
@@ -332,12 +337,14 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         this.plotItemMenu = plotItemMenu;
         useItemMenu.Closed += UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged += UseItemMenu_IsTransferStatusChanged;
+        useItemMenu.ItemUsed += UseItemMenu_ItemUsed;
     }
 
     public void Dispose()
     {
         useItemMenu.Closed -= UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged -= UseItemMenu_IsTransferStatusChanged;
+        useItemMenu.ItemUsed -= UseItemMenu_ItemUsed;
     }
 
     public void Update(IExplorationMenu menu, GamepadId gamepad)
@@ -359,7 +366,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
 
         if (infos == null)
         {
-            if (useItemMenu.IsChoosingCharacters)
+            if (useItemMenu.IsChoosingCharacters || useItemMenu.HasEffect)
             {
                 if (useItemMenu.IsTransfer)
                 {
@@ -400,6 +407,9 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             }
         }
 
+        var currentInfos = infos;
+        var currentDescriptions = descriptions;
+
         ILayoutItem layout;
 
         layout =
@@ -431,9 +441,6 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         itemButtons.Bottom = backButtonRect.Top;
 
         useItemMenu.Update(characterData, gamepad, currentCharacterStyle, this, menu);
-
-        var currentInfos = infos;
-        var currentDescriptions = descriptions;
 
         if (allowChanges)
         {
@@ -528,6 +535,12 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 sharpGui.Text(description);
             }
         }
+    }
+
+    private void UseItemMenu_ItemUsed()
+    {
+        descriptions = null;
+        infos = null;
     }
 
     private void UseItemMenu_Closed()
