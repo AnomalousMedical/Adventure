@@ -14,7 +14,7 @@ namespace Engine
 
         public ScaleHelper(OSWindow window)
         {
-            scaleFactor = window.WindowScaling;
+            scaleFactor = window.WindowHeight / 1080f;
             inverseScaleFactor = 1.0f / scaleFactor;
         }
 
