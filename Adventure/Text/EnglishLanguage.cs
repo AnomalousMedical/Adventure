@@ -20,7 +20,7 @@ namespace Adventure.Text
                     MageName: "Rabras",
                     MageGreeting: "Times a wasting. Let's get moving.",
                     ThiefName: "Malissa",
-                    ThiefGreeting: "If were going out, hopefully we will find some good treasure.",
+                    ThiefGreeting: "If we are going out, hopefully we will find some good treasure.",
                     ClericName: "Adali",
                     ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?"
                 ),
@@ -107,7 +107,7 @@ namespace Adventure.Text
                 (
                     Greeting: "Hello",
                     Intro1: "Greetings. My cards can help you find things your thieving fingers may have missed.",
-                    StartShufflePitch: "Lets see what the cards say about your fate.",
+                    StartShufflePitch: "Let us see what the cards say about your fate.",
                     CardShuffleNarrator: "The fortune teller shuffles her deck of cards...",
                     ShowResultsNarrator: "The cards are arranged before you on the table.",
                     NoResultsNarrator: "The cards are quiet today."
