@@ -63,7 +63,7 @@ internal class CreditsMenu
             }
         }
 
-        var pixelsPerSecond = scaleHelper.Scaled(25);
+        var pixelsPerSecond = scaleHelper.Scaled(50);
 
         foreach(var text in creditsText)
         {
@@ -105,7 +105,7 @@ internal class CreditsMenu
         Previous = null;
     }
 
-    private long NormalDelayMicro = (long)(1.3f * Clock.SecondsToMicro);
+    private long NormalDelayMicro = (long)(.65f * Clock.SecondsToMicro);
 
     private IEnumerable<TextInfo> TextGenerator()
     {
