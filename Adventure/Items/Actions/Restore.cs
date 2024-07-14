@@ -6,6 +6,7 @@ using Adventure.Services;
 using Adventure.Skills;
 using Engine;
 using RpgMath;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,8 @@ namespace Adventure.Items.Actions
                 return null;
             }
 
-            target.CurrentHp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            var damage = item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            target.CurrentHp += damage;
             if (target.CurrentHp > target.Hp)
             {
                 target.CurrentHp = target.Hp;
@@ -52,7 +54,29 @@ namespace Adventure.Items.Actions
                 cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
                 characterEntry.FaceCamera();
 
-                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                var sharpGui = objectResolver.Resolve<ISharpGui>();
+                var scaleHelper = objectResolver.Resolve<IScaleHelper>();
+                var cameraProjector = objectResolver.Resolve<ICameraProjector>();
+                var targetPos = characterEntry.MagicHitLocation;
+                var screenPos = cameraProjector.Project(targetPos);
+                int damageDisplayMultiplier = -1;
+                Color damageDisplayColor = Color.White;
+                if (damage > 0)
+                {
+                    damageDisplayColor = Color.Green;
+                    damageDisplayMultiplier = 1;
+                }
+                var damageNumber = new DamageNumber((damage * damageDisplayMultiplier).ToString(), screenPos, scaleHelper, damageDisplayColor);
+
+                var skillEffect = new CallbackSkillEffect(c =>
+                {
+                    cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                    var screenPos = cameraProjector.Project(targetPos);
+                    damageNumber.UpdatePosition(screenPos, scaleHelper);
+                    sharpGui.Text(damageNumber.Text);
+                    damageNumber.TimeRemaining -= c.DeltaTimeMicro;
+                    damageNumber.UpdatePosition();
+                });
                 IEnumerator<YieldAction> run()
                 {
                     yield return coroutine.WaitSeconds(0.3f);
@@ -165,7 +189,8 @@ namespace Adventure.Items.Actions
                 return null;
             }
 
-            target.CurrentMp += item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            var damage = item.Number.Value + (long)(item.Number.Value * attacker.TotalItemUsageBonus);
+            target.CurrentMp += damage;
             if (target.CurrentMp > target.Mp)
             {
                 target.CurrentMp = target.Mp;
@@ -177,7 +202,29 @@ namespace Adventure.Items.Actions
                 cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
                 characterEntry.FaceCamera();
 
-                var skillEffect = new CallbackSkillEffect(c => cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation));
+                var sharpGui = objectResolver.Resolve<ISharpGui>();
+                var scaleHelper = objectResolver.Resolve<IScaleHelper>();
+                var cameraProjector = objectResolver.Resolve<ICameraProjector>();
+                var targetPos = characterEntry.MagicHitLocation;
+                var screenPos = cameraProjector.Project(targetPos);
+                int damageDisplayMultiplier = -1;
+                Color damageDisplayColor = Color.White;
+                if (damage > 0)
+                {
+                    damageDisplayColor = Color.Green;
+                    damageDisplayMultiplier = 1;
+                }
+                var damageNumber = new DamageNumber((damage * damageDisplayMultiplier).ToString(), screenPos, scaleHelper, damageDisplayColor);
+
+                var skillEffect = new CallbackSkillEffect(c =>
+                {
+                    cameraMover.SetInterpolatedGoalPosition(characterEntry.CameraPosition, characterEntry.CameraRotation);
+                    var screenPos = cameraProjector.Project(targetPos);
+                    damageNumber.UpdatePosition(screenPos, scaleHelper);
+                    sharpGui.Text(damageNumber.Text);
+                    damageNumber.TimeRemaining -= c.DeltaTimeMicro;
+                    damageNumber.UpdatePosition();
+                });
                 IEnumerator<YieldAction> run()
                 {
                     yield return coroutine.WaitSeconds(0.3f);
