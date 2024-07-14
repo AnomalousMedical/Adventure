@@ -99,6 +99,20 @@ class RootMenu
         yield return close;
     }
 
+    private IEnumerable<ILayoutItem> GetStatsItems()
+    {
+        if (persistence.Current.Party.Undefeated)
+        {
+            yield return undefeated;
+        }
+        if (persistence.Current.Party.OldSchool)
+        {
+            yield return oldSchool;
+        }
+        yield return gold;
+        yield return timePlayed;
+    }
+
     public void Update(IExplorationMenu explorationMenu, GamepadId gamepad)
     {
         var time = TimeSpan.FromMilliseconds(persistence.Current.Time.Total * Clock.MicroToMilliseconds);
@@ -117,7 +131,7 @@ class RootMenu
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
 
         sharpGui.Panel(infoPanel, panelStyle);
-        foreach(var info in infos)
+        foreach (var info in infos)
         {
             sharpGui.Text(info);
         }
@@ -127,7 +141,7 @@ class RootMenu
         layout =
           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
           new PanelLayout(descriptionPanel,
-          new ColumnLayout(undefeated, oldSchool, gold, timePlayed) { Margin = new IntPad(10) }
+          new ColumnLayout(GetStatsItems()) { Margin = new IntPad(10) }
         ));
         var infoDesiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));
@@ -186,7 +200,7 @@ class RootMenu
             infos = null;
             explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
         }
-        else if(sharpGui.Button(feedback, gamepad, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
+        else if (sharpGui.Button(feedback, gamepad, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
         {
             coroutineRunner.RunTask(async () =>
             {
