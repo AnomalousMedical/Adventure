@@ -260,9 +260,9 @@ namespace Adventure.Skills
     {
         public Focus()
         {
-            Amount = 20;
+            Amount = 30;
             Name = "Focus";
-            MpCost = 30;
+            MpCost = 35;
             SoundEffect = FocusSpellSoundEffect.Instance;
             EffectSpriteAsset = new BuffMagicEffect();
             CastColor = Color.FromARGB(0xffe109bb);
