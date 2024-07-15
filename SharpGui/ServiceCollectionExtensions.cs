@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<SharpGuiRenderer>();
             services.TryAddSingleton<IScreenPositioner, ScreenPositioner>();
             services.TryAddSingleton<IFontManager, FontManager>();
+            services.TryAddSingleton<IImageManager, ImageManager>();
 
             return services;
         }

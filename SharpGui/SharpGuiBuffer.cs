@@ -203,6 +203,44 @@ namespace SharpGui
             currentZ -= zStep;
         }
 
+        public void DrawImageQuad(int x, int y, int width, int height, in Color color, in Rect uvRect, float layer, uint fontTexture)
+        {
+            if (currentText >= textVerts.Length)
+            {
+                logger.LogWarning($"Exceeded maximum number of text/image quads '{textVerts.Length / 4}'.");
+                return;
+            }
+
+            float left = x / (float)osWindow.WindowWidth * 2.0f - 1.0f;
+            float right = (x + width) / (float)osWindow.WindowWidth * 2.0f - 1.0f;
+            float top = y / (float)osWindow.WindowHeight * -2.0f + 1.0f;
+            float bottom = (y + height) / (float)osWindow.WindowHeight * -2.0f + 1.0f;
+
+            textVerts[currentText].pos = new Vector3(left, top, currentZ - layer);
+            textVerts[currentText + 1].pos = new Vector3(right, top, currentZ - layer);
+            textVerts[currentText + 2].pos = new Vector3(right, bottom, currentZ - layer);
+            textVerts[currentText + 3].pos = new Vector3(left, bottom, currentZ - layer);
+
+            textVerts[currentText].color = color;
+            textVerts[currentText + 1].color = color;
+            textVerts[currentText + 2].color = color;
+            textVerts[currentText + 3].color = color;
+
+            textVerts[currentText].uv = new Vector2(uvRect.Left, uvRect.Top);
+            textVerts[currentText + 1].uv = new Vector2(uvRect.Right, uvRect.Top);
+            textVerts[currentText + 2].uv = new Vector2(uvRect.Right, uvRect.Bottom);
+            textVerts[currentText + 3].uv = new Vector2(uvRect.Left, uvRect.Bottom);
+
+            textVerts[currentText].textureIndex = fontTexture;
+            textVerts[currentText + 1].textureIndex = fontTexture;
+            textVerts[currentText + 2].textureIndex = fontTexture;
+            textVerts[currentText + 3].textureIndex = fontTexture;
+
+            currentText += 4;
+            NumTextIndices += 6;
+            currentZ -= zStep;
+        }
+
         public uint NumQuadIndices { get; private set; }
 
         public uint NumTextIndices { get; private set; }

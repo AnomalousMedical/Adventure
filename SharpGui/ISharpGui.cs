@@ -84,6 +84,12 @@ namespace SharpGui
         void Text(SharpText text);
 
         /// <summary>
+        /// Render a SharpImage to the screen.
+        /// </summary>
+        /// <param name="image">The SharpImage to render.</param>
+        void Image(SharpImage image);
+
+        /// <summary>
         /// Draw a button.
         /// </summary>
         /// <param name="button"></param>

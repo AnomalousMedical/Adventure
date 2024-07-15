@@ -257,6 +257,16 @@ namespace SharpGui
             buffer.DrawText(text.Rect.Left, text.Rect.Top, text.Rect.Right, text.Color, text.Text, fontManager.FontOrDefault(text.Font), text.Layer);
         }
 
+        public void Image(SharpImage image)
+        {
+            if (image.Image == null)
+            {
+                return;
+            }
+            
+            buffer.DrawImageQuad(image.Rect.Left, image.Rect.Top, image.Rect.Width, image.Rect.Height, image.Color, image.UvRect, image.Layer, image.Image.TextureIndex);
+        }
+
         public void Render(IDeviceContext immediateContext)
         {
             renderer.Render(buffer, immediateContext);

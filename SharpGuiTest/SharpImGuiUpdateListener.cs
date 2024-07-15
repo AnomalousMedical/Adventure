@@ -17,6 +17,7 @@ namespace SharpImGuiTest
         private readonly NativeOSWindow window;
         private readonly ISharpGui sharpGui;
         private readonly IScaleHelper scaleHelper;
+        private readonly IImageManager imageManager;
         private readonly ISwapChain swapChain;
         private readonly IDeviceContext immediateContext;
         private String displayText = "Click on something!";
@@ -40,7 +41,9 @@ namespace SharpImGuiTest
 
         private SharpProgressHorizontal progressHorz;
 
-        public SharpImGuiUpdateListener(GraphicsEngine graphicsEngine, NativeOSWindow window, ISharpGui sharpGui, IScaleHelper scaleHelper)
+        private SharpImage sharpImage = new SharpImage();
+
+        public SharpImGuiUpdateListener(GraphicsEngine graphicsEngine, NativeOSWindow window, ISharpGui sharpGui, IScaleHelper scaleHelper, IImageManager imageManager)
         {
             sliderVert = new SharpSliderVertical() { Rect = scaleHelper.Scaled(new IntRect(10, 10, 35, 500)), Max = 15 };
             sliderHorz = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 15 };
@@ -52,8 +55,11 @@ namespace SharpImGuiTest
             this.window = window;
             this.sharpGui = sharpGui;
             this.scaleHelper = scaleHelper;
+            this.imageManager = imageManager;
             this.swapChain = graphicsEngine.SwapChain;
             this.immediateContext = graphicsEngine.ImmediateContext;
+
+            sharpImage.Image = imageManager.Load("AnomalousEngine.png");
 
             layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -86,6 +92,11 @@ namespace SharpImGuiTest
 
             var desiredSize = layout.GetDesiredSize(sharpGui);
             layout.SetRect(new IntRect(window.WindowWidth - desiredSize.Width, window.WindowHeight - desiredSize.Height, desiredSize.Width, desiredSize.Height));
+
+            //Image
+            var imageSize = sharpImage.GetDesiredSize(sharpGui);
+            sharpImage.Rect = new IntRect((window.WindowWidth - imageSize.Width) / 2, (window.WindowHeight - imageSize.Height) / 2, imageSize.Width, imageSize.Height);
+            sharpGui.Image(sharpImage);
 
             //Buttons
             Guid stealFocus = Guid.Empty;

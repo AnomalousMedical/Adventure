@@ -23,16 +23,26 @@ namespace SharpGui
         private AutoPtr<IShaderResourceBinding> textShaderResourceBinding;
         private AutoPtr<IBuffer> textVertexBuffer;
         private AutoPtr<IBuffer> textIndexBuffer;
-        private Dictionary<Font, AutoPtr<ITexture>> fontTextures = new Dictionary<Font, AutoPtr<ITexture>>(NumFonts);
+        private List<AutoPtr<ITexture>> fontTextures = new List<AutoPtr<ITexture>>(NumFonts);
         private List<IDeviceObject> fontDeviceObjects = new List<IDeviceObject>(NumFonts);
         private readonly GraphicsEngine graphicsEngine;
         private readonly OSWindow osWindow;
         private readonly IResourceProvider<SharpGuiRenderer> resourceProvider;
+        private readonly IScaleHelper scaleHelper;
+        private readonly TextureLoader textureLoader;
         private DrawIndexedAttribs DrawAttrs;
         private uint maxNumberOfQuads;
         private uint maxNumberOfTextQuads;
 
-        public unsafe SharpGuiRenderer(GraphicsEngine graphicsEngine, OSWindow osWindow, SharpGuiOptions options, IResourceProvider<SharpGuiRenderer> resourceProvider, IScaleHelper scaleHelper)
+        public unsafe SharpGuiRenderer
+        (
+            GraphicsEngine graphicsEngine, 
+            OSWindow osWindow, 
+            SharpGuiOptions options, 
+            IResourceProvider<SharpGuiRenderer> resourceProvider, 
+            IScaleHelper scaleHelper,
+            TextureLoader textureLoader
+        )
         {
             this.maxNumberOfQuads = options.MaxNumberOfQuads;
             this.maxNumberOfTextQuads = options.MaxNumberOfTextQuads;
@@ -48,6 +58,8 @@ namespace SharpGui
             this.graphicsEngine = graphicsEngine;
             this.osWindow = osWindow;
             this.resourceProvider = resourceProvider;
+            this.scaleHelper = scaleHelper;
+            this.textureLoader = textureLoader;
             CreateQuadPso(graphicsEngine, m_pSwapChain, m_pDevice);
             CreateTextPso(graphicsEngine, m_pSwapChain, m_pDevice, scaleHelper);
 
@@ -309,7 +321,7 @@ namespace SharpGui
             var font = new Font(trueTypeFont.CharMap, trueTypeFont.GlyphInfo, trueTypeFont.SubstituteCodePoint, trueTypeFont.SubstituteCodePointGlyphInfo, textureIndex);
 
             var tex = graphicsEngine.RenderDevice.CreateTexture(TexDesc, TexData);
-            fontTextures.Add(font, tex);
+            fontTextures.Add(tex);
             fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
 
             // Set texture SRV in the SRB
@@ -322,10 +334,37 @@ namespace SharpGui
             return font;
         }
 
+        public ImageTexture LoadImageTexture(String fileName)
+        {
+            if (fontTextures.Count + 1 == NumFonts)
+            {
+                throw new InvalidOperationException($"Can only load {NumFonts} fonts at a time.");
+            }
+
+            //Load Texture
+            using var stream = resourceProvider.openFile(fileName);
+
+            uint textureIndex = (uint)fontTextures.Count;
+
+            var tex = textureLoader.LoadTexture(stream, "SharpGuiImage_" + fileName, RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+            fontTextures.Add(tex);
+            fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
+
+            // Set texture SRV in the SRB
+            textShaderResourceBinding.Obj.GetVariableByName(SHADER_TYPE.SHADER_TYPE_PIXEL, "g_Texture").SetArray(fontDeviceObjects);
+
+            var barriers = new List<StateTransitionDesc>(1);
+            barriers.Add(new StateTransitionDesc { pResource = tex.Obj, OldState = RESOURCE_STATE.RESOURCE_STATE_UNKNOWN, NewState = RESOURCE_STATE.RESOURCE_STATE_SHADER_RESOURCE, Flags = STATE_TRANSITION_FLAGS.STATE_TRANSITION_FLAG_UPDATE_STATE });
+            graphicsEngine.ImmediateContext.TransitionResourceStates(barriers);
+
+            //Pre-scale image size, should add support for @2x @3x etc images
+            return new ImageTexture(textureIndex, scaleHelper.Scaled((int)tex.Obj.GetDesc_Width), scaleHelper.Scaled((int)tex.Obj.GetDesc_Height));
+        }
+
         public void Dispose()
         {
             fontDeviceObjects.Clear();
-            foreach (var fontTexture in fontTextures.Values)
+            foreach (var fontTexture in fontTextures)
             {
                 fontTexture.Dispose();
             }
