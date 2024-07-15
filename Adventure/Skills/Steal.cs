@@ -44,7 +44,7 @@ namespace Adventure.Skills
         private readonly IBattleManager battleManager;
         private readonly IExplorationMenu explorationMenu;
 
-        public StealEffect(StealMenu stealMenu, Description description, IExplorationMenu explorationMenu)
+        public StealEffect(StealMenu stealMenu, Description description, IExplorationMenu explorationMenu, IBattleManager battleManager)
         {
             this.battleManager = description.BattleManager;
             this.explorationMenu = explorationMenu;
@@ -55,6 +55,7 @@ namespace Adventure.Skills
                 stealMenu.SetTreasure(treasures, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker);
                 var padId = battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
                 explorationMenu.RequestSubMenu(stealMenu, padId);
+                battleManager.CancelTargeting();
             }
         }
 
