@@ -191,51 +191,16 @@ class PickUpTreasureMenu
 
         itemInfo.Text = languageService.Current.Items.GetText(treasure.InfoId);
 
-        if (equippingItem)
-        {
-            layout =
-              new ColumnLayout(
-                  new PanelLayout(characterPanel, new ColumnLayout(
-                      new CenterHorizontalLayout(currentCharacter),
-                      new CenterHorizontalLayout(inventoryInfo),
-                      new CenterHorizontalLayout(itemInfo))
-                  { Margin = new IntPad(scaleHelper.Scaled(10)) }),
-                  new CenterHorizontalLayout(equip),
-                  new CenterHorizontalLayout(continueButton))
-              { Margin = new IntPad(scaleHelper.Scaled(10)) };
-        }
-        else
-        {
-            if (treasure.CanUseOnPickup)
-            {
-                layout =
-                   new ColumnLayout(
-                       new PanelLayout(characterPanel, new ColumnLayout(
-                           new CenterHorizontalLayout(currentCharacter),
-                           new CenterHorizontalLayout(inventoryInfo),
-                           new CenterHorizontalLayout(itemInfo))
-                       { Margin = new IntPad(scaleHelper.Scaled(10)) }),
-                       new CenterHorizontalLayout(take),
-                       new CenterHorizontalLayout(use),
-                       new CenterHorizontalLayout(discard))
-                   { Margin = new IntPad(scaleHelper.Scaled(10)) };
-            }
-            else
-            {
-                layout =
-                   new ColumnLayout(
-                       new PanelLayout(characterPanel, new ColumnLayout(
-                           new CenterHorizontalLayout(currentCharacter),
-                           new CenterHorizontalLayout(inventoryInfo),
-                           new CenterHorizontalLayout(itemInfo))
-                       { Margin = new IntPad(scaleHelper.Scaled(10)) }),
-                       new CenterHorizontalLayout(take),
-                       new CenterHorizontalLayout(discard))
-                   { Margin = new IntPad(scaleHelper.Scaled(10)) };
-            }
-        }
+        var colLayout = new ColumnLayout(
+                new PanelLayout(characterPanel, new ColumnLayout(
+                    new CenterHorizontalLayout(currentCharacter),
+                    new CenterHorizontalLayout(inventoryInfo),
+                    new CenterHorizontalLayout(itemInfo))
+                { Margin = new IntPad(scaleHelper.Scaled(10)) }))
+        { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        colLayout.Add(GetMenuItems(treasure));
 
-        layout.SetRect(screenPositioner.GetCenterTopRect(layout.GetDesiredSize(sharpGui)));
+        colLayout.SetRect(screenPositioner.GetCenterTopRect(colLayout.GetDesiredSize(sharpGui)));
 
         if (!replacingItem)
         {
@@ -398,6 +363,27 @@ class PickUpTreasureMenu
         }
 
         return false;
+    }
+
+    private IEnumerable<ILayoutItem> GetMenuItems(ITreasure treasure)
+    {
+        if (equippingItem)
+        {
+            yield return new CenterHorizontalLayout(equip);
+            yield return new CenterHorizontalLayout(continueButton);
+        }
+        else
+        {
+            yield return new CenterHorizontalLayout(take);
+            if (treasure.CanUseOnPickup)
+            {
+                yield return new CenterHorizontalLayout(use);
+            }
+            if (!treasure.IsPlotItem)
+            {
+                yield return new CenterHorizontalLayout(discard);
+            }
+        }
     }
 
     private void NextTreasure()
