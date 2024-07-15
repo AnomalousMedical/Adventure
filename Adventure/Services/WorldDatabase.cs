@@ -758,7 +758,36 @@ namespace Adventure.Services
                 PreventUsageNorthSouth(areaBuilder.Location, usedSquares);
                 yield return areaBuilder;
             }
-            
+
+            //Make it less likely to place a npc on the main island if there is water nearby
+            const byte NpcIgnoreSquare = byte.MaxValue - 1;
+            var modifiedSquares = new List<Tuple<IntVector2, byte>>(bigIsland.islandPoints.Count);
+            foreach (var square in bigIsland.islandPoints)
+            {
+                //Look for water in any direction
+                var left = square.x - 1;
+                var right = square.x + 1;
+                var top = square.y + 1;
+                var bottom = square.y - 1;
+                if (left > 0 && right < map.Map.GetLength(0) && top < map.Map.GetLength(1) && bottom > 0)
+                {
+                    var nearbyCellEmpty = map.Map[left, square.y] == csIslandMaze.EmptyCell
+                         || map.Map[right, square.y] == csIslandMaze.EmptyCell
+                         || map.Map[square.x, top] == csIslandMaze.EmptyCell
+                         || map.Map[square.x, bottom] == csIslandMaze.EmptyCell
+                         || map.Map[left, top] == csIslandMaze.EmptyCell
+                         || map.Map[right, top] == csIslandMaze.EmptyCell
+                         || map.Map[left, bottom] == csIslandMaze.EmptyCell
+                         || map.Map[right, bottom] == csIslandMaze.EmptyCell;
+
+                    if (nearbyCellEmpty && usedSquares[square.x, square.y] < MaxFillGeneration)
+                    {
+                        modifiedSquares.Add(Tuple.Create(square, usedSquares[square.x, square.y]));
+                        usedSquares[square.x, square.y] = NpcIgnoreSquare;
+                    }
+                }
+            }
+
             InnkeeperPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
             PreventUsageNorthSouth(InnkeeperPosition, usedSquares);
             BlacksmithPosition = GetUnusedSquare(usedSquares, bigIsland, placementRandom);
@@ -776,6 +805,17 @@ namespace Adventure.Services
             PreventUsageNorthSouth(AlchemistUpgradePosition, usedSquares);
             ElementalStonePosition = GetUnusedSquare(usedSquares, elementalStoneIsland, placementRandom);
             PreventUsageNorthSouth(ElementalStonePosition, usedSquares);
+
+            //Reset npc ignore squares so background items can be placed again
+            //These can be changed above, so only restore if it is still equal to NpcIgnoreSquare
+            foreach (var item in modifiedSquares)
+            {
+                var square = item.Item1;
+                if (usedSquares[square.x, square.y] == NpcIgnoreSquare)
+                {
+                    usedSquares[square.x, square.y] = item.Item2;
+                }
+            }
 
             var biomePropLocations = new List<IntVector2>();
             foreach(var island in map.IslandInfo)
