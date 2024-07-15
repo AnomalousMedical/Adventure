@@ -3,6 +3,7 @@ using Adventure.Assets.SoundEffects;
 using Adventure.Items;
 using Adventure.Services;
 using Adventure.Skills;
+using Adventure.Skills.Spells;
 using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
@@ -11,6 +12,7 @@ using Engine.Platform;
 using RpgMath;
 using SharpGui;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +57,8 @@ namespace Adventure.Battle
 
         private SharpProgressHorizontal turnProgress = new SharpProgressHorizontal();
         private SharpProgressHorizontal powerProgress = new SharpProgressHorizontal();
-        private SharpText currentBuffs = new SharpText() { Color = Color.White };
+        private RowLayout currentBuffsLayout = new RowLayout();
+        private List<SharpImage> currentBuffs = new List<SharpImage>(4);
         private SharpText name = new SharpText() { Color = Color.White };
         private SharpText currentHp = new SharpText() { Color = Color.White };
         private SharpText currentMp = new SharpText() { Color = Color.White };
@@ -129,6 +132,13 @@ namespace Adventure.Battle
         SharpStyle uiStyle;
         Color nameHighlightColor;
 
+        private SharpImage fire = new SharpImage();
+        private SharpImage ice = new SharpImage();
+        private SharpImage electricity = new SharpImage();
+        private SharpImage physBuff = new SharpImage();
+        private SharpImage mentalBuff = new SharpImage();
+        private SharpImage haste = new SharpImage();
+
         public class Description : SceneObjectDesc
         {
             public int PrimaryHand = Player.RightHand;
@@ -143,7 +153,8 @@ namespace Adventure.Battle
 
         public SharpStyle UiStyle => uiStyle;
 
-        public BattlePlayer(
+        public BattlePlayer
+        (
             RTInstances<BattleScene> rtInstances,
             SpriteInstanceFactory spriteInstanceFactory,
             IDestructionRequest destructionRequest,
@@ -162,7 +173,9 @@ namespace Adventure.Battle
             ISkillFactory skillFactory,
             EventManager eventManager,
             IInventoryFunctions inventoryFunctions,
-            CharacterStyleService characterStyleService)
+            CharacterStyleService characterStyleService,
+            IconLoader iconLoader
+        )
         {
             this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
             this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: new[] { GamepadButtonCode.XInput_RTrigger }) { Pad = description.Gamepad };
@@ -194,6 +207,8 @@ namespace Adventure.Battle
             this.gamepadId = description.Gamepad;
             this.objectResolver = objectResolverFactory.Create();
 
+            this.currentBuffsLayout.Margin = new IntPad(scaleHelper.Scaled(5), 0, scaleHelper.Scaled(5), 0);
+
             UpdateSkills();
 
             turnProgress.DesiredSize = scaleHelper.Scaled(new IntSize2(200, 25));
@@ -201,7 +216,7 @@ namespace Adventure.Battle
             infoRowLayout =
                 new PanelLayoutNoPad(infoPanel,
                 new KeepWidthRightLayout(new RowLayout(
-                    currentBuffs,
+                    new KeepHeightLayout(currentBuffsLayout),
                     name,
                     new FixedWidthLayout(scaleHelper.Scaled(165), currentHp),
                     new FixedWidthLayout(scaleHelper.Scaled(125), currentMp),
@@ -210,7 +225,7 @@ namespace Adventure.Battle
                 ) { Margin = new IntPad(scaleHelper.Scaled(9)) }));
             battleScreenLayout.InfoColumn.Add(infoRowLayout);
 
-            currentBuffs.Text = GetCurrentBuffsText();
+            UpdateCurrentBuffs();
             name.Text = description.CharacterSheet.Name;
             currentHp.Text = GetCurrentHpText();
             currentHp.Color = GetCurrentHpTextColor();
@@ -269,6 +284,26 @@ namespace Adventure.Battle
                 rtInstances.AddShaderTableBinder(Bind);
                 rtInstances.AddSprite(sprite, tlasData, spriteInstance);
             });
+
+            var iconSize = scaleHelper.Scaled(20);
+            fire.Image = iconLoader.Icons;
+            fire.UvRect = iconLoader.Fire;
+            fire.DesiredWidth = iconSize;
+            ice.Image = iconLoader.Icons;
+            ice.UvRect = iconLoader.Ice;
+            ice.DesiredWidth = iconSize;
+            electricity.Image = iconLoader.Icons;
+            electricity.UvRect = iconLoader.Electricity;
+            electricity.DesiredWidth = iconSize;
+            physBuff.Image = iconLoader.Icons;
+            physBuff.UvRect = iconLoader.PhysBuff;
+            physBuff.DesiredWidth = iconSize;
+            mentalBuff.Image = iconLoader.Icons;
+            mentalBuff.UvRect = iconLoader.MentalBuff;
+            mentalBuff.DesiredWidth = iconSize;
+            haste.Image = iconLoader.Icons;
+            haste.UvRect = iconLoader.Haste;
+            haste.DesiredWidth = iconSize;
         }
 
         private String GetCurrentHpText()
@@ -286,9 +321,48 @@ namespace Adventure.Battle
             return $"{characterSheet.CurrentMp} / {characterSheet.Mp}";
         }
 
-        private String GetCurrentBuffsText()
+        private void UpdateCurrentBuffs()
         {
-            return String.Join(' ', characterSheet.Buffs.Select(i => i.Name));
+            currentBuffsLayout.Clear();
+            currentBuffs.Clear();
+            foreach(var buff in characterSheet.Buffs)
+            {
+                switch (buff.BuffTypeId)
+                {
+                    case PhysicalBuff.Id:
+                        currentBuffsLayout.Add(physBuff);
+                        currentBuffs.Add(physBuff);
+                        break;
+                    case MagicBuff.Id:
+                        currentBuffsLayout.Add(mentalBuff);
+                        currentBuffs.Add(mentalBuff);
+                        break;
+                    case Haste.Id:
+                        currentBuffsLayout.Add(haste);
+                        currentBuffs.Add(haste);
+                        break;
+                    case ElementalBase.BuffTypeId:
+                        foreach(var element in buff.AttackElements)
+                        {
+                            switch (element)
+                            {
+                                case Element.Fire:
+                                    currentBuffsLayout.Add(fire);
+                                    currentBuffs.Add(fire);
+                                    break;
+                                case Element.Ice:
+                                    currentBuffsLayout.Add(ice);
+                                    currentBuffs.Add(ice);
+                                    break;
+                                case Element.Electricity:
+                                    currentBuffsLayout.Add(electricity);
+                                    currentBuffs.Add(electricity);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
         }
 
         private Color GetCurrentMpTextColor()
@@ -367,7 +441,10 @@ namespace Adventure.Battle
             }
 
             sharpGui.Panel(infoPanel, panelStyle);
-            sharpGui.Text(currentBuffs);
+            foreach(var buff in currentBuffs)
+            {
+                sharpGui.Image(buff);
+            }
             sharpGui.Text(name);
             sharpGui.Text(currentHp);
             sharpGui.Text(currentMp);
@@ -1223,7 +1300,7 @@ namespace Adventure.Battle
 
         private void CharacterSheet_OnBuffsModified(CharacterSheet obj)
         {
-            currentBuffs.Text = GetCurrentBuffsText();
+            UpdateCurrentBuffs();
         }
 
         public void SetCounterAttack(Func<Clock, IBattleTarget, bool> counter)

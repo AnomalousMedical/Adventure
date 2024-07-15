@@ -210,7 +210,7 @@ namespace Adventure.Skills
 
     class PhysicalBuff : BuffSpell
     {
-        protected static readonly int Id = 0;
+        public const int Id = 0;
 
         public override string DamageNumberText => "+{0} Strength and Vitality";
 
@@ -256,7 +256,7 @@ namespace Adventure.Skills
 
     class MagicBuff : BuffSpell
     {
-        protected static readonly int Id = 1;
+        public const int Id = 1;
 
         public override string DamageNumberText => "+{0} Magic and Spirit";
 
@@ -302,7 +302,7 @@ namespace Adventure.Skills
 
     class Haste : BuffSpell
     {
-        protected static readonly int Id = 4;
+        public const int Id = 4;
 
         public Haste()
         {

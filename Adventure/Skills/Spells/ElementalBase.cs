@@ -34,7 +34,7 @@ namespace Adventure.Skills.Spells
             return MpCost;
         }
 
-        protected static readonly int BuffTypeId = 1000;
+        public const int BuffTypeId = 1000;
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
         {
