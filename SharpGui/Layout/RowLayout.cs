@@ -24,6 +24,8 @@ namespace SharpGui
 
         private List<Entry> items;
 
+        public bool HasItems => items.Count > 0;
+
         public IntSize2 GetDesiredSize(ISharpGui sharpGui)
         {
             int width = 0;

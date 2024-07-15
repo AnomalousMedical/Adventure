@@ -27,6 +27,8 @@ namespace Adventure.Battle
         private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
         private bool disposed;
+        private SharpPanel panel = new SharpPanel();
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
         private SharpButton nextTargetButton = new SharpButton() { Text = "Next" };
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
@@ -90,6 +92,7 @@ namespace Adventure.Battle
         private SharpImage piercing = new SharpImage();
 
         IBattleTarget resistanceTextTarget;
+        private ILayoutItem targetRootLayout;
         private ColumnLayout targetResistenceLayout = new ColumnLayout();
         private List<SharpImage> targetResistenceItems = new List<SharpImage>(8);
 
@@ -135,6 +138,8 @@ namespace Adventure.Battle
             piercing.UvRect = iconLoader.Piercing;
             piercing.DesiredWidth = scaleHelper.Scaled(48);
 
+            targetRootLayout = new PanelLayoutNoPad(panel, new MarginLayout(new IntPad(scaleHelper.Scaled(5)), targetResistenceLayout));
+            targetResistenceLayout.Margin = new IntPad(scaleHelper.Scaled(5));
 
             this.tlasData = new TLASInstanceData()
             {
@@ -271,14 +276,11 @@ namespace Adventure.Battle
             {
                 if (resistanceTextTarget != target)
                 {
-                    var strongResist = new RowLayout();
-                    var weakResist = new RowLayout();
-                    var absorbResist = new RowLayout();
+                    var strongResist = new RowLayout() { Margin = new IntPad(scaleHelper.Scaled(5)) };
+                    var weakResist = new RowLayout() { Margin = new IntPad(scaleHelper.Scaled(5)) };
+                    var absorbResist = new RowLayout() { Margin = new IntPad(scaleHelper.Scaled(5)) };
                     targetResistenceItems.Clear();
                     targetResistenceLayout.Clear();
-                    targetResistenceLayout.Add(weakResist);
-                    targetResistenceLayout.Add(strongResist);
-                    targetResistenceLayout.Add(absorbResist);
 
                     resistanceTextTarget = target;
                     var resistances = new StringBuilder();
@@ -305,15 +307,29 @@ namespace Adventure.Battle
                             }
                         }
                     }
+
+                    if (weakResist.HasItems)
+                    {
+                        targetResistenceLayout.Add(weakResist);
+                    }
+                    if (strongResist.HasItems)
+                    {
+                        targetResistenceLayout.Add(strongResist);
+                    }
+                    if (absorbResist.HasItems)
+                    {
+                        targetResistenceLayout.Add(absorbResist);
+                    }
                 }
 
                 var cursorOffset = currentPosition;
                 cursorOffset.y -= sprite.BaseScale.y / 2.0f;
                 var resistanceLoc = cameraProjector.Project(cursorOffset);
 
-                var layoutSize = targetResistenceLayout.GetDesiredSize(sharpGui);
-                targetResistenceLayout.SetRect(new IntRect((int)resistanceLoc.x, (int)resistanceLoc.y, layoutSize.Width, layoutSize.Height));
+                var layoutSize = targetRootLayout.GetDesiredSize(sharpGui);
+                targetRootLayout.SetRect(new IntRect((int)resistanceLoc.x, (int)resistanceLoc.y, layoutSize.Width, layoutSize.Height));
 
+                sharpGui.Panel(panel, panelStyle);
                 foreach (var image in targetResistenceItems)
                 {
                     sharpGui.Image(image);
