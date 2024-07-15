@@ -89,5 +89,10 @@ class PlotItemMenu
                 sharpGui.Text(description);
             }
         }
+
+        if(lastItemIndex != itemButtons.FocusedIndex(sharpGui))
+        {
+            descriptions = null;
+        }
     }
 }
