@@ -1,4 +1,5 @@
-﻿using DiligentEngine;
+﻿using Adventure.Services;
+using DiligentEngine;
 using DiligentEngine.RT;
 using DiligentEngine.RT.Sprites;
 using Engine;
@@ -30,7 +31,6 @@ namespace Adventure.Battle
         private SharpButton nextTargetButton = new SharpButton() { Text = "Next" };
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
-        private SharpText statText = new SharpText() { Color = Color.White };
 
         public uint EnemyTargetIndex { get; set; }
         public uint PlayerTargetIndex { get; set; }
@@ -82,6 +82,17 @@ namespace Adventure.Battle
             }
         };
 
+        private SharpImage fire = new SharpImage();
+        private SharpImage ice = new SharpImage();
+        private SharpImage electricity = new SharpImage();
+        private SharpImage slashing = new SharpImage();
+        private SharpImage bludgeoning = new SharpImage();
+        private SharpImage piercing = new SharpImage();
+
+        IBattleTarget resistanceTextTarget;
+        private ColumnLayout targetResistenceLayout = new ColumnLayout();
+        private List<SharpImage> targetResistenceItems = new List<SharpImage>(8);
+
         public TargetCursor
         (
             IDestructionRequest destructionRequest,
@@ -91,7 +102,8 @@ namespace Adventure.Battle
             ISharpGui sharpGui,
             IBattleScreenLayout battleScreenLayout,
             ICameraProjector cameraProjector,
-            IScaleHelper scaleHelper
+            IScaleHelper scaleHelper,
+            IconLoader iconLoader
         )
         {
             this.destructionRequest = destructionRequest;
@@ -103,6 +115,26 @@ namespace Adventure.Battle
             this.scaleHelper = scaleHelper;
             this.sprite = new Sprite(animations)
             { BaseScale = new Vector3(0.5f, 0.5f, 1f) };
+
+            fire.Image = iconLoader.Icons;
+            fire.UvRect = iconLoader.Fire;
+            fire.DesiredWidth = scaleHelper.Scaled(48);
+            ice.Image = iconLoader.Icons;
+            ice.UvRect = iconLoader.Ice;
+            ice.DesiredWidth = scaleHelper.Scaled(48);
+            electricity.Image = iconLoader.Icons;
+            electricity.UvRect = iconLoader.Electricity;
+            electricity.DesiredWidth = scaleHelper.Scaled(48);
+            slashing.Image = iconLoader.Icons;
+            slashing.UvRect = iconLoader.Slashing;
+            slashing.DesiredWidth = scaleHelper.Scaled(48);
+            bludgeoning.Image = iconLoader.Icons;
+            bludgeoning.UvRect = iconLoader.Bludgeoning;
+            bludgeoning.DesiredWidth = scaleHelper.Scaled(48);
+            piercing.Image = iconLoader.Icons;
+            piercing.UvRect = iconLoader.Piercing;
+            piercing.DesiredWidth = scaleHelper.Scaled(48);
+
 
             this.tlasData = new TLASInstanceData()
             {
@@ -208,7 +240,26 @@ namespace Adventure.Battle
             }
         }
 
-        IBattleTarget resistanceTextTarget;
+        private SharpImage GetElementImage(Element element)
+        {
+            switch (element)
+            {
+                case Element.Fire:
+                    return fire;
+                case Element.Ice:
+                    return ice;
+                case Element.Electricity:
+                    return electricity;
+                case Element.Slashing:
+                    return slashing;
+                case Element.Bludgeoning:
+                    return bludgeoning;
+                case Element.Piercing:
+                    return piercing;
+                default:
+                    return null;
+            }
+        }
 
         public void UpdateCursor(IBattleManager battleManager, IBattleTarget target, Vector3 enemyPos, BattlePlayer activePlayer)
         {
@@ -220,22 +271,53 @@ namespace Adventure.Battle
             {
                 if (resistanceTextTarget != target)
                 {
+                    var strongResist = new RowLayout();
+                    var weakResist = new RowLayout();
+                    var absorbResist = new RowLayout();
+                    targetResistenceItems.Clear();
+                    targetResistenceLayout.Clear();
+                    targetResistenceLayout.Add(weakResist);
+                    targetResistenceLayout.Add(strongResist);
+                    targetResistenceLayout.Add(absorbResist);
+
                     resistanceTextTarget = target;
                     var resistances = new StringBuilder();
                     foreach (var resistance in target.Stats.Resistances.OrderBy(i => i.Value))
                     {
-                        resistances.AppendLine($"{resistance.Key} - {resistance.Value}");
+                        var image = GetElementImage(resistance.Key);
+                        if (image != null)
+                        {
+                            targetResistenceItems.Add(image);
+                            switch (resistance.Value)
+                            {
+                                case Resistance.Resist:
+                                    strongResist.Add(image);
+                                    image.Color = Color.Red;
+                                    break;
+                                case Resistance.Weak:
+                                    weakResist.Add(image);
+                                    image.Color = Color.Green;
+                                    break;
+                                case Resistance.Absorb:
+                                    absorbResist.Add(image);
+                                    image.Color = Color.Purple;
+                                    break;
+                            }
+                        }
                     }
-                    statText.Text = resistances.ToString();
                 }
 
                 var cursorOffset = currentPosition;
                 cursorOffset.y -= sprite.BaseScale.y / 2.0f;
                 var resistanceLoc = cameraProjector.Project(cursorOffset);
 
-                statText.SetRect(new IntRect((int)resistanceLoc.x, (int)resistanceLoc.y, scaleHelper.Scaled(400), scaleHelper.Scaled(1000)));
+                var layoutSize = targetResistenceLayout.GetDesiredSize(sharpGui);
+                targetResistenceLayout.SetRect(new IntRect((int)resistanceLoc.x, (int)resistanceLoc.y, layoutSize.Width, layoutSize.Height));
 
-                sharpGui.Text(statText);
+                foreach (var image in targetResistenceItems)
+                {
+                    sharpGui.Image(image);
+                }
             }
 
             if (sharpGui.ShowHover && sharpGui.Button(selectTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))

@@ -114,6 +114,7 @@ namespace Adventure
             services.AddSingleton<CharacterStyleService>();
             services.AddSingleton<ZoneEntranceService>();
             services.AddSingleton<IGcService, GcService>();
+            services.AddSingleton<IconLoader>();
             services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<FollowerManager>();
             services.AddScoped(typeof(Follower<>));
