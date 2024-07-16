@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Adventure.Assets.Equipment;
 using Adventure.Assets.SoundEffects;
+using Adventure.Assets.World;
 
 namespace Adventure.Exploration;
 
@@ -113,7 +114,7 @@ class HelpBook : IDisposable, IZonePlaceable
         ISoundEffectPlayer soundEffectPlayer
     )
     {
-        var asset = new Book3();
+        var asset = new HelpBookAsset();
 
         this.plotItem = description.PlotItem;
         this.sprite = asset.CreateSprite();
