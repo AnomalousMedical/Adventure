@@ -42,6 +42,13 @@ internal class MinotaurSoundEffect : ISoundEffect
     public string File => "SoundEffects/80-CC0-creature-SFX/grunt_09.ogg";
 }
 
+internal class MountainLionSoundEffect : ISoundEffect
+{
+    public static readonly ISoundEffect Instance = new MountainLionSoundEffect();
+
+    public string File => "SoundEffects/80-CC0-creature-SFX/misc_14.ogg";
+}
+
 internal class SkeletonSoundEffect : ISoundEffect
 {
     public static readonly ISoundEffect Instance = new SkeletonSoundEffect();
