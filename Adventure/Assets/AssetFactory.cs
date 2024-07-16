@@ -45,6 +45,7 @@ namespace Adventure.Assets
                 case nameof(Sword3): return new Sword3();
                 case nameof(Scimitar): return new Scimitar();
                 case nameof(Trident): return new Trident();
+                case nameof(Club): return new Club();
 
                 default: throw new NotImplementedException(name);
             }
