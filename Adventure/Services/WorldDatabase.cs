@@ -960,9 +960,9 @@ namespace Adventure.Services
 
                     {
                         var treasureLevel = 15;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(Sword1), false));
-                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(Spear1), false));
-                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(Hammer1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword1), 150, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword1), nameof(SmithedSword), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreSpear1), 150, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear1), nameof(SmithedSpear), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreHammer1), 150, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer1), nameof(SmithedHammer), false));
                     }
                     break;
             }

@@ -10,13 +10,17 @@ namespace Adventure.Assets.Equipment
         public ISpriteAsset CreateAnotherInstance() => new Hammer1();
 
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Hammer1.png";
+
+        protected const uint Handle = 0xff692c0c;
+        protected const uint Head = 0xff5c716f;
+
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff692c0c, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xff5c716f, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(Handle, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
+            new SpriteMaterialTextureItem(Head, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
         };
 
-        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        private readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
         (
             colorMap: colorMap,
             materials: materials
@@ -30,6 +34,27 @@ namespace Adventure.Assets.Equipment
         public SpriteMaterialDescription CreateMaterial()
         {
             return defaultMaterial;
+        }
+
+        public Hammer1()
+        {
+
+        }
+
+        public Hammer1(uint handleColor, uint headColor)
+        {
+            var palletSwap = new Dictionary<uint, uint>
+            {
+                { Handle, handleColor },
+                { Head, headColor }
+            };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
         }
 
         private static readonly Dictionary<string, SpriteAnimation> animations = new Dictionary<string, SpriteAnimation>()
@@ -49,6 +74,14 @@ namespace Adventure.Assets.Equipment
         {
             return new Sprite(animations)
             { BaseScale = new Vector3(14f / 22f * 0.75f, 0.75f, 1.0f) };
+        }
+    }
+
+    class SmithedHammer : Hammer1
+    {
+        public SmithedHammer()
+            :base(0xff8f0c0c, 0xff3d4a48)
+        {
         }
     }
 }

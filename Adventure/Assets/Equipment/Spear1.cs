@@ -10,19 +10,42 @@ namespace Adventure.Assets.Equipment
         public ISpriteAsset CreateAnotherInstance() => new Spear1();
 
         private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Spear1.png";
+        
+        protected const uint Handle = 0xff705446;
+        protected const uint Head = 0xffa8bbb0;
+
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
-            new SpriteMaterialTextureItem(0xff705446, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
-            new SpriteMaterialTextureItem(0xffa8bbb0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-            new SpriteMaterialTextureItem(0xffebe8e0, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
-            //new SpriteMaterialTextureItem(0xffd01110, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
+            new SpriteMaterialTextureItem(Handle, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
+            new SpriteMaterialTextureItem(Head, "Graphics/Textures/AmbientCG/Metal032_1K", "jpg", reflective: true),
         };
 
-        private static readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
+        private readonly SpriteMaterialDescription defaultMaterial = new SpriteMaterialDescription
         (
             colorMap: colorMap,
             materials: materials
         );
+
+        public Spear1()
+        {
+
+        }
+
+        public Spear1(uint handleColor, uint headColor)
+        {
+            var palletSwap = new Dictionary<uint, uint>
+            {
+                { Handle, handleColor },
+                { Head, headColor }
+            };
+
+            defaultMaterial = new SpriteMaterialDescription
+            (
+                colorMap: colorMap,
+                materials: materials,
+                palletSwap: palletSwap
+            );
+        }
 
         public Quaternion GetOrientation()
         {
@@ -51,6 +74,14 @@ namespace Adventure.Assets.Equipment
         {
             return new Sprite(animations)
             { BaseScale = new Vector3(5f / 33f * 1.2f, 1.2f, 1.0f) };
+        }
+    }
+
+    class SmithedSpear : Spear1
+    {
+        public SmithedSpear()
+            : base(0xff8f0c0c, 0xff757e78)
+        {
         }
     }
 }
