@@ -242,18 +242,18 @@ namespace Adventure.Text
                     TakePagePrompt: "Take the page from \"The Guide to Power and Mayhem?\"",
 
                     Chapter1Title: "Page 1: Active Abilities",
-                    Chapter1: "Active abilities are used with the right trigger or spacebar. These will enhance your magic spells, allow you to use an offhand weapon or block during an enemy attack. Check the item descriptions for more information. Only press the button one time or the ability will not work correctly.",
+                    Chapter1: "Active abilities are used with the right trigger or spacebar.\n \nThese will enhance your magic spells, allow you to use an offhand weapon or block during an enemy attack.\n \nCheck the item descriptions for more information.\n \nOnly press the button one time or the ability will not work correctly.",
                     
                     Chapter2Title: "Page 2: Thievery",
-                    Chapter2: "When you try to steal from a pack of enemies you have a 100% chance to steal if they have an item. Trying again will not get you anything.",
+                    Chapter2: "When you try to steal from a pack of enemies you have a 100% chance to steal if they have an item.\n \nTrying again will not get you anything.",
                     
                     Chapter3Title: "Page 3: Weapon Damage and Weaknesses",
-                    Chapter3: "Each weapon does either slashing, piercing or bludgeoning damage to your opponents. Each enemy type will be strong, weak and neutral to these damage types. Exploit them to do even more damage.",
+                    Chapter3: "Each weapon does either slashing, piercing or bludgeoning damage to your opponents.\n \nEach enemy type will be strong, weak and neutral to these damage types.\n \nExploit them to do even more damage.",
                     
                     Chapter4Title: "Page 4: Elemental Damage and Weaknesses",
-                    Chapter4: "You can cast spells of ice, fire and electricity. Enemies will be weak, strong and neutral to these types, which will cause the damage to increase or decrease accordingly. Some enemies can even shift their elements and absorb damage as healing instead.",
+                    Chapter4: "You can cast spells of ice, fire and electricity.\n \nEnemies will be weak, strong and neutral to these types, which will cause the damage to increase or decrease accordingly.\n \nSome enemies can even shift their elements and absorb damage as healing instead.",
                     Chapter4Part2Missing: "The rest of this page seems to be missing.",
-                    Chapter4Part2: "Mid and high level elemental spells can be applied to your own party's weapons causing the elemental multiplier to apply in addition to the weapon damage and its type multiplier. Be careful though since elemental damage could end up with weaker or even being absorbed and turned into hp.",
+                    Chapter4Part2: "Mid and high level elemental spells can be applied to your own party's weapons causing the elemental multiplier to apply in addition to the weapon damage and its type multiplier.\n \nBe careful though since elemental damage could end up with weaker or even being absorbed and turned into hp.",
                     
                     Chapter5Title: "Page 5: Exploiting Weaknesses",
                     Chapter5: "Enemies will have weaknesses you can see with the Target Scope item.",
@@ -263,14 +263,13 @@ namespace Adventure.Text
                     Chapter6Title: "Page 6: Inventory and equipment",
                     Chapter6: "Each character has their own inventory and can only use and equip items they are carrying.",
                     Chapter6Part2Missing: "The rest of this page seems to be missing.",
-                    Chapter6Part2: "You can use anything in battle, even weapons. Try to switch your equipment on the fly to adapt to what your fighting.",
+                    Chapter6Part2: "You can use anything in battle, even weapons.\n \nTry to switch your equipment on the fly to adapt to what your fighting.",
 
                     Chapter7Title: "Page 7: Exploration",
-                    Chapter7: "Be sure to explore as much as you can. If you can't beat one area go to another. You never know what you will find.",
-                    Chapter7Part2: "If you don't know where to go next, let the signposts guide you.",
+                    Chapter7: "Be sure to explore as much as you can.\n \nIf you can't beat one area go to another. You never know what you will find.\n \nIf you don't know where to go next, let the signposts guide you.\n \nA flag marks a spot you have already visited.",
 
                     Chapter8Title: "Page 8: Teamwork",
-                    Chapter8: "Everyone in your party has their own strengths and weaknesses. Look at each of their stats to determine their best role. Stats like Heal% and Item% improve how well that character heals or uses items. Block% determines how much damage is reduced when guarding with a shield.",
+                    Chapter8: "Everyone in your party has their own strengths and weaknesses.\n \nLook at each of their stats to determine their best role.\n \nStats like Heal% and Item% improve how well that character heals or uses items. Block% determines how much damage is reduced when guarding with a shield.",
 
                     BookTaken: "You pick up the book. Maybe you can find some of the pages that are missing from it later. You can read it any time from the Help section of the main menu.",
                     Page1Found: "You pick up the page and add it back to the book. It seems to repair itself with some kind of magic.",

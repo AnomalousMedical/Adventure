@@ -86,7 +86,6 @@ class HelpBook : IDisposable, IZonePlaceable
         String Chapter6Part2,
         String Chapter7Title,
         String Chapter7,
-        String Chapter7Part2,
         String Chapter8Title,
         String Chapter8,
         String BookTaken,

@@ -22,21 +22,30 @@ namespace SharpGui
 
             foreach (var word in FindWords(contents))
             {
-                var wordWidth = sharpGui.MeasureText(word, font).Width;
-                if (lineWidth + wordWidth >= width)
+                if(word == "\n")
                 {
                     sb.Append('\n');
                     lineWidth = 0;
                     addSpace = false;
                 }
-
-                if (addSpace)
+                else
                 {
-                    sb.Append(' ');
+                    var wordWidth = sharpGui.MeasureText(word, font).Width;
+                    if (lineWidth + wordWidth >= width)
+                    {
+                        sb.Append('\n');
+                        lineWidth = 0;
+                        addSpace = false;
+                    }
+
+                    if (addSpace)
+                    {
+                        sb.Append(' ');
+                    }
+                    sb.Append(word);
+                    lineWidth += wordWidth;
+                    addSpace = true;
                 }
-                sb.Append(word);
-                lineWidth += wordWidth;
-                addSpace = true;
             }
 
             return sb.ToString();
@@ -54,6 +63,10 @@ namespace SharpGui
                     var word = contents.Substring(wordStart, textPosition - wordStart);
                     wordStart = textPosition + 1;
                     yield return word;
+                    if (i == '\n')
+                    {
+                        yield return "\n";
+                    }
                 }
             }
 
