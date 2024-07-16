@@ -50,6 +50,7 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp, AlligatorSoundEffect.Instance));
 
             monsterAssets.Add(new MonsterAssetInfo(new Minotaur(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new MountainLion(), BiomeType.Mountain, MinotaurSoundEffect.Instance));
 
             monsterAssets.Add(new MonsterAssetInfo(new Dragon(), BiomeType.FinalBoss, TinyDinoSoundEffect.Instance));
         }
