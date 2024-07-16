@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Adventure.Assets.Equipment;
 using Adventure.Assets.SoundEffects;
 using Adventure.Assets.World;
+using Adventure.Assets;
 
 namespace Adventure.Exploration;
 
@@ -114,9 +115,18 @@ class HelpBook : IDisposable, IZonePlaceable
         ISoundEffectPlayer soundEffectPlayer
     )
     {
-        var asset = new HelpBookAsset();
-
         this.plotItem = description.PlotItem;
+
+        ISpriteAsset asset;
+        if(plotItem == PlotItems.GuideToPowerAndMayhem)
+        {
+            asset = new HelpBookAsset();
+        }
+        else
+        {
+            asset = new TornPage();
+        }
+        
         this.sprite = asset.CreateSprite();
         this.rtInstances = rtInstances;
         this.destructionRequest = destructionRequest;
