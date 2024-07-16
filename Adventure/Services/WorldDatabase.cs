@@ -953,7 +953,7 @@ namespace Adventure.Services
                     if (plotItems.Contains(PlotItems.BlacksmithUpgrade))
                     {
                         var treasureLevel = 40;
-                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Sword1), false));
+                        yield return new ShopEntry(nameof(ItemText.StoreSword2), 350, true, () => SwordCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSword2), nameof(Scimitar), false));
                         yield return new ShopEntry(nameof(ItemText.StoreSpear2), 350, true, () => SpearCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreSpear2), nameof(Spear1), false));
                         yield return new ShopEntry(nameof(ItemText.StoreHammer2), 350, true, () => MaceCreator.CreateNormal(treasureLevel, nameof(ItemText.StoreHammer2), nameof(Hammer1), false));
                     }
