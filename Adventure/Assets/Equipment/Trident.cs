@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Adventure.Assets.Equipment
 {
-    class Spear2 : ISpriteAsset
+    class Trident : ISpriteAsset
     {
-        public ISpriteAsset CreateAnotherInstance() => new Spear2();
+        public ISpriteAsset CreateAnotherInstance() => new Trident();
 
-        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Spear2.png";
+        private const string colorMap = "Graphics/Sprites/Anomalous/Equipment/Trident.png";
         private static readonly HashSet<SpriteMaterialTextureItem> materials = new HashSet<SpriteMaterialTextureItem>
         {
             new SpriteMaterialTextureItem(0xff705446, "Graphics/Textures/AmbientCG/Wood049_1K", "jpg"),
@@ -41,7 +41,7 @@ namespace Adventure.Assets.Equipment
                 {
                     Attachments = new List<SpriteFrameAttachment>()
                     {
-                        SpriteFrameAttachment.FromFramePosition(4.5f, 33, 0, 9, 41), //Center of grip
+                        SpriteFrameAttachment.FromFramePosition(7.5f, 33, 0, 15, 41), //Center of grip
                     }
                 } )
             },
@@ -50,7 +50,7 @@ namespace Adventure.Assets.Equipment
         public ISprite CreateSprite()
         {
             return new Sprite(animations)
-            { BaseScale = new Vector3(9f / 41f * 1.45f, 1.45f, 1.0f) };
+            { BaseScale = new Vector3(15f / 41f * 1.45f, 1.45f, 1.0f) };
         }
     }
 }
