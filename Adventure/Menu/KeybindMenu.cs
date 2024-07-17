@@ -71,24 +71,24 @@ internal class KeybindMenu
                             var image = new SharpImage(keyboardMouseIcons.Icons)
                             {
                                 UvRect = keyboardMouseIcons.GetButtonRect(binding.KeyboardButton.Value),
-                                DesiredWidth = scaleHelper.Scaled(32),
-                                DesiredHeight = scaleHelper.Scaled(32)
+                                DesiredWidth = scaleHelper.Scaled(64),
+                                DesiredHeight = scaleHelper.Scaled(64)
                             };
 
                             images.Add(image);
-                            return new RowLayout(image, j);
+                            return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
                         }
                         else if (binding.MouseButton != null)
                         {
                             var image = new SharpImage(keyboardMouseIcons.Icons)
                             {
                                 UvRect = keyboardMouseIcons.GetButtonRect(binding.MouseButton.Value),
-                                DesiredWidth = scaleHelper.Scaled(32),
-                                DesiredHeight = scaleHelper.Scaled(32)
+                                DesiredWidth = scaleHelper.Scaled(64),
+                                DesiredHeight = scaleHelper.Scaled(64)
                             };
 
                             images.Add(image);
-                            return new RowLayout(image, j);
+                            return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
                         }
                     }
                     return j;
@@ -98,10 +98,14 @@ internal class KeybindMenu
 
         foreach (var image in images)
         {
+            if(image.Rect.Bottom > itemButtons.Bottom)
+            {
+                break;
+            }
             sharpGui.Image(image);
         }
 
-        if (sharpGui.Button(close, gamepadId) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(close, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             currentItems = null;
             menu.RequestSubMenu(PreviousMenu, gamepadId);
