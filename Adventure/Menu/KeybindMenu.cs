@@ -141,46 +141,104 @@ internal class KeybindMenu
                     layout.Add(keyboardImage);
                 }
 
-                if (keyBinding != KeyBindings.MoveUp
-                 && keyBinding != KeyBindings.MoveDown
-                 && keyBinding != KeyBindings.MoveLeft
-                 && keyBinding != KeyBindings.MoveRight)
+                SharpImage pad1Image;
+                SharpImage pad2Image;
+                SharpImage pad3Image;
+                SharpImage pad4Image;
+
+                if (keyBinding == KeyBindings.MoveUp
+                 || keyBinding == KeyBindings.MoveDown)
                 {
-                    var pad1Image = new SharpImage(gamepadIcons.Icons)
+                    pad1Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickYAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad2Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickYAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad3Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickYAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad4Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickYAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                }
+                else if(keyBinding == KeyBindings.MoveLeft
+                 || keyBinding == KeyBindings.MoveRight)
+                {
+                    pad1Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickXAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad2Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickXAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad3Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickXAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    pad4Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.LeftStickXAxis,
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                }
+                else
+                {
+                    pad1Image = new SharpImage(gamepadIcons.Icons)
                     {
                         UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad1)),
                         DesiredWidth = scaleHelper.Scaled(64),
                         DesiredHeight = scaleHelper.Scaled(64)
                     };
-                    var pad2Image = new SharpImage(gamepadIcons.Icons)
+                    pad2Image = new SharpImage(gamepadIcons.Icons)
                     {
                         UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad2)),
                         DesiredWidth = scaleHelper.Scaled(64),
                         DesiredHeight = scaleHelper.Scaled(64)
                     };
-                    var pad3Image = new SharpImage(gamepadIcons.Icons)
+                    pad3Image = new SharpImage(gamepadIcons.Icons)
                     {
                         UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad3)),
                         DesiredWidth = scaleHelper.Scaled(64),
                         DesiredHeight = scaleHelper.Scaled(64)
                     };
-                    var pad4Image = new SharpImage(gamepadIcons.Icons)
+                    pad4Image = new SharpImage(gamepadIcons.Icons)
                     {
                         UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad4)),
                         DesiredWidth = scaleHelper.Scaled(64),
                         DesiredHeight = scaleHelper.Scaled(64)
                     };
-
-                    images.Add(pad1Image);
-                    images.Add(pad2Image);
-                    images.Add(pad3Image);
-                    images.Add(pad4Image);
-
-                    layout.Add(pad1Image);
-                    layout.Add(pad2Image);
-                    layout.Add(pad3Image);
-                    layout.Add(pad4Image);
                 }
+
+                images.Add(pad1Image);
+                images.Add(pad2Image);
+                images.Add(pad3Image);
+                images.Add(pad4Image);
+
+                layout.Add(pad1Image);
+                layout.Add(pad2Image);
+                layout.Add(pad3Image);
+                layout.Add(pad4Image);
 
                 if (images.Count > 0)
                 {
