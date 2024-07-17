@@ -29,12 +29,24 @@ internal class KeybindMenu
     public IExplorationSubMenu PreviousMenu { get; set; }
 
     private bool setKeybind = false;
+    private SharpText rebindKeyText = new SharpText() { Color = Color.White };
+    private SharpPanel panel = new SharpPanel();
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
         if (setKeybind)
         {
-            if(sharpGui.KeyEntered != KeyboardButtonCode.KC_UNASSIGNED)
+            var bindLayout =
+                    new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                    new KeepWidthCenterLayout(new PanelLayout(panel, rebindKeyText)));
+
+            bindLayout.SetRect(screenPositioner.GetCenterRect(bindLayout.GetDesiredSize(sharpGui)));
+
+            sharpGui.Panel(panel, panelStyle);
+            sharpGui.Text(rebindKeyText);
+
+            if (sharpGui.KeyEntered != KeyboardButtonCode.KC_UNASSIGNED)
             {
                 setKeybind = false;
             }
@@ -71,6 +83,7 @@ internal class KeybindMenu
         if(selectedButton != null)
         {
             setKeybind = true;
+            rebindKeyText.Text = "Press a new button to assign to " + selectedButton.ToString() + ".";
         }
 
         foreach (var image in images)
