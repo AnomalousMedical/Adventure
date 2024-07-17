@@ -17,7 +17,7 @@ enum KeyBindings
     Previous,
     Next,
     SwitchCharacter,
-    ActiveAction,
+    ActiveAbility,
     Up,
     Down,
     Left,
@@ -41,7 +41,7 @@ class KeybindService
         { KeyBindings.Previous, new KeyboardMouseBinding(KeyboardButtonCode.KC_PGDOWN) },
         { KeyBindings.Next, new KeyboardMouseBinding(KeyboardButtonCode.KC_PGUP) },
         { KeyBindings.SwitchCharacter, new KeyboardMouseBinding(KeyboardButtonCode.KC_LSHIFT) },
-        { KeyBindings.ActiveAction, new KeyboardMouseBinding(KeyboardButtonCode.KC_SPACE) },
+        { KeyBindings.ActiveAbility, new KeyboardMouseBinding(KeyboardButtonCode.KC_SPACE) },
         { KeyBindings.Up, new KeyboardMouseBinding(KeyboardButtonCode.KC_UP) },
         { KeyBindings.Down, new KeyboardMouseBinding(KeyboardButtonCode.KC_DOWN) },
         { KeyBindings.Left, new KeyboardMouseBinding(KeyboardButtonCode.KC_LEFT) },
@@ -60,7 +60,7 @@ class KeybindService
         { KeyBindings.Previous, GamepadButtonCode.XInput_LTrigger },
         { KeyBindings.Next, GamepadButtonCode.XInput_RTrigger },
         { KeyBindings.SwitchCharacter, GamepadButtonCode.XInput_Y },
-        { KeyBindings.ActiveAction, GamepadButtonCode.XInput_RTrigger },
+        { KeyBindings.ActiveAbility, GamepadButtonCode.XInput_RTrigger },
         { KeyBindings.Up, GamepadButtonCode.XInput_DPadUp },
         { KeyBindings.Down, GamepadButtonCode.XInput_DPadDown },
         { KeyBindings.Left, GamepadButtonCode.XInput_DPadLeft },
@@ -202,7 +202,7 @@ class KeybindService
         yield return KeyBindings.Previous;
         yield return KeyBindings.Next;
         yield return KeyBindings.SwitchCharacter;
-        yield return KeyBindings.ActiveAction;
+        yield return KeyBindings.ActiveAbility;
         yield return KeyBindings.Up;
         yield return KeyBindings.Down;
         yield return KeyBindings.Left;

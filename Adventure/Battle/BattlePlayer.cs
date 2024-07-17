@@ -181,8 +181,8 @@ namespace Adventure.Battle
             KeybindService keybindService
         )
         {
-            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.ActiveAction));
-            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: keybindService.GetGamepadBindingArray(KeyBindings.ActiveAction, description.Gamepad)) { Pad = description.Gamepad };
+            this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.ActiveAbility));
+            this.contextTriggerJoystick = new ButtonEvent(description.EventLayer, gamepadButtons: keybindService.GetGamepadBindingArray(KeyBindings.ActiveAbility, description.Gamepad)) { Pad = description.Gamepad };
             eventManager.addEvent(contextTriggerKeyboard);
             eventManager.addEvent(contextTriggerJoystick);
 
@@ -323,7 +323,7 @@ namespace Adventure.Battle
                     switchCharacterButton = keybindService.GetGamepadBinding(keyBinding, gamepadId);
                     switchCharacterKey = keybindService.GetKeyboardMouseBinding(keyBinding).KeyboardButton.Value;
                     break;
-                case KeyBindings.ActiveAction:
+                case KeyBindings.ActiveAbility:
                     contextTriggerJoystick.clearButtons();
                     contextTriggerJoystick.addButtons(keybindService.GetGamepadBindingArray(keyBinding, gamepadId));
                     contextTriggerKeyboard.clearButtons();
