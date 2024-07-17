@@ -164,5 +164,15 @@ namespace SharpGui
         void OverrideStandardNext(KeyboardButtonCode key, GamepadButtonCode[] buttons);
         bool IsStandardAcceptPressed(GamepadId gamepad = GamepadId.Pad1);
         void OverrideStandardAccept(KeyboardButtonCode key, GamepadButtonCode[] buttons);
+        bool IsStandardNextFocusPressed();
+        void OverrideStandardNextFocus(KeyboardButtonCode key);
+        bool IsStandardNavUpPressed(GamepadId gamepad);
+        void OverrideStandardNavUp(KeyboardButtonCode key, GamepadButtonCode[] buttons);
+        bool IsStandardNavDownPressed(GamepadId gamepad);
+        void OverrideStandardNavDown(KeyboardButtonCode key, GamepadButtonCode[] buttons);
+        bool IsStandardNavLeftPressed(GamepadId gamepad);
+        void OverrideStandardNavLeft(KeyboardButtonCode key, GamepadButtonCode[] buttons);
+        bool IsStandardNavRightPressed(GamepadId gamepad);
+        void OverrideStandardNavRight(KeyboardButtonCode key, GamepadButtonCode[] buttons);
     }
 }

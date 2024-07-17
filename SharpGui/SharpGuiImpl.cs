@@ -369,6 +369,56 @@ namespace SharpGui
             state.OverrideStandardAccept(key, buttons);
         }
 
+        public bool IsStandardNextFocusPressed()
+        {
+            return state.IsStandardNextFocusPressed();
+        }
+
+        public void OverrideStandardNextFocus(KeyboardButtonCode key)
+        {
+            state.OverrideStandardNextFocus(key);
+        }
+
+        public bool IsStandardNavUpPressed(GamepadId gamepad)
+        {
+            return state.IsStandardNavUpPressed((int)gamepad);
+        }
+
+        public void OverrideStandardNavUp(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            state.OverrideStandardNavUp(key, buttons);
+        }
+
+        public bool IsStandardNavDownPressed(GamepadId gamepad)
+        {
+            return state.IsStandardNavDownPressed((int)gamepad);
+        }
+
+        public void OverrideStandardNavDown(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            state.OverrideStandardNavDown(key, buttons);
+        }
+
+        public bool IsStandardNavLeftPressed(GamepadId gamepad)
+        {
+            return state.IsStandardNavLeftPressed((int)gamepad);
+        }
+
+        public void OverrideStandardNavLeft(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            state.OverrideStandardNavLeft(key, buttons);
+        }
+
+        public bool IsStandardNavRightPressed(GamepadId gamepad)
+        {
+            return state.IsStandardNavRightPressed((int)gamepad);
+        }
+
+        public void OverrideStandardNavRight(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            state.OverrideStandardNavRight(key, buttons);
+        }
+
         public Guid ActiveItem => state.ActiveItem;
 
         public Guid HoverItem => state.HoverItem;

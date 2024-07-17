@@ -36,6 +36,40 @@ namespace SharpGui
             GamepadButtonCode.XInput_A,
         ];
 
+        KeyboardButtonCode standardNextFocusKey = KeyboardButtonCode.KC_TAB;
+
+        KeyboardButtonCode standardNavUpKey = KeyboardButtonCode.KC_UP;
+        GamepadButtonCode[] standardNavUpButton = [
+            GamepadButtonCode.XInput_DPadUp,
+            GamepadButtonCode.XInput_DPadUp,
+            GamepadButtonCode.XInput_DPadUp,
+            GamepadButtonCode.XInput_DPadUp,
+        ];
+
+        KeyboardButtonCode standardNavDownKey = KeyboardButtonCode.KC_DOWN;
+        GamepadButtonCode[] standardNavDownButton = [
+            GamepadButtonCode.XInput_DPadDown,
+            GamepadButtonCode.XInput_DPadDown,
+            GamepadButtonCode.XInput_DPadDown,
+            GamepadButtonCode.XInput_DPadDown,
+        ];
+
+        KeyboardButtonCode standardNavLeftKey = KeyboardButtonCode.KC_LEFT;
+        GamepadButtonCode[] standardNavLeftButton = [
+            GamepadButtonCode.XInput_DPadLeft,
+            GamepadButtonCode.XInput_DPadLeft,
+            GamepadButtonCode.XInput_DPadLeft,
+            GamepadButtonCode.XInput_DPadLeft,
+        ];
+
+        KeyboardButtonCode standardNavRightKey = KeyboardButtonCode.KC_RIGHT;
+        GamepadButtonCode[] standardNavRightButton = [
+            GamepadButtonCode.XInput_DPadRight,
+            GamepadButtonCode.XInput_DPadRight,
+            GamepadButtonCode.XInput_DPadRight,
+            GamepadButtonCode.XInput_DPadRight,
+        ];
+
         public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
         {
             sawFocusedItem = false;
@@ -144,79 +178,37 @@ namespace SharpGui
                 sawFocusedItem = true;
                 callerHandlesInput = true;
                 //If tab is pressed, drop to allow next widget to pick it up.
-                switch (KeyEntered)
+                if (IsStandardNextFocusPressed())
                 {
-                    case KeyboardButtonCode.KC_TAB:
-                        if (IsShift)
-                        {
-                            FocusedItem = LastWidget;
-                        }
-                        else
-                        {
-                            FocusedItem = Guid.Empty;
-                        }
-                        callerHandlesInput = false;
-                        break;
-                    case KeyboardButtonCode.KC_UP:
-                        if (navUp != null)
-                        {
-                            FocusedItem = navUp.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case KeyboardButtonCode.KC_DOWN:
-                        if (navDown != null)
-                        {
-                            FocusedItem = navDown.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case KeyboardButtonCode.KC_LEFT:
-                        if (navLeft != null)
-                        {
-                            FocusedItem = navLeft.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case KeyboardButtonCode.KC_RIGHT:
-                        if (navRight != null)
-                        {
-                            FocusedItem = navRight.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
+                    if (IsShift)
+                    {
+                        FocusedItem = LastWidget;
+                    }
+                    else
+                    {
+                        FocusedItem = Guid.Empty;
+                    }
+                    callerHandlesInput = false;
                 }
-
-                switch (GamepadButtonEntered[gamepad])
+                else if (navUp != null && IsStandardNavUpPressed(gamepad))
                 {
-                    case GamepadButtonCode.XInput_DPadUp:
-                        if (navUp != null)
-                        {
-                            FocusedItem = navUp.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case GamepadButtonCode.XInput_DPadDown:
-                        if (navDown != null)
-                        {
-                            FocusedItem = navDown.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case GamepadButtonCode.XInput_DPadLeft:
-                        if (navLeft != null)
-                        {
-                            FocusedItem = navLeft.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
-                    case GamepadButtonCode.XInput_DPadRight:
-                        if (navRight != null)
-                        {
-                            FocusedItem = navRight.Value;
-                            callerHandlesInput = false;
-                        }
-                        break;
+                    FocusedItem = navUp.Value;
+                    callerHandlesInput = false;
+                }
+                else if (navDown != null && IsStandardNavDownPressed(gamepad))
+                {
+                    FocusedItem = navDown.Value;
+                    callerHandlesInput = false;
+                }
+                else if (navLeft != null && IsStandardNavLeftPressed(gamepad))
+                {
+                    FocusedItem = navLeft.Value;
+                    callerHandlesInput = false;
+                }
+                else if (navRight != null && IsStandardNavRightPressed(gamepad))
+                {
+                    FocusedItem = navRight.Value;
+                    callerHandlesInput = false;
                 }
 
                 //If input was handled by anything here, clear the current key so nothing else processes it.
@@ -277,6 +269,60 @@ namespace SharpGui
         {
             this.standardAcceptKey = key;
             this.standardAcceptButton = buttons;
+        }
+
+        public bool IsStandardNextFocusPressed()
+        {
+            return KeyEntered == standardNextFocusKey;
+        }
+
+        public void OverrideStandardNextFocus(KeyboardButtonCode key)
+        {
+            this.standardNextFocusKey = key;
+        }
+
+        public bool IsStandardNavUpPressed(int gamepad)
+        {
+            return GamepadButtonEntered[gamepad] == standardNavUpButton[gamepad] || KeyEntered == standardNavUpKey;
+        }
+
+        public void OverrideStandardNavUp(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardNavUpKey = key;
+            this.standardNavUpButton = buttons;
+        }
+
+        public bool IsStandardNavDownPressed(int gamepad)
+        {
+            return GamepadButtonEntered[gamepad] == standardNavDownButton[gamepad] || KeyEntered == standardNavDownKey;
+        }
+
+        public void OverrideStandardNavDown(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardNavDownKey = key;
+            this.standardNavDownButton = buttons;
+        }
+
+        public bool IsStandardNavLeftPressed(int gamepad)
+        {
+            return GamepadButtonEntered[gamepad] == standardNavLeftButton[gamepad] || KeyEntered == standardNavLeftKey;
+        }
+
+        public void OverrideStandardNavLeft(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardNavLeftKey = key;
+            this.standardNavLeftButton = buttons;
+        }
+
+        public bool IsStandardNavRightPressed(int gamepad)
+        {
+            return GamepadButtonEntered[gamepad] == standardNavRightButton[gamepad] || KeyEntered == standardNavRightKey;
+        }
+
+        public void OverrideStandardNavRight(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardNavRightKey = key;
+            this.standardNavRightButton = buttons;
         }
     }
 }

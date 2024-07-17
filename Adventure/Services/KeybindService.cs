@@ -83,6 +83,19 @@ class KeybindService
         sharpGui.OverrideStandardPrevious(GetKeyboardMouseBinding(KeyBindings.Previous).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Previous));
         sharpGui.OverrideStandardNext(GetKeyboardMouseBinding(KeyBindings.Next).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Next));
         sharpGui.OverrideStandardAccept(GetKeyboardMouseBinding(KeyBindings.Confirm).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Confirm));
+        sharpGui.OverrideStandardNavUp(GetKeyboardMouseBinding(KeyBindings.Up).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Up));
+        sharpGui.OverrideStandardNavDown(GetKeyboardMouseBinding(KeyBindings.Down).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Down));
+        sharpGui.OverrideStandardNavLeft(GetKeyboardMouseBinding(KeyBindings.Left).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Left));
+        sharpGui.OverrideStandardNavRight(GetKeyboardMouseBinding(KeyBindings.Right).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Right));
+    }
+
+    public void Clear()
+    {
+        this.options.KeyboardBindings.Clear();
+        foreach(var dict in this.options.GamepadBindings)
+        {
+            dict.Clear();
+        }
     }
 
     public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
@@ -113,6 +126,18 @@ class KeybindService
                 break;
             case KeyBindings.Confirm:
                 sharpGui.OverrideStandardAccept(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Up:
+                sharpGui.OverrideStandardNavUp(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Down:
+                sharpGui.OverrideStandardNavDown(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Left:
+                sharpGui.OverrideStandardNavLeft(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Right:
+                sharpGui.OverrideStandardNavRight(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
                 break;
         }
     }
