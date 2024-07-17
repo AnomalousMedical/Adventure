@@ -25,6 +25,7 @@ class ExplorationMenu : IExplorationMenu, IDisposable
     private IExplorationSubMenu currentMenu = null;
     private GamepadId currentGamepad;
     private KeyboardButtonCode openMenuKeyboard;
+    private GamepadButtonCode[] openMenuGamepad;
 
     public IDebugGui DebugGui => debugGui;
 
@@ -47,6 +48,12 @@ class ExplorationMenu : IExplorationMenu, IDisposable
         this.keybindService = keybindService;
 
         openMenuKeyboard = keybindService.GetKeyboardMouseBinding(KeyBindings.OpenMenu).KeyboardButton.Value;
+        openMenuGamepad = [
+            keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad1),
+            keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad2),
+            keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad3),
+            keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad4),
+        ];
 
         keybindService.KeybindChanged += KeybindService_KeybindChanged;
     }
@@ -62,6 +69,10 @@ class ExplorationMenu : IExplorationMenu, IDisposable
         {
             case KeyBindings.OpenMenu:
                 openMenuKeyboard = service.GetKeyboardMouseBinding(binding).KeyboardButton.Value;
+                openMenuGamepad[0] = keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad1);
+                openMenuGamepad[1] = keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad2);
+                openMenuGamepad[2] = keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad3);
+                openMenuGamepad[3] = keybindService.GetGamepadBinding(KeyBindings.OpenMenu, GamepadId.Pad4);
                 break;
         }
     }
@@ -80,22 +91,22 @@ class ExplorationMenu : IExplorationMenu, IDisposable
         }
         else
         {
-            if (sharpGui.GamepadButtonEntered[0] == Engine.Platform.GamepadButtonCode.XInput_Y || sharpGui.KeyEntered == openMenuKeyboard)
+            if (sharpGui.GamepadButtonEntered[0] == openMenuGamepad[0] || sharpGui.KeyEntered == openMenuKeyboard)
             {
                 RequestSubMenu(rootMenu, GamepadId.Pad1);
                 handled = true;
             }
-            else if (sharpGui.GamepadButtonEntered[1] == Engine.Platform.GamepadButtonCode.XInput_Y)
+            else if (sharpGui.GamepadButtonEntered[1] == openMenuGamepad[1])
             {
                 RequestSubMenu(rootMenu, GamepadId.Pad2);
                 handled = true;
             }
-            else if (sharpGui.GamepadButtonEntered[2] == Engine.Platform.GamepadButtonCode.XInput_Y)
+            else if (sharpGui.GamepadButtonEntered[2] == openMenuGamepad[2])
             {
                 RequestSubMenu(rootMenu, GamepadId.Pad3);
                 handled = true;
             }
-            else if (sharpGui.GamepadButtonEntered[3] == Engine.Platform.GamepadButtonCode.XInput_Y)
+            else if (sharpGui.GamepadButtonEntered[3] == openMenuGamepad[3])
             {
                 RequestSubMenu(rootMenu, GamepadId.Pad4);
                 handled = true;
