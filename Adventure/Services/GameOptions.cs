@@ -72,8 +72,9 @@ namespace Adventure.Services
                 false;
             #else
                 true;
+            #endif
 
-        internal void Update()
+        public void Update()
         {
             if(KeyboardBindings == null)
             {
@@ -90,6 +91,5 @@ namespace Adventure.Services
                 ];
             }
         }
-#endif
     }
 }
