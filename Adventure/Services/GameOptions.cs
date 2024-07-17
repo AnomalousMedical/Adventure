@@ -80,7 +80,7 @@ namespace Adventure.Services
             {
                 KeyboardBindings = new Dictionary<KeyBindings, KeyboardMouseBinding>();
             }
-            if(GamepadBindings == null)
+            if(GamepadBindings == null || GamepadBindings.Length != 4)
             {
                 GamepadBindings =
                 [
