@@ -75,7 +75,10 @@ namespace SharpGui
             
             if (state.ProcessFocus(id, gamepad, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
-                result = state.IsStandardAcceptPressed(gamepad);
+                if (state.IsStandardAcceptPressed(gamepad))
+                {
+                    result = true;
+                }
             }
             return result;
         }
