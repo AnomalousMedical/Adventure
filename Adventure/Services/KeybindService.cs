@@ -121,6 +121,11 @@ class KeybindService(GameOptions options)
         return defaultButtons[binding];
     }
 
+    public GamepadButtonCode[] GetGamepadBindingArray(KeyBindings binding, GamepadId gamepadId)
+    {
+        return new GamepadButtonCode[] { GetGamepadBinding(binding, gamepadId) };
+    }
+
     public GamepadButtonCode[] GetAllGamepadBindings(KeyBindings binding)
     {
         return [
