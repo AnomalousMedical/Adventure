@@ -59,7 +59,7 @@ namespace SharpImGuiTest
             this.swapChain = graphicsEngine.SwapChain;
             this.immediateContext = graphicsEngine.ImmediateContext;
 
-            sharpImage.Image = imageManager.Load("AnomalousEngine.png");
+            sharpImage.Image = imageManager.Load("AnomalousEngine.png", true);
 
             layout =
                 new MarginLayout(new IntPad(scaleHelper.Scaled(10)),

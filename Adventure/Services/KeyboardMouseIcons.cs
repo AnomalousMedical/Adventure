@@ -18,7 +18,7 @@ class KeyboardMouseIcons
         {
             if (icons == null)
             {
-                icons = imageManager.Load("Graphics/Icons/kf_prompts_kb_2048.png");
+                icons = imageManager.Load("Graphics/Icons/kf_prompts_kb_2048.png", true);
             }
             return icons;
         }

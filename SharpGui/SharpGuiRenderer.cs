@@ -334,7 +334,7 @@ namespace SharpGui
             return font;
         }
 
-        public ImageTexture LoadImageTexture(String fileName)
+        public ImageTexture LoadImageTexture(String fileName, bool isSrgb)
         {
             if (fontTextures.Count + 1 == NumFonts)
             {
@@ -346,7 +346,7 @@ namespace SharpGui
 
             uint textureIndex = (uint)fontTextures.Count;
 
-            var tex = textureLoader.LoadTexture(stream, "SharpGuiImage_" + fileName, RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, false);
+            var tex = textureLoader.LoadTexture(stream, "SharpGuiImage_" + fileName, RESOURCE_DIMENSION.RESOURCE_DIM_TEX_2D, isSrgb);
             fontTextures.Add(tex);
             fontDeviceObjects.Add(tex.Obj.GetDefaultView(TEXTURE_VIEW_TYPE.TEXTURE_VIEW_SHADER_RESOURCE));
 

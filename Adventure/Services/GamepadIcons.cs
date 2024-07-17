@@ -18,7 +18,7 @@ class GamepadIcons
         {
             if (icons == null)
             {
-                icons = imageManager.Load("Graphics/Icons/kf_prompts_2048.png");
+                icons = imageManager.Load("Graphics/Icons/kf_prompts_2048.png", true);
             }
             return icons;
         }

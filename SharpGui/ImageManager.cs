@@ -8,13 +8,13 @@ namespace SharpGui;
 
 public interface IImageManager
 {
-    ImageTexture Load(string filename);
+    ImageTexture Load(string filename, bool isSrgb);
 }
 
 class ImageManager(SharpGuiRenderer sharpGuiRenderer) : IImageManager
 {
-    public ImageTexture Load(string filename)
+    public ImageTexture Load(string filename, bool isSrgb)
     {
-        return sharpGuiRenderer.LoadImageTexture(filename);
+        return sharpGuiRenderer.LoadImageTexture(filename, isSrgb);
     }
 }

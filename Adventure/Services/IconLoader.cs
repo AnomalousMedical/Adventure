@@ -17,7 +17,7 @@ class IconLoader(IImageManager imageManager)
         {
             if(icons == null)
             {
-                icons = imageManager.Load("Graphics/Icons/Icons.png");
+                icons = imageManager.Load("Graphics/Icons/Icons.png", false);
             }
             return icons;
         }
