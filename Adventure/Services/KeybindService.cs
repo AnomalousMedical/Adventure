@@ -52,15 +52,40 @@ class KeybindService(GameOptions options)
         { KeyBindings.OpenMenu, new KeyboardMouseBinding(KeyboardButtonCode.KC_TAB) },
     };
 
+    private Dictionary<KeyBindings, GamepadButtonCode> defaultButtons = new Dictionary<KeyBindings, GamepadButtonCode>()
+    {
+        { KeyBindings.Confirm, GamepadButtonCode.XInput_A },
+        { KeyBindings.Cancel, GamepadButtonCode.XInput_B },
+        { KeyBindings.Previous, GamepadButtonCode.XInput_LTrigger },
+        { KeyBindings.Next, GamepadButtonCode.XInput_RTrigger },
+        { KeyBindings.SwitchCharacter, GamepadButtonCode.XInput_Y },
+        { KeyBindings.ActiveAction, GamepadButtonCode.XInput_RTrigger },
+        { KeyBindings.Up, GamepadButtonCode.XInput_DPadUp },
+        { KeyBindings.Down, GamepadButtonCode.XInput_DPadDown },
+        { KeyBindings.Left, GamepadButtonCode.XInput_DPadLeft },
+        { KeyBindings.Right, GamepadButtonCode.XInput_DPadRight },
+        //{ KeyBindings.MoveUp, GamepadButtonCode },
+        //{ KeyBindings.MoveDown, GamepadButtonCode },
+        //{ KeyBindings.MoveLeft, GamepadButtonCode },
+        //{ KeyBindings.MoveRight, GamepadButtonCode },
+        { KeyBindings.OpenMenu, GamepadButtonCode.XInput_Y },
+    };
+
     public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
     {
         options.KeyboardBindings[binding] = key;
         KeybindChanged?.Invoke(this, binding);
     }
 
+    public void SetBinding(KeyBindings binding, GamepadId gamepadId, GamepadButtonCode button)
+    {
+        options.GamepadBindings[(int)gamepadId][binding] = button;
+        KeybindChanged?.Invoke(this, binding);
+    }
+
     public KeyboardMouseBinding GetKeyboardMouseBinding(KeyBindings binding)
     {
-        if(options.KeyboardBindings.TryGetValue(binding, out var keyBind))
+        if (options.KeyboardBindings.TryGetValue(binding, out var keyBind))
         {
             return keyBind;
         }
@@ -70,7 +95,7 @@ class KeybindService(GameOptions options)
     public KeyboardButtonCode[] GetKeyboardBinding(KeyBindings binding)
     {
         var keyBind = GetKeyboardMouseBinding(binding);
-        if(keyBind.KeyboardButton != null)
+        if (keyBind.KeyboardButton != null)
         {
             return new KeyboardButtonCode[] { keyBind.KeyboardButton.Value };
         }
@@ -85,6 +110,15 @@ class KeybindService(GameOptions options)
             return new MouseButtonCode[] { keyBind.MouseButton.Value };
         }
         return null;
+    }
+
+    public GamepadButtonCode GetGamepadBinding(KeyBindings binding, GamepadId gamepadId)
+    {
+        if (options.GamepadBindings[(int)gamepadId].TryGetValue(binding, out var keyBind))
+        {
+            return keyBind;
+        }
+        return defaultButtons[binding];
     }
 
     public IEnumerable<KeyBindings> GetKeyBindings()

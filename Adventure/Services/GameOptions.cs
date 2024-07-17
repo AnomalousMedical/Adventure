@@ -58,6 +58,14 @@ namespace Adventure.Services
 
         public Dictionary<KeyBindings, KeyboardMouseBinding> KeyboardBindings { get; set; } = new Dictionary<KeyBindings, KeyboardMouseBinding>();
 
+        public Dictionary<KeyBindings, GamepadButtonCode>[] GamepadBindings { get; set; } =
+        [
+            new Dictionary<KeyBindings, GamepadButtonCode>(),
+            new Dictionary<KeyBindings, GamepadButtonCode>(),
+            new Dictionary<KeyBindings, GamepadButtonCode>(),
+            new Dictionary<KeyBindings, GamepadButtonCode>(),
+        ];
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Debug { get; set; } =
             #if RELEASE
@@ -70,6 +78,16 @@ namespace Adventure.Services
             if(KeyboardBindings == null)
             {
                 KeyboardBindings = new Dictionary<KeyBindings, KeyboardMouseBinding>();
+            }
+            if(GamepadBindings == null)
+            {
+                GamepadBindings =
+                [
+                    new Dictionary<KeyBindings, GamepadButtonCode>(),
+                    new Dictionary<KeyBindings, GamepadButtonCode>(),
+                    new Dictionary<KeyBindings, GamepadButtonCode>(),
+                    new Dictionary<KeyBindings, GamepadButtonCode>(),
+                ];
             }
         }
 #endif

@@ -150,6 +150,7 @@ class KeyboardMouseIcons
     public Rect Mouse4 { get; } = CreateRect(5, 7);
     public Rect Mouse5 { get; } = CreateRect(6, 7);
     public Rect Mouse6 { get; } = CreateRect(7, 7);
+    public Rect Missing { get; } = CreateRect(8, 7);
     //Space
     public Rect Num1 { get; } = CreateRect(11, 7);
     public Rect Num2 { get; } = CreateRect(12, 7);
@@ -167,9 +168,7 @@ class KeyboardMouseIcons
         {
             return val;
         }
-        //TODO: Need an error key
-        //For now just return esc
-        return Esc;
+        return Missing;
     }
 
     public Rect GetButtonRect(MouseButtonCode code)
@@ -178,9 +177,7 @@ class KeyboardMouseIcons
         {
             return val;
         }
-        //TODO: Need an error key
-        //For now just return esc
-        return Esc;
+        return Missing;
     }
 
     public KeyboardMouseIcons(IImageManager imageManager)

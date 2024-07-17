@@ -12,7 +12,7 @@ namespace SharpGui
 {
     class SharpGuiRenderer : IDisposable
     {
-        private const int NumFonts = 5;
+        private const int NumFonts = 6;
 
         private AutoPtr<IPipelineState> quadPipelineState;
         private AutoPtr<IShaderResourceBinding> quadShaderResourceBinding;

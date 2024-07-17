@@ -230,6 +230,7 @@ namespace Adventure
             services.AddSingleton<IAssetFactory, AssetFactory>();
             services.AddSingleton<ISkillFactory, SkillFactory>();
             services.AddSingleton<GraphicsOptionsMenu>();
+            services.AddSingleton<GamepadIcons>();
             services.AddSingleton<SoundOptionsMenu>();
             services.AddSingleton<ConfirmMenu>();
             services.AddSingleton<Party>();

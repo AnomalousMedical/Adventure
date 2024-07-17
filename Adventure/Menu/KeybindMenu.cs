@@ -17,7 +17,8 @@ internal class KeybindMenu
     ILanguageService languageService,
     IScaleHelper scaleHelper,
     IScreenPositioner screenPositioner,
-    KeyboardMouseIcons keyboardMouseIcons
+    KeyboardMouseIcons keyboardMouseIcons,
+    GamepadIcons gamepadIcons
 ) : IExplorationSubMenu
 {
     private ButtonColumn itemButtons = new ButtonColumn(25);
@@ -108,13 +109,16 @@ internal class KeybindMenu
         {
             if (index < keyBindingItems.Count)
             {
+                var layout = new RowLayout()
+                { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
+
                 var keyBinding = keyBindingItems[index++];
                 var binding = keybindService.GetKeyboardMouseBinding(keyBinding);
 
-                SharpImage image = null;
+                SharpImage keyboardImage = null;
                 if (binding.KeyboardButton != null)
                 {
-                    image = new SharpImage(keyboardMouseIcons.Icons)
+                    keyboardImage = new SharpImage(keyboardMouseIcons.Icons)
                     {
                         UvRect = keyboardMouseIcons.GetButtonRect(binding.KeyboardButton.Value),
                         DesiredWidth = scaleHelper.Scaled(64),
@@ -123,7 +127,7 @@ internal class KeybindMenu
                 }
                 else if (binding.MouseButton != null)
                 {
-                    image = new SharpImage(keyboardMouseIcons.Icons)
+                    keyboardImage = new SharpImage(keyboardMouseIcons.Icons)
                     {
                         UvRect = keyboardMouseIcons.GetButtonRect(binding.MouseButton.Value),
                         DesiredWidth = scaleHelper.Scaled(64),
@@ -131,10 +135,57 @@ internal class KeybindMenu
                     };
                 }
 
-                if (image != null)
+                if (keyboardImage != null)
                 {
-                    images.Add(image);
-                    return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
+                    images.Add(keyboardImage);
+                    layout.Add(keyboardImage);
+                }
+
+                if (keyBinding != KeyBindings.MoveUp
+                 && keyBinding != KeyBindings.MoveDown
+                 && keyBinding != KeyBindings.MoveLeft
+                 && keyBinding != KeyBindings.MoveRight)
+                {
+                    var pad1Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad1)),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    var pad2Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad2)),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    var pad3Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad3)),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                    var pad4Image = new SharpImage(gamepadIcons.Icons)
+                    {
+                        UvRect = gamepadIcons.GetButtonRect(keybindService.GetGamepadBinding(keyBinding, GamepadId.Pad4)),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+
+                    images.Add(pad1Image);
+                    images.Add(pad2Image);
+                    images.Add(pad3Image);
+                    images.Add(pad4Image);
+
+                    layout.Add(pad1Image);
+                    layout.Add(pad2Image);
+                    layout.Add(pad3Image);
+                    layout.Add(pad4Image);
+                }
+
+                if (images.Count > 0)
+                {
+                    layout.Add(j);
+                    return layout;
                 }
             }
             return j;
