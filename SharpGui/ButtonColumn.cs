@@ -55,6 +55,8 @@ namespace SharpGui
             }
             layout.SetRect(layoutRect);
 
+            var result = default(T);
+
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
             {
@@ -96,7 +98,7 @@ namespace SharpGui
 
                     if (sharpGui.Button(button, gamepad, navUp: navUpId, navDown: navDownId, navLeft: navLeft, navRight: navRight, style: style))
                     {
-                        return item.Item;
+                        result = item.Item;
                     }
 
                     if (sharpGui.FocusedItem == ScrollUp)
@@ -133,7 +135,7 @@ namespace SharpGui
                 }
             }
 
-            return default(T);
+            return result;
         }
 
         public void StealFocus(ISharpGui sharpGui)
