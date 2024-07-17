@@ -161,6 +161,8 @@ namespace Adventure
 
             SetupInput();
 
+            keybindService.KeybindChanged += KeybindService_KeybindChanged;
+
             //Sub objects
             objectResolver = objectResolverFactory.Create();
 
@@ -280,6 +282,8 @@ namespace Adventure
             eventManager.removeEvent(moveRight);
 
             eventLayer.OnUpdate -= EventLayer_OnUpdate; //Do have to remove this since its on the layer itself
+
+            keybindService.KeybindChanged -= KeybindService_KeybindChanged;
 
             this.bepuScene.OnUpdated -= BepuScene_OnUpdated;
             collidableIdentifier.RemoveIdentifier(new CollidableReference(CollidableMobility.Dynamic, characterMover.BodyHandle));
@@ -809,6 +813,29 @@ namespace Adventure
                     c.PlayerGamepadId = gamepadId;
                 });
                 this.followers.Add(followerInstance);
+            }
+        }
+
+        private void KeybindService_KeybindChanged(KeybindService service, KeyBindings binding)
+        {
+            switch (binding)
+            {
+                case KeyBindings.MoveUp:
+                    moveForward.clearButtons();
+                    moveForward.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveDown:
+                    moveBackward.clearButtons();
+                    moveBackward.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveLeft:
+                    moveLeft.clearButtons();
+                    moveLeft.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveRight:
+                    moveRight.clearButtons();
+                    moveRight.addButtons(service.GetKeyboardBinding(binding));
+                    break;
             }
         }
     }

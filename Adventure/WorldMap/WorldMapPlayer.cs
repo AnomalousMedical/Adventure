@@ -52,6 +52,7 @@ namespace Adventure.WorldMap
         private readonly IExplorationMenu explorationMenu;
         private readonly MultiCameraMover<WorldMapScene> multiCameraMover;
         private readonly PlayerCage<WorldMapScene> playerCage;
+        private readonly KeybindService keybindService;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<WorldMapScene>> followers = new List<Follower<WorldMapScene>>();
@@ -124,7 +125,8 @@ namespace Adventure.WorldMap
             ICharacterMenuPositionTracker<WorldMapScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu,
             MultiCameraMover<WorldMapScene> multiCameraMover,
-            PlayerCage<WorldMapScene> playerCage
+            PlayerCage<WorldMapScene> playerCage, 
+            KeybindService keybindService
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -135,12 +137,13 @@ namespace Adventure.WorldMap
             this.explorationMenu = explorationMenu;
             this.multiCameraMover = multiCameraMover;
             this.playerCage = playerCage;
+            this.keybindService = keybindService;
             this.followerManager.CharacterDistance = this.followerManager.CharacterDistance * description.Scale.x;
             this.characterSheet = description.CharacterSheet;
-            this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
-            this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
-            this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
-            this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
+            this.moveForward = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveUp));
+            this.moveBackward = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveDown));
+            this.moveRight = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveRight));
+            this.moveLeft = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveLeft));
 
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;
@@ -158,6 +161,8 @@ namespace Adventure.WorldMap
             eventLayer.OnUpdate += EventLayer_OnUpdate;
 
             SetupInput();
+
+            keybindService.KeybindChanged += KeybindService_KeybindChanged;
 
             //Sub objects
             objectResolver = objectResolverFactory.Create();
@@ -288,6 +293,7 @@ namespace Adventure.WorldMap
             objectResolver.Dispose();
             multiCameraMover.Remove(multiCameraMoverEntry);
             playerCage.Remove(playerCageEntry);
+            keybindService.KeybindChanged -= KeybindService_KeybindChanged;
         }
 
         public void SetGraphicsActive(bool active)
@@ -794,6 +800,29 @@ namespace Adventure.WorldMap
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             this.spriteInstance = newSprite;
             rtInstances.AddSprite(sprite, tlasData, spriteInstance);
+        }
+
+        private void KeybindService_KeybindChanged(KeybindService service, KeyBindings binding)
+        {
+            switch (binding)
+            {
+                case KeyBindings.MoveUp:
+                    moveForward.clearButtons();
+                    moveForward.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveDown:
+                    moveBackward.clearButtons();
+                    moveBackward.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveLeft:
+                    moveLeft.clearButtons();
+                    moveLeft.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+                case KeyBindings.MoveRight:
+                    moveRight.clearButtons();
+                    moveRight.addButtons(service.GetKeyboardBinding(binding));
+                    break;
+            }
         }
     }
 }

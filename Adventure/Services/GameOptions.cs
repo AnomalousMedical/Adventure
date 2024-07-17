@@ -17,6 +17,8 @@ namespace Adventure.Services
 
     class KeyboardMouseBinding
     {
+        public KeyboardMouseBinding() { }
+
         public KeyboardMouseBinding(KeyboardButtonCode code)
         {
             this.KeyboardButton = code;

@@ -138,6 +138,14 @@ namespace Engine.Platform
             keyboardButtons.Add(button);
         }
 
+        public void addButtons(IEnumerable<KeyboardButtonCode> buttons)
+        {
+            foreach (var button in buttons)
+            {
+                addButton(button);
+            }
+        }
+
         /// <summary>
         /// Remove a keyboard button binding from the event.
         /// </summary>
@@ -156,6 +164,14 @@ namespace Engine.Platform
             gamepadButtons.Add(button);
         }
 
+        public void addButtons(IEnumerable<GamepadButtonCode> buttons)
+        {
+            foreach (var button in buttons)
+            {
+                addButton(button);
+            }
+        }
+
         /// <summary>
         /// Add a gamepad button binding to the event. Also include the gamepad id for convience, will set Pad to the passed value.
         /// </summary>
@@ -165,6 +181,14 @@ namespace Engine.Platform
         {
             gamepadButtons.Add(button);
             this.Pad = pad;
+        }
+
+        public void addButtons(IEnumerable<GamepadButtonCode> buttons, GamepadId pad)
+        {
+            foreach (var button in buttons)
+            {
+                addButton(button, pad);
+            }
         }
 
         /// <summary>
@@ -183,6 +207,14 @@ namespace Engine.Platform
         public void addButton(MouseButtonCode button)
         {
             mouseButtons.Add(button);
+        }
+
+        public void addButtons(IEnumerable<MouseButtonCode> buttons)
+        {
+            foreach (var button in buttons)
+            {
+                addButton(button);
+            }
         }
 
         /// <summary>

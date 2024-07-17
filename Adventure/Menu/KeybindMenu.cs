@@ -28,15 +28,17 @@ internal class KeybindMenu
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
-    private bool setKeybind = false;
+    private KeyBindings? selectedBinding;
     private SharpText rebindKeyText = new SharpText() { Color = Color.White };
     private SharpPanel panel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
-        if (setKeybind)
+        if (selectedBinding != null)
         {
+            rebindKeyText.Text = "Press a new button to assign to " + selectedBinding.ToString() + ".";
+
             var bindLayout =
                     new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
                     new KeepWidthCenterLayout(new PanelLayout(panel, rebindKeyText)));
@@ -48,7 +50,8 @@ internal class KeybindMenu
 
             if (sharpGui.KeyEntered != KeyboardButtonCode.KC_UNASSIGNED)
             {
-                setKeybind = false;
+                keybindService.SetBinding(selectedBinding.Value, new KeyboardMouseBinding(sharpGui.KeyEntered));
+                selectedBinding = null;
             }
             return;
         }
@@ -76,15 +79,10 @@ internal class KeybindMenu
         }
         
         var images = new List<SharpImage>();
-        var selectedButton = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
+        selectedBinding = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
             wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) },
             wrapItemLayout: i => CreateBindingRow(i, images),
             navUp: close.Id, navDown: close.Id);
-        if(selectedButton != null)
-        {
-            setKeybind = true;
-            rebindKeyText.Text = "Press a new button to assign to " + selectedButton.ToString() + ".";
-        }
 
         foreach (var image in images)
         {

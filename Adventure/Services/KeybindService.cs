@@ -30,6 +30,8 @@ enum KeyBindings
 
 class KeybindService(GameOptions options)
 {
+    public event Action<KeybindService, KeyBindings> KeybindChanged;
+
     //This dictionary must have all KeyBindings entries to be correct
     private Dictionary<KeyBindings, KeyboardMouseBinding> defaultKeys = new Dictionary<KeyBindings, KeyboardMouseBinding>()
     {
@@ -49,6 +51,12 @@ class KeybindService(GameOptions options)
         { KeyBindings.MoveRight, new KeyboardMouseBinding(KeyboardButtonCode.KC_D) },
         { KeyBindings.OpenMenu, new KeyboardMouseBinding(KeyboardButtonCode.KC_TAB) },
     };
+
+    public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
+    {
+        options.KeyboardBindings[binding] = key;
+        KeybindChanged?.Invoke(this, binding);
+    }
 
     public KeyboardMouseBinding GetKeyboardMouseBinding(KeyBindings binding)
     {
