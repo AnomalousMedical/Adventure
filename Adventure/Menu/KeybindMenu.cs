@@ -24,12 +24,23 @@ internal class KeybindMenu
     SharpButton close = new SharpButton() { Text = "Close" };
 
     private List<KeyBindings> keyBindingItems = new List<KeyBindings>();
-    private List<ButtonColumnItem<KeyBindings>> currentItems;
+    private List<ButtonColumnItem<KeyBindings?>> currentItems;
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
+    private bool setKeybind = false;
+
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
+        if (setKeybind)
+        {
+            if(sharpGui.KeyEntered != KeyboardButtonCode.KC_UNASSIGNED)
+            {
+                setKeybind = false;
+            }
+            return;
+        }
+
         var descriptionLayout =
           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
           new ColumnLayout()
@@ -49,56 +60,22 @@ internal class KeybindMenu
         if (currentItems == null)
         {
             keyBindingItems = keybindService.GetKeyBindings().ToList();
-            currentItems = keyBindingItems.Select(i => new ButtonColumnItem<KeyBindings>(i.ToString(), i)).ToList();
+            currentItems = keyBindingItems.Select(i => new ButtonColumnItem<KeyBindings?>(i.ToString(), i)).ToList();
         }
-        var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
+        
         var images = new List<SharpImage>();
-        itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
+        var selectedButton = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
             wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) },
-            wrapItemLayout: i =>
-            {
-                var topItem = itemButtons.ListIndex;
-                var index = topItem;
-                return i.Select<SharpButton, ILayoutItem>(j =>
-                {
-                    if (index < keyBindingItems.Count)
-                    {
-                        var keyBinding = keyBindingItems[index++];
-                        var binding = keybindService.GetKeyboardMouseBinding(keyBinding);
-
-                        if (binding.KeyboardButton != null)
-                        {
-                            var image = new SharpImage(keyboardMouseIcons.Icons)
-                            {
-                                UvRect = keyboardMouseIcons.GetButtonRect(binding.KeyboardButton.Value),
-                                DesiredWidth = scaleHelper.Scaled(64),
-                                DesiredHeight = scaleHelper.Scaled(64)
-                            };
-
-                            images.Add(image);
-                            return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
-                        }
-                        else if (binding.MouseButton != null)
-                        {
-                            var image = new SharpImage(keyboardMouseIcons.Icons)
-                            {
-                                UvRect = keyboardMouseIcons.GetButtonRect(binding.MouseButton.Value),
-                                DesiredWidth = scaleHelper.Scaled(64),
-                                DesiredHeight = scaleHelper.Scaled(64)
-                            };
-
-                            images.Add(image);
-                            return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
-                        }
-                    }
-                    return j;
-                });
-            },
+            wrapItemLayout: i => CreateBindingRow(i, images),
             navUp: close.Id, navDown: close.Id);
+        if(selectedButton != null)
+        {
+            setKeybind = true;
+        }
 
         foreach (var image in images)
         {
-            if(image.Rect.Bottom > itemButtons.Bottom)
+            if (image.Rect.Bottom > itemButtons.Bottom)
             {
                 break;
             }
@@ -110,5 +87,46 @@ internal class KeybindMenu
             currentItems = null;
             menu.RequestSubMenu(PreviousMenu, gamepadId);
         }
+    }
+
+    private IEnumerable<ILayoutItem> CreateBindingRow(IEnumerable<SharpButton> i, List<SharpImage> images)
+    {
+        var topItem = itemButtons.ListIndex;
+        var index = topItem;
+        return i.Select<SharpButton, ILayoutItem>(j =>
+        {
+            if (index < keyBindingItems.Count)
+            {
+                var keyBinding = keyBindingItems[index++];
+                var binding = keybindService.GetKeyboardMouseBinding(keyBinding);
+
+                SharpImage image = null;
+                if (binding.KeyboardButton != null)
+                {
+                    image = new SharpImage(keyboardMouseIcons.Icons)
+                    {
+                        UvRect = keyboardMouseIcons.GetButtonRect(binding.KeyboardButton.Value),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                }
+                else if (binding.MouseButton != null)
+                {
+                    image = new SharpImage(keyboardMouseIcons.Icons)
+                    {
+                        UvRect = keyboardMouseIcons.GetButtonRect(binding.MouseButton.Value),
+                        DesiredWidth = scaleHelper.Scaled(64),
+                        DesiredHeight = scaleHelper.Scaled(64)
+                    };
+                }
+
+                if (image != null)
+                {
+                    images.Add(image);
+                    return new RowLayout(new KeepHeightLayout(image), j) { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
+                }
+            }
+            return j;
+        });
     }
 }
