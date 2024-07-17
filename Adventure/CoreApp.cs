@@ -110,11 +110,14 @@ namespace Adventure
             services.AddSingleton<IWorldMapManager, WorldMapManager>();
             services.AddSingleton<IStartExplorationGameState, StartExplorationGameState>();
             services.AddSingleton<PartyMemberManager>();
+            services.AddSingleton<KeyboardMouseIcons>();
             services.AddSingleton<CharacterStatsTextService>();
             services.AddSingleton<CharacterStyleService>();
             services.AddSingleton<ZoneEntranceService>();
             services.AddSingleton<IGcService, GcService>();
             services.AddSingleton<IconLoader>();
+            services.AddSingleton<KeybindService>();
+            services.AddSingleton<KeybindMenu>();
             services.AddScoped<IInventoryFunctions>(s => new InventoryFunctions(s));
             services.AddScoped<FollowerManager>();
             services.AddScoped(typeof(Follower<>));

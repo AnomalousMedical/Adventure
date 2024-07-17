@@ -50,7 +50,14 @@ namespace Adventure.Services
                 options = JsonSerializer.Deserialize<GameOptions>(stream, GameOptionsSourceGenerationContext.Default.GameOptions);
             }
 
-            return options ?? new GameOptions();
+            if(options == null)
+            {
+                options = new GameOptions();
+            }
+
+            options.Update();
+
+            return options;
         }
 
         private String GetFile()

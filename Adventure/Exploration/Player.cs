@@ -51,6 +51,7 @@ namespace Adventure
         private readonly IExplorationMenu explorationMenu;
         private readonly MultiCameraMover<ZoneScene> multiCameraMover;
         private readonly PlayerCage<ZoneScene> playerCage;
+        private readonly KeybindService keybindService;
         private readonly EventLayer eventLayer;
         private readonly IObjectResolver objectResolver;
         private List<Follower<ZoneScene>> followers = new List<Follower<ZoneScene>>();
@@ -124,7 +125,8 @@ namespace Adventure
             ICharacterMenuPositionTracker<ZoneScene> characterMenuPositionTracker,
             IExplorationMenu explorationMenu,
             MultiCameraMover<ZoneScene> multiCameraMover,
-            PlayerCage<ZoneScene> playerCage
+            PlayerCage<ZoneScene> playerCage,
+            KeybindService keybindService
         )
         {
             playerSpriteInfo = assetFactory.CreatePlayer(description.PlayerSprite ?? throw new InvalidOperationException($"You must include the {nameof(description.PlayerSprite)} property in your description."));
@@ -135,11 +137,12 @@ namespace Adventure
             this.explorationMenu = explorationMenu;
             this.multiCameraMover = multiCameraMover;
             this.playerCage = playerCage;
+            this.keybindService = keybindService;
             this.characterSheet = description.CharacterSheet;
-            this.moveForward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_W });
-            this.moveBackward = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_S });
-            this.moveRight = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_D });
-            this.moveLeft = new ButtonEvent(description.EventLayer, keys: new KeyboardButtonCode[] { KeyboardButtonCode.KC_A });
+            this.moveForward = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveUp));
+            this.moveBackward = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveDown));
+            this.moveRight = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveRight));
+            this.moveLeft = new ButtonEvent(description.EventLayer, keys: keybindService.GetKeyboardBinding(KeyBindings.MoveLeft));
 
             this.primaryHand = description.PrimaryHand;
             this.secondaryHand = description.SecondaryHand;

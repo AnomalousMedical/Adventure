@@ -14,7 +14,8 @@ internal class OptionsMenu
     PlayerMenu playerMenu,
     CreditsMenu creditsMenu,
     GraphicsOptionsMenu graphicsOptionsMenu,
-    SoundOptionsMenu soundOptionsMenu
+    SoundOptionsMenu soundOptionsMenu,
+    KeybindMenu keybindMenu
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
@@ -22,6 +23,7 @@ internal class OptionsMenu
     private readonly SharpButton players = new SharpButton() { Text = "Players" };
     private readonly SharpButton graphicsOptions = new SharpButton() { Text = "Graphics" };
     private readonly SharpButton soundOptions = new SharpButton() { Text = "Sound" };
+    private readonly SharpButton bindingsOptions = new SharpButton() { Text = "Bindings" };
     private readonly SharpButton credits = new SharpButton() { Text = "Credits" };
     private readonly SharpButton exitGame = new SharpButton() { Text = "Exit Game" };
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
@@ -36,7 +38,7 @@ internal class OptionsMenu
         var layout =
            new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
            new MaxWidthLayout(scaleHelper.Scaled(300),
-           new ColumnLayout(players, graphicsOptions, soundOptions, credits, exitGame, back) { Margin = new IntPad(10) }
+           new ColumnLayout(players, graphicsOptions, soundOptions, bindingsOptions, credits, exitGame, back) { Margin = new IntPad(10) }
         ));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
@@ -54,13 +56,19 @@ internal class OptionsMenu
             menu.RequestSubMenu(graphicsOptionsMenu, gamepadId);
         }
 
-        if (sharpGui.Button(soundOptions, gamepadId, navUp: graphicsOptions.Id, navDown: credits.Id))
+        if (sharpGui.Button(soundOptions, gamepadId, navUp: graphicsOptions.Id, navDown: bindingsOptions.Id))
         {
             soundOptionsMenu.PreviousMenu = this;
             menu.RequestSubMenu(soundOptionsMenu, gamepadId);
         }
 
-        if (sharpGui.Button(credits, gamepadId, navUp: soundOptions.Id, navDown: exitGame.Id))
+        if (sharpGui.Button(bindingsOptions, gamepadId, navUp: soundOptions.Id, navDown: credits.Id))
+        {
+            keybindMenu.PreviousMenu = this;
+            menu.RequestSubMenu(keybindMenu, gamepadId);
+        }
+
+        if (sharpGui.Button(credits, gamepadId, navUp: bindingsOptions.Id, navDown: exitGame.Id))
         {
             creditsMenu.Previous = this;
             menu.RequestSubMenu(creditsMenu, gamepadId);

@@ -1,4 +1,5 @@
 ﻿using DiligentEngine;
+using Engine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,23 @@ namespace Adventure.Services
     [JsonSerializable(typeof(GameOptions))]
     internal partial class GameOptionsSourceGenerationContext : JsonSerializerContext
     {
+    }
+
+    class KeyboardMouseBinding
+    {
+        public KeyboardMouseBinding(KeyboardButtonCode code)
+        {
+            this.KeyboardButton = code;
+        }
+
+        public KeyboardMouseBinding(MouseButtonCode code)
+        {
+            this.MouseButton = code;
+        }
+
+        public KeyboardButtonCode? KeyboardButton { get; set; }
+
+        public MouseButtonCode? MouseButton { get; set; }
     }
 
     class GameOptions
@@ -36,12 +54,22 @@ namespace Adventure.Services
 
         public uint PresentInterval { get; set; } = 1;
 
+        public Dictionary<KeyBindings, KeyboardMouseBinding> KeyboardBindings { get; set; } = new Dictionary<KeyBindings, KeyboardMouseBinding>();
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Debug { get; set; } =
             #if RELEASE
                 false;
             #else
                 true;
-            #endif
+
+        internal void Update()
+        {
+            if(KeyboardBindings == null)
+            {
+                KeyboardBindings = new Dictionary<KeyBindings, KeyboardMouseBinding>();
+            }
+        }
+#endif
     }
 }

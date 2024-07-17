@@ -28,12 +28,18 @@ namespace SharpGui
             }
         }
 
-        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null, Guid? navUp = null, Guid? navDown = null)
+        public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null, Guid? navUp = null, Guid? navDown = null, Func<IEnumerable<SharpButton>, IEnumerable<ILayoutItem>> wrapItemLayout = null)
         {
+            IEnumerable<ILayoutItem> wrappedButtons = buttons;
+            if(wrapItemLayout != null)
+            {
+                wrappedButtons = wrapItemLayout(buttons).ToList();
+            }
+
             ILayoutItem layout =
                new MarginLayout(new IntPad(Margin),
                new MaxWidthLayout(MaxWidth,
-               new ColumnLayout(buttons) { Margin = new IntPad(Margin) }
+               new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) }
             ));
 
             if(wrapLayout != null)
