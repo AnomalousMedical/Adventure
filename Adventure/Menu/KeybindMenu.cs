@@ -2,11 +2,8 @@
 using Engine;
 using Engine.Platform;
 using SharpGui;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Menu;
 
@@ -22,7 +19,7 @@ internal class KeybindMenu
 ) : IExplorationSubMenu
 {
     private ButtonColumn itemButtons = new ButtonColumn(25);
-    SharpButton close = new SharpButton() { Text = "Close" };
+    SharpButton close = new SharpButton() { Text = "Back" };
 
     private List<KeyBindings> keyBindingItems = new List<KeyBindings>();
     private List<ButtonColumnItem<KeyBindings?>> currentItems;
@@ -38,7 +35,20 @@ internal class KeybindMenu
     {
         if (selectedBinding != null)
         {
-            rebindKeyText.Text = "Press a new button to assign to " + selectedBinding.ToString() + ".";
+            var isMovement = 
+                 selectedBinding == KeyBindings.MoveUp
+              || selectedBinding == KeyBindings.MoveDown
+              || selectedBinding == KeyBindings.MoveLeft
+              || selectedBinding == KeyBindings.MoveRight;
+
+            rebindKeyText.Text = "Press a new button to assign to " + selectedBinding.ToString();
+
+            if(isMovement)
+            {
+                rebindKeyText.Text += " (Keyboard Only)";
+            }
+
+            rebindKeyText.Text += ".";
 
             var bindLayout =
                     new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
@@ -53,6 +63,29 @@ internal class KeybindMenu
             {
                 keybindService.SetBinding(selectedBinding.Value, new KeyboardMouseBinding(sharpGui.KeyEntered));
                 selectedBinding = null;
+            }
+            else if (!isMovement)
+            {
+                if(sharpGui.GamepadButtonEntered[0] != GamepadButtonCode.NUM_BUTTONS)
+                {
+                    keybindService.SetBinding(selectedBinding.Value, GamepadId.Pad1, sharpGui.GamepadButtonEntered[0]);
+                    selectedBinding = null;
+                }
+                else if (sharpGui.GamepadButtonEntered[1] != GamepadButtonCode.NUM_BUTTONS)
+                {
+                    keybindService.SetBinding(selectedBinding.Value, GamepadId.Pad2, sharpGui.GamepadButtonEntered[1]);
+                    selectedBinding = null;
+                }
+                else if (sharpGui.GamepadButtonEntered[2] != GamepadButtonCode.NUM_BUTTONS)
+                {
+                    keybindService.SetBinding(selectedBinding.Value, GamepadId.Pad3, sharpGui.GamepadButtonEntered[2]);
+                    selectedBinding = null;
+                }
+                else if (sharpGui.GamepadButtonEntered[3] != GamepadButtonCode.NUM_BUTTONS)
+                {
+                    keybindService.SetBinding(selectedBinding.Value, GamepadId.Pad4, sharpGui.GamepadButtonEntered[3]);
+                    selectedBinding = null;
+                }
             }
             return;
         }
