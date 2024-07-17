@@ -1,5 +1,6 @@
 ﻿using Anomalous.Interop;
 using Engine.Platform;
+using SharpGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ enum KeyBindings
     OpenMenu
 }
 
-class KeybindService(GameOptions options)
+class KeybindService
 {
     public event Action<KeybindService, KeyBindings> KeybindChanged;
 
@@ -70,17 +71,46 @@ class KeybindService(GameOptions options)
         //{ KeyBindings.MoveRight, GamepadButtonCode },
         { KeyBindings.OpenMenu, GamepadButtonCode.XInput_Y },
     };
+    private readonly GameOptions options;
+    private readonly ISharpGui sharpGui;
+
+    public KeybindService(GameOptions options, ISharpGui sharpGui)
+    {
+        this.options = options;
+        this.sharpGui = sharpGui;
+
+        sharpGui.OverrideStandardBack(GetKeyboardMouseBinding(KeyBindings.Cancel).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Cancel));
+        sharpGui.OverrideStandardPrevious(GetKeyboardMouseBinding(KeyBindings.Previous).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Previous));
+        sharpGui.OverrideStandardNext(GetKeyboardMouseBinding(KeyBindings.Next).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Next));
+    }
 
     public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
     {
         options.KeyboardBindings[binding] = key;
-        KeybindChanged?.Invoke(this, binding);
+        FireKeybindChanged(binding);
     }
 
     public void SetBinding(KeyBindings binding, GamepadId gamepadId, GamepadButtonCode button)
     {
         options.GamepadBindings[(int)gamepadId][binding] = button;
+        FireKeybindChanged(binding);
+    }
+
+    private void FireKeybindChanged(KeyBindings binding)
+    {
         KeybindChanged?.Invoke(this, binding);
+        switch (binding)
+        {
+            case KeyBindings.Cancel:
+                sharpGui.OverrideStandardBack(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Previous:
+                sharpGui.OverrideStandardPrevious(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Next:
+                sharpGui.OverrideStandardNext(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+        }
     }
 
     public KeyboardMouseBinding GetKeyboardMouseBinding(KeyBindings binding)

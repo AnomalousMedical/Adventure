@@ -39,6 +39,30 @@ namespace SharpGui
         private SharpStyle inputStyle;
         private SharpStyle panelStyle;
 
+        KeyboardButtonCode standardNextKey = KeyboardButtonCode.KC_PGUP;
+        GamepadButtonCode[] standardNextButton = [
+            GamepadButtonCode.XInput_RTrigger,
+            GamepadButtonCode.XInput_RTrigger,
+            GamepadButtonCode.XInput_RTrigger,
+            GamepadButtonCode.XInput_RTrigger,
+        ];
+
+        KeyboardButtonCode standardPreviousKey = KeyboardButtonCode.KC_PGDOWN;
+        GamepadButtonCode[] standardPreviousButton = [
+            GamepadButtonCode.XInput_LTrigger,
+            GamepadButtonCode.XInput_LTrigger,
+            GamepadButtonCode.XInput_LTrigger,
+            GamepadButtonCode.XInput_LTrigger,
+        ];
+
+        KeyboardButtonCode standardBackKey = KeyboardButtonCode.KC_ESCAPE;
+        GamepadButtonCode[] standardBackButton = [
+            GamepadButtonCode.XInput_B,
+            GamepadButtonCode.XInput_B,
+            GamepadButtonCode.XInput_B,
+            GamepadButtonCode.XInput_B,
+        ];
+
         public SharpGuiImpl(SharpGuiBuffer buffer, SharpGuiRenderer renderer, EventManager eventManager, IScaleHelper scaleHelper, IFontManager fontManager)
         {
             this.buffer = buffer;
@@ -304,17 +328,35 @@ namespace SharpGui
 
         public bool IsStandardNextPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_RTrigger || KeyEntered == KeyboardButtonCode.KC_PGUP;
+            return GamepadButtonEntered[(int)gamepad] == standardNextButton[(int)gamepad] || KeyEntered == standardNextKey;
+        }
+
+        public void OverrideStandardNext(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardNextKey = key;
+            this.standardNextButton = buttons;
         }
 
         public bool IsStandardPreviousPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_LTrigger || KeyEntered == KeyboardButtonCode.KC_PGDOWN;
+            return GamepadButtonEntered[(int)gamepad] == standardPreviousButton[(int)gamepad] || KeyEntered == standardPreviousKey;
+        }
+
+        public void OverrideStandardPrevious(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardPreviousKey = key;
+            this.standardPreviousButton = buttons;
         }
 
         public bool IsStandardBackPressed(GamepadId gamepad = GamepadId.Pad1)
         {
-            return GamepadButtonEntered[(int)gamepad] == GamepadButtonCode.XInput_B || KeyEntered == KeyboardButtonCode.KC_ESCAPE;
+            return GamepadButtonEntered[(int)gamepad] == standardBackButton[(int)gamepad] || KeyEntered == standardBackKey;
+        }
+
+        public void OverrideStandardBack(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardBackKey = key;
+            this.standardBackButton = buttons;
         }
 
         public Guid ActiveItem => state.ActiveItem;
