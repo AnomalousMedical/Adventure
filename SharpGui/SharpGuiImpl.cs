@@ -359,6 +359,16 @@ namespace SharpGui
             this.standardBackButton = buttons;
         }
 
+        public bool IsStandardAcceptPressed(GamepadId gamepad = GamepadId.Pad1)
+        {
+            return state.IsStandardAcceptPressed((int)gamepad);
+        }
+
+        public void OverrideStandardAccept(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            state.OverrideStandardAccept(key, buttons);
+        }
+
         public Guid ActiveItem => state.ActiveItem;
 
         public Guid HoverItem => state.HoverItem;

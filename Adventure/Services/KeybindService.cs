@@ -82,6 +82,7 @@ class KeybindService
         sharpGui.OverrideStandardBack(GetKeyboardMouseBinding(KeyBindings.Cancel).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Cancel));
         sharpGui.OverrideStandardPrevious(GetKeyboardMouseBinding(KeyBindings.Previous).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Previous));
         sharpGui.OverrideStandardNext(GetKeyboardMouseBinding(KeyBindings.Next).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Next));
+        sharpGui.OverrideStandardAccept(GetKeyboardMouseBinding(KeyBindings.Confirm).KeyboardButton.Value, GetAllGamepadBindings(KeyBindings.Confirm));
     }
 
     public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
@@ -109,6 +110,9 @@ class KeybindService
                 break;
             case KeyBindings.Next:
                 sharpGui.OverrideStandardNext(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
+                break;
+            case KeyBindings.Confirm:
+                sharpGui.OverrideStandardAccept(GetKeyboardMouseBinding(binding).KeyboardButton.Value, GetAllGamepadBindings(binding));
                 break;
         }
     }

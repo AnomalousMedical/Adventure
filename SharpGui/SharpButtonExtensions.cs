@@ -75,19 +75,7 @@ namespace SharpGui
             
             if (state.ProcessFocus(id, gamepad, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
-                switch (state.KeyEntered)
-                {
-                    case Engine.Platform.KeyboardButtonCode.KC_RETURN:
-                        result = true;
-                        break;
-                }
-
-                switch (state.GamepadButtonEntered[gamepad])
-                {
-                    case Engine.Platform.GamepadButtonCode.XInput_A:
-                        result = true;
-                        break;
-                }
+                result = state.IsStandardAcceptPressed(gamepad);
             }
             return result;
         }

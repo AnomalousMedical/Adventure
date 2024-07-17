@@ -28,6 +28,14 @@ namespace SharpGui
         public uint LastKeyChar { get; private set; }
         public bool ShowHover { get; set; } = true;
 
+        KeyboardButtonCode standardAcceptKey = KeyboardButtonCode.KC_RETURN;
+        GamepadButtonCode[] standardAcceptButton = [
+            GamepadButtonCode.XInput_A,
+            GamepadButtonCode.XInput_A,
+            GamepadButtonCode.XInput_A,
+            GamepadButtonCode.XInput_A,
+        ];
+
         public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
         {
             sawFocusedItem = false;
@@ -258,6 +266,17 @@ namespace SharpGui
             }
 
             return style.Normal;
+        }
+
+        public bool IsStandardAcceptPressed(int gamepad)
+        {
+            return GamepadButtonEntered[gamepad] == standardAcceptButton[gamepad] || KeyEntered == standardAcceptKey;
+        }
+
+        public void OverrideStandardAccept(KeyboardButtonCode key, GamepadButtonCode[] buttons)
+        {
+            this.standardAcceptKey = key;
+            this.standardAcceptButton = buttons;
         }
     }
 }
