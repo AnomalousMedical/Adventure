@@ -121,6 +121,16 @@ class KeybindService(GameOptions options)
         return defaultButtons[binding];
     }
 
+    public GamepadButtonCode[] GetAllGamepadBindings(KeyBindings binding)
+    {
+        return [
+            GetGamepadBinding(binding, GamepadId.Pad1),
+            GetGamepadBinding(binding, GamepadId.Pad2),
+            GetGamepadBinding(binding, GamepadId.Pad3),
+            GetGamepadBinding(binding, GamepadId.Pad4),
+        ];
+    }
+
     public IEnumerable<KeyBindings> GetKeyBindings()
     {
         yield return KeyBindings.Confirm;

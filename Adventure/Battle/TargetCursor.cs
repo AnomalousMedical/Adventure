@@ -23,6 +23,7 @@ namespace Adventure.Battle
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly ICameraProjector cameraProjector;
         private readonly IScaleHelper scaleHelper;
+        private readonly KeybindService keybindService;
         private readonly Sprite sprite;
         private readonly TLASInstanceData tlasData;
         private SpriteInstance spriteInstance;
@@ -96,6 +97,22 @@ namespace Adventure.Battle
         private ColumnLayout targetResistenceLayout = new ColumnLayout();
         private List<SharpImage> targetResistenceItems = new List<SharpImage>(8);
 
+        private KeyboardButtonCode AcceptKey;
+        private KeyboardButtonCode CancelKey;
+        private KeyboardButtonCode UpKey;
+        private KeyboardButtonCode DownKey;
+        private KeyboardButtonCode LeftKey;
+        private KeyboardButtonCode RightKey;
+        private KeyboardButtonCode SwitchKey;
+
+        private GamepadButtonCode[] AcceptButton;
+        private GamepadButtonCode[] CancelButton;
+        private GamepadButtonCode[] UpButton;
+        private GamepadButtonCode[] DownButton;
+        private GamepadButtonCode[] LeftButton;
+        private GamepadButtonCode[] RightButton;
+        private GamepadButtonCode[] SwitchButton;
+
         public TargetCursor
         (
             IDestructionRequest destructionRequest,
@@ -106,7 +123,8 @@ namespace Adventure.Battle
             IBattleScreenLayout battleScreenLayout,
             ICameraProjector cameraProjector,
             IScaleHelper scaleHelper,
-            IconLoader iconLoader
+            IconLoader iconLoader,
+            KeybindService keybindService
         )
         {
             this.destructionRequest = destructionRequest;
@@ -116,6 +134,7 @@ namespace Adventure.Battle
             this.battleScreenLayout = battleScreenLayout;
             this.cameraProjector = cameraProjector;
             this.scaleHelper = scaleHelper;
+            this.keybindService = keybindService;
             this.sprite = new Sprite(animations)
             { BaseScale = new Vector3(0.5f, 0.5f, 1f) };
 
@@ -148,6 +167,24 @@ namespace Adventure.Battle
                 Transform = new InstanceMatrix(Vector3.Zero, Quaternion.Identity, sprite.BaseScale)
             };
 
+            AcceptKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Confirm).KeyboardButton.Value;
+            CancelKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Cancel).KeyboardButton.Value;
+            UpKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Up).KeyboardButton.Value;
+            DownKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Down).KeyboardButton.Value;
+            LeftKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Left).KeyboardButton.Value;
+            RightKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Right).KeyboardButton.Value;
+            SwitchKey = keybindService.GetKeyboardMouseBinding(KeyBindings.SwitchCharacter).KeyboardButton.Value;
+
+            AcceptButton = keybindService.GetAllGamepadBindings(KeyBindings.Confirm);
+            CancelButton = keybindService.GetAllGamepadBindings(KeyBindings.Cancel);
+            UpButton = keybindService.GetAllGamepadBindings(KeyBindings.Up);
+            DownButton = keybindService.GetAllGamepadBindings(KeyBindings.Down);
+            LeftButton = keybindService.GetAllGamepadBindings(KeyBindings.Left);
+            RightButton = keybindService.GetAllGamepadBindings(KeyBindings.Right);
+            SwitchButton = keybindService.GetAllGamepadBindings(KeyBindings.SwitchCharacter);
+
+            keybindService.KeybindChanged += KeybindService_KeybindChanged;
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -173,6 +210,7 @@ namespace Adventure.Battle
 
         public void Dispose()
         {
+            keybindService.KeybindChanged -= KeybindService_KeybindChanged;
             disposed = true;
             this.spriteInstanceFactory.TryReturn(spriteInstance);
             RemoveFromScene();
@@ -350,54 +388,62 @@ namespace Adventure.Battle
             }
             else
             {
-                switch (sharpGui.GamepadButtonEntered[(int)activePlayer.GamepadId])
+                var currentGamepad = (int)activePlayer.GamepadId;
+                var gamepadButton = sharpGui.GamepadButtonEntered[currentGamepad];
+                if (gamepadButton == AcceptButton[currentGamepad])
                 {
-                    case GamepadButtonCode.XInput_A:
+                    SetTarget(target);
+                }
+                else if (gamepadButton == CancelButton[currentGamepad])
+                {
+                    SetTarget(null);
+                }
+                else if (gamepadButton == UpButton[currentGamepad])
+                {
+                    NextTarget();
+                }
+                else if (gamepadButton == DownButton[currentGamepad])
+                {
+                    PreviousTarget();
+                }
+                else if (gamepadButton == LeftButton[currentGamepad] || gamepadButton == RightButton[currentGamepad])
+                {
+                    ChangeRow();
+                }
+                else if (gamepadButton == SwitchButton[currentGamepad])
+                {
+                    battleManager.SwitchPlayer();
+                    SetTarget(null);
+                }
+                else
+                {
+                    //Handle keyboard
+                    var keyboardKey = sharpGui.KeyEntered;
+                    if (keyboardKey == AcceptKey)
+                    {
                         SetTarget(target);
-                        break;
-                    case GamepadButtonCode.XInput_B:
+                    }
+                    else if (keyboardKey == CancelKey)
+                    {
                         SetTarget(null);
-                        break;
-                    case GamepadButtonCode.XInput_DPadUp:
+                    }
+                    else if (keyboardKey == UpKey)
+                    {
                         NextTarget();
-                        break;
-                    case GamepadButtonCode.XInput_DPadDown:
+                    }
+                    else if (keyboardKey == DownKey)
+                    {
                         PreviousTarget();
-                        break;
-                    case GamepadButtonCode.XInput_DPadLeft:
-                    case GamepadButtonCode.XInput_DPadRight:
+                    }
+                    else if (keyboardKey == LeftKey || keyboardKey == RightKey)
+                    {
                         ChangeRow();
-                        break;
-                    case GamepadButtonCode.XInput_Y:
+                    }
+                    else if(keyboardKey == SwitchKey)
+                    {
                         battleManager.SwitchPlayer();
                         SetTarget(null);
-                        break;
-                    default:
-                        //Handle keyboard
-                        switch (sharpGui.KeyEntered)
-                        {
-                            case KeyboardButtonCode.KC_RETURN:
-                                SetTarget(target);
-                                break;
-                            case KeyboardButtonCode.KC_ESCAPE:
-                                SetTarget(null);
-                                break;
-                            case KeyboardButtonCode.KC_UP:
-                                NextTarget();
-                                break;
-                            case KeyboardButtonCode.KC_DOWN:
-                                PreviousTarget();
-                                break;
-                            case KeyboardButtonCode.KC_LEFT:
-                            case KeyboardButtonCode.KC_RIGHT:
-                                ChangeRow();
-                                break;
-                            case KeyboardButtonCode.KC_LSHIFT:
-                                battleManager.SwitchPlayer();
-                                SetTarget(null);
-                                break;
-                        }
-                        break;
+                    }
                 }
             }
         }
@@ -445,6 +491,41 @@ namespace Adventure.Battle
         private void Bind(IShaderBindingTable sbt, ITopLevelAS tlas)
         {
             spriteInstance.Bind(this.tlasData.InstanceName, sbt, tlas, sprite);
+        }
+
+        private void KeybindService_KeybindChanged(KeybindService service, KeyBindings keyBinding)
+        {
+            switch (keyBinding)
+            {
+                case KeyBindings.Confirm:
+                    AcceptKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Confirm).KeyboardButton.Value;
+                    AcceptButton = keybindService.GetAllGamepadBindings(KeyBindings.Confirm);
+                    break;
+                case KeyBindings.Cancel:
+                    CancelKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Cancel).KeyboardButton.Value;
+                    CancelButton = keybindService.GetAllGamepadBindings(KeyBindings.Cancel);
+                    break;
+                case KeyBindings.Up:
+                    UpKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Up).KeyboardButton.Value;
+                    UpButton = keybindService.GetAllGamepadBindings(KeyBindings.Up);
+                    break;
+                case KeyBindings.Down:
+                    DownKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Down).KeyboardButton.Value;
+                    DownButton = keybindService.GetAllGamepadBindings(KeyBindings.Down);
+                    break;
+                case KeyBindings.Left:
+                    LeftKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Left).KeyboardButton.Value;
+                    LeftButton = keybindService.GetAllGamepadBindings(KeyBindings.Left);
+                    break;
+                case KeyBindings.Right:
+                    RightKey = keybindService.GetKeyboardMouseBinding(KeyBindings.Right).KeyboardButton.Value;
+                    RightButton = keybindService.GetAllGamepadBindings(KeyBindings.Right);
+                    break;
+                case KeyBindings.SwitchCharacter:
+                    SwitchKey = keybindService.GetKeyboardMouseBinding(KeyBindings.SwitchCharacter).KeyboardButton.Value;
+                    SwitchButton = keybindService.GetAllGamepadBindings(KeyBindings.SwitchCharacter);
+                    break;
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Adventure.Battle
         private readonly ISkillFactory skillFactory;
         private readonly EventManager eventManager;
         private readonly IInventoryFunctions inventoryFunctions;
-
+        private readonly KeybindService keybindService;
         private bool victorious = false;
 
         private SharpPanel infoPanel = new SharpPanel();
@@ -139,6 +139,9 @@ namespace Adventure.Battle
         private SharpImage mentalBuff = new SharpImage();
         private SharpImage haste = new SharpImage();
 
+        private GamepadButtonCode switchCharacterButton;
+        private KeyboardButtonCode switchCharacterKey;
+
         public class Description : SceneObjectDesc
         {
             public int PrimaryHand = Player.RightHand;
@@ -174,7 +177,8 @@ namespace Adventure.Battle
             EventManager eventManager,
             IInventoryFunctions inventoryFunctions,
             CharacterStyleService characterStyleService,
-            IconLoader iconLoader
+            IconLoader iconLoader,
+            KeybindService keybindService
         )
         {
             this.contextTriggerKeyboard = new ButtonEvent(description.EventLayer, keys: new[] { KeyboardButtonCode.KC_SPACE });
@@ -193,6 +197,7 @@ namespace Adventure.Battle
             this.skillFactory = skillFactory;
             this.eventManager = eventManager;
             this.inventoryFunctions = inventoryFunctions;
+            this.keybindService = keybindService;
             this.rtInstances = rtInstances;
             this.spriteInstanceFactory = spriteInstanceFactory;
             this.destructionRequest = destructionRequest;
@@ -268,6 +273,10 @@ namespace Adventure.Battle
 
             Sprite_FrameChanged(sprite);
 
+            keybindService.KeybindChanged += KeybindService_KeybindChanged;
+            switchCharacterButton = keybindService.GetGamepadBinding(KeyBindings.SwitchCharacter, gamepadId);
+            switchCharacterKey = keybindService.GetKeyboardMouseBinding(KeyBindings.SwitchCharacter).KeyboardButton.Value;
+
             coroutine.RunTask(async () =>
             {
                 using var destructionBlock = destructionRequest.BlockDestruction(); //Block destruction until coroutine is finished and this is disposed.
@@ -304,6 +313,17 @@ namespace Adventure.Battle
             haste.Image = iconLoader.Icons;
             haste.UvRect = iconLoader.Haste;
             haste.DesiredWidth = iconSize;
+        }
+
+        private void KeybindService_KeybindChanged(KeybindService service, KeyBindings keyBinding)
+        {
+            switch (keyBinding)
+            {
+                case KeyBindings.SwitchCharacter:
+                    switchCharacterButton = keybindService.GetGamepadBinding(keyBinding, gamepadId);
+                    switchCharacterKey = keybindService.GetKeyboardMouseBinding(keyBinding).KeyboardButton.Value;
+                    break;
+            }
         }
 
         private String GetCurrentHpText()
@@ -407,6 +427,8 @@ namespace Adventure.Battle
             characterSheet.OnOffHandModified -= OnOffHandModified;
             characterSheet.OnBuffsModified -= CharacterSheet_OnBuffsModified;
 
+            keybindService.KeybindChanged -= KeybindService_KeybindChanged;
+
             eventManager.removeEvent(contextTriggerKeyboard);
             eventManager.removeEvent(contextTriggerJoystick);
 
@@ -480,20 +502,10 @@ namespace Adventure.Battle
 
             if (!didSomething)
             {
-                switch (sharpGui.GamepadButtonEntered[(int)gamepadId])
+                if (sharpGui.GamepadButtonEntered[(int)gamepadId] == switchCharacterButton
+                    || sharpGui.KeyEntered == switchCharacterKey)
                 {
-                    case GamepadButtonCode.XInput_Y:
                         SwitchPlayer();
-                        break;
-                    default:
-                        //Handle keyboard
-                        switch (sharpGui.KeyEntered)
-                        {
-                            case KeyboardButtonCode.KC_LSHIFT:
-                                SwitchPlayer();
-                                break;
-                        }
-                        break;
                 }
             }
 
