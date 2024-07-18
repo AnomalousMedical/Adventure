@@ -90,14 +90,6 @@ internal class KeybindMenu
             return;
         }
 
-        var descriptionLayout =
-          new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-          new ColumnLayout()
-          {
-              Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
-          }
-       );
-
         var layout = new RowLayout(close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
@@ -111,10 +103,12 @@ internal class KeybindMenu
             keyBindingItems = keybindService.GetKeyBindings().ToList();
             currentItems = keyBindingItems.Select(i => new ButtonColumnItem<KeyBindings?>(i.ToString(), i)).ToList();
         }
-        
+
+        sharpGui.Panel(panel, panelStyle);
+
         var images = new List<SharpImage>();
         selectedBinding = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
-            wrapLayout: l => new RowLayout(descriptionLayout, l) { Margin = new IntPad(scaleHelper.Scaled(10)) },
+            wrapLayout: l => new PanelLayout(panel, l),
             wrapItemLayout: i => CreateBindingRow(i, images),
             navUp: close.Id, navDown: close.Id);
 
