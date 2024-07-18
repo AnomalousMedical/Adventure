@@ -34,6 +34,7 @@ namespace Engine
         public static readonly Color UIRed = new Color(0.901f, 0.0f, 0.0f);
         public static readonly Color UIGreen = new Color(0.0f, 0.901f, 0.0f);
         public static readonly Color UIBlue = new Color(0.0f, 0.0f, 0.901f);
+        public static readonly Color UIPurple = new Color(0.7f, 0.0f, 0.901f);
 
         public static Color FromARGB(byte a, byte r, byte g, byte b)
         {

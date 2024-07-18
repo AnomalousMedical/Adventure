@@ -340,7 +340,7 @@ namespace Adventure.Battle
                                     break;
                                 case Resistance.Absorb:
                                     absorbResist.Add(image);
-                                    image.Color = Color.Purple;
+                                    image.Color = Color.UIPurple;
                                     break;
                             }
                         }
