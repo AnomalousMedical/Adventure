@@ -19,7 +19,6 @@ internal class HelpMenu
     ISharpGui sharpGui,
     IScreenPositioner screenPositioner,
     ILanguageService languageService,
-    ICoroutineRunner coroutine,
     Persistence persistence
 ) : IExplorationSubMenu
 {
