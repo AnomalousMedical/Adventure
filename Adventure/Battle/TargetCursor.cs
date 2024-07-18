@@ -332,7 +332,7 @@ namespace Adventure.Battle
                             {
                                 case Resistance.Resist:
                                     strongResist.Add(image);
-                                    image.Color = Color.Red;
+                                    image.Color = Color.UIRed;
                                     break;
                                 case Resistance.Weak:
                                     weakResist.Add(image);

@@ -31,7 +31,7 @@ namespace Adventure.Services
             {
                 if (currentStat > 0)
                 {
-                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.Red };
+                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.UIRed };
                     return true;
                 }
                 sharpText = null;
@@ -56,7 +56,7 @@ namespace Adventure.Services
                 else
                 {
                     sharpText.Text = $"{label} {difference}";
-                    sharpText.Color = Color.Red;
+                    sharpText.Color = Color.UIRed;
                 }
                 return true;
             }
@@ -84,7 +84,7 @@ namespace Adventure.Services
             {
                 if (currentStat > 0)
                 {
-                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.Red };
+                    sharpText = new SharpText($"{label} -{currentStat}") { Color = Color.UIRed };
                     return true;
                 }
                 sharpText = null;
@@ -109,7 +109,7 @@ namespace Adventure.Services
                 else
                 {
                     sharpText.Text = $"{label} {difference}";
-                    sharpText.Color = Color.Red;
+                    sharpText.Color = Color.UIRed;
                 }
                 return true;
             }
@@ -137,7 +137,7 @@ namespace Adventure.Services
             {
                 if (currentStat.Value)
                 {
-                    sharpText = new SharpText($"-{label}") { Color = Color.Red };
+                    sharpText = new SharpText($"-{label}") { Color = Color.UIRed };
                     return true;
                 }
                 sharpText = null;
@@ -158,7 +158,7 @@ namespace Adventure.Services
 
             if (currentStat.Value && !newStat.Value)
             {
-                sharpText = new SharpText($"-{label}") { Color = Color.Red };
+                sharpText = new SharpText($"-{label}") { Color = Color.UIRed };
                 return true;
             }
 
@@ -170,7 +170,7 @@ namespace Adventure.Services
         {
             if (currentItem?.Id != null && currentItem.Id == newItem?.Id)
             {
-                yield return new SharpText("Unequip") { Color = Color.Red };
+                yield return new SharpText("Unequip") { Color = Color.UIRed };
                 newItem = null; //Same item, effect will be to unequip
             }
 
@@ -308,7 +308,7 @@ namespace Adventure.Services
                 foreach (var skill in currentItem.Skills)
                 {
                     var skillInstance = skillFactory.CreateSkill(skill);
-                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.Red };
+                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.UIRed };
                 }
             }
 
@@ -334,7 +334,7 @@ namespace Adventure.Services
                 foreach (var skill in currentItem.Skills.Where(i => !newItem.Skills.Contains(i)))
                 {
                     var skillInstance = skillFactory.CreateSkill(skill);
-                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.Red };
+                    yield return new SharpText("-" + skillInstance.Name) { Color = Color.UIRed };
                 }
             }
 
@@ -355,7 +355,7 @@ namespace Adventure.Services
                     {
                         results = results.Concat(new[] { 
                             new SharpText("Off Hand") { Color = Color.UIWhite },
-                            new SharpText("Unequip") { Color = Color.Red }
+                            new SharpText("Unequip") { Color = Color.UIRed }
                         });
                         results = results.Concat(CompareEquipment(characterData.CharacterSheet.OffHand, null));
                     }
@@ -366,7 +366,7 @@ namespace Adventure.Services
                     {
                         results = results.Concat(new[] {
                             new SharpText("Main Hand") { Color = Color.UIWhite },
-                            new SharpText("Unequip") { Color = Color.Red }
+                            new SharpText("Unequip") { Color = Color.UIRed }
                         });
                         results = results.Concat(CompareEquipment(characterData.CharacterSheet.MainHand, null));
                     }

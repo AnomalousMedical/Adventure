@@ -134,7 +134,7 @@ class SkillMenu
                 var mpCost = skill.GetMpCost(false, false);
                 if (mpCost != 0)
                 {
-                    descriptions.Add(new SharpText($"MP: {mpCost}") { Color = mpCost > characterData.CharacterSheet.CurrentMp ? Color.Red : Color.UIWhite });
+                    descriptions.Add(new SharpText($"MP: {mpCost}") { Color = mpCost > characterData.CharacterSheet.CurrentMp ? Color.UIRed : Color.UIWhite });
                 }
             }
         }

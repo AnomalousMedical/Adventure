@@ -210,7 +210,7 @@ namespace Adventure.Menu
                     descriptions = new List<SharpText>();
                     descriptions.Add(description);
                     descriptions.Add(new SharpText($@"Gold: {persistence.Current.Party.Gold}") { Color = Color.UIWhite });
-                    descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.Red : Color.UIWhite });
+                    descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.UIRed : Color.UIWhite });
                     if (item.Item.IsEquipment)
                     {
                         var equipment = item.Item.CreateItem?.Invoke();

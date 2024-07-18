@@ -454,7 +454,7 @@ namespace Adventure.Battle
         {
             if (currentTarget)
             {
-                name.Color = Color.Red;
+                name.Color = Color.UIRed;
             }
             else
             {
