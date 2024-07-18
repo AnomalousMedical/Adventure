@@ -15,11 +15,14 @@ internal class KeybindMenu
     IScaleHelper scaleHelper,
     IScreenPositioner screenPositioner,
     KeyboardMouseIcons keyboardMouseIcons,
-    GamepadIcons gamepadIcons
+    GamepadIcons gamepadIcons,
+    ICoroutineRunner coroutine,
+    ConfirmMenu confirmMenu
 ) : IExplorationSubMenu
 {
     private ButtonColumn itemButtons = new ButtonColumn(25);
     SharpButton close = new SharpButton() { Text = "Back" };
+    SharpButton reset = new SharpButton() { Text = "Reset" };
 
     private List<KeyBindings> keyBindingItems = new List<KeyBindings>();
     private List<ButtonColumnItem<KeyBindings?>> currentItems;
@@ -90,7 +93,7 @@ internal class KeybindMenu
             return;
         }
 
-        var layout = new RowLayout(close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        var layout = new RowLayout(reset, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -121,7 +124,18 @@ internal class KeybindMenu
             sharpGui.Image(image);
         }
 
-        if (sharpGui.Button(close, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(reset, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton, navLeft: close.Id, navRight: close.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        {
+            coroutine.RunTask(async () =>
+            {
+                if(await confirmMenu.ShowAndWait("Are you sure you want to reset all bindings?", this, gamepadId))
+                {
+                    keybindService.Clear();
+                }
+            });
+        }
+
+        if (sharpGui.Button(close, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton, navLeft: reset.Id, navRight: reset.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             currentItems = null;
             menu.RequestSubMenu(PreviousMenu, gamepadId);

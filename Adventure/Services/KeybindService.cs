@@ -96,6 +96,10 @@ class KeybindService
         {
             dict.Clear();
         }
+        foreach(var binding in GetKeyBindings())
+        {
+            FireKeybindChanged(binding);
+        }
     }
 
     public void SetBinding(KeyBindings binding, KeyboardMouseBinding key)
