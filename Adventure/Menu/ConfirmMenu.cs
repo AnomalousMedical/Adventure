@@ -84,5 +84,6 @@ class ConfirmMenu
         var tempTask = currentTask;
         currentTask = null;
         tempTask?.SetResult(confirmed);
+        sharpGui.StealFocus(Guid.Empty);
     }
 }
