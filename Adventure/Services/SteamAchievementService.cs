@@ -1,84 +1,81 @@
-﻿using Anomalous.OSPlatform;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Steamworks;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Adventure.Services
+namespace Adventure.Services;
+
+internal interface IAchievementService
 {
-    internal interface IAchievementService
-    {
-        void Update();
-    }
+    string AccountName { get; }
 
-    class SteamAchievementService : IDisposable, IAchievementService
+    void Update();
+}
+
+class SteamAchievementService : IDisposable, IAchievementService
+{
+    public static IAchievementService Create(ILogger<SteamAchievementService> logger)
     {
-        public static IAchievementService Create(ILogger<SteamAchievementService> logger)
+        if (!Packsize.Test())
         {
-            if (!Packsize.Test())
-            {
-                logger.LogError("Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.");
-            }
+            logger.LogError("Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.");
+        }
 
-            if (!DllCheck.Test())
-            {
-                logger.LogError("DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.");
-            }
+        if (!DllCheck.Test())
+        {
+            logger.LogError("DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.");
+        }
 
-            try
+        try
+        {
+            var m_bInitialized = SteamAPI.Init();
+            if (!m_bInitialized)
             {
-                var m_bInitialized = SteamAPI.Init();
-                if (!m_bInitialized)
-                {
-                    logger.LogError("SteamAPI_Init() failed.");
-
-                    return new NullAchievementService();
-                }
-
-                return new SteamAchievementService(logger);
-            }
-            catch (DllNotFoundException e)
-            {
-                logger.LogError("Could not load [lib]steam_api.dll/so/dylib." + e);
+                logger.LogError("SteamAPI_Init() failed.");
 
                 return new NullAchievementService();
             }
+
+            return new SteamAchievementService(logger);
         }
-
-        private readonly ILogger<SteamAchievementService> logger;
-        private SteamAPIWarningMessageHook_t m_SteamAPIWarningMessageHook;
-
-        private SteamAchievementService(ILogger<SteamAchievementService> logger)
+        catch (DllNotFoundException e)
         {
-            this.logger = logger;
-            logger.LogInformation("Connected to Steam.");
+            logger.LogError("Could not load [lib]steam_api.dll/so/dylib." + e);
 
-            logger.LogInformation(SteamFriends.GetPersonaName());
-        }
-
-        public void Dispose()
-        {
-            logger.LogInformation("Shutting down Steam.");
-            SteamAPI.Shutdown();
-        }
-
-        public void Update()
-        {
-            SteamAPI.RunCallbacks();
+            return new NullAchievementService();
         }
     }
 
-    class NullAchievementService : IAchievementService
+    private readonly ILogger<SteamAchievementService> logger;
+    private SteamAPIWarningMessageHook_t m_SteamAPIWarningMessageHook;
+
+    private SteamAchievementService(ILogger<SteamAchievementService> logger)
     {
-        public void Update()
-        {
-            
-        }
+        this.logger = logger;
+        logger.LogInformation("Connected to Steam.");
+
+        logger.LogInformation(AccountName);
+    }
+
+    public void Dispose()
+    {
+        logger.LogInformation("Shutting down Steam.");
+        SteamAPI.Shutdown();
+    }
+
+    public void Update()
+    {
+        SteamAPI.RunCallbacks();
+    }
+
+    public String AccountName => SteamFriends.GetPersonaName();
+}
+
+class NullAchievementService : IAchievementService
+{
+    public string AccountName => null;
+
+    public void Update()
+    {
+        
     }
 }

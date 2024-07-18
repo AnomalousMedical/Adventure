@@ -25,7 +25,8 @@ namespace Adventure.Menu
         ITimeClock timeClock,
         Party party,
         FlyCameraManager flyCameraManager,
-        Persistence persistence
+        Persistence persistence,
+        IAchievementService achievementService
     //TextDialog textDialog
     ) : IDebugGui, IExplorationSubMenu
     {
@@ -37,7 +38,8 @@ namespace Adventure.Menu
         SharpButton toggleCamera = new SharpButton() { Text = "Toggle Camera" };
         SharpButton levelWorld = new SharpButton() { Text = "Level World" };
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
-        SharpText averageLevel = new SharpText() { Color = Color.White };
+        SharpText averageLevel = new SharpText() { Color = Color.UIWhite };
+        SharpText accountName = new SharpText(achievementService.AccountName) { Color = Color.UIWhite };
         SharpSliderHorizontal currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
 
         public void Link(IExplorationGameState explorationGameState)
@@ -100,11 +102,19 @@ namespace Adventure.Menu
                 timeClock.CurrentTimeMicro = (long)currentTime * 60L * 60L * Clock.SecondsToMicro;
             }
             var time = TimeSpan.FromMilliseconds(timeClock.CurrentTimeMicro * Clock.MicroToMilliseconds);
-            sharpGui.Text(currentHour.Rect.Right, currentHour.Rect.Top, timeClock.IsDay ? Engine.Color.Black : Engine.Color.White, $"Time: {time}");
+            sharpGui.Text(currentHour.Rect.Right, currentHour.Rect.Top, timeClock.IsDay ? Color.Black : Color.UIWhite, $"Time: {time}");
 
             if (sharpGui.IsStandardBackPressed(gamepad))
             {
                 explorationMenu.RequestSubMenu(explorationMenu.RootMenu, gamepad);
+            }
+
+            if(accountName.Text != null)
+            {
+                accountName.Color = timeClock.IsDay ? Color.Black : Color.UIWhite;
+                var accountLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), accountName);
+                accountLayout.SetRect(screenPositioner.GetTopRightRect(accountLayout.GetDesiredSize(sharpGui)));
+                sharpGui.Text(accountName);
             }
         }
     }
