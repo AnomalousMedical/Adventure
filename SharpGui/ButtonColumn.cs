@@ -15,7 +15,11 @@ namespace SharpGui
         private static Guid ScrollUp = Guid.NewGuid();
         private static Guid ScrollDown = Guid.NewGuid();
 
-        private static Guid currentBottomButton;
+        private static Guid ScrollTop = Guid.NewGuid();
+        private static Guid ScrollBottom = Guid.NewGuid();
+
+        private Guid currentBottomButton;
+        private int currentDisplayButton;
 
         private List<SharpButton> buttons;
 
@@ -60,18 +64,30 @@ namespace SharpGui
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
             {
+                if (sharpGui.FocusedItem == ScrollTop)
+                {
+                    ListIndex = 0;
+                    sharpGui.StealFocus(buttons[0].Id);
+                }
+
+                if (sharpGui.FocusedItem == ScrollBottom)
+                {
+                    ListIndex = itemCount - currentDisplayButton;
+                    sharpGui.StealFocus(currentBottomButton);
+                }
+
                 var previous = buttonCount - 1;
                 var next = buttons.Count > 1 ? 1 : 0;
-                int i = 0;
+                currentDisplayButton = 0;
 
                 foreach (var item in items.Skip(ListIndex))
                 {
-                    if (i >= buttonCount)
+                    if (currentDisplayButton >= buttonCount)
                     {
                         break;
                     }
 
-                    var button = buttons[i];
+                    var button = buttons[currentDisplayButton];
 
                     if (button.Rect.Bottom > Bottom)
                     {
@@ -81,13 +97,13 @@ namespace SharpGui
                     currentBottomButton = button.Id;
 
                     Guid navUpId = buttons[previous].Id;
-                    if (i == 0)
+                    if (currentDisplayButton == 0)
                     {
                         navUpId = ScrollUp;
                     }
 
                     Guid navDownId = buttons[next].Id;
-                    var nextIndex = i + 1;
+                    var nextIndex = currentDisplayButton + 1;
                     var nextButton = nextIndex < buttons.Count ? buttons[nextIndex] : null;
                     if (nextButton == null || nextButton.Rect.Bottom > Bottom || nextIndex + ListIndex >= itemCount)
                     {
@@ -118,9 +134,9 @@ namespace SharpGui
                     {
                         sharpGui.StealFocus(button.Id);
                         ++ListIndex;
-                        if (ListIndex + i >= itemCount)
+                        if (ListIndex + currentDisplayButton >= itemCount)
                         {
-                            ListIndex = itemCount - i - 1;
+                            ListIndex = itemCount - currentDisplayButton - 1;
                             if(navDown != null)
                             {
                                 sharpGui.StealFocus(navDown.Value);
@@ -128,10 +144,10 @@ namespace SharpGui
                         }
                     }
 
-                    previous = i;
-                    next = (i + 2) % buttonCount;
+                    previous = currentDisplayButton;
+                    next = (currentDisplayButton + 2) % buttonCount;
 
-                    ++i;
+                    ++currentDisplayButton;
                 }
             }
 
@@ -174,8 +190,8 @@ namespace SharpGui
             return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.HoverItem), 0);
         }
 
-        public Guid TopButton => buttons[0].Id;
+        public Guid TopButton => ScrollTop;
 
-        public Guid BottomButton => currentBottomButton;
+        public Guid BottomButton => ScrollBottom;
     }
 }
