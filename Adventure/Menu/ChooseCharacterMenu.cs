@@ -140,7 +140,7 @@ class ChooseCharacterMenu
 
                     if (nameResult.Confirmed)
                     {
-                        var confirmChoice = await confirmMenu.ShowAndWait($"Are you sure you want to choose {nameResult.Value}?", this, gamepadId);
+                        var confirmChoice = await confirmMenu.ShowAndWait($"Are you sure you want to choose {nameResult.Value}?", this, gamepadId, location: ConfirmMenu.Location.Center);
                         if (confirmChoice)
                         {
                             persistence.Current.Player.Position[(int)gamepadId] = currentTrigger.SpawnPosition;

@@ -16,6 +16,12 @@ class ConfirmMenu
     IScreenPositioner screenPositioner
 ) : IExplorationSubMenu
 {
+    public enum Location
+    {
+        Top,
+        Center
+    }
+
     private SharpText message = new SharpText() { Color = Color.White };
     private SharpButton yesButton = new SharpButton() { Text = "Yes" };
     private SharpButton noButton = new SharpButton() { Text = "No" };
@@ -26,19 +32,21 @@ class ConfirmMenu
     private TaskCompletionSource<bool> currentTask;
     private bool confirmed = false;
     private IExplorationMenu explorationMenu;
+    private Location location;
 
     public void Link(IExplorationMenu explorationMenu)
     {
         this.explorationMenu = explorationMenu;
     }
 
-    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepadId, string confirmText = "Yes", string rejectText = "No")
+    public Task<bool> ShowAndWait(String message, IExplorationSubMenu previousMenu, GamepadId gamepadId, string confirmText = "Yes", string rejectText = "No", Location location = Location.Top)
     {
         this.yesButton.Text = confirmText;
         this.noButton.Text = rejectText;
         this.confirmed = false;
         this.message.Text = message;
         this.previousMenu = previousMenu;
+        this.location = location;
         explorationMenu.RequestSubMenu(this, gamepadId);
         return WaitForCurrentInput();
     }
@@ -61,7 +69,18 @@ class ConfirmMenu
         )));
 
         var desiredSize = layout.GetDesiredSize(sharpGui);
-        layout.SetRect(screenPositioner.GetCenterTopRect(desiredSize));
+        IntRect layoutRect;
+        switch (location)
+        {
+            default:
+            case Location.Top:
+                layoutRect = screenPositioner.GetCenterTopRect(desiredSize);
+                break;
+            case Location.Center:
+                layoutRect = screenPositioner.GetCenterRect(desiredSize);
+                break;
+        }
+        layout.SetRect(layoutRect);
 
         sharpGui.Panel(promptPanel, panelStyle);
         sharpGui.Text(message);
