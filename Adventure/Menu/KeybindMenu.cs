@@ -7,22 +7,20 @@ using System.Linq;
 
 namespace Adventure.Menu;
 
-internal class KeybindMenu
-(
-    KeybindService keybindService,
-    ISharpGui sharpGui,
-    ILanguageService languageService,
-    IScaleHelper scaleHelper,
-    IScreenPositioner screenPositioner,
-    KeyboardMouseIcons keyboardMouseIcons,
-    GamepadIcons gamepadIcons,
-    ICoroutineRunner coroutine,
-    ConfirmMenu confirmMenu
-) : IExplorationSubMenu
+internal class KeybindMenu : IExplorationSubMenu
 {
     private ButtonColumn itemButtons = new ButtonColumn(25);
     SharpButton close = new SharpButton() { Text = "Back" };
     SharpButton reset = new SharpButton() { Text = "Reset" };
+
+    SharpText keyboard = new SharpText() { Text = "Keyboard", Color = Color.White };
+    SharpText pad1 = new SharpText() { Text = "Pad 1", Color = Color.White };
+    SharpText pad2 = new SharpText() { Text = "Pad 2", Color = Color.White };
+    SharpText pad3 = new SharpText() { Text = "Pad 3", Color = Color.White };
+    SharpText pad4 = new SharpText() { Text = "Pad 4", Color = Color.White };
+    SharpText action = new SharpText() { Text = "Action", Color = Color.White };
+
+    ILayoutItem headerLayout;
 
     private List<KeyBindings> keyBindingItems = new List<KeyBindings>();
     private List<ButtonColumnItem<KeyBindings?>> currentItems;
@@ -33,6 +31,50 @@ internal class KeybindMenu
     private SharpText rebindKeyText = new SharpText() { Color = Color.White };
     private SharpPanel panel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private readonly KeybindService keybindService;
+    private readonly ISharpGui sharpGui;
+    private readonly ILanguageService languageService;
+    private readonly IScaleHelper scaleHelper;
+    private readonly IScreenPositioner screenPositioner;
+    private readonly KeyboardMouseIcons keyboardMouseIcons;
+    private readonly GamepadIcons gamepadIcons;
+    private readonly ICoroutineRunner coroutine;
+    private readonly ConfirmMenu confirmMenu;
+
+    const int UnscaledColumnWidth = 150;
+    const int UnscaledActionColumnWidth = 250;
+
+    public KeybindMenu
+    (
+        KeybindService keybindService,
+        ISharpGui sharpGui,
+        ILanguageService languageService,
+        IScaleHelper scaleHelper,
+        IScreenPositioner screenPositioner,
+        KeyboardMouseIcons keyboardMouseIcons,
+        GamepadIcons gamepadIcons,
+        ICoroutineRunner coroutine,
+        ConfirmMenu confirmMenu
+    )
+    {
+        this.keybindService = keybindService;
+        this.sharpGui = sharpGui;
+        this.languageService = languageService;
+        this.scaleHelper = scaleHelper;
+        this.screenPositioner = screenPositioner;
+        this.keyboardMouseIcons = keyboardMouseIcons;
+        this.gamepadIcons = gamepadIcons;
+        this.coroutine = coroutine;
+        this.confirmMenu = confirmMenu;
+
+        headerLayout = new RowLayout(
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(keyboard)),
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad1)),
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad2)),
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad3)),
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad4)),
+            new MinWidthLayout(scaleHelper.Scaled(UnscaledActionColumnWidth), new KeepWidthCenterLayout(action)));
+    }
 
     public void Update(IExplorationMenu menu, GamepadId gamepadId)
     {
@@ -97,7 +139,6 @@ internal class KeybindMenu
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
-        itemButtons.Margin = scaleHelper.Scaled(10);
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
         itemButtons.Bottom = backButtonRect.Top;
 
@@ -111,9 +152,16 @@ internal class KeybindMenu
 
         var images = new List<SharpImage>();
         selectedBinding = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId,
-            wrapLayout: l => new PanelLayout(panel, l),
+            wrapLayout: l => new PanelLayout(panel, new ColumnLayout(headerLayout, l) { Margin = new IntPad(0, 0, 0, scaleHelper.Scaled(10)) }),
             wrapItemLayout: i => CreateBindingRow(i, images),
             navUp: close.Id, navDown: close.Id);
+
+        sharpGui.Text(keyboard);
+        sharpGui.Text(pad1);
+        sharpGui.Text(pad2);
+        sharpGui.Text(pad3);
+        sharpGui.Text(pad4);
+        sharpGui.Text(action);
 
         foreach (var image in images)
         {
@@ -151,7 +199,7 @@ internal class KeybindMenu
             if (index < keyBindingItems.Count)
             {
                 var layout = new RowLayout()
-                { Margin = new IntPad(0, 0, scaleHelper.Scaled(15), 0) };
+                { Margin = new IntPad(0, 0, 0, scaleHelper.Scaled(15)) };
 
                 var keyBinding = keyBindingItems[index++];
                 var binding = keybindService.GetKeyboardMouseBinding(keyBinding);
@@ -179,7 +227,7 @@ internal class KeybindMenu
                 if (keyboardImage != null)
                 {
                     images.Add(keyboardImage);
-                    layout.Add(keyboardImage);
+                    layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(keyboardImage)));
                 }
 
                 SharpImage pad1Image;
@@ -276,14 +324,14 @@ internal class KeybindMenu
                 images.Add(pad3Image);
                 images.Add(pad4Image);
 
-                layout.Add(pad1Image);
-                layout.Add(pad2Image);
-                layout.Add(pad3Image);
-                layout.Add(pad4Image);
+                layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad1Image)));
+                layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad2Image)));
+                layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad3Image)));
+                layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(pad4Image)));
 
                 if (images.Count > 0)
                 {
-                    layout.Add(j);
+                    layout.Add(new MinWidthLayout(scaleHelper.Scaled(UnscaledActionColumnWidth), j));
                     return layout;
                 }
             }
