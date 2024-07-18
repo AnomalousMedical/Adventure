@@ -145,7 +145,7 @@ internal class KeybindMenu : IExplorationSubMenu
         if (currentItems == null)
         {
             keyBindingItems = keybindService.GetKeyBindings().ToList();
-            currentItems = keyBindingItems.Select(i => new ButtonColumnItem<KeyBindings?>(i.ToString(), i)).ToList();
+            currentItems = keyBindingItems.Select(i => new ButtonColumnItem<KeyBindings?>(languageService.Current.KeybindMenu.GetText(i), i)).ToList();
         }
 
         sharpGui.Panel(panel, panelStyle);
@@ -337,5 +337,63 @@ internal class KeybindMenu : IExplorationSubMenu
             }
             return j;
         });
+    }
+
+    public record Text
+    (
+        string Confirm,
+        string Cancel,
+        string ActiveAbility,
+        string SwitchCharacter,
+        string OpenMenu,
+        string Previous,
+        string Next,
+        string Up,
+        string Down,
+        string Left,
+        string Right,
+        string MoveUp,
+        string MoveDown,
+        string MoveLeft,
+        string MoveRight
+    )
+    {
+        internal string GetText(KeyBindings i)
+        {
+            switch (i)
+            {
+                case KeyBindings.Confirm:
+                    return Confirm;
+                case KeyBindings.Cancel:
+                    return Cancel;
+                case KeyBindings.Previous:
+                    return Previous;
+                case KeyBindings.Next:
+                    return Next;
+                case KeyBindings.SwitchCharacter:
+                    return SwitchCharacter;
+                case KeyBindings.ActiveAbility:
+                    return ActiveAbility;
+                case KeyBindings.Up:
+                    return Up;
+                case KeyBindings.Down:
+                    return Down;
+                case KeyBindings.Left:
+                    return Left;
+                case KeyBindings.Right:
+                    return Right;
+                case KeyBindings.MoveUp:
+                    return MoveUp;
+                case KeyBindings.MoveDown:
+                    return MoveDown;
+                case KeyBindings.MoveLeft:
+                    return MoveLeft;
+                case KeyBindings.MoveRight:
+                    return MoveRight;
+                case KeyBindings.OpenMenu:
+                    return OpenMenu;
+            }
+            return "MissingID_" + i;
+        }
     }
 }

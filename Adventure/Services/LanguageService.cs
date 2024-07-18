@@ -51,6 +51,7 @@ namespace Adventure.Services
         //Menus
         RootMenu.Text RootMenu,
         LevelText Levels,
-        EndGameTrigger.Text EndGameTrigger
+        EndGameTrigger.Text EndGameTrigger,
+        KeybindMenu.Text KeybindMenu
     );
 }

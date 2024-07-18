@@ -1,12 +1,7 @@
-﻿using Anomalous.Interop;
-using Engine.Platform;
+﻿using Engine.Platform;
 using SharpGui;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Adventure.Services;
 
@@ -203,10 +198,11 @@ class KeybindService
     {
         yield return KeyBindings.Confirm;
         yield return KeyBindings.Cancel;
+        yield return KeyBindings.ActiveAbility;
+        yield return KeyBindings.SwitchCharacter;
+        yield return KeyBindings.OpenMenu;
         yield return KeyBindings.Previous;
         yield return KeyBindings.Next;
-        yield return KeyBindings.SwitchCharacter;
-        yield return KeyBindings.ActiveAbility;
         yield return KeyBindings.Up;
         yield return KeyBindings.Down;
         yield return KeyBindings.Left;
@@ -215,6 +211,5 @@ class KeybindService
         yield return KeyBindings.MoveDown;
         yield return KeyBindings.MoveLeft;
         yield return KeyBindings.MoveRight;
-        yield return KeyBindings.OpenMenu;
     }
 }

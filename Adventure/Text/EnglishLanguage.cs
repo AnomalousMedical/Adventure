@@ -305,6 +305,24 @@ namespace Adventure.Text
                     l70: "Lesser God",
                     l73: "Boundary Breaker",
                     l77: "The One"
+                ),
+                KeybindMenu: new KeybindMenu.Text
+                (
+                    Confirm: "Confirm",
+                    Cancel: "Cancel",
+                    ActiveAbility: "Active Ability",
+                    SwitchCharacter: "Switch Character",
+                    OpenMenu: "Open Menu",
+                    Previous: "Previous",
+                    Next: "Next",
+                    Up: "Up",
+                    Down: "Down",
+                    Left: "Left",
+                    Right: "Right",
+                    MoveUp: "Move Up",
+                    MoveDown: "Move Down",
+                    MoveLeft: "Move Left",
+                    MoveRight: "Move Right"
                 )
             );
         }
