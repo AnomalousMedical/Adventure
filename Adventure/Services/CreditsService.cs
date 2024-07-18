@@ -31,6 +31,7 @@ class CreditsService(VirtualFileSystem virtualFileSystem) : ICreditsService
         yield return new Credit("OpenALSoft", "kcat", "https://github.com/kcat/openal-soft", "LGPL Version 2, June 1991");
         yield return new Credit("OggVorbis", null, "https://xiph.org/", "BSD license");
         yield return new Credit("RogueLike", "Andy Stobirski", "https://github.com/AndyStobirski/RogueLike", "Public Domain");
+        yield return new Credit("Steamworks.NET", "Riley Labrecque", "https://github.com/rlabrecque/Steamworks.NET", "MIT");
 
         foreach (var file in virtualFileSystem.listFiles("/", "credits.json", true))
         {
