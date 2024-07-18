@@ -109,38 +109,38 @@ internal class CreditsMenu
 
     private IEnumerable<TextInfo> TextGenerator()
     {
-        yield return new(new SharpText("Anomalous Adventure") { Color = Color.White }, NormalDelayMicro * 2);
-        yield return new(new SharpText("Created By") { Color = Color.White }, NormalDelayMicro);
-        yield return new(new SharpText("Andrew Piper") { Color = Color.White }, NormalDelayMicro * 2);
-        yield return new(new SharpText("https://github.com/AnomalousMedical/Adventure") { Color = Color.White }, NormalDelayMicro);
-        yield return new(new SharpText("MIT License") { Color = Color.White }, NormalDelayMicro * 2);
-        yield return new(new SharpText("The opinions expressed in this game are my own.") { Color = Color.White }, NormalDelayMicro);
-        yield return new(new SharpText("The following people contributed works used under various licenses.") { Color = Color.White }, NormalDelayMicro);
-        yield return new(new SharpText("They do not directly support or condone this game.") { Color = Color.White }, NormalDelayMicro);
-        yield return new(new SharpText("However, I wish to thank them, since without thier contributions this game would not exist.") { Color = Color.White }, NormalDelayMicro * 3);
+        yield return new(new SharpText("Anomalous Adventure") { Color = Color.UIWhite }, NormalDelayMicro * 2);
+        yield return new(new SharpText("Created By") { Color = Color.UIWhite }, NormalDelayMicro);
+        yield return new(new SharpText("Andrew Piper") { Color = Color.UIWhite }, NormalDelayMicro * 2);
+        yield return new(new SharpText("https://github.com/AnomalousMedical/Adventure") { Color = Color.UIWhite }, NormalDelayMicro);
+        yield return new(new SharpText("MIT License") { Color = Color.UIWhite }, NormalDelayMicro * 2);
+        yield return new(new SharpText("The opinions expressed in this game are my own.") { Color = Color.UIWhite }, NormalDelayMicro);
+        yield return new(new SharpText("The following people contributed works used under various licenses.") { Color = Color.UIWhite }, NormalDelayMicro);
+        yield return new(new SharpText("They do not directly support or condone this game.") { Color = Color.UIWhite }, NormalDelayMicro);
+        yield return new(new SharpText("However, I wish to thank them, since without thier contributions this game would not exist.") { Color = Color.UIWhite }, NormalDelayMicro * 3);
 
         foreach(var credit in creditsService.GetCredits())
         {
             if (credit.Title != null)
             {
-                yield return new(new SharpText(credit.Title) { Color = Color.White }, NormalDelayMicro);
+                yield return new(new SharpText(credit.Title) { Color = Color.UIWhite }, NormalDelayMicro);
             }
             if (credit.Author != null)
             {
-                yield return new(new SharpText(credit.Author) { Color = Color.White }, NormalDelayMicro);
+                yield return new(new SharpText(credit.Author) { Color = Color.UIWhite }, NormalDelayMicro);
             }
             if (credit.License != null)
             {
-                yield return new(new SharpText(credit.License) { Color = Color.White }, NormalDelayMicro);
+                yield return new(new SharpText(credit.License) { Color = Color.UIWhite }, NormalDelayMicro);
             }
             if (credit.Source != null)
             {
-                yield return new(new SharpText(credit.Source) { Color = Color.White }, NormalDelayMicro);
+                yield return new(new SharpText(credit.Source) { Color = Color.UIWhite }, NormalDelayMicro);
             }
 
             yield return new(null, NormalDelayMicro * 3);
         }
 
-        yield return new(new SharpText("Thank you for playing!") { Color = Color.White }, NormalDelayMicro);
+        yield return new(new SharpText("Thank you for playing!") { Color = Color.UIWhite }, NormalDelayMicro);
     }
 }

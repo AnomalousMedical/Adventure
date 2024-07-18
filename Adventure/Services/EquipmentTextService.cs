@@ -340,7 +340,7 @@ namespace Adventure.Services
 
             if (!returnedStat)
             {
-                yield return new SharpText("No Change") { Color = Color.White };
+                yield return new SharpText("No Change") { Color = Color.UIWhite };
             }
         }
 
@@ -354,7 +354,7 @@ namespace Adventure.Services
                     if (item.Equipment.TwoHanded && characterData.CharacterSheet.OffHand != null)
                     {
                         results = results.Concat(new[] { 
-                            new SharpText("Off Hand") { Color = Color.White },
+                            new SharpText("Off Hand") { Color = Color.UIWhite },
                             new SharpText("Unequip") { Color = Color.Red }
                         });
                         results = results.Concat(CompareEquipment(characterData.CharacterSheet.OffHand, null));
@@ -365,7 +365,7 @@ namespace Adventure.Services
                     if (characterData.CharacterSheet.MainHand?.TwoHanded == true)
                     {
                         results = results.Concat(new[] {
-                            new SharpText("Main Hand") { Color = Color.White },
+                            new SharpText("Main Hand") { Color = Color.UIWhite },
                             new SharpText("Unequip") { Color = Color.Red }
                         });
                         results = results.Concat(CompareEquipment(characterData.CharacterSheet.MainHand, null));
@@ -384,7 +384,7 @@ namespace Adventure.Services
         {
             if (stat > 0)
             {
-                sharpText = new SharpText($"{label} {stat}") { Color = Color.White };
+                sharpText = new SharpText($"{label} {stat}") { Color = Color.UIWhite };
                 return true;
             }
             else
@@ -398,7 +398,7 @@ namespace Adventure.Services
         {
             if (stat > 0.0f)
             {
-                sharpText = new SharpText($"{label} {stat:n2}") { Color = Color.White };
+                sharpText = new SharpText($"{label} {stat:n2}") { Color = Color.UIWhite };
                 return true;
             }
             else
@@ -412,7 +412,7 @@ namespace Adventure.Services
         {
             if (stat)
             {
-                sharpText = new SharpText(label) { Color = Color.White };
+                sharpText = new SharpText(label) { Color = Color.UIWhite };
                 return true;
             }
             else
@@ -428,16 +428,16 @@ namespace Adventure.Services
             switch (item.Action)
             {
                 case nameof(EquipMainHand):
-                    yield return new SharpText("Main Hand") { Color = Color.White };
+                    yield return new SharpText("Main Hand") { Color = Color.UIWhite };
                     break;
                 case nameof(EquipOffHand):
-                    yield return new SharpText("Off Hand") { Color = Color.White };
+                    yield return new SharpText("Off Hand") { Color = Color.UIWhite };
                     break;
                 case nameof(EquipBody):
-                    yield return new SharpText("Body") { Color = Color.White };
+                    yield return new SharpText("Body") { Color = Color.UIWhite };
                     break;
                 case nameof(EquipAccessory):
-                    yield return new SharpText("Accessory") { Color = Color.White };
+                    yield return new SharpText("Accessory") { Color = Color.UIWhite };
                     break;
             }
 
@@ -547,7 +547,7 @@ namespace Adventure.Services
                 foreach (var skill in item.Equipment.Skills)
                 {
                     var skillInstance = skillFactory.CreateSkill(skill);
-                    yield return new SharpText(skillInstance.Name) { Color = Color.White };
+                    yield return new SharpText(skillInstance.Name) { Color = Color.UIWhite };
                 }
             }
         }

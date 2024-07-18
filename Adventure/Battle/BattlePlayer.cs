@@ -59,9 +59,9 @@ namespace Adventure.Battle
         private SharpProgressHorizontal powerProgress = new SharpProgressHorizontal();
         private RowLayout currentBuffsLayout = new RowLayout();
         private List<SharpImage> currentBuffs = new List<SharpImage>(4);
-        private SharpText name = new SharpText() { Color = Color.White };
-        private SharpText currentHp = new SharpText() { Color = Color.White };
-        private SharpText currentMp = new SharpText() { Color = Color.White };
+        private SharpText name = new SharpText() { Color = Color.UIWhite };
+        private SharpText currentHp = new SharpText() { Color = Color.UIWhite };
+        private SharpText currentMp = new SharpText() { Color = Color.UIWhite };
         private ILayoutItem infoRowLayout;
 
         private IBattleSkills skills;
@@ -339,7 +339,7 @@ namespace Adventure.Battle
 
         private Color GetCurrentHpTextColor()
         {
-            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.White;
+            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.UIWhite;
         }
 
         private String GetCurrentMpText()
@@ -393,7 +393,7 @@ namespace Adventure.Battle
 
         private Color GetCurrentMpTextColor()
         {
-            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.White;
+            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.UIWhite;
         }
 
         private bool guiActive = false;
@@ -420,7 +420,7 @@ namespace Adventure.Battle
                     {
                         this.currentPosition = this.startPosition;
                     }
-                    name.Color = Color.White;
+                    name.Color = Color.UIWhite;
                 }
                 Sprite_FrameChanged(sprite);
             }
@@ -464,7 +464,7 @@ namespace Adventure.Battle
                 }
                 else
                 {
-                    name.Color = Color.White;
+                    name.Color = Color.UIWhite;
                 }
             }
 

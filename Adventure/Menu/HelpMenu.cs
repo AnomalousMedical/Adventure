@@ -69,7 +69,7 @@ internal class HelpMenu
                 if (descriptionIndex < chapterButtons.Count)
                 {
                     var item = chapterButtons[descriptionIndex];
-                    var description = new SharpText() { Color = Color.White };
+                    var description = new SharpText() { Color = Color.UIWhite };
 
                     descriptions = new List<SharpText>();
                     descriptions.Add(description);

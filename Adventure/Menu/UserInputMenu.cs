@@ -19,7 +19,7 @@ class UserInputMenu
 {
     public record Result(bool Confirmed, string Value);
 
-    private SharpText message = new SharpText() { Color = Color.White };
+    private SharpText message = new SharpText() { Color = Color.UIWhite };
     private SharpInput input = new SharpInput();
     private SharpButton yesButton = new SharpButton();
     private SharpButton noButton = new SharpButton();

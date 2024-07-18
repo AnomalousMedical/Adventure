@@ -24,7 +24,7 @@ namespace Adventure.Menu
         private SharpPanel panel = new SharpPanel();
         private SharpText text = new SharpText()
         {
-            Color = Color.White,
+            Color = Color.UIWhite,
         };
 
         private SharpButton nextButton = new SharpButton()

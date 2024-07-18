@@ -118,7 +118,7 @@ namespace SharpGui
             var style = new SharpStyle()
             {
                 Background = Color.FromARGB(0xff202429).ToSrgb(),
-                Color = Color.FromARGB(0xffffffff).ToSrgb(),
+                Color = Color.UIWhite.ToSrgb(),
                 BorderColor = Color.FromARGB(0xff181b1e).ToSrgb(),
                 ShadowColor = Color.FromARGB(0x80000000).ToSrgb(),
                 ShadowOffset = scaleHelper.Scaled(new IntVector2(6, 6)),

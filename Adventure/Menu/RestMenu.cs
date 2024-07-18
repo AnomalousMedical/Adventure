@@ -22,7 +22,7 @@ internal class RestMenu
     IExplorationMenu explorationMenu
 ): IExplorationSubMenu
 {
-    SharpText prompt = new SharpText() { Text = "Rest Until", Color = Color.White, Layer = BuyMenu.UseItemMenuLayer };
+    SharpText prompt = new SharpText() { Text = "Rest Until", Color = Color.UIWhite, Layer = BuyMenu.UseItemMenuLayer };
     SharpButton dawn = new SharpButton() { Text = "Dawn", Layer = BuyMenu.UseItemMenuLayer };
     SharpButton noon = new SharpButton() { Text = "Noon", Layer = BuyMenu.UseItemMenuLayer };
     SharpButton dusk = new SharpButton() { Text = "Dusk", Layer = BuyMenu.UseItemMenuLayer };

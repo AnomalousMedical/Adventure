@@ -43,10 +43,10 @@ class RootMenu
     SharpButton feedback = new SharpButton() { Text = languageService.Current.RootMenu.Feedback };
     SharpButton close = new SharpButton() { Text = languageService.Current.RootMenu.Close };
 
-    SharpText undefeated = new SharpText() { Text = languageService.Current.RootMenu.Undefeated, Color = Color.White };
-    SharpText oldSchool = new SharpText() { Text = languageService.Current.RootMenu.OldSchool, Color = Color.White };
-    SharpText gold = new SharpText() { Color = Color.White };
-    SharpText timePlayed = new SharpText() { Color = Color.White };
+    SharpText undefeated = new SharpText() { Text = languageService.Current.RootMenu.Undefeated, Color = Color.UIWhite };
+    SharpText oldSchool = new SharpText() { Text = languageService.Current.RootMenu.OldSchool, Color = Color.UIWhite };
+    SharpText gold = new SharpText() { Color = Color.UIWhite };
+    SharpText timePlayed = new SharpText() { Color = Color.UIWhite };
     List<SharpText> infos;
 
     private TaskCompletionSource currentTask;

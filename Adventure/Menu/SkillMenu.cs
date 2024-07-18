@@ -42,7 +42,7 @@ class SkillMenu
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
     SharpButton close = new SharpButton() { Text = "Close" };
-    SharpText noSkills = new SharpText() { Text = "No Skills", Color = Color.White };
+    SharpText noSkills = new SharpText() { Text = "No Skills", Color = Color.UIWhite };
     SharpPanel noSkillsPanel = new SharpPanel();
     List<SharpText> infos;
     List<SharpText> descriptions;
@@ -129,12 +129,12 @@ class SkillMenu
             {
                 var item = currentPlayerSkills[descriptionIndex];
                 var description = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Skills.GetDescription(item.Item), scaleHelper.Scaled(520), sharpGui);
-                descriptions.Add(new SharpText(description) { Color = Color.White });
+                descriptions.Add(new SharpText(description) { Color = Color.UIWhite });
                 var skill = skillFactory.CreateSkill(item.Item);
                 var mpCost = skill.GetMpCost(false, false);
                 if (mpCost != 0)
                 {
-                    descriptions.Add(new SharpText($"MP: {mpCost}") { Color = mpCost > characterData.CharacterSheet.CurrentMp ? Color.Red : Color.White });
+                    descriptions.Add(new SharpText($"MP: {mpCost}") { Color = mpCost > characterData.CharacterSheet.CurrentMp ? Color.Red : Color.UIWhite });
                 }
             }
         }

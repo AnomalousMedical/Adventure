@@ -34,9 +34,9 @@ class UseItemMenu
     SharpButton transfer = new SharpButton() { Text = "Transfer", Layer = ItemMenu.UseItemMenuLayer };
     SharpButton discard = new SharpButton() { Text = "Discard", Layer = ItemMenu.UseItemMenuLayer };
     SharpButton cancel = new SharpButton() { Text = "Cancel", Layer = ItemMenu.UseItemMenuLayer };
-    SharpText itemPrompt = new SharpText() { Color = Color.White };
-    SharpText characterChooserPrompt = new SharpText() { Color = Color.White };
-    SharpText swapItemPrompt = new SharpText() { Color = Color.White };
+    SharpText itemPrompt = new SharpText() { Color = Color.UIWhite };
+    SharpText characterChooserPrompt = new SharpText() { Color = Color.UIWhite };
+    SharpText swapItemPrompt = new SharpText() { Color = Color.UIWhite };
     private List<ButtonColumnItem<Action>> characterChoices = null;
     private List<ButtonColumnItem<Action>> swapItemChoices = null;
     private SharpPanel promptPanel = new SharpPanel();
@@ -342,7 +342,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
-    private SharpText noItems = new SharpText() { Text = "No Items", Color = Color.White };
+    private SharpText noItems = new SharpText() { Text = "No Items", Color = Color.UIWhite };
     private SharpPanel noItemsPanel = new SharpPanel();
 
     public ItemMenu
@@ -429,16 +429,16 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 if (descriptionIndex < currentItems.Count)
                 {
                     var item = currentItems[descriptionIndex];
-                    var description = new SharpText() { Color = Color.White };
+                    var description = new SharpText() { Color = Color.UIWhite };
                     description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
 
                     descriptions = new List<SharpText>();
                     descriptions.Add(description);
                     if (item.Item.Equipment != null)
                     {
-                        descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                        descriptions.Add(new SharpText(" \n") { Color = Color.UIWhite });
                         descriptions.AddRange(equipmentTextService.BuildEquipmentText(item.Item));
-                        descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
+                        descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.UIWhite });
                         descriptions.AddRange(equipmentTextService.GetComparisonText(item.Item, characterData));
                     }
                 }

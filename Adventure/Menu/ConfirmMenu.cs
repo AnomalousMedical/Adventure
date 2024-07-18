@@ -22,7 +22,7 @@ class ConfirmMenu
         Center
     }
 
-    private SharpText message = new SharpText() { Color = Color.White };
+    private SharpText message = new SharpText() { Color = Color.UIWhite };
     private SharpButton yesButton = new SharpButton() { Text = "Yes" };
     private SharpButton noButton = new SharpButton() { Text = "No" };
     private SharpPanel promptPanel = new SharpPanel();

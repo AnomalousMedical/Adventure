@@ -109,9 +109,9 @@ namespace Adventure.Battle
         private List<BattleBackgroundItem> bgItems = new List<BattleBackgroundItem>();
 
         private SharpButton endBattle = new SharpButton() { Text = "End Battle" };
-        private SharpText goldRewardText = new SharpText() { Color = Color.White };
-        private SharpText victoryText = new SharpText() { Color = Color.White };
-        private SharpText nextRankText = new SharpText() { Color = Color.White };
+        private SharpText goldRewardText = new SharpText() { Color = Color.UIWhite };
+        private SharpText victoryText = new SharpText() { Color = Color.UIWhite };
+        private SharpText nextRankText = new SharpText() { Color = Color.UIWhite };
         private SharpPanel victoryPanel = new SharpPanel();
         private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 

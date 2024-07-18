@@ -34,7 +34,7 @@ namespace Adventure.GameOver
 
         private SharpButton retry = new SharpButton() { Text = "Retry Battle" };
         private SharpButton restart = new SharpButton() { Text = "Restart Zone" };
-        private SharpText gameOver = new SharpText("Game Over") { Color = Color.White };
+        private SharpText gameOver = new SharpText("Game Over") { Color = Color.UIWhite };
         private readonly object saveBlock = new object();
         private IGameState nextState;
 

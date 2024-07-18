@@ -13,12 +13,12 @@ internal class KeybindMenu : IExplorationSubMenu
     SharpButton close = new SharpButton() { Text = "Back" };
     SharpButton reset = new SharpButton() { Text = "Reset" };
 
-    SharpText keyboard = new SharpText() { Text = "Keyboard", Color = Color.White };
-    SharpText pad1 = new SharpText() { Text = "Pad 1", Color = Color.White };
-    SharpText pad2 = new SharpText() { Text = "Pad 2", Color = Color.White };
-    SharpText pad3 = new SharpText() { Text = "Pad 3", Color = Color.White };
-    SharpText pad4 = new SharpText() { Text = "Pad 4", Color = Color.White };
-    SharpText action = new SharpText() { Text = "Action", Color = Color.White };
+    SharpText keyboard = new SharpText() { Text = "Keyboard", Color = Color.UIWhite };
+    SharpText pad1 = new SharpText() { Text = "Pad 1", Color = Color.UIWhite };
+    SharpText pad2 = new SharpText() { Text = "Pad 2", Color = Color.UIWhite };
+    SharpText pad3 = new SharpText() { Text = "Pad 3", Color = Color.UIWhite };
+    SharpText pad4 = new SharpText() { Text = "Pad 4", Color = Color.UIWhite };
+    SharpText action = new SharpText() { Text = "Action", Color = Color.UIWhite };
 
     ILayoutItem headerLayout;
 
@@ -28,7 +28,7 @@ internal class KeybindMenu : IExplorationSubMenu
     public IExplorationSubMenu PreviousMenu { get; set; }
 
     private KeyBindings? selectedBinding;
-    private SharpText rebindKeyText = new SharpText() { Color = Color.White };
+    private SharpText rebindKeyText = new SharpText() { Color = Color.UIWhite };
     private SharpPanel panel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
     private readonly KeybindService keybindService;

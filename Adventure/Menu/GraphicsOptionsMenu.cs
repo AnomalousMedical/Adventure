@@ -32,7 +32,7 @@ internal class GraphicsOptionsMenu
     private const float FSRPercentConversion = 10f;
     private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(0.9f * FSRPercentConversion) };
 
-    private SharpText restartRequired = new SharpText("Restart Required") { Color = Color.White };
+    private SharpText restartRequired = new SharpText("Restart Required") { Color = Color.UIWhite };
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 

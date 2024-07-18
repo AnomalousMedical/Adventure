@@ -20,7 +20,7 @@ namespace Adventure.Menu
         ISoundEffectPlayer soundEffectPlayer
     )
     {
-        SharpText prompt = new SharpText() { Color = Color.White, Layer = BuyMenu.UseItemMenuLayer };
+        SharpText prompt = new SharpText() { Color = Color.UIWhite, Layer = BuyMenu.UseItemMenuLayer };
         SharpButton buy = new SharpButton() { Text = "Yes", Layer = BuyMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "No", Layer = BuyMenu.UseItemMenuLayer };
         private SharpPanel promptPanel = new SharpPanel();
@@ -204,21 +204,21 @@ namespace Adventure.Menu
                 if (descriptionIndex < shopItems.Count)
                 {
                     var item = shopItems[descriptionIndex];
-                    var description = new SharpText() { Color = Color.White };
+                    var description = new SharpText() { Color = Color.UIWhite };
                     description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
 
                     descriptions = new List<SharpText>();
                     descriptions.Add(description);
-                    descriptions.Add(new SharpText($@"Gold: {persistence.Current.Party.Gold}") { Color = Color.White});
-                    descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.Red : Color.White });
+                    descriptions.Add(new SharpText($@"Gold: {persistence.Current.Party.Gold}") { Color = Color.UIWhite });
+                    descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.Red : Color.UIWhite });
                     if (item.Item.IsEquipment)
                     {
                         var equipment = item.Item.CreateItem?.Invoke();
                         if (equipment != null)
                         {
-                            descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                            descriptions.Add(new SharpText(" \n") { Color = Color.UIWhite });
                             descriptions.AddRange(equipmentTextService.BuildEquipmentText(equipment));
-                            descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
+                            descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.UIWhite });
                             descriptions.AddRange(equipmentTextService.GetComparisonText(equipment, characterData));
                         }
                     }

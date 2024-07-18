@@ -28,8 +28,8 @@ class ChooseCharacterMenu
     FontLoader fontLoader
 ) : IExplorationSubMenu
 {
-    private SharpText title = new SharpText("Anomalous Adventure") { Color = Color.White, Font = fontLoader.TitleFont };
-    private SharpText prompt = new SharpText("Choose your character...") { Color = Color.White };
+    private SharpText title = new SharpText("Anomalous Adventure") { Color = Color.UIWhite, Font = fontLoader.TitleFont };
+    private SharpText prompt = new SharpText("Choose your character...") { Color = Color.UIWhite };
 
     private SharpButton choose = new SharpButton() { Text = "Choose" };
     private SharpButton next = new SharpButton() { Text = "Next" };
@@ -87,15 +87,15 @@ class ChooseCharacterMenu
             {
                 descriptions = new List<SharpText>()
                 {
-                    new SharpText("Skills") { Color = Color.White }
+                    new SharpText("Skills") { Color = Color.UIWhite }
                 };
                 foreach (var skill in currentTrigger.CharacterData.CharacterSheet.Skills)
                 {
-                    descriptions.Add(new SharpText(languageService.Current.Skills.GetText(skill)) { Color = Color.White });
+                    descriptions.Add(new SharpText(languageService.Current.Skills.GetText(skill)) { Color = Color.UIWhite });
                 }
                 if (currentTrigger.CharacterData.CharacterSheet.CanBlock)
                 {
-                    descriptions.Add(new SharpText("Block") { Color = Color.White });
+                    descriptions.Add(new SharpText("Block") { Color = Color.UIWhite });
                 }
             }
 

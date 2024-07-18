@@ -97,14 +97,14 @@ class ItemVoidMenu
                     if (descriptionIndex < currentItems.Count)
                     {
                         var item = currentItems[descriptionIndex];
-                        var description = new SharpText() { Color = Color.White };
+                        var description = new SharpText() { Color = Color.UIWhite };
                         description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
 
                         descriptions = new List<SharpText>();
                         descriptions.Add(description);
                         if (item.Item.Equipment != null)
                         {
-                            descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                            descriptions.Add(new SharpText(" \n") { Color = Color.UIWhite });
                             descriptions.AddRange(equipmentTextService.BuildEquipmentText(item.Item));
                         }
                     }

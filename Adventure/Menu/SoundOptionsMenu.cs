@@ -21,13 +21,13 @@ class SoundOptionsMenu
 {
     private const float SoundPercentConversion = 20f;
 
-    private readonly SharpText masterVolumeText = new SharpText("Master Volume") { Color = Color.White };
+    private readonly SharpText masterVolumeText = new SharpText("Master Volume") { Color = Color.UIWhite };
     private readonly SharpSliderHorizontal masterVolumeSlider = new SharpSliderHorizontal() { Max = (int)(1f * SoundPercentConversion) };
 
-    private readonly SharpText musicVolumeText = new SharpText("Music Volume") { Color = Color.White };
+    private readonly SharpText musicVolumeText = new SharpText("Music Volume") { Color = Color.UIWhite };
     private readonly SharpSliderHorizontal musicVolumeSlider = new SharpSliderHorizontal() { Max = (int)(1f * SoundPercentConversion) };
 
-    private readonly SharpText sfxVolumeText = new SharpText("Sound Effect Volume") { Color = Color.White };
+    private readonly SharpText sfxVolumeText = new SharpText("Sound Effect Volume") { Color = Color.UIWhite };
     private readonly SharpSliderHorizontal sfxVolumeSlider = new SharpSliderHorizontal() { Max = (int)(1f * SoundPercentConversion) };
 
     private readonly SharpButton testSound = new SharpButton() { Text = "Test Sound Effect" };

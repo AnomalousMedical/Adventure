@@ -40,12 +40,12 @@ class PickUpTreasureMenu
     SharpButton discard = new SharpButton() { Text = "Discard" };
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
-    SharpText itemInfo = new SharpText() { Color = Color.White };
-    SharpText currentCharacter = new SharpText() { Color = Color.White };
-    SharpText inventoryInfo = new SharpText() { Color = Color.White };
+    SharpText itemInfo = new SharpText() { Color = Color.UIWhite };
+    SharpText currentCharacter = new SharpText() { Color = Color.UIWhite };
+    SharpText inventoryInfo = new SharpText() { Color = Color.UIWhite };
     List<SharpText> infos;
     List<SharpText> descriptions;
-    SharpText promptText = new SharpText() { Color = Color.White };
+    SharpText promptText = new SharpText() { Color = Color.UIWhite };
     private int currentSheet;
     private bool replacingItem = false;
     private bool equippingItem = false;
@@ -140,15 +140,15 @@ class PickUpTreasureMenu
         {
             descriptions = new List<SharpText>();
 
-            var description = new SharpText() { Color = Color.White };
+            var description = new SharpText() { Color = Color.UIWhite };
             description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);
             descriptions.Add(description);
 
             if (treasure.CanEquipOnPickup && treasure.Item != null)
             {
-                descriptions.Add(new SharpText(" \n") { Color = Color.White });
+                descriptions.Add(new SharpText(" \n") { Color = Color.UIWhite });
                 descriptions.AddRange(equipmentTextService.BuildEquipmentText(treasure.Item));
-                descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.White });
+                descriptions.Add(new SharpText(" \nStat Changes") { Color = Color.UIWhite });
                 descriptions.AddRange(equipmentTextService.GetComparisonText(treasure.Item, sheet));
             }
             description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(treasure.InfoId), scaleHelper.Scaled(520), sharpGui);

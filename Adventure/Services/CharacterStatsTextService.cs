@@ -22,24 +22,24 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
 ";
             }
 
-            yield return new SharpText(text) { Color = Color.White };
+            yield return new SharpText(text) { Color = Color.UIWhite };
         }
 
         private Color GetHpColor(CharacterSheet characterSheet)
         {
-            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.White;
+            return characterSheet.CurrentHp > 0 && (float)characterSheet.CurrentHp / characterSheet.Hp < 0.35f ? Color.Yellow : Color.UIWhite;
         }
 
         private Color GetMpColor(CharacterSheet characterSheet)
         {
-            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.White;
+            return characterSheet.CurrentHp > 0 && characterSheet.CurrentMp > 0 && (float)characterSheet.CurrentMp / characterSheet.Mp < 0.35f ? Color.Yellow : Color.UIWhite;
         }
 
         public IEnumerable<SharpText> GetVitalStats(IEnumerable<Persistence.CharacterData> members)
         {
             foreach (var character in members)
             {
-                yield return new SharpText(character.CharacterSheet.Name) { Color = Color.White };
+                yield return new SharpText(character.CharacterSheet.Name) { Color = Color.UIWhite };
                 yield return new SharpText($"HP:  {character.CharacterSheet.CurrentHp} / {character.CharacterSheet.Hp}") 
                 {
                     Color = GetHpColor(character.CharacterSheet)
@@ -59,7 +59,7 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
     $@"{characterSheetDisplay.CharacterSheet.Name}
 {languageService.Current.Levels.GetText(characterSheetDisplay.CharacterSheet.Level)}
  ";
-            yield return new SharpText(text) { Color = Color.White };
+            yield return new SharpText(text) { Color = Color.UIWhite };
 
             yield return new SharpText($"HP:  {characterSheetDisplay.CharacterSheet.CurrentHp} / {characterSheetDisplay.CharacterSheet.Hp}")
             {
@@ -70,7 +70,7 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
                 Color = GetMpColor(characterSheetDisplay.CharacterSheet)
             };
 
-            yield return new SharpText($"Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}\n ") { Color = Color.White };
+            yield return new SharpText($"Items:  {characterSheetDisplay.Inventory.Items.Count} / {characterSheetDisplay.CharacterSheet.InventorySize}\n ") { Color = Color.UIWhite };
 
             text = 
 $@"Att:   {characterSheetDisplay.CharacterSheet.Attack}
@@ -110,7 +110,7 @@ Lck: {characterSheetDisplay.CharacterSheet.TotalLuck}
 {item.StatusEffect}";
             }
 
-            yield return new SharpText(text) { Color = Color.White };
+            yield return new SharpText(text) { Color = Color.UIWhite };
         }
     }
 }

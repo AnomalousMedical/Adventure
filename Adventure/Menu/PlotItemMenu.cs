@@ -35,7 +35,7 @@ class PlotItemMenu
                 if (descriptionIndex < currentItems.Count)
                 {
                     var item = currentItems[descriptionIndex];
-                    var description = new SharpText() { Color = Color.White };
+                    var description = new SharpText() { Color = Color.UIWhite };
                     description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.PlotItems.GetDescription(item.Item), scaleHelper.Scaled(520), sharpGui);
 
                     descriptions = new List<SharpText>();
