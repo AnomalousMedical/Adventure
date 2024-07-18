@@ -17,12 +17,20 @@ namespace Adventure.Text
                 (
                     FighterName: "Bolar",
                     FighterGreeting: "Don't worry. My shield will guard us.",
+                    FighterClass: "Fighter",
+                    FighterDescription: "Active Ability: Block enemy attacks with your shield.",
                     MageName: "Rabras",
                     MageGreeting: "Times a wasting. Let's get moving.",
+                    MageClass: "Mage",
+                    MageDescription: "Active Ability: Enhance attack spells while they travel to their target.",
                     ThiefName: "Malissa",
-                    ThiefGreeting: "If we are going out, hopefully we will find some good treasure.",
+                    ThiefGreeting: "If we are going to help, hopefully we will find some good treasure.",
+                    ThiefClass: "Thief",
+                    ThiefDescription: "Active Ability: Enhance attacks using your offhand dagger.",
                     ClericName: "Adali",
-                    ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?"
+                    ClericGreeting: "I wonder if these quakes are with what's made everything so agressive?",
+                    ClericClass: "Cleric",
+                    ClericDescription: "Active Ability: Enhance healing spells while they travel to their target."
                 ),
                 EndGameTrigger: new EndGameTrigger.Text
                 (

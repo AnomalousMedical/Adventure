@@ -92,6 +92,8 @@ namespace Adventure.Exploration
 
         public Persistence.CharacterData CharacterData => partyMember.CharacterData;
 
+        public PartyMember PartyMember => partyMember;
+
         public Vector3 SpawnPosition
         {
             get

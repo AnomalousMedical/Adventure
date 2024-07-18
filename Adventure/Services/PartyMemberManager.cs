@@ -8,6 +8,10 @@ class PartyMember
     public Persistence.CharacterData CharacterData { get; set; }
 
     public String Greeting { get; set; }
+
+    public String Class { get; set; }
+
+    public String Description { get; set; }
 }
 
 class PartyMemberManager

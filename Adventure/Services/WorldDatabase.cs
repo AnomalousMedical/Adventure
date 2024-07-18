@@ -61,12 +61,20 @@ namespace Adventure.Services
         (
             String FighterName,
             String FighterGreeting,
+            String FighterClass,
+            String FighterDescription,
             String MageName,
             String MageGreeting,
+            String MageClass,
+            String MageDescription,
             String ThiefName,
             String ThiefGreeting,
+            String ThiefClass,
+            String ThiefDescription,
             String ClericName,
-            String ClericGreeting
+            String ClericGreeting,
+            String ClericClass,
+            String ClericDescription
         );
 
         private List<IAreaBuilder> areaBuilders;
@@ -273,6 +281,8 @@ namespace Adventure.Services
                 {
                     CharacterData = hero,
                     Greeting = languageService.Current.WorldDatabase.FighterGreeting,
+                    Class = languageService.Current.WorldDatabase.FighterClass,
+                    Description = languageService.Current.WorldDatabase.FighterDescription,
                 };
             }
 
@@ -292,6 +302,8 @@ namespace Adventure.Services
                 {
                     CharacterData = hero,
                     Greeting = languageService.Current.WorldDatabase.MageGreeting,
+                    Class = languageService.Current.WorldDatabase.MageClass,
+                    Description = languageService.Current.WorldDatabase.MageDescription,
                 };
             }
 
@@ -314,6 +326,8 @@ namespace Adventure.Services
                 {
                     CharacterData = hero,
                     Greeting = languageService.Current.WorldDatabase.ThiefGreeting,
+                    Class = languageService.Current.WorldDatabase.ThiefClass,
+                    Description = languageService.Current.WorldDatabase.ThiefDescription,
                 };
             }
 
@@ -334,6 +348,8 @@ namespace Adventure.Services
                 {
                     CharacterData = hero,
                     Greeting = languageService.Current.WorldDatabase.ClericGreeting,
+                    Class = languageService.Current.WorldDatabase.ClericClass,
+                    Description = languageService.Current.WorldDatabase.ClericDescription,
                 };
             }
         }

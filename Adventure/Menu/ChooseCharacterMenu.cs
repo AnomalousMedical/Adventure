@@ -42,16 +42,13 @@ class ChooseCharacterMenu
     private bool instantMoveCamera = true;
 
     private List<SharpText> infos = null;
-    private List<SharpText> descriptions = null;
 
     private SharpPanel promptPanel = new SharpPanel();
-    private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
     private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
 
     public void Reset()
     {
-        descriptions = null;
         infos = null;
         instantMoveCamera = true;
         currentPlayerIndex = 0;
@@ -81,23 +78,7 @@ class ChooseCharacterMenu
 
             if (infos == null)
             {
-                infos = characterStatsTextService.GetFullStats(currentTrigger.CharacterData).ToList();
-            }
-
-            if (descriptions == null)
-            {
-                descriptions = new List<SharpText>()
-                {
-                    new SharpText("Skills") { Color = Color.UIWhite }
-                };
-                foreach (var skill in currentTrigger.CharacterData.CharacterSheet.Skills)
-                {
-                    descriptions.Add(new SharpText(languageService.Current.Skills.GetText(skill)) { Color = Color.UIWhite });
-                }
-                if (currentTrigger.CharacterData.CharacterSheet.CanBlock)
-                {
-                    descriptions.Add(new SharpText("Block") { Color = Color.UIWhite });
-                }
+                infos = GetSelectionStats(currentTrigger.CharacterData, currentTrigger.PartyMember, scaleHelper.Scaled(450)).ToList();
             }
 
             if (instantMoveCamera)
@@ -115,7 +96,6 @@ class ChooseCharacterMenu
 
             if (sharpGui.Button(previous, gamepadId, navLeft: options.Id, navRight: next.Id) || sharpGui.IsStandardPreviousPressed(gamepadId))
             {
-                descriptions = null;
                 infos = null;
                 --currentPlayerIndex;
                 if (currentPlayerIndex < 0)
@@ -125,7 +105,6 @@ class ChooseCharacterMenu
             }
             if (sharpGui.Button(next, gamepadId, navLeft: previous.Id, navRight: choose.Id) || sharpGui.IsStandardNextPressed(gamepadId))
             {
-                descriptions = null;
                 infos = null;
                 ++currentPlayerIndex;
                 currentPlayerIndex %= partyMemberTriggerManager.Count;
@@ -161,7 +140,7 @@ class ChooseCharacterMenu
             if (sharpGui.Button(options, gamepadId, navLeft: files.Id, navRight: previous.Id))
             {
                 optionsMenu.PreviousMenu = this;
-                menu.RequestSubMenu(optionsMenu, gamepadId); //Have to fix party menu somehow
+                menu.RequestSubMenu(optionsMenu, gamepadId);
             }
         }
         else
@@ -178,7 +157,7 @@ class ChooseCharacterMenu
                new PanelLayout(infoPanel,
                new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
             ));
-            layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
+            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
 
             sharpGui.Panel(infoPanel, panelStyle);
             foreach (var info in infos)
@@ -186,21 +165,45 @@ class ChooseCharacterMenu
                 sharpGui.Text(info);
             }
         }
+    }
 
-        if (descriptions != null)
+    public IEnumerable<SharpText> GetSelectionStats(Persistence.CharacterData characterData, PartyMember partyMember, int width)
+    {
+        var characterSheetDisplay = characterData;
+
+        var text =
+$@"{partyMember.Class}
+ ";
+        yield return new SharpText(text) { Color = Color.UIWhite };
+
+        text = MultiLineTextBuilder.CreateMultiLineString(partyMember.Description, width, sharpGui);
+        yield return new SharpText(text) { Color = Color.UIWhite };
+
+        text = @"
+ 
+Equipment";
+
+        foreach (var item in characterSheetDisplay.CharacterSheet.EquippedItems())
         {
-            layout =
-               new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
-               new PanelLayout(descriptionPanel,
-               new ColumnLayout(descriptions.Select(i => new KeepWidthRightLayout(i))) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
-            ));
-            layout.SetRect(screenPositioner.GetTopRightRect(layout.GetDesiredSize(sharpGui)));
-
-            sharpGui.Panel(descriptionPanel, panelStyle);
-            foreach (var description in descriptions)
-            {
-                sharpGui.Text(description);
-            }
+            text += $@"
+{languageService.Current.Items.GetText(item.InfoId)}";
         }
+
+        yield return new SharpText(text) { Color = Color.UIWhite };
+
+        text = @"
+ 
+Skills";
+        foreach (var skill in characterSheetDisplay.CharacterSheet.Skills)
+        {
+            text += $@"
+{languageService.Current.Skills.GetText(skill)}";
+        }
+        if (characterSheetDisplay.CharacterSheet.CanBlock)
+        {
+            text += "\nBlock";
+        }
+
+        yield return new SharpText(text) { Color = Color.UIWhite };
     }
 }
