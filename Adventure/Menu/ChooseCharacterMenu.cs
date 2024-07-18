@@ -25,7 +25,8 @@ class ChooseCharacterMenu
     UserInputMenu userInputMenu,
     IScopedCoroutine coroutine,
     Persistence persistence,
-    FontLoader fontLoader
+    FontLoader fontLoader,
+    IAchievementService achievementService
 ) : IExplorationSubMenu
 {
     private SharpText title = new SharpText("Anomalous Adventure") { Color = Color.UIWhite, Font = fontLoader.TitleFont };
@@ -134,7 +135,7 @@ class ChooseCharacterMenu
                 coroutine.RunTask(async () =>
                 {
                     var nameResult = await userInputMenu.ShowAndWait("Enter your name.", this, gamepadId,
-                    currentText: currentTrigger.CharacterData.CharacterSheet.Name,
+                    currentText: achievementService.AccountName ?? currentTrigger.CharacterData.CharacterSheet.Name,
                     yesText: "Confirm",
                     noText: "Cancel");
 
