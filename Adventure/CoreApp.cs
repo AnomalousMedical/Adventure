@@ -275,6 +275,7 @@ namespace Adventure
             services.AddSingleton<ElementalStaffCreator>();
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
+            services.AddSingleton<IAchievementService>(s => SteamAchievementService.Create(s.GetRequiredService<ILogger<SteamAchievementService>>()));
             services.AddSingleton<ChooseCharacterMenu>();
             services.AddSingleton<FadeScreenMenu>();
             services.AddSingleton<RestManager>();

@@ -32,6 +32,7 @@ namespace Adventure
         private readonly IGameStateRequestor gameStateRequestor;
         private readonly GameOptions gameOptions;
         private readonly IClockService clockService;
+        private readonly IAchievementService achievementService;
         private IGameState gameState;
 
         public unsafe GameUpdateListener
@@ -49,7 +50,8 @@ namespace Adventure
             PlayedTimeService playedTimeService,
             IGameStateRequestor gameStateRequestor,
             GameOptions gameOptions,
-            IClockService clockService
+            IClockService clockService,
+            IAchievementService achievementService
         )
         {
 
@@ -67,6 +69,7 @@ namespace Adventure
             this.gameStateRequestor = gameStateRequestor;
             this.gameOptions = gameOptions;
             this.clockService = clockService;
+            this.achievementService = achievementService;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -97,6 +100,7 @@ namespace Adventure
             }
 
             sharpGui.End();
+            achievementService.Update();
             sky.UpdateLight(clock);
             lightManager.UpdateLights(); //Sky then light manager ensures we always have the sun and moon
 

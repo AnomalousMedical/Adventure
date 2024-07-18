@@ -161,6 +161,13 @@
 
 	</ItemGroup>
 
+	<ItemGroup Condition="Exists('../../Dependencies/Steamworks/SteamworksSdk/redistributable_bin/win64/steam_api64.dll')">
+		<Content Include="../../Dependencies/Steamworks/SteamworksSdk/redistributable_bin/win64/steam_api64.dll">
+			<Link>x64\steam_api64.dll</Link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
 	<!--Items only needed for diligent in dx / opengl mode-->
 	<ItemGroup Condition="false">
 
