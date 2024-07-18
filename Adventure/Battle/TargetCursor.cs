@@ -336,7 +336,7 @@ namespace Adventure.Battle
                                     break;
                                 case Resistance.Weak:
                                     weakResist.Add(image);
-                                    image.Color = Color.Green;
+                                    image.Color = Color.UIGreen;
                                     break;
                                 case Resistance.Absorb:
                                     absorbResist.Add(image);

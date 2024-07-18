@@ -20,7 +20,7 @@ namespace Adventure.Services
             {
                 if (newStat > 0)
                 {
-                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.Green };
+                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.UIGreen };
                     return true;
                 }
                 sharpText = null;
@@ -51,7 +51,7 @@ namespace Adventure.Services
                 if (difference > 0)
                 {
                     sharpText.Text = $"{label} +{difference}";
-                    sharpText.Color = Color.Green;
+                    sharpText.Color = Color.UIGreen;
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace Adventure.Services
             {
                 if (newStat > 0)
                 {
-                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.Green };
+                    sharpText = new SharpText($"{label} +{newStat}") { Color = Color.UIGreen };
                     return true;
                 }
                 sharpText = null;
@@ -104,7 +104,7 @@ namespace Adventure.Services
                 if (difference > 0)
                 {
                     sharpText.Text = $"{label} +{difference}";
-                    sharpText.Color = Color.Green;
+                    sharpText.Color = Color.UIGreen;
                 }
                 else
                 {
@@ -126,7 +126,7 @@ namespace Adventure.Services
             {
                 if (newStat.Value)
                 {
-                    sharpText = new SharpText($"+{label}") { Color = Color.Green };
+                    sharpText = new SharpText($"+{label}") { Color = Color.UIGreen };
                     return true;
                 }
                 sharpText = null;
@@ -152,7 +152,7 @@ namespace Adventure.Services
 
             if (!currentStat.Value && newStat.Value)
             {
-                sharpText = new SharpText($"+{label}") { Color = Color.Green };
+                sharpText = new SharpText($"+{label}") { Color = Color.UIGreen };
                 return true;
             }
 
@@ -318,7 +318,7 @@ namespace Adventure.Services
                 foreach (var skill in newItem.Skills)
                 {
                     var skillInstance = skillFactory.CreateSkill(skill);
-                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.Green };
+                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.UIGreen };
                 }
             }
 
@@ -328,7 +328,7 @@ namespace Adventure.Services
                 foreach (var skill in newItem.Skills.Where(i => !currentItem.Skills.Contains(i)))
                 {
                     var skillInstance = skillFactory.CreateSkill(skill);
-                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.Green };
+                    yield return new SharpText("+" + skillInstance.Name) { Color = Color.UIGreen };
                 }
 
                 foreach (var skill in currentItem.Skills.Where(i => !newItem.Skills.Contains(i)))
