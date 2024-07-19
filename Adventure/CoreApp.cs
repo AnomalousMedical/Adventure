@@ -53,6 +53,8 @@ namespace Adventure
                 o.Fullscreen = options.Fullscreen;
             });
 
+            SteamAchievementService.Init();
+
             services.AddLogging(o =>
             {
                 o.AddSimpleConsole(o =>
@@ -275,7 +277,7 @@ namespace Adventure
             services.AddSingleton<ElementalStaffCreator>();
             services.AddSingleton<BuyMenu>();
             services.AddSingleton<ConfirmBuyMenu>();
-            services.AddSingleton<IAchievementService>(s => SteamAchievementService.Create(s.GetRequiredService<ILogger<SteamAchievementService>>()));
+            services.AddSingleton<IAchievementService>(s => SteamAchievementService.Instance);
             services.AddSingleton<ChooseCharacterMenu>();
             services.AddSingleton<FadeScreenMenu>();
             services.AddSingleton<RestManager>();
