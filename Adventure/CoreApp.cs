@@ -53,7 +53,12 @@ namespace Adventure
                 o.Fullscreen = options.Fullscreen;
             });
 
-            services.AddSteamAchievements(); //Call this early
+            //Call this early
+            services.AddSteamAchievements(o =>
+            {
+                o.AppId = 3093270; //Playtest
+                //o.AppId = 3082490; //Full Game
+            });
 
             services.AddLogging(o =>
             {

@@ -29,7 +29,7 @@ internal interface IAchievementService
 
 static class SteamAchievementServiceExt
 {
-    public static void AddSteamAchievements(this IServiceCollection services)
+    public static void AddSteamAchievements(this IServiceCollection services, Action<SteamAchievementService.Options> configure = null)
     {
         var addSteamService = false;
 
@@ -64,6 +64,9 @@ static class SteamAchievementServiceExt
 
         if (addSteamService)
         {
+            var options = new SteamAchievementService.Options();
+            configure?.Invoke(options);
+            services.AddSingleton<SteamAchievementService.Options>(options);
             services.AddSingleton<IAchievementService, SteamAchievementService>();
         }
         else
@@ -75,6 +78,11 @@ static class SteamAchievementServiceExt
 
 class SteamAchievementService : IDisposable, IAchievementService
 {
+    public class Options
+    {
+        public uint? AppId { get; set; }
+    }
+
     private readonly Callback<UserStatsReceived_t> userStatsReceived;
     private readonly Callback<UserStatsStored_t> userStatsStored;
     private readonly Callback<UserAchievementStored_t> userAchievementStored;
@@ -89,21 +97,33 @@ class SteamAchievementService : IDisposable, IAchievementService
 
     public String AccountName => loggedIn ? SteamFriends.GetPersonaName() : null;
 
-    public SteamAchievementService(ILogger<SteamAchievementService> logger)
+    public SteamAchievementService(ILogger<SteamAchievementService> logger, Options options)
     {
         this.logger = logger;
         this.gameId = new CGameID(SteamUtils.GetAppID());
 
         if (SteamUser.BLoggedOn())
         {
+            logger.LogInformation("User is logged in.");
             loggedIn = true;
-            userStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
-            userStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
-            userAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
 
-            if (!SteamUserStats.RequestCurrentStats())
+            if (options.AppId == null || SteamApps.BIsSubscribedApp(new AppId_t(options.AppId.Value)))
             {
-                logger.LogWarning("Cannot request user stats.");
+                logger.LogInformation("Running in full mode.");
+
+                userStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
+                userStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
+                userAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
+
+                logger.LogInformation("Loading achievements.");
+                if (!SteamUserStats.RequestCurrentStats())
+                {
+                    logger.LogWarning("Cannot request user stats.");
+                }
+            }
+            else
+            {
+                logger.LogInformation("Running in demo mode.");
             }
         }
         else
