@@ -17,7 +17,7 @@ enum Achievements
     //FinishGameUndefeated,
     //FullyUpgradedHelpBook,
     //ElementalMastery,
-    //SeeTheWorld,
+    SeeTheWorld,
 }
 
 internal interface IAchievementService

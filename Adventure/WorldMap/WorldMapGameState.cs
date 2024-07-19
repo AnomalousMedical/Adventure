@@ -36,7 +36,8 @@ class WorldMapGameState
     CharacterMenuPositionService characterMenuPositionService,
     IAnimationService<WorldMapScene> animationService,
     MultiCameraMover<WorldMapScene> multiCameraMover,
-    PlayerCage<WorldMapScene> playerCage
+    PlayerCage<WorldMapScene> playerCage,
+    IAchievementService achievementService
 ) : IWorldMapGameState
 {
     private IGameState startExplorationGameState;
@@ -54,6 +55,7 @@ class WorldMapGameState
         persistence.Current.Player.InWorld = active;
         if (active)
         {
+            achievementService.UnlockAchievement(Achievements.SeeTheWorld);
             characterMenuPositionService.SetTrackerActive(typeof(WorldMapScene));
             eventManager[EventLayers.WorldMap].makeFocusLayer();
             nextState = this;
