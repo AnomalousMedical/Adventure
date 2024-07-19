@@ -16,7 +16,7 @@ enum Achievements
     //FinishGameOldSchool,
     //FinishGameUndefeated,
     //FullyUpgradedHelpBook,
-    //ElementalMastery,
+    ElementalMastery,
     SeeTheWorld,
 }
 

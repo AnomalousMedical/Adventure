@@ -45,6 +45,7 @@ namespace Adventure.WorldMap
         private readonly AccessoryCreator accessoryCreator;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly IAchievementService achievementService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -63,7 +64,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public ElementalStone(
+        public ElementalStone
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -81,7 +83,9 @@ namespace Adventure.WorldMap
             TreasureMenu treasureMenu,
             AccessoryCreator accessoryCreator,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            IAchievementService achievementService
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -100,6 +104,7 @@ namespace Adventure.WorldMap
             this.accessoryCreator = accessoryCreator;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.achievementService = achievementService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -231,6 +236,7 @@ namespace Adventure.WorldMap
                         treasureMenu.GatherTreasures(new[] { treasure }, treasureGivenCallback: t => persistence.Current.PlotItems.Add(PlotItems.ElementalStone));
                         explorationMenu.RequestSubMenu(treasureMenu, args.GamepadId);
                         contextMenu.ClearContext(Check);
+                        achievementService.UnlockAchievement(Achievements.ElementalMastery);
                         RequestDestruction();
                     });
                 }
