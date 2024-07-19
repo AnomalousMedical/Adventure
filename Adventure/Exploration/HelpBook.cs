@@ -40,6 +40,7 @@ class HelpBook : IDisposable, IZonePlaceable
     private readonly IExplorationMenu explorationMenu;
     private readonly HelpMenu helpMenu;
     private readonly ISoundEffectPlayer soundEffectPlayer;
+    private readonly IAchievementService achievementService;
     private SpriteInstance spriteInstance;
     private bool graphicsLoaded = false;
     private readonly ISprite sprite;
@@ -111,7 +112,8 @@ class HelpBook : IDisposable, IZonePlaceable
         ConfirmMenu confirmMenu,
         IExplorationMenu explorationMenu,
         HelpMenu helpMenu,
-        ISoundEffectPlayer soundEffectPlayer
+        ISoundEffectPlayer soundEffectPlayer,
+        IAchievementService achievementService
     )
     {
         this.plotItem = description.PlotItem;
@@ -141,6 +143,7 @@ class HelpBook : IDisposable, IZonePlaceable
         this.explorationMenu = explorationMenu;
         this.helpMenu = helpMenu;
         this.soundEffectPlayer = soundEffectPlayer;
+        this.achievementService = achievementService;
         this.mapOffset = description.MapOffset;
 
         this.currentPosition = description.Translation;
@@ -327,6 +330,7 @@ class HelpBook : IDisposable, IZonePlaceable
                             default:
                                 takeSoundEffect = PageFixSoundEffect.Instance;
                                 take = languageService.Current.HelpBook.AllPagesFound;
+                                achievementService.UnlockAchievement(Achievements.FullyUpgradedHelpBook);
                                 break;
                         }
                     }
