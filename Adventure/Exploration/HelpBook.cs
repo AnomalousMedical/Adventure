@@ -330,7 +330,6 @@ class HelpBook : IDisposable, IZonePlaceable
                             default:
                                 takeSoundEffect = PageFixSoundEffect.Instance;
                                 take = languageService.Current.HelpBook.AllPagesFound;
-                                achievementService.UnlockAchievement(Achievements.FullyUpgradedHelpBook);
                                 break;
                         }
                     }
@@ -385,6 +384,7 @@ class HelpBook : IDisposable, IZonePlaceable
                     await textDialog.ShowTextAndWait(take, args.GamepadId);
                     contextMenu.ClearContext(Take);
                     persistence.Current.PlotItems.Add(plotItem);
+                    achievementService.UnlockAchievement(Achievements.FullyUpgradedHelpBook);
                     DestroyGraphics();
                     DestroyPhysics();
                 }
