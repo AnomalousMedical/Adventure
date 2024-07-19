@@ -56,8 +56,8 @@ namespace Adventure
             //Call this early
             services.AddSteamAchievements(o =>
             {
-                o.AppId = 3093270; //Playtest
-                //o.AppId = 3082490; //Full Game
+                o.PlaytestAppId = 3093270;
+                o.AppId = 3082490;
             });
 
             services.AddLogging(o =>

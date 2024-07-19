@@ -86,6 +86,8 @@ class SteamAchievementService : IDisposable, IAchievementService
     public class Options
     {
         public uint? AppId { get; set; }
+
+        public uint? PlaytestAppId { get; set; }
     }
 
     private readonly Callback<UserStatsReceived_t> userStatsReceived;
@@ -107,9 +109,20 @@ class SteamAchievementService : IDisposable, IAchievementService
     public SteamAchievementService(ILogger<SteamAchievementService> logger, Options options)
     {
         this.logger = logger;
-        this.gameId = new CGameID(SteamUtils.GetAppID());
+        var appId = SteamUtils.GetAppID();
+        this.gameId = new CGameID(appId);
 
-        if (options.AppId == null || SteamApps.BIsSubscribedApp(new AppId_t(options.AppId.Value)))
+        uint? isSubscribedTest;
+        if(appId.m_AppId == options.PlaytestAppId)
+        {
+            isSubscribedTest = options.PlaytestAppId;
+        }
+        else
+        {
+            isSubscribedTest = options.AppId;
+        }
+
+        if (isSubscribedTest == null || SteamApps.BIsSubscribedApp(new AppId_t(isSubscribedTest.Value)))
         {
             logger.LogInformation("Running in full mode.");
 
