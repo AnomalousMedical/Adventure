@@ -12,9 +12,9 @@ namespace Adventure.Services;
 enum Achievements
 {
     GetAirship,
-    //FinishGame,
-    //FinishGameOldSchool,
-    //FinishGameUndefeated,
+    FinishGame,
+    FinishGameOldSchool,
+    FinishGameUndefeated,
     FullyUpgradedHelpBook,
     ElementalMastery,
     SeeTheWorld,

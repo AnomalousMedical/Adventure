@@ -25,7 +25,8 @@ class VictoryGameState
     FileMenu fileMenu,
     IExplorationMenu explorationMenu,
     App app,
-    CreditsMenu creditsMenu
+    CreditsMenu creditsMenu,
+    IAchievementService achievementService
 ) : IVictoryGameState
 {
     private SharpButton credits = new SharpButton() { Text = "Credits" };
@@ -43,7 +44,17 @@ class VictoryGameState
     {
         if (active)
         {
-            if(persistence.Current.Time.ClearTime == null)
+            achievementService.UnlockAchievement(Achievements.FinishGame);
+            if (persistence.Current.Party.Undefeated)
+            {
+                achievementService.UnlockAchievement(Achievements.FinishGameUndefeated);
+            }
+            if (persistence.Current.Party.OldSchool)
+            {
+                achievementService.UnlockAchievement(Achievements.FinishGameOldSchool);
+            }
+
+            if (persistence.Current.Time.ClearTime == null)
             {
                 persistence.Current.Time.ClearTime = persistence.Current.Time.Total;
             }
