@@ -33,33 +33,35 @@ static class SteamAchievementServiceExt
     {
         var addSteamService = false;
 
-        if (!Packsize.Test())
-        {
-            Console.WriteLine("Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.");
-            return;
-        }
-
-        if (!DllCheck.Test())
-        {
-            Console.WriteLine("DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.");
-            return;
-        }
-
         try
         {
-            if (SteamAPI.Init())
+            if (Packsize.Test())
             {
-                Console.WriteLine("Connected to Steam.");
-                addSteamService = true;
+                if (DllCheck.Test())
+                {
+                    if (SteamAPI.Init())
+                    {
+                        Console.WriteLine("Connected to Steam.");
+                        addSteamService = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("SteamAPI_Init() failed.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.");
+                }
             }
             else
             {
-                Console.WriteLine("SteamAPI_Init() failed.");
+                Console.WriteLine("Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.");
             }
         }
-        catch (DllNotFoundException e)
+        catch (DllNotFoundException)
         {
-            Console.WriteLine("Could not load [lib]steam_api.dll/so/dylib." + e);
+            Console.WriteLine("Could not load [lib]steam_api.dll/so/dylib. Steam services will be unavailable.");
         }
 
         if (addSteamService)
