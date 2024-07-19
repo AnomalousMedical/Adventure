@@ -16,7 +16,8 @@ enum Achievements
     //FinishGameOldSchool,
     //FinishGameUndefeated,
     //FullyUpgradedHelpBook,
-    //ElementalMastery
+    //ElementalMastery,
+    //SeeTheWorld,
 }
 
 internal interface IAchievementService
@@ -90,6 +91,7 @@ class SteamAchievementService : IDisposable, IAchievementService
     private readonly Callback<UserAchievementStored_t> userAchievementStored;
     private readonly CGameID gameId;
     private readonly HashSet<Achievements> currentAchievements = new HashSet<Achievements>();
+    private readonly HashSet<Achievements> loadedAchievements = new HashSet<Achievements>();
     private readonly ILogger<SteamAchievementService> logger;
 
     private bool storeStats = false;
@@ -146,6 +148,12 @@ class SteamAchievementService : IDisposable, IAchievementService
             return;
         }
 
+        if (!loadedAchievements.Contains(achievement))
+        {
+            logger.LogInformation("Achievement '{achievement}' is not loaded from Steam.", achievement);
+            return;
+        }
+
         if (statsValid)
         {
             currentAchievements.Add(achievement);
@@ -177,6 +185,7 @@ class SteamAchievementService : IDisposable, IAchievementService
                     if (ret)
                     {
                         logger.LogInformation("Loaded achievement '{ach}' achieved: {status}", ach, achieved);
+                        loadedAchievements.Add(ach);
                         if (achieved)
                         {
                             currentAchievements.Add(ach);
