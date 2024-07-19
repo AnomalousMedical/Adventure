@@ -53,6 +53,7 @@ namespace Adventure.WorldMap
         private readonly FadeScreenMenu fadeScreenMenu;
         private readonly ISoundEffectPlayer soundEffectPlayer;
         private readonly EarthquakeMenu earthquakeMenu;
+        private readonly IAchievementService achievementService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -90,7 +91,8 @@ namespace Adventure.WorldMap
             CameraMover cameraMover,
             FadeScreenMenu fadeScreenMenu,
             ISoundEffectPlayer soundEffectPlayer,
-            EarthquakeMenu earthquakeMenu
+            EarthquakeMenu earthquakeMenu,
+            IAchievementService achievementService
         )
         {
             this.sprite = description.Sprite;
@@ -110,6 +112,7 @@ namespace Adventure.WorldMap
             this.fadeScreenMenu = fadeScreenMenu;
             this.soundEffectPlayer = soundEffectPlayer;
             this.earthquakeMenu = earthquakeMenu;
+            this.achievementService = achievementService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -243,6 +246,7 @@ namespace Adventure.WorldMap
                     {
                         await textDialog.ShowTextAndWait(languageService.Current.AirshipEngineer.BothAirshipItems, args.GamepadId);
                         soundEffectPlayer.PlaySound(FixAirshipSoundEffect.Instance);
+                        achievementService.UnlockAchievement(Achievements.GetAirship);
                         await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, args.GamepadId);
                         await Task.Delay(TimeSpan.FromSeconds(2.4));
                         await fadeScreenMenu.ShowAndWaitAndClose(1.0f, 0.0f, 0.6f, args.GamepadId);
