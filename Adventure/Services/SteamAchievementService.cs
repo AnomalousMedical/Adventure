@@ -92,45 +92,34 @@ class SteamAchievementService : IDisposable, IAchievementService
     private readonly HashSet<Achievements> currentAchievements = new HashSet<Achievements>();
     private readonly ILogger<SteamAchievementService> logger;
 
-    private bool loggedIn = false;
     private bool storeStats = false;
     private bool statsValid = false;
     private HashSet<Achievements> missedAchievements;
 
-    public String AccountName => loggedIn ? SteamFriends.GetPersonaName() : null;
+    public String AccountName => SteamFriends.GetPersonaName();
 
     public SteamAchievementService(ILogger<SteamAchievementService> logger, Options options)
     {
         this.logger = logger;
         this.gameId = new CGameID(SteamUtils.GetAppID());
 
-        if (SteamUser.BLoggedOn())
+        if (options.AppId == null || SteamApps.BIsSubscribedApp(new AppId_t(options.AppId.Value)))
         {
-            logger.LogInformation("User is logged in.");
-            loggedIn = true;
+            logger.LogInformation("Running in full mode.");
 
-            if (options.AppId == null || SteamApps.BIsSubscribedApp(new AppId_t(options.AppId.Value)))
+            userStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
+            userStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
+            userAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
+
+            logger.LogInformation("Loading achievements.");
+            if (!SteamUserStats.RequestCurrentStats())
             {
-                logger.LogInformation("Running in full mode.");
-
-                userStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
-                userStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
-                userAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
-
-                logger.LogInformation("Loading achievements.");
-                if (!SteamUserStats.RequestCurrentStats())
-                {
-                    logger.LogWarning("Cannot request user stats.");
-                }
-            }
-            else
-            {
-                logger.LogInformation("Running in demo mode.");
+                logger.LogWarning("Cannot request user stats.");
             }
         }
         else
         {
-            logger.LogInformation("User is not logged in.");
+            logger.LogInformation("Running in demo mode.");
         }
     }
 
