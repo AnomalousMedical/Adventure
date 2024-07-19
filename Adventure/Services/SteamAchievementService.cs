@@ -23,7 +23,7 @@ internal interface IAchievementService
 {
     string AccountName { get; }
 
-    void SetAchievement(Achievements achievement);
+    void UnlockAchievement(Achievements achievement);
     void Update();
 }
 
@@ -128,7 +128,7 @@ class SteamAchievementService : IDisposable, IAchievementService
         }
     }
 
-    public void SetAchievement(Achievements achievement)
+    public void UnlockAchievement(Achievements achievement)
     {
         if (currentAchievements.Contains(achievement))
         {
@@ -185,7 +185,7 @@ class SteamAchievementService : IDisposable, IAchievementService
                     missedAchievements = null;
                     foreach (var achievement in localMissed)
                     {
-                        SetAchievement(achievement);
+                        UnlockAchievement(achievement);
                     }
                 }
             }
@@ -245,7 +245,7 @@ class NullAchievementService : IAchievementService
 {
     public string AccountName => null;
 
-    public void SetAchievement(Achievements achievement)
+    public void UnlockAchievement(Achievements achievement)
     {
         
     }
