@@ -24,6 +24,8 @@ internal interface IAchievementService
 {
     string AccountName { get; }
 
+    string AppId { get; }
+
     void UnlockAchievement(Achievements achievement);
     void Update();
 }
@@ -99,6 +101,8 @@ class SteamAchievementService : IDisposable, IAchievementService
     private HashSet<Achievements> missedAchievements;
 
     public String AccountName => SteamFriends.GetPersonaName();
+
+    public string AppId => gameId.ToString();
 
     public SteamAchievementService(ILogger<SteamAchievementService> logger, Options options)
     {
@@ -264,6 +268,8 @@ class SteamAchievementService : IDisposable, IAchievementService
 class NullAchievementService : IAchievementService
 {
     public string AccountName => null;
+
+    public string AppId => null;
 
     public void UnlockAchievement(Achievements achievement)
     {

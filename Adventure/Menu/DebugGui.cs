@@ -40,6 +40,7 @@ namespace Adventure.Menu
         SharpButton allowBattle = new SharpButton() { Text = "Allow Battle" };
         SharpText averageLevel = new SharpText() { Color = Color.UIWhite };
         SharpText accountName = new SharpText(achievementService.AccountName) { Color = Color.UIWhite };
+        SharpText appId = new SharpText(achievementService.AppId) { Color = Color.UIWhite };
         SharpSliderHorizontal currentHour = new SharpSliderHorizontal() { Rect = scaleHelper.Scaled(new IntRect(100, 10, 500, 35)), Max = 24 };
 
         public void Link(IExplorationGameState explorationGameState)
@@ -109,12 +110,13 @@ namespace Adventure.Menu
                 explorationMenu.RequestSubMenu(explorationMenu.RootMenu, gamepad);
             }
 
-            if(accountName.Text != null)
+            if(accountName.Text != null && appId.Text != null)
             {
-                accountName.Color = timeClock.IsDay ? Color.Black : Color.UIWhite;
-                var accountLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), accountName);
+                appId.Color = accountName.Color = timeClock.IsDay ? Color.Black : Color.UIWhite;
+                var accountLayout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new ColumnLayout(accountName, appId) { Margin = new IntPad(scaleHelper.Scaled(10)) });
                 accountLayout.SetRect(screenPositioner.GetTopRightRect(accountLayout.GetDesiredSize(sharpGui)));
                 sharpGui.Text(accountName);
+                sharpGui.Text(appId);
             }
         }
     }
