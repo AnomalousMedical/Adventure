@@ -112,17 +112,21 @@ class SteamAchievementService : IDisposable, IAchievementService
         var appId = SteamUtils.GetAppID();
         this.gameId = new CGameID(appId);
 
-        uint? isSubscribedTest;
-        if(appId.m_AppId == options.PlaytestAppId)
+        bool subscribed;
+        if (appId.m_AppId == options.AppId)
         {
-            isSubscribedTest = options.PlaytestAppId;
+            subscribed = SteamApps.BIsSubscribedApp(new AppId_t(options.AppId.Value));
+        }
+        else if (appId.m_AppId == options.PlaytestAppId)
+        {
+            subscribed = SteamApps.BIsSubscribedApp(new AppId_t(options.PlaytestAppId.Value));
         }
         else
         {
-            isSubscribedTest = options.AppId;
+            subscribed = false;
         }
 
-        if (isSubscribedTest == null || SteamApps.BIsSubscribedApp(new AppId_t(isSubscribedTest.Value)))
+        if (subscribed)
         {
             logger.LogInformation("Running in full mode.");
 
