@@ -23,7 +23,7 @@ namespace Adventure.Services
     {
     }
 
-    record MonsterAssetInfo(ISpriteAsset Asset, BiomeType NativeBiome, ISoundEffect AttackSound);
+    record MonsterAssetInfo(ISpriteAsset Asset, BiomeType NativeBiome, ISoundEffect AttackSound, Dictionary<Element, Resistance> Resistances = null);
 
     class MonsterMaker : IMonsterMaker
     {
@@ -38,13 +38,19 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy, WolfSoundEffect.Instance));
 
             monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert, SalamanderFirebrandSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance, Resistances: new Dictionary<Element, Resistance>
+            {
+                { Element.Healing, Resistance.Absorb } //Make healing damage
+            }));
 
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest, ThornHunterSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest, WanderingMushroomNewSoundEffect.Instance));
 
             monsterAssets.Add(new MonsterAssetInfo(new GreatWhiteShark(), BiomeType.Beach, GreatWhiteSharkSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Beach, SkeletonSoundEffect.Instance));
+            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Beach, SkeletonSoundEffect.Instance, Resistances: new Dictionary<Element, Resistance>
+            {
+                { Element.Healing, Resistance.Absorb } //Make healing damage
+            }));
 
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Swamp, OgreNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Alligator(), BiomeType.Swamp, AlligatorSoundEffect.Instance));
@@ -111,6 +117,14 @@ namespace Adventure.Services
                     NativeBiome: monsterAsset.NativeBiome,
                     AttackSound: monsterAsset.AttackSound
                 );
+
+                if(monsterAsset.Resistances != null)
+                {
+                    foreach(var resistence in monsterAsset.Resistances)
+                    {
+                        monster.Resistances.Add(resistence.Key, resistence.Value);
+                    }
+                }
 
                 monsters.Add(monster);
             }
