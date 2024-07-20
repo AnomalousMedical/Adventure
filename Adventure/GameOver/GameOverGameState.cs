@@ -116,7 +116,7 @@ namespace Adventure.GameOver
                     {
                         coroutineRunner.RunTask(async () =>
                         {
-                            if (!persistence.Current.Party.OldSchool || await confirmMenu.ShowAndWait("Restart from current battle?", null, GamepadId.Pad1))
+                            if (!persistence.Current.Party.OldSchool || await confirmMenu.ShowAndWait("Restart from current battle?", null, GamepadId.Pad1, location: ConfirmMenu.Location.Center))
                             {
                                 if (persistence.Current.Party.OldSchool)
                                 {
