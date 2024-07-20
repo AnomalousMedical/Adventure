@@ -415,8 +415,8 @@ public abstract class PlayerSprite : IPlayerSprite
             {
                 Attachments = new List<SpriteFrameAttachment>()
                 {
-                    SpriteFrameAttachment.FromFramePosition(16, -230, +0.01f, 32, 32), //Right Hand
-                    SpriteFrameAttachment.FromFramePosition(16, -230, -0.01f, 32, 32), //Left Hand
+                    SpriteFrameAttachment.FromFramePosition(16, -float.MaxValue / 2, float.MaxValue / 2, 32, 32), //Right Hand
+                    SpriteFrameAttachment.FromFramePosition(16, -float.MaxValue / 2, float.MaxValue / 2, 32, 32), //Left Hand
                 }
             })
         },
