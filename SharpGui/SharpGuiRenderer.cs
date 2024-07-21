@@ -582,7 +582,7 @@ struct PSOutput
 void main(in  PSInput  PSIn,
           out PSOutput PSOut)
 {
-    float4 texColor = g_Texture[PSIn.textureIndex.x].Sample(g_Texture_sampler, PSIn.UV);
+    float4 texColor = g_Texture[NonUniformResourceIndex(PSIn.textureIndex.x)].Sample(g_Texture_sampler, PSIn.UV);
     PSOut.Color.rgb = PSIn.Color.rgb * texColor.rgb;
     PSOut.Color.a = texColor.a;
 }";
