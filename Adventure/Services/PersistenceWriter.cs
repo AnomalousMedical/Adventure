@@ -115,17 +115,28 @@ namespace Adventure.Services
 
             if (!File.Exists(outFile))
             {
-                logger.LogInformation($"Creating new save.");
-                return genesysModule.SeedWorld(seedProvider.GetSeed());
+                logger.LogInformation("File '{outFile}' does not exist. Creating new save.", outFile);
             }
             else
             {
-                logger.LogInformation($"Loading save from '{outFile}'.");
-                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                var save = JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
-                UpdateSave(save);
-                return save;
+                try
+                {
+                    logger.LogInformation($"Loading save from '{outFile}'.");
+                    using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var save = JsonSerializer.Deserialize<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+                    UpdateSave(save);
+                    return save;
+                }
+                catch(Exception ex)
+                {
+                    var oldOutFile = outFile;
+                    options.CurrentSave = null;
+                    outFile = GetSaveFile();
+                    logger.LogError("{exception} loading save from '{oldOutFile}'. Creating new save '{outFile}'.", ex.GetType(), oldOutFile, outFile);
+                }
             }
+
+            return genesysModule.SeedWorld(seedProvider.GetSeed());
         }
 
         public void DeleteFile(String saveFile)
@@ -175,18 +186,31 @@ namespace Adventure.Services
 
         public async IAsyncEnumerable<SaveDataInfo> GetAllSaveData()
         {
+            var outDir = GetSaveDirectory();
+
             foreach (var file in GetSaveFiles())
             {
-                var outDir = GetSaveDirectory();
-                var outFile = Path.Combine(outDir, Path.GetFileName(file));
-                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                var save = await JsonSerializer.DeserializeAsync<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
-                UpdateSave(save);
-                yield return new SaveDataInfo()
+                SaveDataInfo info = null;
+                try
                 {
-                    GameState = save,
-                    FileName = file,
-                };
+                    var outFile = Path.Combine(outDir, Path.GetFileName(file));
+                    using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var save = await JsonSerializer.DeserializeAsync<Persistence.GameState>(stream, PersistenceWriterSourceGenerationContext.Default.GameState);
+                    UpdateSave(save);
+                    info = new SaveDataInfo()
+                    {
+                        GameState = save,
+                        FileName = file,
+                    };
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError("{exception} loading save from '{file}'. This save will be skipped.", ex.GetType(), file);
+                }
+                if(info != null)
+                {
+                    yield return info;
+                }
             }
         }
 
