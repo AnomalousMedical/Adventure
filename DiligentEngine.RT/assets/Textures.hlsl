@@ -54,59 +54,59 @@ int GetTextureSet(in int texIdx)
 float3 GetSampledNormal(in float mip, in float2 uv)
 {
 	int tex = instanceData.tex0;
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].normalTexture)].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
 float3 GetSampledNormal(in float mip, in float2 uv, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].normalTexture].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].normalTexture)].SampleLevel(g_SamLinearWrap, uv, mip).rgb;
 }
 
 float4 GetPhysical(in float mip, in float2 uv)
 {
 	int tex = instanceData.tex0;
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].physicalTexture)].SampleLevel(g_SamLinearWrap, uv, mip);
 }
 
 float4 GetPhysical(in float mip, in float2 uv, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].physicalTexture].SampleLevel(g_SamLinearWrap, uv, mip);
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].physicalTexture)].SampleLevel(g_SamLinearWrap, uv, mip);
 }
 
 float3 GetBaseColor(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].baseTexture)].SampleLevel(sState, uv, mip).rgb;
 }
 
 float3 GetBaseColor(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].baseTexture)].SampleLevel(sState, uv, mip).rgb;
 }
 
 float GetOpacity(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).a;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].baseTexture)].SampleLevel(sState, uv, mip).a;
 }
 
 float GetOpacity(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].baseTexture].SampleLevel(sState, uv, mip).a;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].baseTexture)].SampleLevel(sState, uv, mip).a;
 }
 
 float3 GetEmissive(in float mip, in float2 uv, SamplerState sState)
 {
 	int tex = instanceData.tex0;
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].emissiveTexture].SampleLevel(sState, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].emissiveTexture)].SampleLevel(sState, uv, mip).rgb;
 }
 
 float3 GetEmissive(in float mip, in float2 uv, SamplerState sState, in int texIdx)
 {
 	int tex = GetTextureSet(texIdx);
-	return $$(G_TEXTURES)[$$(G_TEXTURESETS)[tex].emissiveTexture].SampleLevel(sState, uv, mip).rgb;
+	return $$(G_TEXTURES)[NonUniformResourceIndex($$(G_TEXTURESETS)[NonUniformResourceIndex(tex)].emissiveTexture)].SampleLevel(sState, uv, mip).rgb;
 }
