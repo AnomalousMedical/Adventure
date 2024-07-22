@@ -214,6 +214,8 @@ namespace SharpGui
                 buttonsToSend[i] = buttonToSend;
             }
 
+            state.ShowHover = state.ShowHover || mouse.RelativePosition.x != 0 || mouse.RelativePosition.y != 0;
+
             state.Begin(
                 mouse.AbsolutePosition.x, mouse.AbsolutePosition.y,
                 mouse.buttonDown(MouseButtonCode.MB_BUTTON0),

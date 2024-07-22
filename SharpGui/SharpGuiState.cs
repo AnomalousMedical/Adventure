@@ -120,14 +120,16 @@ namespace SharpGui
 
         /// <summary>
         /// Try to set this item active. Will also make it the hover item.
-        /// Returns true if the item was set active, otherwise false.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="shouldActivate"></param>
-        /// <returns></returns>
         public void TrySetActiveItem(Guid id, bool shouldActivate)
         {
             HoverItem = id;
+            if (ShowHover)
+            {
+                FocusedItem = id;
+            }
             if (ActiveItem == Guid.Empty && shouldActivate)
             {
                 ActiveItem = id;
@@ -215,6 +217,7 @@ namespace SharpGui
                 //If input was handled by anything here, clear the current key so nothing else processes it.
                 if (!callerHandlesInput)
                 {
+                    ShowHover = false;
                     KeyEntered = KeyboardButtonCode.KC_UNASSIGNED;
                     GamepadButtonEntered[0] = GamepadButtonCode.NUM_BUTTONS;
                     GamepadButtonEntered[1] = GamepadButtonCode.NUM_BUTTONS;
