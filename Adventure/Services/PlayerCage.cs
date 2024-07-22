@@ -88,12 +88,21 @@ class PlayerCage<T> : IDisposable
             return;
         }
 
-        Vector3 currentPosition = new Vector3();
+        //Use center of extremes
+        Vector3 minPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 maxPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         foreach (var entry in entries)
         {
-            currentPosition += entry.Position;
+            minPosition.x = MathF.Min(minPosition.x, entry.Position.x);
+            minPosition.y = MathF.Min(minPosition.y, entry.Position.y);
+            minPosition.z = MathF.Min(minPosition.z, entry.Position.z);
+
+            maxPosition.x = MathF.Max(maxPosition.x, entry.Position.x);
+            maxPosition.y = MathF.Max(maxPosition.y, entry.Position.y);
+            maxPosition.z = MathF.Max(maxPosition.z, entry.Position.z);
         }
-        currentPosition /= entries.Count;
+
+        var currentPosition = minPosition + (maxPosition - minPosition) / 2;
 
         {
             var characterBody = new BodyReference(left, bepuScene.Simulation.Bodies);
