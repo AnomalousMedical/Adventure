@@ -10,7 +10,7 @@ namespace SharpGui
 {
     static class SharpInputExtensions
     {
-        public static bool Process(this SharpInput input, SharpGuiState state, SharpGuiBuffer buffer, IFontManager fontManager, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight)
+        public static bool Process(this SharpInput input, SharpGuiState state, SharpGuiBuffer buffer, IFontManager fontManager, SharpStyle style, Guid? navUp, Guid? navDown, Guid? navLeft, Guid? navRight, int gamepad)
         {
             Guid id = input.Id;
 
@@ -120,12 +120,11 @@ namespace SharpGui
                         break;
                 }
 
-                //switch (state.GamepadButtonEntered)
-                //{
-                //    case Engine.Platform.GamepadButtonCode.XInput_A:
-                //        result = true;
-                //        break;
-                //}
+                if (state.IsStandardAcceptPressed(gamepad))
+                {
+                    state.RequestKeyboardPopup(input.OnscreenKeyboardMode, input.Rect.Left, input.Rect.Top, input.Rect.Width, input.Rect.Height);
+                    result = true;
+                }
             }
             return result;
         }

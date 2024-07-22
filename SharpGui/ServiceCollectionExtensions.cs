@@ -11,12 +11,14 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OSPlatformServiceCollectionExtensions
     {
-        public static IServiceCollection AddSharpGui(this IServiceCollection services, Action<SharpGuiOptions> configure = null)
+        public static IServiceCollection AddSharpGui(this IServiceCollection services, Action<IServiceProvider, SharpGuiOptions> configure = null)
         {
-            var options = new SharpGuiOptions();
-            configure?.Invoke(options);
-
-            services.AddSingleton<SharpGuiOptions>(options);
+            services.AddSingleton<SharpGuiOptions>(s =>
+            {
+                var options = new SharpGuiOptions();
+                configure?.Invoke(s, options);
+                return options;
+            });
             services.TryAddSingleton<ISharpGui, SharpGuiImpl>();
             services.TryAddSingleton<SharpGuiBuffer>();
             services.TryAddSingleton<SharpGuiRenderer>();

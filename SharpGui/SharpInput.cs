@@ -47,5 +47,7 @@ namespace SharpGui
         public Font Font { get; set; }
 
         public float Layer { get; set; }
+
+        public RequestedOnscreenKeyboardMode OnscreenKeyboardMode { get; set; } = RequestedOnscreenKeyboardMode.SingleLine;
     }
 }

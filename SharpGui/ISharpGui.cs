@@ -101,7 +101,7 @@ namespace SharpGui
         /// </summary>
         /// <param name="button"></param>
         /// <returns></returns>
-        bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null);
+        bool Input(SharpInput input, GamepadId gamepad = GamepadId.Pad1, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null);
 
         /// <summary>
         /// Draw a panel.

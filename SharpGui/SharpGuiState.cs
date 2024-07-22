@@ -27,6 +27,7 @@ namespace SharpGui
         public Guid LastWidget { get; private set; }
         public uint LastKeyChar { get; private set; }
         public bool ShowHover { get; set; } = true;
+        public RequestOnscreenKeyboard KeyboardPopupRequested { get; set; }
 
         KeyboardButtonCode standardAcceptKey = KeyboardButtonCode.KC_RETURN;
         GamepadButtonCode[] standardAcceptButton = [
@@ -323,6 +324,11 @@ namespace SharpGui
         {
             this.standardNavRightKey = key;
             this.standardNavRightButton = buttons;
+        }
+
+        public void RequestKeyboardPopup(RequestedOnscreenKeyboardMode mode, int x, int y, int width, int height)
+        {
+            this.KeyboardPopupRequested?.Invoke(mode, x, y, width, height);
         }
     }
 }

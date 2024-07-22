@@ -66,7 +66,7 @@ class UserInputMenu
 
         sharpGui.Text(message);
 
-        sharpGui.Input(input, navUp: noButton.Id, navDown: yesButton.Id);
+        sharpGui.Input(input, gamepadId, navUp: noButton.Id, navDown: yesButton.Id);
 
         if (sharpGui.Button(yesButton, gamepadId, navUp: input.Id, navDown: noButton.Id))
         {

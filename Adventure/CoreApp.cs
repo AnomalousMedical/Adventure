@@ -8,6 +8,7 @@ using Adventure.Items.Creators;
 using Adventure.Menu;
 using Adventure.Services;
 using Adventure.Skills;
+using Adventure.Steam;
 using Adventure.Text;
 using Adventure.WorldMap;
 using Anomalous.OSPlatform;
@@ -53,12 +54,14 @@ namespace Adventure
                 o.Fullscreen = options.Fullscreen;
             });
 
-            //Call this early
-            services.AddSteamAchievements(o =>
+            //Call this early, and call AddSteam before anythign that it registers so it overrides the other registrations.
+            services.AddSteam(o =>
             {
                 o.PlaytestAppId = 3093270;
                 o.AppId = 3082490;
             });
+            services.AddAchievements();
+            services.AddOnscreenKeyboard();
 
             services.AddLogging(o =>
             {
@@ -87,7 +90,11 @@ namespace Adventure
             {
                 o.MasterVolume = options.MasterVolume;
             });
-            services.AddSharpGui();
+            services.AddSharpGui((s, o) =>
+            {
+                var keyboardService = s.GetRequiredService<IOnscreenKeyboardService>();
+                o.KeyboardPopupRequested = keyboardService.ShowKeyboard;
+            });
             services.AddFirstPersonFlyCamera(o =>
             {
                 o.EventLayer = EventLayers.Exploration;

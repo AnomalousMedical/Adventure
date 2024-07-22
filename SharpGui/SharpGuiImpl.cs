@@ -63,7 +63,7 @@ namespace SharpGui
             GamepadButtonCode.XInput_B,
         ];
 
-        public SharpGuiImpl(SharpGuiBuffer buffer, SharpGuiRenderer renderer, EventManager eventManager, IScaleHelper scaleHelper, IFontManager fontManager)
+        public SharpGuiImpl(SharpGuiBuffer buffer, SharpGuiRenderer renderer, EventManager eventManager, IScaleHelper scaleHelper, IFontManager fontManager, SharpGuiOptions options)
         {
             this.buffer = buffer;
             this.renderer = renderer;
@@ -96,6 +96,8 @@ namespace SharpGui
             inputStyle = SharpStyle.CreateComplete(scaleHelper, colors);
 
             panelStyle = SharpStyle.CreateComplete(scaleHelper, colors);
+
+            state.KeyboardPopupRequested = options.KeyboardPopupRequested;
         }
 
         private void Pad1_ButtonDown(Engine.Platform.Input.Gamepad pad, GamepadButtonCode buttonCode)
@@ -241,9 +243,9 @@ namespace SharpGui
             return button.Process(state, buffer, fontManager, style ?? buttonStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
-        public bool Input(SharpInput input, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
+        public bool Input(SharpInput input, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null)
         {
-            return input.Process(state, buffer, fontManager, style ?? inputStyle, navUp, navDown, navLeft, navRight);
+            return input.Process(state, buffer, fontManager, style ?? inputStyle, navUp, navDown, navLeft, navRight, (int)gamepad);
         }
 
         public bool Slider(SharpSliderHorizontal slider, ref int value, GamepadId gamepad, Guid? navUp = null, Guid? navDown = null, SharpStyle style = null)
