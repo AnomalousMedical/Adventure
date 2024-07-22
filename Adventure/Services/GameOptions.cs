@@ -54,7 +54,7 @@ namespace Adventure.Services
 
         public float FSR1RenderPercentage { get; set; } = 0.75f;
 
-        public uint PresentInterval { get; set; } = 1;
+        public uint PresentInterval { get; set; } = 0;
 
         public Dictionary<KeyBindings, KeyboardMouseBinding> KeyboardBindings { get; set; } = new Dictionary<KeyBindings, KeyboardMouseBinding>();
 
