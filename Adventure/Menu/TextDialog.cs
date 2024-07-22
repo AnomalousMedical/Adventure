@@ -10,7 +10,7 @@ namespace Adventure.Menu
 {
     class TextDialog : IExplorationSubMenu
     {
-        private const int NumLines = 2;
+        private const int NumLines = 3;
         private IEnumerator<String> words;
         private string lastWord = String.Empty;
         private string contents;
