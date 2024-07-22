@@ -71,7 +71,7 @@ namespace Adventure.Text
                     Intro1: "Hail adventurers. I have the best weapons around.",
                     Intro2: "I can make you anything you need. For a small fee of course.",
                     SalesPitch: "Let me know if anything catches your eye.",
-                    Ancient1: "Your telling me if I heat my steel just so and then strike it it will be even stronger?",
+                    Ancient1: "You're telling me if I heat my steel just so and then strike it it will be even stronger?",
                     Ancient2: "This is amazing! With this knowledge I can make my weapons even better.",
                     Goodbye: "Goodbye now."
                 ),
@@ -87,14 +87,14 @@ namespace Adventure.Text
                 (
                     Greeting: "Hello",
                     InitialInfo: "Hold on a second.",
-                    InitialInfo2: "Just as I suspected. These quakes are centered around the volcano that recently appeared.",
+                    InitialInfo2: "Just as I suspected. These quakes are centered around the volcano that has started acting up recently.",
                     InitialInfo3: "However, we won't be able to get there with the airship in its current condition.",
                     InitialInfo4: "It seems like monsters are making off with our parts.",
                     NoAirshipItems: "Find the ship's wheel and some fuel. Look in the nearby wilderness areas. The signposts will guide you.",
                     HasFuelOnly: "You found the fuel now just find the wheel and we can fly.",
                     HasWheelOnly: "You found the wheel. We just need to fuel up and we can fly.",
                     BothAirshipItems: "You found everything. Give me a minute and I will fix her right up.",
-                    AirshipFixed: "Got the wheel reattached and shes all fueled up. Here are the keys so you can fly whenever your ready.",
+                    AirshipFixed: "Got the wheel reattached and she's all fueled up. Here are the keys so you can fly whenever you're ready.",
                     FinalMessage: "Don't just rush to the volcano. I'm sure the monsters there are very strong. See what else you can find if you explore around."
                 ),
                 ItemStorage: new ItemStorage.Text
@@ -125,7 +125,7 @@ namespace Adventure.Text
                     Greeting: "Hello",
                     Intro1: "You don't think all these quakes are caused by a monster thats going to come eat us, do you?",
                     Intro2: "Eeek! I sure hope that isn't the case!",
-                    Intro3: "Sorry, I know I shouldn't scare people just looking for rest like that.",
+                    Intro3: "Sorry, I know I shouldn't scare people like that who are just looking for rest.",
                     SleepQuestionDialog: "Would you like to get some sleep?"
                 ),
                 ZoneEntrance: new ZoneEntrance.Text
@@ -165,10 +165,10 @@ namespace Adventure.Text
                     , StoreHammer1: new(Text: "Smithed Hammer", Description: "A hand made hammer for bludgeoning your foes.")
                     , StoreHammer2: new(Text: "Ancient Hammer", Description: "A hand made hammer created with ancient techniques. It will deliver bludgeoning damage to your foes better than most.")
                     , Sword1: new(Text: "Soldier's Sword", Description: "A basic blade. Does a small amount of slashing damage to your opponents.")
-                    , Sword2: new(Text: "Common Sword", Description: "The most common type of blade found through the land. Many rely on its slashing damage to defeat their opponents.")
+                    , Sword2: new(Text: "Common Sword", Description: "The most common type of blade found throughout the land. Many rely on its slashing damage to defeat their opponents.")
                     , Sword3: new(Text: "Ultimate Sword", Description: "A blade of legend. Nothing delivers more slashing damage to your opponents in the entire world.")
                     , StoreSword1: new(Text: "Smithed Sword", Description: "A hand made sword for slashing your opponents.")
-                    , StoreSword2: new(Text: "Ancient Sword", Description: "A hand made sword creted with ancient techniques. Will slash your opponents better than most.")
+                    , StoreSword2: new(Text: "Ancient Sword", Description: "A hand made sword created with ancient techniques. Will slash your opponents better than most.")
                     , Plate1: new(Text: "Tarnished Plate Armor", Description: "Once fine plate mail. This suit is worn out, but still offers decent protection.")
                     , Plate2: new(Text: "Iron Plate Armor", Description: "Solid plate mail, but a bit too heavy to offer full protection.")
                     , Plate3: new(Text: "Steel Plate Armor", Description: "A suit of the finest plate mail. Delivers the ultimate protection that can be found.")
@@ -261,7 +261,7 @@ namespace Adventure.Text
                     Chapter4Title: "Page 4: Elemental Damage and Weaknesses",
                     Chapter4: "You can cast spells of ice, fire and electricity.\n \nEnemies will be weak, strong and neutral to these types, which will cause the damage to increase or decrease accordingly.\n \nSome enemies can even shift their elements and absorb damage as healing instead.",
                     Chapter4Part2Missing: "The rest of this page seems to be missing.",
-                    Chapter4Part2: "Mid and high level elemental spells can be applied to your own party's weapons causing the elemental multiplier to apply in addition to the weapon damage and its type multiplier.\n \nBe careful though since elemental damage could end up with weaker or even being absorbed and turned into hp.",
+                    Chapter4Part2: "Mid and high level elemental spells can be applied to your own party's weapons causing the elemental multiplier to apply in addition to the weapon damage and its type multiplier.\n \nBe careful though since elemental damage could end up weaker or even being absorbed and turned into hp.",
                     
                     Chapter5Title: "Page 5: Exploiting Weaknesses",
                     Chapter5: "Enemies will have weaknesses you can see with the Target Scope item.",
@@ -271,7 +271,7 @@ namespace Adventure.Text
                     Chapter6Title: "Page 6: Inventory and equipment",
                     Chapter6: "Each character has their own inventory and can only use and equip items they are carrying.",
                     Chapter6Part2Missing: "The rest of this page seems to be missing.",
-                    Chapter6Part2: "You can use anything in battle, even weapons.\n \nTry to switch your equipment on the fly to adapt to what your fighting.",
+                    Chapter6Part2: "You can use anything in battle, even weapons.\n \nTry to switch your equipment on the fly to adapt to what you're fighting.",
 
                     Chapter7Title: "Page 7: Exploration",
                     Chapter7: "Be sure to explore as much as you can.\n \nIf you can't beat one area go to another. You never know what you will find.\n \nIf you don't know where to go next, let the signposts guide you.\n \nA flag marks a spot you have already visited.",
