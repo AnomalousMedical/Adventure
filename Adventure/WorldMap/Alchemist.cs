@@ -51,6 +51,7 @@ namespace Adventure.WorldMap
         private readonly CameraMover cameraMover;
         private readonly EarthquakeMenu earthquakeMenu;
         private readonly TreasureMenu treasureMenu;
+        private readonly IAchievementService achievementService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -89,7 +90,8 @@ namespace Adventure.WorldMap
             ILanguageService languageService,
             CameraMover cameraMover,
             EarthquakeMenu earthquakeMenu,
-            TreasureMenu treasureMenu
+            TreasureMenu treasureMenu,
+            IAchievementService achievementService
         )
         {
             this.sprite = description.Sprite;
@@ -110,6 +112,7 @@ namespace Adventure.WorldMap
             this.cameraMover = cameraMover;
             this.earthquakeMenu = earthquakeMenu;
             this.treasureMenu = treasureMenu;
+            this.achievementService = achievementService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -233,6 +236,7 @@ namespace Adventure.WorldMap
                         persistence.Current.PlotFlags.Add(PlotFlags.AlchemistUpgradeDelivered);
                         await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Ancient1, args.GamepadId);
                         await textDialog.ShowTextAndWait(languageService.Current.Alchemist.Ancient2, args.GamepadId);
+                        achievementService.UnlockAchievement(Achievements.AncientAlchemy);
                     }
                 }
 

@@ -47,6 +47,7 @@ namespace Adventure.WorldMap
         private readonly Persistence persistence;
         private readonly ILanguageService languageService;
         private readonly CameraMover cameraMover;
+        private readonly IAchievementService achievementService;
         private SpriteInstance spriteInstance;
         private readonly ISprite sprite;
         private readonly TLASInstanceData[] tlasData;
@@ -65,7 +66,8 @@ namespace Adventure.WorldMap
         private Vector3 cameraOffset = new Vector3(0, 1, -2);
         private Quaternion cameraAngle = new Quaternion(Vector3.Left, -MathF.PI / 8f);
 
-        public Blacksmith(
+        public Blacksmith
+        (
             RTInstances<WorldMapScene> rtInstances,
             IDestructionRequest destructionRequest,
             IScopedCoroutine coroutine,
@@ -82,7 +84,9 @@ namespace Adventure.WorldMap
             IExplorationMenu explorationMenu,
             Persistence persistence,
             ILanguageService languageService,
-            CameraMover cameraMover)
+            CameraMover cameraMover,
+            IAchievementService achievementService
+        )
         {
             this.sprite = description.Sprite;
             this.rtInstances = rtInstances;
@@ -100,6 +104,7 @@ namespace Adventure.WorldMap
             this.persistence = persistence;
             this.languageService = languageService;
             this.cameraMover = cameraMover;
+            this.achievementService = achievementService;
             this.transforms = description.Transforms;
 
             this.currentPosition = description.Translation;
@@ -224,6 +229,7 @@ namespace Adventure.WorldMap
                         persistence.Current.PlotFlags.Add(PlotFlags.BlacksmithUpgradeDelivered);
                         await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Ancient1, args.GamepadId);
                         await textDialog.ShowTextAndWait(languageService.Current.Blacksmith.Ancient2, args.GamepadId);
+                        achievementService.UnlockAchievement(Achievements.AncientSmithing);
                     }
                 }
 

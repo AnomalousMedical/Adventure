@@ -18,6 +18,8 @@ namespace Adventure.Services
         FullyUpgradedHelpBook,
         ElementalMastery,
         SeeTheWorld,
+        AncientSmithing,
+        AncientAlchemy,
     }
 
     internal interface IAchievementService
