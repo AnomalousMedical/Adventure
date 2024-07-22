@@ -82,7 +82,7 @@ namespace SharpGui
 
             bool result = false;
 
-            if (state.ProcessFocus(id, 0, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
+            if (state.ProcessFocus(id, gamepad, navUp: navUp, navDown: navDown, navLeft: navLeft, navRight: navRight))
             {
                 if (DateTime.Now.Second % 2 == 0)
                 {
