@@ -25,6 +25,8 @@ namespace SharpGui
         private List<SharpButton> buttons;
         private SharpSliderVertical scrollBar = new SharpSliderVertical();
 
+        private bool hasMoreButtons = false;
+
         public int ScrollBarWidth { get => scrollBar.DesiredSize.Width; set => scrollBar.DesiredSize.Width = value; }
 
         public int ScrollMargin { get; set; }
@@ -46,15 +48,17 @@ namespace SharpGui
                 wrappedButtons = wrapItemLayout(buttons).ToList();
             }
 
-            ILayoutItem layout =
-               new MarginLayout(new IntPad(Margin),
-               new MaxWidthLayout(MaxWidth,
-               new RowLayout(
-                   new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) }
-                   , scrollBar) { Margin = new IntPad(ScrollMargin, 0, 0, 0) }
-            ));
+            ILayoutItem innerLayout = new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) };
 
-            if(wrapLayout != null)
+            if (hasMoreButtons)
+            {
+                innerLayout = new RowLayout(innerLayout, scrollBar) { Margin = new IntPad(ScrollMargin, 0, 0, 0) };
+            }
+
+            ILayoutItem layout = new MarginLayout(new IntPad(Margin),
+                                    new MaxWidthLayout(MaxWidth, innerLayout));
+
+            if (wrapLayout != null)
             {
                 layout = wrapLayout(layout);
             }
@@ -68,6 +72,8 @@ namespace SharpGui
             layout.SetRect(layoutRect);
 
             var result = default(T);
+
+            hasMoreButtons = ListIndex > 0;
 
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
@@ -94,6 +100,7 @@ namespace SharpGui
                 {
                     if (currentDisplayButton >= buttonCount)
                     {
+                        hasMoreButtons = true;
                         break;
                     }
 
@@ -101,6 +108,7 @@ namespace SharpGui
 
                     if (button.Rect.Bottom > Bottom)
                     {
+                        hasMoreButtons = true;
                         break;
                     }
 
@@ -184,7 +192,7 @@ namespace SharpGui
                     }
                 }
 
-                if (scrollBar.Rect.Width > 0)
+                if (scrollBar.Rect.Width > 0 && hasMoreButtons)
                 {
                     scrollBar.Max = itemCount - currentDisplayButton;
                     scrollBar.Rect.Height = lastButtonBottom - scrollBar.Rect.Top;
