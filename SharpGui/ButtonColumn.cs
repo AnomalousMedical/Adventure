@@ -189,7 +189,18 @@ namespace SharpGui
                     scrollBar.Max = itemCount - currentDisplayButton;
                     scrollBar.Rect.Height = lastButtonBottom - scrollBar.Rect.Top;
                     var value = scrollBar.Max - ListIndex;
-                    sharpGui.Slider(scrollBar, ref value, gamepad);
+                    var lastValue = value;
+                    if(sharpGui.Slider(scrollBar, ref value, gamepad))
+                    {
+                        if (value > lastValue)
+                        {
+                            --ListIndex;
+                        }
+                        else
+                        {
+                            ++ListIndex;
+                        }
+                    }
                 }
             }
 
