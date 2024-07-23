@@ -171,7 +171,14 @@ namespace Adventure
         public void Reset()
         {
             state = GetState(description, persistence);
-            AddGraphics();
+            if (state.Dead)
+            {
+                RemoveGraphics();
+            }
+            else
+            {
+                AddGraphics();
+            }
         }
 
         public void CreatePhysics()
