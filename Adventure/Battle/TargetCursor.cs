@@ -34,6 +34,7 @@ namespace Adventure.Battle
         private SharpButton nextTargetButton = new SharpButton() { Text = "Next" };
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
+        private SharpButton rowButton = new SharpButton() { Text = "Row" };
 
         public uint EnemyTargetIndex { get; set; }
         public uint PlayerTargetIndex { get; set; }
@@ -308,7 +309,7 @@ namespace Adventure.Battle
         {
             SetPosition(enemyPos);
 
-            battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton);
+            battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton, rowButton);
 
             if (activePlayer.Stats.CanSeeEnemyInfo)
             {
@@ -374,19 +375,29 @@ namespace Adventure.Battle
                 }
             }
 
+            var handled = false;
             if (sharpGui.ShowHover && sharpGui.Button(selectTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 SetTarget(target);
+                handled = true;
             }
-            else if (sharpGui.ShowHover && sharpGui.Button(nextTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
+            if (sharpGui.ShowHover && sharpGui.Button(nextTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 NextTarget();
+                handled = true;
             }
-            else if (sharpGui.ShowHover && sharpGui.Button(previousTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
+            if (sharpGui.ShowHover && sharpGui.Button(previousTargetButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
             {
                 PreviousTarget();
+                handled = true;
             }
-            else
+            if (sharpGui.ShowHover && sharpGui.Button(rowButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
+            {
+                ChangeRow();
+                handled = true;
+            }
+
+            if(!handled)
             {
                 var currentGamepad = (int)activePlayer.GamepadId;
                 var gamepadButton = sharpGui.GamepadButtonEntered[currentGamepad];
