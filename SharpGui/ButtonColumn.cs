@@ -48,7 +48,7 @@ namespace SharpGui
                 wrappedButtons = wrapItemLayout(buttons).ToList();
             }
 
-            ILayoutItem innerLayout = new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) };
+            ILayoutItem innerLayout = new ColumnLayout(wrappedButtons) { Margin = new IntPad(0, 0, 0, Margin) };
 
             if (hasMoreButtons)
             {
