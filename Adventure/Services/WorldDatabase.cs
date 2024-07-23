@@ -17,6 +17,13 @@ namespace Adventure.Services
         Blacksmith,
     }
 
+    public enum TreasureFortuneType
+    {
+        Assassin,
+        Hourglass,
+        Luck
+    }
+
     interface IWorldDatabase
     {
         int GetZoneSeed(int index);
@@ -484,7 +491,7 @@ namespace Adventure.Services
                 var phase2UniqueStolenTreasures = new List<Treasure>
                 {
                     new Treasure(DaggerCreator.CreateNormal(nameof(Dagger2), phase2TreasureLevel, nameof(ItemText.Dagger2), nameof(Steal)), TreasureType.OffHand)
-                    { Id = 200, FortuneText = "Assassin" }
+                    { Id = 200, FortuneText = TreasureFortuneType.Assassin }
                 };
 
                 const int zoneCount = 2;
@@ -603,9 +610,9 @@ namespace Adventure.Services
                 var phase3UniqueStolenTreasures = new List<ITreasure>
                 {
                     new Treasure(DaggerCreator.CreateNormal(nameof(Dagger3), phase3TreasureLevel, nameof(ItemText.Dagger3), nameof(Steal), nameof(Haste)), TreasureType.OffHand)
-                    { Id = 300, FortuneText = "Hourglass" },
+                    { Id = 300, FortuneText = TreasureFortuneType.Hourglass },
                     new Treasure(PotionCreator.CreateLuckBoost(20), TreasureType.StatBoost)
-                    { Id = 302, FortuneText = "Elephant" },
+                    { Id = 302, FortuneText = TreasureFortuneType.Luck },
                 };
 
                 var zoneCount = 3;

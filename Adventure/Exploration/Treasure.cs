@@ -38,7 +38,7 @@ namespace Adventure
 
         int? Id { get; }
 
-        string FortuneText { get; }
+        TreasureFortuneType FortuneText { get; }
 
         InventoryItem Item { get; }
 
@@ -59,7 +59,7 @@ namespace Adventure
 
         public int? Id { get; init; }
 
-        public string FortuneText { get; init; }
+        public TreasureFortuneType FortuneText { get; init; }
 
         public InventoryItem Item => inventoryItem;
 
@@ -106,7 +106,7 @@ namespace Adventure
 
         public int? Id { get; init; }
 
-        public string FortuneText { get; init; }
+        public TreasureFortuneType FortuneText { get; init; }
 
         public InventoryItem Item => null;
 

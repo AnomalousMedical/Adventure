@@ -118,7 +118,19 @@ namespace Adventure.Text
                     StartShufflePitch: "Let us see what the cards say about your fate.",
                     CardShuffleNarrator: "The fortune teller shuffles her deck of cards...",
                     ShowResultsNarrator: "The cards are arranged before you on the table.",
-                    NoResultsNarrator: "The cards are quiet today."
+                    NoResultsNarrator: "The cards are quiet today.",
+                    FirstCardIntro: "The first card shows ",
+                    SecondCardIntro: "The second card shows ",
+                    AssassinFortune: "a long dagger.",
+                    HourglassFortune: "a hourglass next to curved dagger.",
+                    LuckFortune: "various lucky animals including a rabbit and an elephant.",
+                    CountrysideFortune: "a countryside with green trees and grass.",
+                    DesertFortune: "an arid desert.",
+                    SnowyFortune: "a snow filled tundra.",
+                    ForestFortune: "a deep forest with tall trees.",
+                    BeachFortune: "a scenic beach with palm trees.",
+                    SwampFortune: "a dangerous swamp.",
+                    MountainFortune: "a tall mountain."
                 ),
                 Innkeeper: new Innkeeper.Text
                 (

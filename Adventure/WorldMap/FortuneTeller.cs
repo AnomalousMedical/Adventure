@@ -31,8 +31,58 @@ namespace Adventure.WorldMap
             String StartShufflePitch,
             String CardShuffleNarrator,
             String ShowResultsNarrator,
-            String NoResultsNarrator
-        );
+            String NoResultsNarrator,
+            String AssassinFortune,
+            String HourglassFortune,
+            String LuckFortune,
+            String CountrysideFortune,
+            String DesertFortune,
+            String SnowyFortune,
+            String ForestFortune,
+            String BeachFortune,
+            String SwampFortune,
+            String MountainFortune,
+            String FirstCardIntro,
+            String SecondCardIntro
+        )
+        {
+            public String GetFortune(BiomeType biome)
+            {
+                switch (biome)
+                {
+                    case BiomeType.Countryside:
+                        return CountrysideFortune;
+                    case BiomeType.Desert:
+                        return DesertFortune;
+                    case BiomeType.Snowy:
+                        return SnowyFortune;
+                    case BiomeType.Forest:
+                        return ForestFortune;
+                    case BiomeType.Beach:
+                        return BeachFortune;
+                    case BiomeType.Swamp:
+                        return SwampFortune;
+                    case BiomeType.Mountain:
+                        return MountainFortune;
+                }
+
+                return "Missing_" + biome;
+            }
+            public String GetFortune(TreasureFortuneType treasure)
+            {
+                switch (treasure)
+                {
+                    case TreasureFortuneType.Assassin:
+                        return AssassinFortune;
+                    case TreasureFortuneType.Hourglass:
+                        return HourglassFortune;
+                    case TreasureFortuneType.Luck:
+                        return LuckFortune;
+                }
+
+                return "Missing_" + treasure;
+            }
+        }
 
         private readonly RTInstances<WorldMapScene> rtInstances;
         private readonly IDestructionRequest destructionRequest;
@@ -237,16 +287,17 @@ namespace Adventure.WorldMap
                             await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.ShowResultsNarrator, args.GamepadId);
                             showedCards = true;
                         }
-                        string cardMessage;
+                        
                         if (Random.Shared.Next(0, 100) < 50)
                         {
-                            cardMessage = $"{zone.Biome} {treasure.FortuneText ?? languageService.Current.Items.GetText(treasure.InfoId)}";
+                            await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.FirstCardIntro + languageService.Current.FortuneTeller.GetFortune(zone.Biome), args.GamepadId);
+                            await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.SecondCardIntro + languageService.Current.FortuneTeller.GetFortune(treasure.FortuneText), args.GamepadId);
                         }
                         else
                         {
-                            cardMessage = $"{treasure.FortuneText ?? languageService.Current.Items.GetText(treasure.InfoId)} {zone.Biome}";
+                            await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.FirstCardIntro + languageService.Current.FortuneTeller.GetFortune(treasure.FortuneText), args.GamepadId);
+                            await textDialog.ShowTextAndWait(languageService.Current.FortuneTeller.SecondCardIntro + languageService.Current.FortuneTeller.GetFortune(zone.Biome), args.GamepadId);
                         }
-                        await textDialog.ShowTextAndWait(cardMessage, args.GamepadId);
                     }
                 }
 
