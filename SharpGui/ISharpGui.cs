@@ -174,5 +174,7 @@ namespace SharpGui
         void OverrideStandardNavLeft(KeyboardButtonCode key, GamepadButtonCode[] buttons);
         bool IsStandardNavRightPressed(GamepadId gamepad);
         void OverrideStandardNavRight(KeyboardButtonCode key, GamepadButtonCode[] buttons);
+        bool MouseWheelScrolledDown();
+        bool MouseWheelScrolledUp();
     }
 }

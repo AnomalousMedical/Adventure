@@ -17,6 +17,7 @@ namespace SharpGui
         public Guid ActiveItem { get; private set; }
         public int MouseX { get; private set; }
         public int MouseY { get; private set; }
+        public int MouseWheel { get; set; }
         public bool MouseDown { get; private set; }
         public Guid FocusedItem { get; private set; }
         public KeyboardButtonCode KeyEntered { get; private set; }
@@ -71,7 +72,7 @@ namespace SharpGui
             GamepadButtonCode.XInput_DPadRight,
         ];
 
-        public void Begin(int mouseX, int mouseY, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
+        public void Begin(int mouseX, int mouseY, int mouseWheel, bool mouseDown, KeyboardButtonCode lastKeyPressed, uint lastKeyChar, bool isShift, bool isAlt, bool isCtrl, GamepadButtonCode[] lastGamepadKey)
         {
             sawFocusedItem = false;
             this.LastKeyChar = lastKeyChar;
@@ -79,6 +80,7 @@ namespace SharpGui
             this.GamepadButtonEntered = lastGamepadKey;
             this.MouseX = mouseX;
             this.MouseY = mouseY;
+            this.MouseWheel = mouseWheel;
             this.MouseDown = mouseDown;
             this.HoverItem = Guid.Empty;
             this.IsShift = isShift;

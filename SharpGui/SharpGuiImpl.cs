@@ -217,7 +217,7 @@ namespace SharpGui
             state.ShowHover = state.ShowHover || mouse.RelativePosition.x != 0 || mouse.RelativePosition.y != 0;
 
             state.Begin(
-                mouse.AbsolutePosition.x, mouse.AbsolutePosition.y,
+                mouse.AbsolutePosition.x, mouse.AbsolutePosition.y, mouse.RelativePosition.z,
                 mouse.buttonDown(MouseButtonCode.MB_BUTTON0),
                 keyToSend,
                 keyCharToSend,
@@ -421,6 +421,16 @@ namespace SharpGui
         public void OverrideStandardNavRight(KeyboardButtonCode key, GamepadButtonCode[] buttons)
         {
             state.OverrideStandardNavRight(key, buttons);
+        }
+
+        public bool MouseWheelScrolledDown()
+        {
+            return state.MouseWheel < 0;
+        }
+
+        public bool MouseWheelScrolledUp()
+        {
+            return state.MouseWheel > 0;
         }
 
         public Guid ActiveItem => state.ActiveItem;

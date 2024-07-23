@@ -162,16 +162,33 @@ namespace SharpGui
                     ++currentDisplayButton;
                 }
 
-                if(HasFocus(sharpGui))
+                if(HasFocus(sharpGui) || sharpGui.FocusedItem == scrollBar.Id)
                 {
                     lastFocusedIndex = FocusedIndex(sharpGui);
+
+                    if (sharpGui.MouseWheelScrolledUp())
+                    {
+                        --ListIndex;
+                        if (ListIndex < 0)
+                        {
+                            ListIndex = 0;
+                        }
+                    }
+                    else if (sharpGui.MouseWheelScrolledDown())
+                    {
+                        ++ListIndex;
+                        if (ListIndex + currentDisplayButton > itemCount)
+                        {
+                            ListIndex = itemCount - currentDisplayButton;
+                        }
+                    }
                 }
 
                 if (scrollBar.Rect.Width > 0)
                 {
-                    scrollBar.Max = items.Count() - 1;
+                    scrollBar.Max = itemCount - currentDisplayButton;
                     scrollBar.Rect.Height = lastButtonBottom - scrollBar.Rect.Top;
-                    var value = scrollBar.Max - lastFocusedIndex;
+                    var value = scrollBar.Max - ListIndex;
                     sharpGui.Slider(scrollBar, ref value, gamepad);
                 }
             }
