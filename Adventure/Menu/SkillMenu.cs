@@ -89,6 +89,9 @@ class SkillMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+            characterButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            characterButtons.ScrollMargin = scaleHelper.Scaled(5);
+
             var action = characterButtons.Show(sharpGui, characterChoices.Append(new ButtonColumnItem<Action>("Cancel", () => { })), characterChoices.Count + 1, s => screenPositioner.GetCenterRect(s), gamepad, style: currentCharacterStyle);
             if (action != null)
             {
@@ -181,6 +184,8 @@ class SkillMenu
                 skillButtons.Margin = scaleHelper.Scaled(10);
                 skillButtons.MaxWidth = scaleHelper.Scaled(900);
                 skillButtons.Bottom = backButtonLayoutRect.Top;
+                skillButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+                skillButtons.ScrollMargin = scaleHelper.Scaled(5);
 
                 var lastSkillIndex = skillButtons.FocusedIndex(sharpGui);
                 var newSelection = skillButtons.Show(sharpGui, currentPlayerSkills, skillCount, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);

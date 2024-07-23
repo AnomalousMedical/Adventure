@@ -66,6 +66,8 @@ class PlotItemMenu
         itemButtons.Margin = scaleHelper.Scaled(10);
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
         itemButtons.Bottom = backButtonRect.Top;
+        itemButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+        itemButtons.ScrollMargin = scaleHelper.Scaled(5);
 
         if (currentItems == null)
         {

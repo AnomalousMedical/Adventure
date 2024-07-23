@@ -104,6 +104,9 @@ class UseItemMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+            characterButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            characterButtons.ScrollMargin = scaleHelper.Scaled(5);
+
             var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterTopRect(s), gamepadId, wrapLayout: l => new ColumnLayout(new PanelLayout(promptPanel, new KeepWidthCenterLayout(characterChooserPrompt)), new KeepWidthCenterLayout(l)) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
             if (action != null)
             {
@@ -134,6 +137,8 @@ class UseItemMenu
                 replaceButtons.Margin = scaleHelper.Scaled(10);
                 replaceButtons.MaxWidth = scaleHelper.Scaled(900);
                 replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
+                replaceButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+                replaceButtons.ScrollMargin = scaleHelper.Scaled(5);
 
                 var swapItem = replaceButtons.Show(sharpGui, swapItemChoices, swapItemChoices.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new PanelLayout(promptPanel, new KeepWidthCenterLayout(swapItemPrompt)), new KeepWidthCenterLayout(l)) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: style);
                 if (swapItem != null)
@@ -477,6 +482,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         itemButtons.Margin = scaleHelper.Scaled(10);
         itemButtons.MaxWidth = scaleHelper.Scaled(900);
         itemButtons.Bottom = backButtonRect.Top;
+        itemButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+        itemButtons.ScrollMargin = scaleHelper.Scaled(5);
 
         useItemMenu.Update(characterData, gamepad, currentCharacterStyle, this, menu);
 

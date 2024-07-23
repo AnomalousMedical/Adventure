@@ -20,8 +20,14 @@ namespace SharpGui
 
         private Guid currentBottomButton;
         private int currentDisplayButton;
+        private int lastFocusedIndex;
 
         private List<SharpButton> buttons;
+        private SharpSliderVertical scrollBar = new SharpSliderVertical();
+
+        public int ScrollBarWidth { get => scrollBar.DesiredSize.Width; set => scrollBar.DesiredSize.Width = value; }
+
+        public int ScrollMargin { get; set; }
 
         public ButtonColumn(int numButtons, float layer = 0f)
         {
@@ -43,7 +49,9 @@ namespace SharpGui
             ILayoutItem layout =
                new MarginLayout(new IntPad(Margin),
                new MaxWidthLayout(MaxWidth,
-               new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) }
+               new RowLayout(
+                   new ColumnLayout(wrappedButtons) { Margin = new IntPad(Margin) }
+                   , scrollBar) { Margin = new IntPad(ScrollMargin, 0, 0, 0) }
             ));
 
             if(wrapLayout != null)
@@ -64,6 +72,8 @@ namespace SharpGui
             var buttonCount = buttons.Count;
             if (buttonCount > 0)
             {
+                var lastButtonBottom = 0;
+
                 if (sharpGui.FocusedItem == ScrollTop)
                 {
                     ListIndex = 0;
@@ -93,6 +103,8 @@ namespace SharpGui
                     {
                         break;
                     }
+
+                    lastButtonBottom = button.Rect.Bottom;
 
                     currentBottomButton = button.Id;
 
@@ -149,6 +161,19 @@ namespace SharpGui
 
                     ++currentDisplayButton;
                 }
+
+                if(HasFocus(sharpGui))
+                {
+                    lastFocusedIndex = FocusedIndex(sharpGui);
+                }
+
+                if (scrollBar.Rect.Width > 0)
+                {
+                    scrollBar.Max = items.Count() - 1;
+                    scrollBar.Rect.Height = lastButtonBottom - scrollBar.Rect.Top;
+                    var value = scrollBar.Max - lastFocusedIndex;
+                    sharpGui.Slider(scrollBar, ref value, gamepad);
+                }
             }
 
             return result;
@@ -182,12 +207,14 @@ namespace SharpGui
 
         public int FocusedIndex(ISharpGui sharpGui)
         {
-            return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.FocusedItem), 0);
-        }
-
-        public int HoverIndex(ISharpGui sharpGui)
-        {
-            return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.HoverItem), 0);
+            if (HasFocus(sharpGui))
+            {
+                return ListIndex + Math.Max(buttons.FindIndex(i => i.Id == sharpGui.FocusedItem), 0);
+            }
+            else
+            {
+                return lastFocusedIndex;
+            }
         }
 
         public Guid TopButton => ScrollTop;

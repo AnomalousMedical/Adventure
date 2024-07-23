@@ -42,7 +42,9 @@ internal class KeybindMenu : IExplorationSubMenu
     private readonly ConfirmMenu confirmMenu;
 
     const int UnscaledColumnWidth = 150;
-    const int UnscaledActionColumnWidth = 250;
+    const int UnscaledActionColumnWidth = 250 + UnscaledScrollMargin + UnscaledScrollWidth;
+    const int UnscaledScrollMargin = 5;
+    const int UnscaledScrollWidth = 25;
 
     public KeybindMenu
     (
@@ -66,6 +68,8 @@ internal class KeybindMenu : IExplorationSubMenu
         this.gamepadIcons = gamepadIcons;
         this.coroutine = coroutine;
         this.confirmMenu = confirmMenu;
+        itemButtons.ScrollBarWidth = scaleHelper.Scaled(UnscaledScrollWidth);
+        itemButtons.ScrollMargin = scaleHelper.Scaled(UnscaledScrollMargin);
 
         headerLayout = new RowLayout(
             new MinWidthLayout(scaleHelper.Scaled(UnscaledColumnWidth), new KeepWidthCenterLayout(keyboard)),
@@ -139,7 +143,7 @@ internal class KeybindMenu : IExplorationSubMenu
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
-        itemButtons.MaxWidth = scaleHelper.Scaled(900);
+        itemButtons.MaxWidth = scaleHelper.Scaled(1920);
         itemButtons.Bottom = backButtonRect.Top;
 
         if (currentItems == null)

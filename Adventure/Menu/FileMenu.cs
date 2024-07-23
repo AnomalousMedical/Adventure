@@ -45,6 +45,8 @@ internal class FileMenu
             saveFileButtons.Margin = scaleHelper.Scaled(10);
             saveFileButtons.MaxWidth = scaleHelper.Scaled(900);
             saveFileButtons.Bottom = screenPositioner.ScreenSize.Height;
+            saveFileButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            saveFileButtons.ScrollMargin = scaleHelper.Scaled(5);
 
             var newSelection = saveFileButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
             if (newSelection != null)

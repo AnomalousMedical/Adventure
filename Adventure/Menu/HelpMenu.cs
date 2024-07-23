@@ -153,6 +153,8 @@ internal class HelpMenu
         chapters.Margin = scaleHelper.Scaled(10);
         chapters.MaxWidth = scaleHelper.Scaled(900);
         chapters.Bottom = backButtonRect.Top;
+        chapters.ScrollBarWidth = scaleHelper.Scaled(25);
+        chapters.ScrollMargin = scaleHelper.Scaled(5);
 
         var lastItemIndex = chapters.FocusedIndex(sharpGui);
         var selectedItem = chapters.Show<int?>(sharpGui, chapterButtons, 8, s => screenPositioner.GetTopRightRect(s), gamepadId, navDown: back.Id, navUp: back.Id, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });

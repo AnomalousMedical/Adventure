@@ -250,6 +250,8 @@ namespace Adventure.Menu
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
             itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+            itemButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            itemButtons.ScrollMargin = scaleHelper.Scaled(5);
 
             sharpGui.Panel(infoPanel, panelStyle);
             foreach (var info in infos)

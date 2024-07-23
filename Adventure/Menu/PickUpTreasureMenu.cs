@@ -98,6 +98,9 @@ class PickUpTreasureMenu
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
+            characterButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            characterButtons.ScrollMargin = scaleHelper.Scaled(5);
+
             var action = characterButtons.Show(sharpGui, characterChoices, characterChoices.Count, s => screenPositioner.GetCenterRect(s), gamepadId, style: currentCharacterStyle);
             if (action != null)
             {
@@ -246,6 +249,8 @@ class PickUpTreasureMenu
             replaceButtons.Margin = scaleHelper.Scaled(10);
             replaceButtons.MaxWidth = scaleHelper.Scaled(900);
             replaceButtons.Bottom = screenPositioner.ScreenSize.Height;
+            replaceButtons.ScrollBarWidth = scaleHelper.Scaled(25);
+            replaceButtons.ScrollMargin = scaleHelper.Scaled(5);
 
             if (replacingItem)
             {
