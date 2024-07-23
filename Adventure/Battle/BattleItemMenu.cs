@@ -42,14 +42,14 @@ namespace Adventure.Battle
 
             itemButtons.Margin = scaleHelper.Scaled(10);
             itemButtons.MaxWidth = scaleHelper.Scaled(900);
-            itemButtons.Bottom = screenPositioner.ScreenSize.Height;
+            itemButtons.Bottom = battleScreenLayout.DynamicButtonBottom;
             itemButtons.ScrollBarWidth = scaleHelper.Scaled(25);
             itemButtons.ScrollMargin = scaleHelper.Scaled(5);
 
             var selectedItem = itemButtons.Show<InventoryItem>(sharpGui
                 , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i))
                 , inventory.Items.Count
-                , s => screenPositioner.GetTopRightRect(s)
+                , s => battleScreenLayout.DynamicButtonLocation(s)
                 , gamepadId,
                 style: style);
 

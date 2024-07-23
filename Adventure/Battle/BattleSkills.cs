@@ -63,7 +63,12 @@ namespace Adventure.Battle
             skillButtons.ScrollBarWidth = scaleHelper.Scaled(25);
             skillButtons.ScrollMargin = scaleHelper.Scaled(5);
 
-            var skill = skillButtons.Show(sharpGui, skills.Select(i => new ButtonColumnItem<ISkill>(i.Name, i)).Append(new ButtonColumnItem<ISkill>("Back", BackSkill)), skills.Count + 1, s => battleScreenLayout.DynamicButtonLocation(s), gamepadId, style: style);
+            var skill = skillButtons.Show(sharpGui
+                , skills.Select(i => new ButtonColumnItem<ISkill>(i.Name, i)).Append(new ButtonColumnItem<ISkill>("Back", BackSkill))
+                , skills.Count + 1
+                , s => battleScreenLayout.DynamicButtonLocation(s)
+                , gamepadId
+                , style: style);
             if (skill != null)
             {
                 if (skill == BackSkill)
