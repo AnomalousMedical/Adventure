@@ -76,7 +76,13 @@ namespace Adventure.Battle
 
         public IntRect DynamicButtonLocation(IntSize2 s)
         {
-            return new IntRect(screenPositioner.ScreenSize.Width - s.Width, infoColumnRect.Top - s.Height, s.Width, s.Height);
+            var rect = new IntRect(screenPositioner.ScreenSize.Width - s.Width, infoColumnRect.Top - s.Height, s.Width, s.Height);
+            if(rect.Top < 0)
+            {
+                rect.Top = 0;
+                rect.Height = infoColumnRect.Top;
+            }
+            return rect;
         }
 
         public ColumnLayout InfoColumn => infoColumn;
