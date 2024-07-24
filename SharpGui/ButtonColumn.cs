@@ -43,6 +43,10 @@ namespace SharpGui
         public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null, Guid? navUp = null, Guid? navDown = null, Func<IEnumerable<SharpButton>, IEnumerable<ILayoutItem>> wrapItemLayout = null)
         {
             IEnumerable<ILayoutItem> wrappedButtons = buttons;
+            if(itemCount < buttons.Count)
+            {
+                wrappedButtons = buttons.Take(itemCount);
+            }
             if(wrapItemLayout != null)
             {
                 wrappedButtons = wrapItemLayout(buttons).ToList();
