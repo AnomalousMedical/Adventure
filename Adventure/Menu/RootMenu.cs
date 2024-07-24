@@ -40,7 +40,6 @@ class RootMenu
     SharpButton help = new SharpButton() { Text = languageService.Current.RootMenu.Help };
     SharpButton options = new SharpButton() { Text = languageService.Current.RootMenu.Options };
     SharpButton debug = new SharpButton() { Text = languageService.Current.RootMenu.Debug };
-    SharpButton feedback = new SharpButton() { Text = languageService.Current.RootMenu.Feedback };
     SharpButton close = new SharpButton() { Text = languageService.Current.RootMenu.Close };
 
     SharpText undefeated = new SharpText() { Text = languageService.Current.RootMenu.Undefeated, Color = Color.UIWhite };
@@ -95,7 +94,6 @@ class RootMenu
         {
             yield return debug;
         }
-        yield return feedback;
         yield return close;
     }
 
@@ -189,32 +187,18 @@ class RootMenu
             helpMenu.PreviousMenu = this;
             explorationMenu.RequestSubMenu(helpMenu, gamepad);
         }
-        else if (sharpGui.Button(options, gamepad, navDown: gameOptions.Debug ? debug.Id : feedback.Id, navUp: HasHelpBook ? help.Id : files.Id))
+        else if (sharpGui.Button(options, gamepad, navDown: gameOptions.Debug ? debug.Id : close.Id, navUp: HasHelpBook ? help.Id : files.Id))
         {
             infos = null;
             optionsMenu.PreviousMenu = this;
             explorationMenu.RequestSubMenu(optionsMenu, gamepad);
         }
-        else if (gameOptions.Debug && sharpGui.Button(debug, gamepad, navDown: feedback.Id, navUp: options.Id))
+        else if (gameOptions.Debug && sharpGui.Button(debug, gamepad, navDown: close.Id, navUp: options.Id))
         {
             infos = null;
             explorationMenu.RequestSubMenu(explorationMenu.DebugGui, gamepad);
         }
-        else if (sharpGui.Button(feedback, gamepad, navDown: close.Id, navUp: gameOptions.Debug ? debug.Id : options.Id))
-        {
-            coroutineRunner.RunTask(async () =>
-            {
-                var open = await confirmMenu.ShowAndWait("This will open your browser. Do you want to continue?", null, gamepad);
-                if (open)
-                {
-                    Process.Start(new ProcessStartInfo("https://docs.google.com/forms/d/e/1FAIpQLSd8TUYdRgNfZi6zIdTmRTC5IpoiHxHRaJtq0O8mOH1qlEnQ0A/viewform?usp=sf_link")
-                    {
-                        UseShellExecute = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
-                    });
-                }
-            });
-        }
-        else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: feedback.Id) || sharpGui.IsStandardBackPressed(gamepad))
+        else if (sharpGui.Button(close, gamepad, navDown: skills.Id, navUp: gameOptions.Debug ? debug.Id : options.Id) || sharpGui.IsStandardBackPressed(gamepad))
         {
             infos = null;
             explorationMenu.RequestSubMenu(null, gamepad);
