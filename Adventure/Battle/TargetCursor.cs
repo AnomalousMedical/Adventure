@@ -35,6 +35,7 @@ namespace Adventure.Battle
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
         private SharpButton selectTargetButton = new SharpButton() { Text = "Select" };
         private SharpButton rowButton = new SharpButton() { Text = "Row" };
+        private SharpButton cancelButton = new SharpButton() { Text = "Cancel" };
 
         public uint EnemyTargetIndex { get; set; }
         public uint PlayerTargetIndex { get; set; }
@@ -309,7 +310,7 @@ namespace Adventure.Battle
         {
             SetPosition(enemyPos);
 
-            battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton, rowButton);
+            battleScreenLayout.LayoutBattleMenu(cancelButton, selectTargetButton, nextTargetButton, previousTargetButton, rowButton);
 
             if (activePlayer.Stats.CanSeeEnemyInfo)
             {
@@ -396,8 +397,13 @@ namespace Adventure.Battle
                 ChangeRow();
                 handled = true;
             }
+            if (sharpGui.ShowHover && sharpGui.Button(cancelButton, activePlayer.GamepadId, style: activePlayer.UiStyle))
+            {
+                SetTarget(null);
+                handled = true;
+            }
 
-            if(!handled)
+            if (!handled)
             {
                 var currentGamepad = (int)activePlayer.GamepadId;
                 var gamepadButton = sharpGui.GamepadButtonEntered[currentGamepad];
