@@ -62,7 +62,6 @@ class RootMenu
         String Help,
         String Options,
         String Debug,
-        String Feedback,
         String Close,
         String Undefeated,
         String OldSchool,

@@ -305,7 +305,6 @@ namespace Adventure.Text
                     Help: "Help",
                     Options: "Options",
                     Debug: "Debug",
-                    Feedback: "Feedback",
                     Close: "Close",
                     Undefeated: "Undefeated",
                     OldSchool: "Old School",
