@@ -26,7 +26,7 @@ namespace Adventure.Battle
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleManager battleManager;
         private readonly IScaleHelper scaleHelper;
-        private ButtonColumn skillButtons = new ButtonColumn(4);
+        private ButtonColumn skillButtons = new ButtonColumn(5);
         private List<ISkill> skills = new List<ISkill>();
 
         public BattleSkills(IBattleScreenLayout battleScreenLayout, IBattleManager battleManager, IScaleHelper scaleHelper)
