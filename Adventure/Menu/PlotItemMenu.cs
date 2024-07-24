@@ -59,7 +59,7 @@ class PlotItemMenu
            }
         ));
 
-        var layout = new RowLayout(close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        var layout = new RowLayout(close) { Margin = new IntPad(scaleHelper.Scaled(20)) };
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -74,7 +74,11 @@ class PlotItemMenu
             currentItems = persistence.Current.PlotItems.Select(i => new ButtonColumnItem<PlotItems>(languageService.Current.PlotItems.GetText(i), i)).ToList();
         }
         var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-        itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepadId, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+        itemButtons.Show(sharpGui, currentItems, currentItems.Count, 
+            p => screenPositioner.GetTopRightRect(p), 
+            gamepadId, 
+            wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0) }, 
+            navUp: close.Id, navDown: close.Id);
 
         if (sharpGui.Button(close, gamepadId) || sharpGui.IsStandardBackPressed(gamepadId))
         {

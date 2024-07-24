@@ -121,7 +121,7 @@ class RootMenu
         }
 
         var layout =
-           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+           new MarginLayout(new IntPad(scaleHelper.Scaled(20)),
            new PanelLayout(infoPanel,
            new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) }
         ));
@@ -136,9 +136,9 @@ class RootMenu
         gold.Text = persistence.Current.Party.Gold + languageService.Current.RootMenu.Gold;
 
         layout =
-          new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+          new MarginLayout(new IntPad(scaleHelper.Scaled(20)),
           new PanelLayout(descriptionPanel,
-          new ColumnLayout(GetStatsItems()) { Margin = new IntPad(10) }
+          new ColumnLayout(GetStatsItems()) { Margin = new IntPad(scaleHelper.Scaled(5)) }
         ));
         var infoDesiredSize = layout.GetDesiredSize(sharpGui);
         layout.SetRect(screenPositioner.GetBottomLeftRect(infoDesiredSize));

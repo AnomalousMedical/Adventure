@@ -52,15 +52,14 @@ namespace SharpGui
                 wrappedButtons = wrapItemLayout(buttons).ToList();
             }
 
-            ILayoutItem innerLayout = new ColumnLayout(wrappedButtons) { Margin = new IntPad(0, 0, 0, Margin) };
+            ILayoutItem innerLayout = new ColumnLayout(wrappedButtons) { Margin = new IntPad(0, Margin, 0, Margin) };
 
             if (hasMoreButtons)
             {
-                innerLayout = new RowLayout(innerLayout, scrollBar) { Margin = new IntPad(ScrollMargin, 0, 0, 0) };
+                innerLayout = new RowLayout(innerLayout, new MarginLayout(new IntPad(0, Margin, 0, 0), scrollBar)) { Margin = new IntPad(ScrollMargin, 0, 0, 0) };
             }
 
-            ILayoutItem layout = new MarginLayout(new IntPad(Margin),
-                                    new MaxWidthLayout(MaxWidth, innerLayout));
+            ILayoutItem layout = new MaxWidthLayout(MaxWidth, innerLayout);
 
             if (wrapLayout != null)
             {

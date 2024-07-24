@@ -157,7 +157,11 @@ internal class HelpMenu
         chapters.ScrollMargin = scaleHelper.Scaled(5);
 
         var lastItemIndex = chapters.FocusedIndex(sharpGui);
-        var selectedItem = chapters.Show<int?>(sharpGui, chapterButtons, 8, s => screenPositioner.GetTopRightRect(s), gamepadId, navDown: back.Id, navUp: back.Id, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+        var selectedItem = chapters.Show<int?>(sharpGui, chapterButtons, 8, 
+            s => screenPositioner.GetTopRightRect(s), 
+            gamepadId, 
+            navDown: back.Id, navUp: back.Id, 
+            wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0) });
 
         if (sharpGui.Button(back, gamepadId, navUp: chapters.BottomButton, navDown: chapters.TopButton, navLeft: chapters.TopButton, navRight: chapters.TopButton) || sharpGui.IsStandardBackPressed(gamepadId))
         {

@@ -13,6 +13,8 @@ namespace Adventure.Battle
 {
     internal class BattleItemMenu
     {
+        private static readonly InventoryItem BackInventoryItem = new InventoryItem();
+
         private readonly IBattleScreenLayout battleScreenLayout;
         private readonly IBattleManager battleManager;
         private readonly IScaleHelper scaleHelper;
@@ -47,28 +49,32 @@ namespace Adventure.Battle
             itemButtons.ScrollMargin = scaleHelper.Scaled(5);
 
             var selectedItem = itemButtons.Show<InventoryItem>(sharpGui
-                , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i))
-                , inventory.Items.Count
+                , inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Back", BackInventoryItem))
+                , inventory.Items.Count + 1
                 , s => battleScreenLayout.DynamicButtonLocation(s)
-                , gamepadId,
-                style: style);
+                , gamepadId
+                , wrapLayout: l => new MarginLayout(new IntPad(0, 0, scaleHelper.Scaled(20), scaleHelper.Scaled(10)), l)
+                , style: style);
 
             if(selectedItem != null)
             {
-                if (selectedItem.Equipment != null)
-                {
-                    itemSelectedCb(user, selectedItem);
-                }
-                else
-                {
-                    coroutine.RunTask(async () =>
+                if (selectedItem != BackInventoryItem) 
+                { 
+                    if (selectedItem.Equipment != null)
                     {
-                        var target = await battleManager.GetTarget(true);
-                        if (target != null)
+                        itemSelectedCb(user, selectedItem);
+                    }
+                    else
+                    {
+                        coroutine.RunTask(async () =>
                         {
-                            itemSelectedCb(target, selectedItem);
-                        }
-                    });
+                            var target = await battleManager.GetTarget(true);
+                            if (target != null)
+                            {
+                                itemSelectedCb(target, selectedItem);
+                            }
+                        });
+                    }
                 }
                 menuMode = BattlePlayer.MenuMode.Root;
                 didSomething = true;

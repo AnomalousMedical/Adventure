@@ -161,7 +161,7 @@ class UseItemMenu
             else
             {
                 var layout =
-                   new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+                   new MarginLayout(new IntPad(scaleHelper.Scaled(20)),
                    new ColumnLayout(new KeepWidthCenterLayout(new PanelLayout(promptPanel, itemPrompt)), 
                        new KeepWidthCenterLayout(
                            new ColumnLayout(use, transfer, discard, cancel) 
@@ -456,7 +456,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         ILayoutItem layout;
 
         layout =
-           new MarginLayout(new IntPad(scaleHelper.Scaled(10)),
+           new MarginLayout(new IntPad(scaleHelper.Scaled(20)),
            new PanelLayout(infoPanel,
            new ColumnLayout(infos) { Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5)) } ));
         layout.SetRect(screenPositioner.GetTopLeftRect(layout.GetDesiredSize(sharpGui)));
@@ -475,7 +475,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
            } ));
 
-        layout = new RowLayout(previous, next, plotItems, close) { Margin = new IntPad(scaleHelper.Scaled(10)) };
+        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new RowLayout(previous, next, plotItems, close) { Margin = new IntPad(scaleHelper.Scaled(10)) });
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -499,7 +499,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
             if (hasItems)
             {
                 var lastItemIndex = itemButtons.FocusedIndex(sharpGui);
-                var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, navUp: close.Id, navDown: close.Id);
+                var newSelection = itemButtons.Show(sharpGui, currentItems, currentItems.Count, p => screenPositioner.GetTopRightRect(p), gamepad, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle, wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0) }, navUp: close.Id, navDown: close.Id);
                 if (lastItemIndex != itemButtons.FocusedIndex(sharpGui))
                 {
                     descriptions = null;

@@ -68,6 +68,7 @@ namespace Adventure.Battle
                 , skills.Count + 1
                 , s => battleScreenLayout.DynamicButtonLocation(s)
                 , gamepadId
+                , wrapLayout: l => new MarginLayout(new IntPad(0, 0, scaleHelper.Scaled(20), scaleHelper.Scaled(10)), l)
                 , style: style);
             if (skill != null)
             {
