@@ -527,7 +527,7 @@ namespace Adventure.Battle
         private bool UpdateRootMenu(ISharpGui sharpGui, bool didSomething)
         {
             battleScreenLayout.LayoutBattleMenu(attackButton, skillsButton, itemButton, defendButton);
-            attackButton.Text = characterSheet.AtPowerMax ? "Catalyze" : "Attack";
+            attackButton.Text = characterSheet.AtPowerMax ? "PowAtk" : "Attack";
 
             if (sharpGui.Button(attackButton, gamepadId, navUp: defendButton.Id, navDown: skillsButton.Id, style: uiStyle))
             {
