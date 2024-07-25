@@ -48,7 +48,10 @@ internal class FileMenu
             saveFileButtons.ScrollBarWidth = scaleHelper.Scaled(25);
             saveFileButtons.ScrollMargin = scaleHelper.Scaled(5);
 
-            var newSelection = saveFileButtons.Show(sharpGui, saveFiles, saveFiles.Count, p => screenPositioner.GetCenterTopRect(p), gamepadId, navLeft: back.Id, navRight: back.Id);
+            var newSelection = saveFileButtons.Show(sharpGui, saveFiles, saveFiles.Count, 
+                p => screenPositioner.GetTopRightRect(p), 
+                gamepadId, navLeft: back.Id, navRight: back.Id,
+                wrapLayout: l => new MarginLayout(new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0), l));
             if (newSelection != null)
             {
                 SaveSelectedAction(newSelection, menu, gamepadId);
@@ -76,12 +79,15 @@ internal class FileMenu
         {
             coroutineRunner.RunTask(async () =>
             {
-                persistenceWriter.Save();
-                options.CurrentSave = persistenceWriter.CreateSaveFileName();
+                if (await confirmMenu.ShowAndWait("Are you sure you want to start a new game?", this, gamepadId))
+                {
+                    persistenceWriter.Save();
+                    options.CurrentSave = persistenceWriter.CreateSaveFileName();
 
-                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+                    await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
 
-                gameStateRequestor.RequestGameState(resetGameState);
+                    gameStateRequestor.RequestGameState(resetGameState);
+                }
             });
         }
 
@@ -107,13 +113,16 @@ internal class FileMenu
     {
         coroutineRunner.RunTask(async () =>
         {
-            persistenceWriter.Save();
-            options.CurrentSave = newSelection.FileName;
+            if (await confirmMenu.ShowAndWait($"Are you sure you want to load this save?\n \n{newSelection.Description}", this, gamepadId))
+            {
+                persistenceWriter.Save();
+                options.CurrentSave = newSelection.FileName;
 
-            await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
+                await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
 
-            gameStateRequestor.RequestGameState(resetGameState);
-            saveFiles = null;
+                gameStateRequestor.RequestGameState(resetGameState);
+                saveFiles = null;
+            }
         });
     }
 
@@ -121,7 +130,7 @@ internal class FileMenu
     {
         coroutineRunner.RunTask(async () =>
         {
-            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete this save?\n{saveInfo.Description}", this, gamepadId))
+            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete this save?\n \n{saveInfo.Description}", this, gamepadId))
             {
                 if (options.CurrentSave == saveInfo.FileName)
                 {
