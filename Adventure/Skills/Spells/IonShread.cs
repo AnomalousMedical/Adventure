@@ -18,7 +18,7 @@ namespace Adventure.Skills.Spells
         {
             if (triggered)
             {
-                return 70;
+                return 50;
             }
 
             if (triggerSpammed)
@@ -26,7 +26,7 @@ namespace Adventure.Skills.Spells
                 return 250;
             }
 
-            return 150;
+            return 100;
         }
 
         public ISkillEffect Apply(IBattleManager battleManager, IObjectResolver objectResolver, IScopedCoroutine coroutine, IBattleTarget attacker, IBattleTarget target, bool triggered, bool triggerSpammed)
