@@ -23,6 +23,13 @@ namespace SoundPlugin
             PerformanceMonitor.stop("Sound");
         }
 
+        public void pauseUpdate(Clock clock)
+        {
+            PerformanceMonitor.start("Sound");
+            openALManager.Update();
+            PerformanceMonitor.stop("Sound");
+        }
+
         public void loopStarting()
         {
             

@@ -11,7 +11,6 @@ namespace Engine.Platform
     public class UpdateTimer
     {
         protected List<UpdateListener> updateListeners = new List<UpdateListener>();
-        private Dictionary<String, UpdateListenerWithBackgrounding> multiThreadedWorkerListeners = new Dictionary<string, UpdateListenerWithBackgrounding>();
 
         protected Clock clock = new Clock();
         protected SystemTimer systemTimer;
@@ -114,65 +113,6 @@ namespace Engine.Platform
         }
 
         /// <summary>
-        /// Add a listener that will be updated as fast a possible by the loop.
-        /// </summary>
-        /// <param name="listener">The listener to add.</param>
-        public void addBackgroundUpdateListener(String name, BackgroundUpdateListener listener)
-        {
-            try
-            {
-                UpdateListenerWithBackgrounding bgListenerWorker = multiThreadedWorkerListeners[name];
-                bgListenerWorker.addBackgroundListener(listener);
-            }
-            catch (KeyNotFoundException)
-            {
-                logger.LogWarning("Could not find background worker supporting update named '{0}'. Be sure to add the update listeners that support background tasks before the background tasks. Listener will not update.", name);
-            }
-        }
-
-        /// <summary>
-        /// Remove a listener from the full speed loop.
-        /// </summary>
-        /// <param name="listener">The listener to remove</param>
-        public void removeBackgroundUpdateListener(String name, BackgroundUpdateListener listener)
-        {
-            try
-            {
-                UpdateListenerWithBackgrounding bgListenerWorker = multiThreadedWorkerListeners[name];
-                bgListenerWorker.removeBackgroundListener(listener);
-            }
-            catch (KeyNotFoundException)
-            {
-                //This is ok, the foreground task may have been removed first
-            }
-        }
-
-        /// <summary>
-        /// Add a listener that will be updated as fast a possible by the loop. Also will enable background tasks to run at the same time
-        /// as this listener. Those can be added using addBackgroundUpdateListener and giving the same name given here.
-        /// You must add the main thread update listener before adding the updates that will run in the background.
-        /// </summary>
-        /// <param name="listener">The listener to add.</param>
-        public void addUpdateListenerWithBackgrounding(String name, UpdateListener listener)
-        {
-            UpdateListenerWithBackgrounding bgListenerWorker = new UpdateListenerWithBackgrounding(listener);
-            multiThreadedWorkerListeners.Add(name, bgListenerWorker);
-            addUpdateListener(bgListenerWorker);
-        }
-
-        /// <summary>
-        /// Remove a listener from the full speed loop.
-        /// </summary>
-        /// <param name="listener">The listener to remove</param>
-        public void removeUpdateListenerWithBackgrounding(String name, UpdateListener listener)
-        {
-            UpdateListenerWithBackgrounding bgListenerWorker = multiThreadedWorkerListeners[name];
-            removeUpdateListener(bgListenerWorker);
-            bgListenerWorker.Dispose();
-            multiThreadedWorkerListeners.Remove(name);
-        }
-
-        /// <summary>
         /// Starts the loop iterating at the set update frequency.  This function will return
         /// once the loop is stopped.
         /// </summary>
@@ -264,6 +204,9 @@ namespace Engine.Platform
             }
         }
 
+        private bool live = true;
+        public bool Live { get => live; set => live = value; }
+
         /// <summary>
         /// Fire an update.
         /// </summary>
@@ -271,17 +214,30 @@ namespace Engine.Platform
         {
             clock.setTimeMicroseconds(currentTimeMicro, deltaTimeMicro);
 
-            //Update active coroutines, do this first so later steps can add them and they won't
-            //have their counters increased until the next frame
-            coroutineRunner.Update(clock);
-
-            //Iterate manually, this way listeners can be added/removed during the iteration of this loop.
-            //If a listener is removed the fixedUpdateIndex will be adjusted if needed.
-            for (listenerUpdateIndex = 0; listenerUpdateIndex < updateListeners.Count; ++listenerUpdateIndex)
+            if (live)
             {
-                updateListeners[listenerUpdateIndex].sendUpdate(clock);
+                //Update active coroutines, do this first so later steps can add them and they won't
+                //have their counters increased until the next frame
+                coroutineRunner.Update(clock);
+
+                //Iterate manually, this way listeners can be added/removed during the iteration of this loop.
+                //If a listener is removed the fixedUpdateIndex will be adjusted if needed.
+                for (listenerUpdateIndex = 0; listenerUpdateIndex < updateListeners.Count; ++listenerUpdateIndex)
+                {
+                    updateListeners[listenerUpdateIndex].sendUpdate(clock);
+                }
+                listenerUpdateIndex = -1;
             }
-            listenerUpdateIndex = -1;
+            else
+            {
+                //Iterate manually, this way listeners can be added/removed during the iteration of this loop.
+                //If a listener is removed the fixedUpdateIndex will be adjusted if needed.
+                for (listenerUpdateIndex = 0; listenerUpdateIndex < updateListeners.Count; ++listenerUpdateIndex)
+                {
+                    updateListeners[listenerUpdateIndex].pauseUpdate(clock);
+                }
+                listenerUpdateIndex = -1;
+            }
 
             mainThreadSynchronizationContext.PumpCurrentQueue();
 

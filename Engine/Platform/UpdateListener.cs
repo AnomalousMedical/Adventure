@@ -24,5 +24,11 @@ namespace Engine.Platform
 	    /// pause so any timing smoothing must be reset.
 	    /// </summary>
 	    void exceededMaxDelta();
+
+		/// <summary>
+		/// Fired when the pump is put out of Live mode, which causes it to run only a minimal update.
+		/// </summary>
+		/// <param name="clock"></param>
+		void pauseUpdate(Clock clock) { }
     }
 }

@@ -38,6 +38,11 @@ namespace Engine.Platform
             eventManager.updateEvents(clock);
         }
 
+        public void pauseUpdate(Clock clock)
+        {
+            eventManager.updateEvents(clock);
+        }
+
         /// <summary>
         /// Called when the max delta was exceeded.
         /// </summary>

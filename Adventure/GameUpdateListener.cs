@@ -33,6 +33,7 @@ namespace Adventure
         private readonly GameOptions gameOptions;
         private readonly IClockService clockService;
         private readonly IAchievementService achievementService;
+        private readonly PauseService pauseService;
         private IGameState gameState;
 
         public unsafe GameUpdateListener
@@ -51,7 +52,8 @@ namespace Adventure
             IGameStateRequestor gameStateRequestor,
             GameOptions gameOptions,
             IClockService clockService,
-            IAchievementService achievementService
+            IAchievementService achievementService,
+            PauseService pauseService
         )
         {
 
@@ -70,6 +72,7 @@ namespace Adventure
             this.gameOptions = gameOptions;
             this.clockService = clockService;
             this.achievementService = achievementService;
+            this.pauseService = pauseService;
             this.gameState = startState.GetFirstGameState();
             this.gameState.SetActive(true);
         }
@@ -98,6 +101,8 @@ namespace Adventure
                 nextState.SetActive(true);
                 this.gameState = nextState;
             }
+
+            pauseService.UnpausedUpdate();
 
             sharpGui.End();
             achievementService.Update();
@@ -130,6 +135,28 @@ namespace Adventure
             this.swapChain.Present(gameOptions.PresentInterval);
 
             objectResolverFactory.Flush();
+        }
+
+        public void pauseUpdate(Clock clock)
+        {
+            sharpGui.Begin(clock);
+
+            pauseService.PausedUpdate();
+
+            sharpGui.End();
+
+            achievementService.Update();
+
+            var pRTV = swapChain.GetCurrentBackBufferRTV();
+            var pDSV = swapChain.GetDepthBufferDSV();
+
+            immediateContext.SetRenderTarget(pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            immediateContext.ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            immediateContext.ClearDepthStencil(pDSV, CLEAR_DEPTH_STENCIL_FLAGS.CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE.RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+            sharpGui.Render(immediateContext);
+
+            this.swapChain.Present(gameOptions.PresentInterval);
         }
     }
 }
