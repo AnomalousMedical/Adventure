@@ -31,7 +31,7 @@ internal class FileMenu
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
     private ButtonColumn saveFileButtons = new ButtonColumn(25, LoadButtonsLayer);
 
-    record SaveInfo(string FileName, DateTime SaveTime);
+    record SaveInfo(string FileName, DateTime SaveTime, String Description);
     private List<ButtonColumnItem<SaveInfo>> saveFiles = null;
 
     public IExplorationSubMenu PreviousMenu { get; set; }
@@ -121,7 +121,7 @@ internal class FileMenu
     {
         coroutineRunner.RunTask(async () =>
         {
-            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete the save {saveInfo.SaveTime}?", this, gamepadId))
+            if (await confirmMenu.ShowAndWait($"Are you sure you want to delete this save?\n{saveInfo.Description}", this, gamepadId))
             {
                 if (options.CurrentSave == saveInfo.FileName)
                 {
@@ -148,32 +148,23 @@ internal class FileMenu
 
                 var time = TimeSpan.FromMilliseconds(save.GameState.Time.Total * Clock.MicroToMilliseconds);
                 var timeText = $"{(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
+                var message = GetName(save);
 
-                var message =
-@$"{save.GameState.Party.Members.FirstOrDefault()?.CharacterSheet?.Name}
-Areas Cleared: {save.GameState.World.CompletedAreaLevels.Count}
-Level: {save.GameState.World.Level}
-Time: {timeText}";
-
-                if(save.GameState.Time.ClearTime != null)
+                if (save.GameState.Time.ClearTime != null)
                 {
                     time = TimeSpan.FromMilliseconds(save.GameState.Time.ClearTime.Value * Clock.MicroToMilliseconds);
-                    message += $"\nCleared: {(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";   
+                    message += $"\nGame Cleared: {(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
+                }
+                else
+                {
+                    message += $"\nAreas Cleared: {save.GameState.World.CompletedAreaLevels.Count}";
                 }
 
-                if (save.GameState.Party.Undefeated)
-                {
-                    message += "\nUndefeated";
-                }
-
-                if (save.GameState.Party.OldSchool)
-                {
-                    message += "\nOld School";
-                }
+                message += $"\nTime: {timeText}";
 
                 message += $"\nSaved: {save.GameState.SaveTime}";
 
-                var buttonColumnItem = new ButtonColumnItem<SaveInfo>(message, new SaveInfo(save.FileName, save.GameState.SaveTime));
+                var buttonColumnItem = new ButtonColumnItem<SaveInfo>(message, new SaveInfo(save.FileName, save.GameState.SaveTime, message));
 
                 if (mySaveFiles.Count == 0)
                 {
@@ -187,5 +178,33 @@ Time: {timeText}";
                 }
             }
         });
+    }
+
+    private static string GetName(SaveDataInfo save)
+    {
+        String message;
+        var firstCharacter = save.GameState.Party.Members.FirstOrDefault();
+        if (firstCharacter != null)
+        {
+            message = $"{firstCharacter.CharacterSheet?.Name}";
+
+            var prefix = ": ";
+            if (save.GameState.Party.Undefeated)
+            {
+                message += $"{prefix}Undefeated";
+                prefix = ", ";
+            }
+
+            if (save.GameState.Party.OldSchool)
+            {
+                message += $"{prefix}Old School";
+            }
+        }
+        else
+        {
+            message = "No Party";
+        }
+
+        return message;
     }
 }
