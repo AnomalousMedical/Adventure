@@ -201,13 +201,13 @@ namespace Adventure.Services
                 enemy.Asset.SetupSwap(elementColor, 100, 50);
 
                 const int weakStart = 35;
-                const int medStart = 50;
+                const int medStart = 55;
                 const int strongStart = 60;
                 const int strongEnd = 99;
 
-                const float weakChance = 0.25f;
-                const float medChance = 0.35f;
-                const float strongChance = 0.5f;
+                const float weakChance = 0.15f;
+                const float medChance = 0.25f;
+                const float strongChance = 0.35f;
 
                 switch (absorbElement)
                 {
@@ -216,7 +216,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Ice), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongIce), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(ArchIce), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(StrongIce), strongStart, strongEnd, strongChance),
                         };
                         break;
                     case Element.Fire:
@@ -224,7 +224,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Fire), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongFire), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(ArchFire), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(StrongFire), strongStart, strongEnd, strongChance),
                         };
                         break;
                     case Element.Electricity:
@@ -232,7 +232,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Lightning), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongLightning), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(ArchLightning), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(StrongLightning), strongStart, strongEnd, strongChance),
                         };
                         break;
                 }
