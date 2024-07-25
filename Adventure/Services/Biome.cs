@@ -67,7 +67,7 @@ namespace Adventure
 
         public string BgMusic { get; set; } = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg";
 
-        public string BgMusicNight { get; set; } = "Music/opengameart/BossLevelVGM - Victoriana Loop.ogg";
+        public string BgMusicNight { get; set; } = "Music/opengameart/Youre Perfect Studio - gone_fishin_by_memoraphile_CC0.ogg";
 
         public string BattleMusic { get; set; } = "Music/freepd/Rafael Krux - Hit n Smash.ogg";
 
