@@ -42,6 +42,8 @@ class PauseService : IDisposable
         keybindService.KeybindChanged -= KeybindService_KeybindChanged;
     }
 
+    public bool Live { get => updateTimer.Live; set => updateTimer.Live = value; }
+
     public void UnpausedUpdate()
     {
         if (sharpGui.GamepadButtonEntered[0] == pauseButton[0]

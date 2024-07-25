@@ -12,10 +12,10 @@ namespace Adventure.Steam;
 
 static class SteamServiceExt
 {
+    private static bool addSteamService = false;
+
     public static void AddSteam(this IServiceCollection services, Action<SteamAchievementService.Options> configure = null)
     {
-        var addSteamService = false;
-
         try
         {
             if (Packsize.Test())
@@ -54,6 +54,15 @@ static class SteamServiceExt
             services.AddSingleton(options);
             services.AddSingleton<IAchievementService, SteamAchievementService>();
             services.AddSingleton<IOnscreenKeyboardService, SteamOnscreenKeyboardService>();
+            services.AddSingleton<SteamPauseService>();
+        }
+    }
+
+    public static void ActivateSteamServices(this IServiceProvider serviceProvider)
+    {
+        if (addSteamService)
+        {
+            serviceProvider.GetRequiredService<SteamPauseService>();
         }
     }
 }

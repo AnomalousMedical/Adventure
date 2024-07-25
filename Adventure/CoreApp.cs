@@ -374,6 +374,8 @@ namespace Adventure
 
             mainTimer = serviceProvider.GetRequiredService<UpdateTimer>();
 
+            serviceProvider.ActivateSteamServices();
+
             var linker = serviceProvider.GetRequiredService<IGameStateLinker>(); //This links the game states together.
             var updateListener = serviceProvider.GetRequiredService<GameUpdateListener>();
             mainTimer.addUpdateListener(updateListener);
