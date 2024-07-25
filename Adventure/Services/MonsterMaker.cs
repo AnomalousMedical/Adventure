@@ -216,7 +216,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Ice), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongIce), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(StrongIce), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(ArchIce), strongStart, strongEnd, strongChance),
                         };
                         break;
                     case Element.Fire:
@@ -224,7 +224,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Fire), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongFire), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(StrongFire), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(ArchFire), strongStart, strongEnd, strongChance),
                         };
                         break;
                     case Element.Electricity:
@@ -232,7 +232,7 @@ namespace Adventure.Services
                         {
                             new BattleStats.SkillInfo(nameof(Lightning), weakStart, medStart, weakChance),
                             new BattleStats.SkillInfo(nameof(StrongLightning), medStart, strongStart, medChance),
-                            new BattleStats.SkillInfo(nameof(StrongLightning), strongStart, strongEnd, strongChance),
+                            new BattleStats.SkillInfo(nameof(ArchLightning), strongStart, strongEnd, strongChance),
                         };
                         break;
                 }
