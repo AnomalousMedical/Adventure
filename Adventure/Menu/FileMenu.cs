@@ -20,7 +20,8 @@ internal class FileMenu
     IResetGameState resetGameState,
     ICoroutineRunner coroutineRunner,
     ConfirmMenu confirmMenu,
-    FadeScreenMenu fadeScreenMenu
+    FadeScreenMenu fadeScreenMenu,
+    IBackgroundMusicPlayer backgroundMusicPlayer
 ) : IExplorationSubMenu
 {
     public const float LoadButtonsLayer = 0.15f;
@@ -83,6 +84,7 @@ internal class FileMenu
                 {
                     persistenceWriter.Save();
                     options.CurrentSave = persistenceWriter.CreateSaveFileName();
+                    backgroundMusicPlayer.SetBackgroundSong(null);
 
                     await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
 
@@ -117,6 +119,7 @@ internal class FileMenu
             {
                 persistenceWriter.Save();
                 options.CurrentSave = newSelection.FileName;
+                backgroundMusicPlayer.SetBackgroundSong(null);
 
                 await fadeScreenMenu.ShowAndWait(0.0f, 1.0f, 0.6f, GamepadId.Pad1);
 
