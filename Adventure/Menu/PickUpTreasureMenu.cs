@@ -255,7 +255,7 @@ class PickUpTreasureMenu
             if (replacingItem)
             {
                 sharpGui.Text(promptText);
-                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(promptText), l) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: currentCharacterStyle);
+                var removeItem = replaceButtons.Show(sharpGui, sheet.Inventory.Items.Select(i => new ButtonColumnItem<InventoryItem>(languageService.Current.Items.GetText(i.InfoId), i)).Append(new ButtonColumnItem<InventoryItem>("Cancel", CancelInventoryItem)), sheet.Inventory.Items.Count + 1, p => screenPositioner.GetCenterTopRect(p), gamepadId, wrapLayout: l => new ColumnLayout(new KeepWidthCenterLayout(promptText), new KeepWidthCenterLayout(l)) { Margin = new IntPad(scaleHelper.Scaled(10)) }, style: currentCharacterStyle);
                 if (removeItem != null)
                 {
                     replacingItem = false;
