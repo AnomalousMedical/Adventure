@@ -21,7 +21,8 @@ enum KeyBindings
     MoveDown,
     MoveLeft,
     MoveRight,
-    OpenMenu
+    OpenMenu,
+    Pause
 }
 
 class KeybindService
@@ -46,6 +47,7 @@ class KeybindService
         { KeyBindings.MoveLeft, new KeyboardMouseBinding(KeyboardButtonCode.KC_A) },
         { KeyBindings.MoveRight, new KeyboardMouseBinding(KeyboardButtonCode.KC_D) },
         { KeyBindings.OpenMenu, new KeyboardMouseBinding(KeyboardButtonCode.KC_TAB) },
+        { KeyBindings.Pause, new KeyboardMouseBinding(KeyboardButtonCode.KC_PAUSE) },
     };
 
     private Dictionary<KeyBindings, GamepadButtonCode> defaultButtons = new Dictionary<KeyBindings, GamepadButtonCode>()
@@ -65,6 +67,7 @@ class KeybindService
         //{ KeyBindings.MoveLeft, GamepadButtonCode },
         //{ KeyBindings.MoveRight, GamepadButtonCode },
         { KeyBindings.OpenMenu, GamepadButtonCode.XInput_Y },
+        { KeyBindings.Pause, GamepadButtonCode.XInput_Start },
     };
     private readonly GameOptions options;
     private readonly ISharpGui sharpGui;
@@ -211,5 +214,6 @@ class KeybindService
         yield return KeyBindings.MoveDown;
         yield return KeyBindings.MoveLeft;
         yield return KeyBindings.MoveRight;
+        yield return KeyBindings.Pause;
     }
 }

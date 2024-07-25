@@ -359,7 +359,8 @@ internal class KeybindMenu : IExplorationSubMenu
         string MoveUp,
         string MoveDown,
         string MoveLeft,
-        string MoveRight
+        string MoveRight,
+        string Pause
     )
     {
         internal string GetText(KeyBindings i)
@@ -396,6 +397,8 @@ internal class KeybindMenu : IExplorationSubMenu
                     return MoveRight;
                 case KeyBindings.OpenMenu:
                     return OpenMenu;
+                case KeyBindings.Pause:
+                    return Pause;
             }
             return "MissingID_" + i;
         }

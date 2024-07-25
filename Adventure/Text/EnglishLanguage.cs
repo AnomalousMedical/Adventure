@@ -340,7 +340,8 @@ namespace Adventure.Text
                     MoveUp: "Move Up",
                     MoveDown: "Move Down",
                     MoveLeft: "Move Left",
-                    MoveRight: "Move Right"
+                    MoveRight: "Move Right",
+                    Pause: "Pause"
                 )
             );
         }
