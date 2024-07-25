@@ -80,7 +80,7 @@ class PlotItemMenu
             wrapLayout: l => new RowLayout(new KeepHeightLayout(descriptionLayout), l) { Margin = new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0) }, 
             navUp: close.Id, navDown: close.Id);
 
-        if (sharpGui.Button(close, gamepadId) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(close, gamepadId, navUp: itemButtons.BottomButton, navDown: itemButtons.TopButton) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             currentItems = null;
             descriptions = null;
