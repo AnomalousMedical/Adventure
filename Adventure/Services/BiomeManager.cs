@@ -11,13 +11,12 @@ namespace Adventure
     enum BiomeType
     {
         Countryside = 0,
-        Desert = 1,
+        Mountain = 1,
         Snowy = 2,
         Forest = 3,
         Beach = 4,
         Swamp = 5,
-        Mountain = 6,
-        Volcano = 1000, //This isn't included in random selection
+        Volcano = 6,
         FinalBoss = 30000
     }
 
@@ -88,8 +87,6 @@ namespace Adventure
             {
                 case BiomeType.Countryside:
                     return MakeCountryside();
-                case BiomeType.Desert:
-                    return MakeDesert();
                 case BiomeType.Snowy:
                     return MakeSnowy();
                 case BiomeType.Forest:
@@ -137,26 +134,6 @@ namespace Adventure
                     new BiomeBackgroundItem(4, new PineTree(), 0.8f, 0.4f),
                     new BiomeBackgroundItem(7, new PineTree.Swap1(), 0.8f, 0.4f),
                     new BiomeBackgroundItem(10, new PineTree.Swap2(), 0.8f, 0.4f),
-                }
-            };
-
-            return biome;
-        }
-
-        public Biome MakeDesert()
-        {
-            var biome = new Biome
-            {
-                FloorTexture = "Graphics/Textures/AmbientCG/Rocks008_1K",
-                FloorTexture2 = "Graphics/Textures/AmbientCG/Ground033_1K",
-                WallTexture = "Graphics/Textures/AmbientCG/Ground033_1K",
-                WallTexture2 = "Graphics/Textures/AmbientCG/Ground035_1K",
-                Treasure = MakeDefaultTreasure(),
-                BgMusic = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
-                BgMusicNight = "Music/freepd/Desert Fox Underscore - Rafael Krux.ogg",
-                BackgroundItems = new List<BiomeBackgroundItem>
-                {
-                    new BiomeBackgroundItem(2, new Cactus(), 0.8f, 0.4f)
                 }
             };
 

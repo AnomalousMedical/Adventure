@@ -369,7 +369,6 @@ namespace Adventure.Services
 
         private IEnumerable<IAreaBuilder> SetupAreaBuilder(int seed, FIRandom biomeRandom, FIRandom placementRandom, FIRandom elementalRandom, FIRandom treasureRandom, FIRandom alignmentRandom, byte[,] usedSquares, bool[] usedIslands, csIslandMaze map)
         {
-            //BiomeType.Desert is not being used
             var biomeDistributor = new EnumerableDistributor<BiomeType>(new[] { BiomeType.Forest, BiomeType.Snowy, BiomeType.Swamp });//This is not all of the biomes, some are added later
 
             var monsterInfo = MonsterMaker.CreateBaseMonsters(seed);
@@ -1006,18 +1005,19 @@ namespace Adventure.Services
         {
             switch (biome)
             {
-                case BiomeType.Beach:
+                case BiomeType.Mountain:
                 case BiomeType.Snowy:
                     return Element.Ice;
+
+                default:
+                case BiomeType.Volcano:
+                case BiomeType.Beach:
                 case BiomeType.Countryside:
                     return Element.Fire;
+
                 case BiomeType.Forest:
                 case BiomeType.Swamp:
                     return Element.Electricity;
-                case BiomeType.Desert:
-                    return Element.Fire;
-                default:
-                    return Element.Fire;
             }
         }
 

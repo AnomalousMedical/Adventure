@@ -37,12 +37,6 @@ namespace Adventure.Services
             monsterAssets.Add(new MonsterAssetInfo(new OgreNew(), BiomeType.Snowy, OgreNewSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new Wolf(), BiomeType.Snowy, WolfSoundEffect.Instance));
 
-            monsterAssets.Add(new MonsterAssetInfo(new SalamanderFirebrand(), BiomeType.Desert, SalamanderFirebrandSoundEffect.Instance));
-            monsterAssets.Add(new MonsterAssetInfo(new Skeleton(), BiomeType.Desert, SkeletonSoundEffect.Instance, Resistances: new Dictionary<Element, Resistance>
-            {
-                { Element.Healing, Resistance.Absorb } //Make healing damage
-            }));
-
             monsterAssets.Add(new MonsterAssetInfo(new ThornHunter(), BiomeType.Forest, ThornHunterSoundEffect.Instance));
             monsterAssets.Add(new MonsterAssetInfo(new WanderingMushroomNew(), BiomeType.Forest, WanderingMushroomNewSoundEffect.Instance));
 

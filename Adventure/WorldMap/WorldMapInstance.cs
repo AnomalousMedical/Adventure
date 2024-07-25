@@ -140,7 +140,7 @@ namespace Adventure.WorldMap
                 try
                 {
                     var countrysideTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground037_1K");
-                    var desertTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground025_1K");
+                    var mountainTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock026_1K");
                     var snowyTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Snow006_1K");
                     var forestTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground042_1K");
                     var beachTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Ground060_1K");
@@ -149,7 +149,7 @@ namespace Adventure.WorldMap
                     var cliffTextureDesc = new CCOTextureBindingDescription("Graphics/Textures/AmbientCG/Rock029_1K");
 
                     var countrysideTextureTask = textureManager.Checkout(countrysideTextureDesc);
-                    var desertTextureTask = textureManager.Checkout(desertTextureDesc);
+                    var mountainTextureTask = textureManager.Checkout(mountainTextureDesc);
                     var snowyTextureTask = textureManager.Checkout(snowyTextureDesc);
                     var forestTextureTask = textureManager.Checkout(forestTextureDesc);
                     var beachTextureTask = textureManager.Checkout(beachTextureDesc);
@@ -172,7 +172,7 @@ namespace Adventure.WorldMap
                     await Task.WhenAll
                     (
                         countrysideTextureTask,
-                        desertTextureTask,
+                        mountainTextureTask,
                         snowyTextureTask,
                         forestTextureTask,
                         beachTextureTask,
@@ -186,7 +186,7 @@ namespace Adventure.WorldMap
                     this.shader = shaderSetup.Result;
 
                     var countrysideTexture = countrysideTextureTask.Result;
-                    var desertTexture = desertTextureTask.Result;
+                    var mountainTexture = mountainTextureTask.Result;
                     var snowyTexture = snowyTextureTask.Result;
                     var forestTexture = forestTextureTask.Result;
                     var beachTexture = beachTextureTask.Result;
@@ -195,7 +195,7 @@ namespace Adventure.WorldMap
                     var cliffTexture = cliffTextureTask.Result;
 
                     loadedTextures.Add(countrysideTexture);
-                    loadedTextures.Add(desertTexture);
+                    loadedTextures.Add(mountainTexture);
                     loadedTextures.Add(snowyTexture);
                     loadedTextures.Add(forestTexture);
                     loadedTextures.Add(beachTexture);
@@ -211,7 +211,7 @@ namespace Adventure.WorldMap
 
                     floorBlasInstanceData = this.activeTextures.AddActiveTexture(
                         countrysideTexture,
-                        desertTexture,
+                        mountainTexture,
                         snowyTexture,
                         forestTexture,
                         beachTexture,

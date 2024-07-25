@@ -125,7 +125,6 @@ namespace Adventure.Text
                     HourglassFortune: "a hourglass next to curved dagger.",
                     LuckFortune: "various lucky animals including a rabbit and an elephant.",
                     CountrysideFortune: "a countryside with green trees and grass.",
-                    DesertFortune: "an arid desert.",
                     SnowyFortune: "a snow filled tundra.",
                     ForestFortune: "a deep forest with tall trees.",
                     BeachFortune: "a scenic beach with palm trees.",

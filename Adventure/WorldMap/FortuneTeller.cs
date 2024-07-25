@@ -36,7 +36,6 @@ namespace Adventure.WorldMap
             String HourglassFortune,
             String LuckFortune,
             String CountrysideFortune,
-            String DesertFortune,
             String SnowyFortune,
             String ForestFortune,
             String BeachFortune,
@@ -52,8 +51,6 @@ namespace Adventure.WorldMap
                 {
                     case BiomeType.Countryside:
                         return CountrysideFortune;
-                    case BiomeType.Desert:
-                        return DesertFortune;
                     case BiomeType.Snowy:
                         return SnowyFortune;
                     case BiomeType.Forest:
