@@ -1015,6 +1015,9 @@ namespace Adventure.Battle
                         break;
                 }
             }
+
+            mainHandItem?.SetAnimation(obj.CurrentAnimationName);
+            offHandItem?.SetAnimation(obj.CurrentAnimationName);
         }
 
         private void Sprite_FrameChanged(ISprite obj)
