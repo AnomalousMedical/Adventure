@@ -51,14 +51,16 @@ internal class FileMenu
 
             var newSelection = saveFileButtons.Show(sharpGui, saveFiles, saveFiles.Count, 
                 p => screenPositioner.GetTopRightRect(p), 
-                gamepadId, navLeft: back.Id, navRight: back.Id,
-                wrapLayout: l => new MarginLayout(new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0), l));
+                gamepadId,
+                wrapLayout: l => new MarginLayout(new IntPad(0, scaleHelper.Scaled(10), scaleHelper.Scaled(20), 0), l),
+                navUp: back.Id,
+                navDown: back.Id);
             if (newSelection != null)
             {
                 SaveSelectedAction(newSelection, menu, gamepadId);
             }
 
-            if (sharpGui.Button(back, gamepadId, navLeft: saveFileButtons.TopButton, navRight: saveFileButtons.TopButton)
+            if (sharpGui.Button(back, gamepadId, navUp: saveFileButtons.BottomButton, navDown: saveFileButtons.TopButton)
                 || sharpGui.IsStandardBackPressed(gamepadId))
             {
                 saveFiles = null;
