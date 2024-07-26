@@ -1177,7 +1177,7 @@ namespace Adventure.Battle
         public void MoveToGuard(in Vector3 position)
         {
             this.currentPosition = position;
-            this.currentPosition.z += -0.03f;
+            this.currentPosition.z += -0.15f;
             sprite.SetAnimation("stand-left");
             Sprite_FrameChanged(sprite);
         }
