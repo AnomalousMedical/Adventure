@@ -50,7 +50,7 @@ class SkillMenu
     private ISkillEffect currentEffect;
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
     private ButtonColumn characterButtons = new ButtonColumn(5, SkillMenu.ChooseTargetLayer);
     private List<ButtonColumnItem<Action>> characterChoices = null;

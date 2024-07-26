@@ -113,7 +113,7 @@ namespace Adventure.Battle
         private SharpText victoryText = new SharpText() { Color = Color.UIWhite };
         private SharpText nextRankText = new SharpText() { Color = Color.UIWhite };
         private SharpPanel victoryPanel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
         private List<Enemy> enemies = new List<Enemy>(20);
         private List<Enemy> killedEnemies = new List<Enemy>(20);

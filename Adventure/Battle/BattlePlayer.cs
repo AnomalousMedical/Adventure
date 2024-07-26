@@ -74,7 +74,7 @@ namespace Adventure.Battle
         private bool victorious = false;
 
         private SharpPanel infoPanel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
         public IBattleStats Stats => this.characterSheet;
 

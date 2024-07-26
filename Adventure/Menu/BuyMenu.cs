@@ -24,7 +24,7 @@ namespace Adventure.Menu
         SharpButton buy = new SharpButton() { Text = "Yes", Layer = BuyMenu.UseItemMenuLayer };
         SharpButton cancel = new SharpButton() { Text = "No", Layer = BuyMenu.UseItemMenuLayer };
         private SharpPanel promptPanel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
         public event Action Closed;
 
@@ -116,7 +116,7 @@ namespace Adventure.Menu
         private int currentSheet;
         private SharpPanel descriptionPanel = new SharpPanel();
         private SharpPanel infoPanel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
         private TaskCompletionSource menuClosedTask;
 

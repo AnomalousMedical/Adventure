@@ -26,7 +26,7 @@ class ConfirmMenu
     private SharpButton yesButton = new SharpButton() { Text = "Yes" };
     private SharpButton noButton = new SharpButton() { Text = "No" };
     private SharpPanel promptPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
     private IExplorationSubMenu previousMenu;
     private TaskCompletionSource<bool> currentTask;

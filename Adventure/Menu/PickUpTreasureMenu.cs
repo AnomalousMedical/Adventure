@@ -54,7 +54,7 @@ class PickUpTreasureMenu
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
     private SharpPanel characterPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
     private ButtonColumn replaceButtons = new ButtonColumn(25, ReplaceButtonsLayer);
     private ButtonColumn characterButtons = new ButtonColumn(5, ChooseTargetLayer);

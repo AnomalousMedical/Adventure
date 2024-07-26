@@ -21,7 +21,7 @@ class PlotItemMenu
     List<SharpText> descriptions = null;
     private List<ButtonColumnItem<PlotItems>> currentItems;
     private SharpPanel descriptionPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 

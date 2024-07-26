@@ -40,7 +40,7 @@ class UseItemMenu
     private List<ButtonColumnItem<Action>> characterChoices = null;
     private List<ButtonColumnItem<Action>> swapItemChoices = null;
     private SharpPanel promptPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
     private ButtonColumn characterButtons = new ButtonColumn(5, ItemMenu.ChooseTargetLayer);
     private ButtonColumn replaceButtons = new ButtonColumn(25, ItemMenu.ReplaceButtonsLayer);
@@ -342,7 +342,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private List<ButtonColumnItem<InventoryItem>> currentItems;
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
     private SharpText noItems = new SharpText() { Text = "No Items", Color = Color.UIWhite };
     private SharpPanel noItemsPanel = new SharpPanel();
 

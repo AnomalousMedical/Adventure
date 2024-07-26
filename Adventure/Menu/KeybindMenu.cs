@@ -30,7 +30,7 @@ internal class KeybindMenu : IExplorationSubMenu
     private KeyBindings? selectedBinding;
     private SharpText rebindKeyText = new SharpText() { Color = Color.UIWhite };
     private SharpPanel panel = new SharpPanel();
-    private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+    private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
     private readonly KeybindService keybindService;
     private readonly ISharpGui sharpGui;
     private readonly ILanguageService languageService;

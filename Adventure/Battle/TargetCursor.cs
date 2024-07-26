@@ -29,7 +29,7 @@ namespace Adventure.Battle
         private SpriteInstance spriteInstance;
         private bool disposed;
         private SharpPanel panel = new SharpPanel();
-        private SharpStyle panelStyle = new SharpStyle() { Background = Color.FromARGB(0xbb020202) };
+        private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
 
         private SharpButton nextTargetButton = new SharpButton() { Text = "Next" };
         private SharpButton previousTargetButton = new SharpButton() { Text = "Previous" };
