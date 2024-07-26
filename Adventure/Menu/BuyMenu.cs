@@ -200,6 +200,7 @@ namespace Adventure.Menu
 
             if (descriptions == null)
             {
+                descriptions = new List<SharpText>();
                 var descriptionIndex = itemButtons.FocusedIndex(sharpGui);
                 if (descriptionIndex < shopItems.Count)
                 {
@@ -207,7 +208,6 @@ namespace Adventure.Menu
                     var description = new SharpText() { Color = Color.UIWhite };
                     description.Text = MultiLineTextBuilder.CreateMultiLineString(languageService.Current.Items.GetDescription(item.Item.InfoId), scaleHelper.Scaled(520), sharpGui);
 
-                    descriptions = new List<SharpText>();
                     descriptions.Add(description);
                     descriptions.Add(new SharpText($@"Gold: {persistence.Current.Party.Gold}") { Color = Color.UIWhite });
                     descriptions.Add(new SharpText($@"Cost: {item.Item.Cost}") { Color = item.Item.Cost > persistence.Current.Party.Gold ? Color.UIRed : Color.UIWhite });
