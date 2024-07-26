@@ -316,6 +316,7 @@ class PickUpTreasureMenu
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
                         {
                             NextTreasure();
+                            treasureGivenCallback?.Invoke(treasure);
                             useCallback(treasure, i.Inventory, i.CharacterSheet, inventoryFunctions, persistence.Current);
                         }))
                         .Append(new ButtonColumnItem<Action>("Cancel", () => { }))
@@ -330,6 +331,7 @@ class PickUpTreasureMenu
                         if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, gamepadId))
                         {
                             NextTreasure();
+                            treasureGivenCallback?.Invoke(treasure);
                             if (treasure.Item?.Unique == true)
                             {
                                 persistence.Current.ItemVoid.Add(treasure.Item);
