@@ -384,7 +384,13 @@ class HelpBook : IDisposable, IZonePlaceable
                     await textDialog.ShowTextAndWait(take, args.GamepadId);
                     contextMenu.ClearContext(Take);
                     persistence.Current.PlotItems.Add(plotItem);
-                    achievementService.UnlockAchievement(Achievements.FullyUpgradedHelpBook);
+                    if (persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhem)
+                     && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter4)
+                     && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter5)
+                     && persistence.Current.PlotItems.Contains(PlotItems.GuideToPowerAndMayhemChapter6))
+                    {
+                        achievementService.UnlockAchievement(Achievements.FullyUpgradedHelpBook);
+                    }
                     DestroyGraphics();
                     DestroyPhysics();
                 }
