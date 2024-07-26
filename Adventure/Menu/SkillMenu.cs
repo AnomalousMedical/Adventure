@@ -84,8 +84,6 @@ class SkillMenu
 
         if (choosingCharacter)
         {
-            characterButtons.StealFocus(sharpGui);
-
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;

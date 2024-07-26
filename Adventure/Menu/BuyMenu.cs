@@ -176,7 +176,7 @@ namespace Adventure.Menu
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 
-            if (currentSheet > persistence.Current.Party.Members.Count)
+            if (currentSheet >= persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }

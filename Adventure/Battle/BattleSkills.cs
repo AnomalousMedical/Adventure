@@ -55,8 +55,6 @@ namespace Adventure.Battle
         {
             var didSomething = false;
 
-            skillButtons.StealFocus(sharpGui);
-
             skillButtons.Margin = scaleHelper.Scaled(10);
             skillButtons.MaxWidth = scaleHelper.Scaled(900);
             skillButtons.Bottom = battleScreenLayout.DynamicButtonBottom;

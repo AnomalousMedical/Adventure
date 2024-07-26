@@ -31,6 +31,9 @@ namespace SharpGui
 
         public int ScrollMargin { get; set; }
 
+        private static readonly Guid WrapTop = Guid.NewGuid();
+        private static readonly Guid WrapBottom = Guid.NewGuid();
+
         public ButtonColumn(int numButtons, float layer = 0f)
         {
             buttons = new List<SharpButton>(numButtons);
@@ -42,6 +45,15 @@ namespace SharpGui
 
         public T Show<T>(ISharpGui sharpGui, IEnumerable<ButtonColumnItem<T>> items, int itemCount, Func<IntSize2, IntRect> GetLayoutPosition, GamepadId gamepad, Guid? navLeft = null, Guid? navRight = null, SharpStyle style = null, Func<ILayoutItem, ILayoutItem> wrapLayout = null, Guid? navUp = null, Guid? navDown = null, Func<IEnumerable<SharpButton>, IEnumerable<ILayoutItem>> wrapItemLayout = null)
         {
+            if(navUp == null)
+            {
+                navUp = WrapTop;
+            }
+            if(navDown == null)
+            {
+                navDown = WrapBottom;
+            }
+
             IEnumerable<ILayoutItem> wrappedButtons = buttons;
             if(itemCount < buttons.Count)
             {
@@ -213,6 +225,15 @@ namespace SharpGui
                         }
                     }
                 }
+            }
+
+            if (sharpGui.FocusedItem == WrapTop)
+            {
+                sharpGui.StealFocus(BottomButton);
+            }
+            if (sharpGui.FocusedItem == WrapBottom)
+            {
+                sharpGui.StealFocus(TopButton);
             }
 
             return result;

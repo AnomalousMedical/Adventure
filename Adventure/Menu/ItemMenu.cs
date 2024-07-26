@@ -99,8 +99,6 @@ class UseItemMenu
 
         if (choosingCharacter)
         {
-            characterButtons.StealFocus(sharpGui);
-
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
@@ -132,8 +130,6 @@ class UseItemMenu
 
             if (replacingItem)
             {
-                replaceButtons.StealFocus(sharpGui);
-
                 replaceButtons.Margin = scaleHelper.Scaled(10);
                 replaceButtons.MaxWidth = scaleHelper.Scaled(900);
                 replaceButtons.Bottom = screenPositioner.ScreenSize.Height;

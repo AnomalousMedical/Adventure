@@ -82,7 +82,7 @@ class PickUpTreasureMenu
 
     public bool Update(GamepadId gamepadId, IExplorationMenu menu, IExplorationSubMenu parentSubMenu)
     {
-        if (currentSheet > persistence.Current.Party.Members.Count)
+        if (currentSheet >= persistence.Current.Party.Members.Count)
         {
             currentSheet = 0;
         }
@@ -93,8 +93,6 @@ class PickUpTreasureMenu
         var choosingCharacter = characterChoices != null;
         if (choosingCharacter)
         {
-            characterButtons.StealFocus(sharpGui);
-
             characterButtons.Margin = scaleHelper.Scaled(10);
             characterButtons.MaxWidth = scaleHelper.Scaled(900);
             characterButtons.Bottom = screenPositioner.ScreenSize.Height;
@@ -409,7 +407,7 @@ class PickUpTreasureMenu
     {
         if (activeCharacterChanged != null)
         {
-            if (currentSheet > persistence.Current.Party.Members.Count)
+            if (currentSheet >= persistence.Current.Party.Members.Count)
             {
                 currentSheet = 0;
             }
