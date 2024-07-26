@@ -703,6 +703,8 @@ namespace Adventure
                     o.Light = asset.CreateLight();
                     o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
+
+                mainHandItem.SetAnimation(sprite.CurrentAnimationName);
             }
 
             if (characterSheet.MainHand?.ShowHand != false)
@@ -743,6 +745,8 @@ namespace Adventure
                     o.Light = asset.CreateLight();
                     o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
+
+                offHandItem.SetAnimation(sprite.CurrentAnimationName);
             }
 
             if (characterSheet.OffHand?.ShowHand != false)

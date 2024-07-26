@@ -693,6 +693,8 @@ namespace Adventure.WorldMap
                         };
                         o.SpriteMaterial = playerSpriteInfo.Tier1;
                     });
+
+                    mainHandItem.SetAnimation(sprite.CurrentAnimationName);
                 }
             }
             else if (mainHandHand != null)
@@ -725,6 +727,8 @@ namespace Adventure.WorldMap
                     }
                     o.LightAttachmentChannel = asset.LightAttachmentChannel;
                 });
+
+                offHandItem.SetAnimation(sprite.CurrentAnimationName);
             }
 
             if (characterSheet.OffHand?.ShowHand != false)
