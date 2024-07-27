@@ -327,6 +327,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
     SharpButton plotItems = new SharpButton() { Text = "Plot Items" };
+    SharpButton skills = new SharpButton() { Text = "Skills" };
     SharpButton close = new SharpButton() { Text = "Close" };
     List<SharpText> infos = null;
     List<SharpText> descriptions = null;
@@ -339,6 +340,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private readonly CharacterStatsTextService characterStatsTextService;
     private readonly CharacterStyleService characterStyleService;
     private readonly PlotItemMenu plotItemMenu;
+    private SkillMenu skillMenu;
     private List<ButtonColumnItem<InventoryItem>> currentItems;
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
@@ -377,6 +379,11 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         useItemMenu.Closed += UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged += UseItemMenu_IsTransferStatusChanged;
         useItemMenu.ItemUsed += UseItemMenu_ItemUsed;
+    }
+
+    public void Link(SkillMenu skillMenu)
+    {
+        this.skillMenu = skillMenu;
     }
 
     public void Dispose()
@@ -471,7 +478,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                Margin = new IntPad(scaleHelper.Scaled(10), scaleHelper.Scaled(5), scaleHelper.Scaled(10), scaleHelper.Scaled(5))
            } ));
 
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new RowLayout(previous, next, plotItems, close) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new RowLayout(previous, next, plotItems, skills, close) { Margin = new IntPad(scaleHelper.Scaled(10)) });
         var backButtonRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonRect);
 
@@ -548,7 +555,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     itemButtons.FocusTop(sharpGui);
                 }
             }
-            if (sharpGui.Button(plotItems, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: next.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(plotItems, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: next.Id, navRight: skills.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {
@@ -559,7 +566,18 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                     menu.RequestSubMenu(plotItemMenu, gamepad);
                 }
             }
-            if (sharpGui.Button(close, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: plotItems.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(skills, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: plotItems.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            {
+                if (allowChanges)
+                {
+                    currentItems = null;
+                    descriptions = null;
+                    infos = null;
+                    plotItemMenu.PreviousMenu = this;
+                    menu.RequestSubMenu(skillMenu, gamepad);
+                }
+            }
+            if (sharpGui.Button(close, gamepad, navUp: hasItems ? itemButtons.BottomButton : close.Id, navDown: hasItems ? itemButtons.TopButton : close.Id, navLeft: skills.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 if (allowChanges)
                 {

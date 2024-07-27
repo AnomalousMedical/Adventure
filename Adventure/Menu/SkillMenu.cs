@@ -29,7 +29,8 @@ class SkillMenu
     IObjectResolverFactory objectResolverFactory,
     IScopedCoroutine coroutine,
     IClockService clockService,
-    ISoundEffectPlayer soundEffectPlayer
+    ISoundEffectPlayer soundEffectPlayer,
+    ItemMenu itemMenu
 ) : IExplorationSubMenu, IDisposable
 {
     public const float SkillButtonsLayer = 0.15f;
@@ -41,6 +42,7 @@ class SkillMenu
     private ButtonColumn skillButtons = new ButtonColumn(25, SkillButtonsLayer);
     SharpButton next = new SharpButton() { Text = "Next" };
     SharpButton previous = new SharpButton() { Text = "Previous" };
+    SharpButton items = new SharpButton() { Text = "Items" };
     SharpButton close = new SharpButton() { Text = "Close" };
     SharpText noSkills = new SharpText() { Text = "No Skills", Color = Color.UIWhite };
     SharpPanel noSkillsPanel = new SharpPanel();
@@ -165,7 +167,7 @@ class SkillMenu
         ));
         var descriptionNeedsLayout = true;
 
-        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new RowLayout(previous, next, close) { Margin = new IntPad(scaleHelper.Scaled(10)) });
+        layout = new MarginLayout(new IntPad(scaleHelper.Scaled(10)), new RowLayout(previous, next, items, close) { Margin = new IntPad(scaleHelper.Scaled(10)) });
         var backButtonLayoutRect = screenPositioner.GetBottomRightRect(layout.GetDesiredSize(sharpGui));
         layout.SetRect(backButtonLayoutRect);
 
@@ -237,17 +239,6 @@ class SkillMenu
                 sharpGui.Text(noSkills);
             }
 
-            if (sharpGui.Button(next, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: previous.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
-            {
-                ++currentSheet;
-                if (currentSheet >= persistence.Current.Party.Members.Count)
-                {
-                    currentSheet = 0;
-                }
-                currentPlayerSkills = null;
-                infos = null;
-                skillButtons.FocusTop(sharpGui);
-            }
             if (sharpGui.Button(previous, gamepad, navUp: hasSkills ? skillButtons.BottomButton : previous.Id, navDown: hasSkills ? skillButtons.TopButton : previous.Id, navLeft: close.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
                 --currentSheet;
@@ -259,7 +250,24 @@ class SkillMenu
                 infos = null;
                 skillButtons.FocusTop(sharpGui);
             }
-            if (sharpGui.Button(close, gamepad, navUp: hasSkills ? skillButtons.BottomButton : close.Id, navDown: hasSkills ? skillButtons.TopButton : close.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            if (sharpGui.Button(next, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: previous.Id, navRight: items.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
+            {
+                ++currentSheet;
+                if (currentSheet >= persistence.Current.Party.Members.Count)
+                {
+                    currentSheet = 0;
+                }
+                currentPlayerSkills = null;
+                infos = null;
+                skillButtons.FocusTop(sharpGui);
+            }
+            if (sharpGui.Button(items, gamepad, navUp: hasSkills ? skillButtons.BottomButton : items.Id, navDown: hasSkills ? skillButtons.TopButton : items.Id, navLeft: next.Id, navRight: close.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
+            {
+                currentPlayerSkills = null;
+                menu.RequestSubMenu(itemMenu, gamepad);
+                infos = null;
+            }
+            if (sharpGui.Button(close, gamepad, navUp: hasSkills ? skillButtons.BottomButton : close.Id, navDown: hasSkills ? skillButtons.TopButton : close.Id, navLeft: items.Id, navRight: previous.Id, style: currentCharacterStyle) || sharpGui.IsStandardBackPressed(gamepad))
             {
                 currentPlayerSkills = null;
                 menu.RequestSubMenu(menu.RootMenu, gamepad);
