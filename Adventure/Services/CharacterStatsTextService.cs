@@ -44,9 +44,13 @@ Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventoryS
                 {
                     Color = GetHpColor(character.CharacterSheet)
                 };
-                yield return new SharpText($"MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}\n ")
+                yield return new SharpText($"MP:  {character.CharacterSheet.CurrentMp} / {character.CharacterSheet.Mp}")
                 {
                     Color = GetMpColor(character.CharacterSheet)
+                };
+                yield return new SharpText($"Items:  {character.Inventory.Items.Count} / {character.CharacterSheet.InventorySize}\n ") 
+                { 
+                    Color = Color.UIWhite 
                 };
             }
         }
