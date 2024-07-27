@@ -107,13 +107,13 @@ namespace Adventure.Menu
         private readonly CharacterMenuPositionService characterMenuPositionService;
         private readonly CharacterStyleService characterStyleService;
         private readonly ISoundEffectPlayer soundEffectPlayer;
+        private readonly SelectedCharacterService selectedCharacterService;
         private ButtonColumn itemButtons = new ButtonColumn(25, ItemButtonsLayer);
         SharpButton next = new SharpButton() { Text = "Next" };
         SharpButton previous = new SharpButton() { Text = "Previous" };
         SharpButton back = new SharpButton() { Text = "Back" };
         List<SharpText> infos;
         List<SharpText> descriptions;
-        private int currentSheet;
         private SharpPanel descriptionPanel = new SharpPanel();
         private SharpPanel infoPanel = new SharpPanel();
         private SharpStyle panelStyle = new SharpStyle() { Background = Color.UITransparentBg };
@@ -134,7 +134,8 @@ namespace Adventure.Menu
             CameraMover cameraMover,
             CharacterMenuPositionService characterMenuPositionService,
             CharacterStyleService characterStyleService,
-            ISoundEffectPlayer soundEffectPlayer
+            ISoundEffectPlayer soundEffectPlayer,
+            SelectedCharacterService selectedCharacterService
         )
         {
             this.persistence = persistence;
@@ -150,6 +151,7 @@ namespace Adventure.Menu
             this.characterMenuPositionService = characterMenuPositionService;
             this.characterStyleService = characterStyleService;
             this.soundEffectPlayer = soundEffectPlayer;
+            this.selectedCharacterService = selectedCharacterService;
             this.confirmBuyMenu.Closed += ConfirmBuyMenu_Closed;
         }
 
@@ -176,11 +178,7 @@ namespace Adventure.Menu
         {
             bool allowChanges = confirmBuyMenu.SelectedItem == null;
 
-            if (currentSheet >= persistence.Current.Party.Members.Count)
-            {
-                currentSheet = 0;
-            }
-            var characterData = persistence.Current.Party.Members[currentSheet];
+            var characterData = persistence.Current.Party.Members[selectedCharacterService.SelectedCharacter];
             var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
             if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
@@ -293,11 +291,7 @@ namespace Adventure.Menu
                 {
                     if (allowChanges)
                     {
-                        --currentSheet;
-                        if (currentSheet < 0)
-                        {
-                            currentSheet = persistence.Current.Party.Members.Count - 1;
-                        }
+                        selectedCharacterService.Previous();
                         descriptions = null;
                         infos = null;
                     }
@@ -306,11 +300,7 @@ namespace Adventure.Menu
                 {
                     if (allowChanges)
                     {
-                        ++currentSheet;
-                        if (currentSheet >= persistence.Current.Party.Members.Count)
-                        {
-                            currentSheet = 0;
-                        }
+                        selectedCharacterService.Next();
                         descriptions = null;
                         infos = null;
                     }

@@ -23,7 +23,8 @@ class PickUpTreasureMenu
     CharacterStatsTextService characterStatsTextService,
     CharacterStyleService characterStyleService,
     ConfirmMenu confirmMenu,
-    IScopedCoroutine scopedCoroutine
+    IScopedCoroutine scopedCoroutine,
+    SelectedCharacterService selectedCharacterService
 )
 {
     public const float ChooseTargetLayer = 0.15f;
@@ -46,7 +47,6 @@ class PickUpTreasureMenu
     List<SharpText> infos;
     List<SharpText> descriptions;
     SharpText promptText = new SharpText() { Color = Color.UIWhite };
-    private int currentSheet;
     private bool replacingItem = false;
     private bool equippingItem = false;
     private DateTime allowPickupTime;
@@ -82,11 +82,7 @@ class PickUpTreasureMenu
 
     public bool Update(GamepadId gamepadId, IExplorationMenu menu, IExplorationSubMenu parentSubMenu)
     {
-        if (currentSheet >= persistence.Current.Party.Members.Count)
-        {
-            currentSheet = 0;
-        }
-        var sheet = persistence.Current.Party.Members[currentSheet];
+        var sheet = persistence.Current.Party.Members[selectedCharacterService.SelectedCharacter];
         var currentCharacterStyle = characterStyleService.GetCharacterStyle(sheet.StyleIndex);
 
         //Keep this block first so it exits in the section below
@@ -343,11 +339,7 @@ class PickUpTreasureMenu
                 if (sharpGui.Button(previous, gamepadId, navUp: replacingItem ? replaceButtons.BottomButton : discard.Id, navDown: replacingItem ? replaceButtons.TopButton : take.Id, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
                 {
                     replacingItem = false;
-                    --currentSheet;
-                    if (currentSheet < 0)
-                    {
-                        currentSheet = persistence.Current.Party.Members.Count - 1;
-                    }
+                    selectedCharacterService.Previous();
                     descriptions = null;
                     infos = null;
                     FireActiveCharacterChanged();
@@ -355,11 +347,7 @@ class PickUpTreasureMenu
                 if (sharpGui.Button(next, gamepadId, navUp: replacingItem ? replaceButtons.BottomButton : discard.Id, navDown: replacingItem ? replaceButtons.TopButton : take.Id, navLeft: previous.Id, navRight: replacingItem ? replaceButtons.TopButton : take.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepadId))
                 {
                     replacingItem = false;
-                    ++currentSheet;
-                    if (currentSheet >= persistence.Current.Party.Members.Count)
-                    {
-                        currentSheet = 0;
-                    }
+                    selectedCharacterService.Next();
                     descriptions = null;
                     infos = null;
                     FireActiveCharacterChanged();
@@ -409,11 +397,7 @@ class PickUpTreasureMenu
     {
         if (activeCharacterChanged != null)
         {
-            if (currentSheet >= persistence.Current.Party.Members.Count)
-            {
-                currentSheet = 0;
-            }
-            var sheet = persistence.Current.Party.Members[currentSheet];
+            var sheet = persistence.Current.Party.Members[selectedCharacterService.SelectedCharacter];
             this.activeCharacterChanged.Invoke(sheet);
         }
     }
