@@ -30,7 +30,8 @@ class SkillMenu
     IScopedCoroutine coroutine,
     IClockService clockService,
     ISoundEffectPlayer soundEffectPlayer,
-    ItemMenu itemMenu
+    ItemMenu itemMenu,
+    SelectedCharacterService selectedCharacterService
 ) : IExplorationSubMenu, IDisposable
 {
     public const float SkillButtonsLayer = 0.15f;
@@ -48,7 +49,6 @@ class SkillMenu
     SharpPanel noSkillsPanel = new SharpPanel();
     List<SharpText> infos;
     List<SharpText> descriptions;
-    private int currentSheet;
     private ISkillEffect currentEffect;
     private SharpPanel descriptionPanel = new SharpPanel();
     private SharpPanel infoPanel = new SharpPanel();
@@ -77,11 +77,7 @@ class SkillMenu
 
         var choosingCharacter = characterChoices != null;
 
-        if (currentSheet >= persistence.Current.Party.Members.Count)
-        {
-            currentSheet = 0;
-        }
-        var characterData = persistence.Current.Party.Members[currentSheet];
+        var characterData = persistence.Current.Party.Members[selectedCharacterService.SelectedCharacter];
         var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
         if (choosingCharacter)
@@ -241,22 +237,14 @@ class SkillMenu
 
             if (sharpGui.Button(previous, gamepad, navUp: hasSkills ? skillButtons.BottomButton : previous.Id, navDown: hasSkills ? skillButtons.TopButton : previous.Id, navLeft: close.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepad))
             {
-                --currentSheet;
-                if (currentSheet < 0)
-                {
-                    currentSheet = persistence.Current.Party.Members.Count - 1;
-                }
+                selectedCharacterService.Previous();
                 currentPlayerSkills = null;
                 infos = null;
                 skillButtons.FocusTop(sharpGui);
             }
             if (sharpGui.Button(next, gamepad, navUp: hasSkills ? skillButtons.BottomButton : next.Id, navDown: hasSkills ? skillButtons.TopButton : next.Id, navLeft: previous.Id, navRight: items.Id, style: currentCharacterStyle) || sharpGui.IsStandardNextPressed(gamepad))
             {
-                ++currentSheet;
-                if (currentSheet >= persistence.Current.Party.Members.Count)
-                {
-                    currentSheet = 0;
-                }
+                selectedCharacterService.Next();
                 currentPlayerSkills = null;
                 infos = null;
                 skillButtons.FocusTop(sharpGui);

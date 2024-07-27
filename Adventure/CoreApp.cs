@@ -317,6 +317,7 @@ namespace Adventure
             services.AddSingleton<UserInputMenu>();
             services.AddSingleton<FontLoader>();
             services.AddSingleton<PauseService>();
+            services.AddSingleton<SelectedCharacterService>();
             services.AddSingleton<IVictoryGameState, VictoryGameState>();
             services.AddSingleton<MultiCameraMover<ZoneScene>>();
             services.AddSingleton<MultiCameraMover<ZoneScene>.Description>(new MultiCameraMover<ZoneScene>.Description());

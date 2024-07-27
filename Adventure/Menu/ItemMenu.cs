@@ -331,7 +331,6 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     SharpButton close = new SharpButton() { Text = "Close" };
     List<SharpText> infos = null;
     List<SharpText> descriptions = null;
-    private int currentSheet;
     private UseItemMenu useItemMenu;
     private readonly ILanguageService languageService;
     private readonly CharacterMenuPositionService characterMenuPositionService;
@@ -340,6 +339,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     private readonly CharacterStatsTextService characterStatsTextService;
     private readonly CharacterStyleService characterStyleService;
     private readonly PlotItemMenu plotItemMenu;
+    private readonly SelectedCharacterService selectedCharacterService;
     private SkillMenu skillMenu;
     private List<ButtonColumnItem<InventoryItem>> currentItems;
     private SharpPanel descriptionPanel = new SharpPanel();
@@ -361,7 +361,8 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         EquipmentTextService equipmentTextService,
         CharacterStatsTextService characterStatsTextService,
         CharacterStyleService characterStyleService,
-        PlotItemMenu plotItemMenu
+        PlotItemMenu plotItemMenu,
+        SelectedCharacterService selectedCharacterService
     )
     {
         this.persistence = persistence;
@@ -376,6 +377,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
         this.characterStatsTextService = characterStatsTextService;
         this.characterStyleService = characterStyleService;
         this.plotItemMenu = plotItemMenu;
+        this.selectedCharacterService = selectedCharacterService;
         useItemMenu.Closed += UseItemMenu_Closed;
         useItemMenu.IsTransferStatusChanged += UseItemMenu_IsTransferStatusChanged;
         useItemMenu.ItemUsed += UseItemMenu_ItemUsed;
@@ -397,11 +399,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
     {
         bool allowChanges = useItemMenu.SelectedItem == null;
 
-        if (currentSheet >= persistence.Current.Party.Members.Count)
-        {
-            currentSheet = 0;
-        }
-        var characterData = persistence.Current.Party.Members[currentSheet];
+        var characterData = persistence.Current.Party.Members[selectedCharacterService.SelectedCharacter];
         var currentCharacterStyle = characterStyleService.GetCharacterStyle(characterData.StyleIndex);
 
         if (characterMenuPositionService.TryGetEntry(characterData.CharacterSheet, out var characterMenuPosition))
@@ -528,11 +526,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 if (allowChanges)
                 {
                     itemButtons.ListIndex = 0;
-                    --currentSheet;
-                    if (currentSheet < 0)
-                    {
-                        currentSheet = persistence.Current.Party.Members.Count - 1;
-                    }
+                    selectedCharacterService.Previous();
                     currentItems = null;
                     descriptions = null;
                     infos = null;
@@ -544,11 +538,7 @@ class ItemMenu : IExplorationSubMenu, IDisposable
                 if (allowChanges)
                 {
                     itemButtons.ListIndex = 0;
-                    ++currentSheet;
-                    if (currentSheet >= persistence.Current.Party.Members.Count)
-                    {
-                        currentSheet = 0;
-                    }
+                    selectedCharacterService.Next();
                     currentItems = null;
                     descriptions = null;
                     infos = null;
