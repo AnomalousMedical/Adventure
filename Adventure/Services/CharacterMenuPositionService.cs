@@ -39,13 +39,18 @@ namespace Adventure.Services
         void Remove(CharacterSheet sheet, ICharacterMenuPositionEntry entry);
         void Set(CharacterSheet sheet, ICharacterMenuPositionEntry entry);
         bool TryGetEntry(CharacterSheet sheet, out ICharacterMenuPositionEntry entry);
+        void GetNormalCameraPosition(out Vector3 pos, out Quaternion rot);
     }
 
     interface ICharacterMenuPositionTracker<T> : ICharacterMenuPositionTracker
     {
     }
 
-    class CharacterMenuPositionTracker : ICharacterMenuPositionTracker
+    class CharacterMenuPositionTracker<T>
+    (
+        MultiCameraMover<T> multiCameraMover
+    )
+    : ICharacterMenuPositionTracker<T>
     {
         private Dictionary<CharacterSheet, ICharacterMenuPositionEntry> entries = new Dictionary<CharacterSheet, ICharacterMenuPositionEntry>();
 
@@ -69,10 +74,11 @@ namespace Adventure.Services
         {
             return entries.TryGetValue(sheet, out entry);
         }
-    }
 
-    class CharacterMenuPositionTracker<T> : CharacterMenuPositionTracker, ICharacterMenuPositionTracker<T>
-    {
+        public void GetNormalCameraPosition(out Vector3 pos, out Quaternion rot)
+        {
+            multiCameraMover.ComputeCameraPosition(out pos, out rot);
+        }
     }
 
     class WrappingCharacterMenuPositionTracker<T> : ICharacterMenuPositionTracker<T>
@@ -122,6 +128,19 @@ namespace Adventure.Services
                 return wrapped.TryGetEntry(sheet, out entry);
             }
         }
+
+        public void GetNormalCameraPosition(out Vector3 pos, out Quaternion rot)
+        {
+            if (UseOverrideEntry && overrideEntry != null)
+            {
+                pos = overrideEntry.CameraPosition;
+                rot = overrideEntry.CameraRotation;
+            }
+            else
+            {
+                wrapped.GetNormalCameraPosition(out pos, out rot);
+            }
+        }
     }
 
     class CharacterMenuPositionService
@@ -161,6 +180,19 @@ namespace Adventure.Services
             }
 
             return currentTracker.TryGetEntry(sheet, out entry);
+        }
+
+        public void GetNormalCameraPosition(out Vector3 pos, out Quaternion rot)
+        {
+            if (currentTracker == null)
+            {
+                pos = Vector3.Zero;
+                rot = Quaternion.Identity;
+            }
+            else
+            {
+                currentTracker.GetNormalCameraPosition(out pos, out rot);
+            }
         }
     }
 }

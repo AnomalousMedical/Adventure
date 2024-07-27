@@ -311,7 +311,7 @@ namespace Adventure
 
             services.AddSingleton<ICharacterMenuPositionTracker<ZoneScene>, CharacterMenuPositionTracker<ZoneScene>>();
             services.AddSingleton<ICharacterMenuPositionTracker<WorldMapScene>>(s => s.GetRequiredService<WrappingCharacterMenuPositionTracker<WorldMapScene>>());
-            services.AddSingleton<WrappingCharacterMenuPositionTracker<WorldMapScene>>(s => new WrappingCharacterMenuPositionTracker<WorldMapScene>(new CharacterMenuPositionTracker<WorldMapScene>()));
+            services.AddSingleton<WrappingCharacterMenuPositionTracker<WorldMapScene>>(s => new WrappingCharacterMenuPositionTracker<WorldMapScene>(new CharacterMenuPositionTracker<WorldMapScene>(s.GetRequiredService<MultiCameraMover<WorldMapScene>>())));
             services.AddSingleton<CharacterMenuPositionService>();
             services.AddSingleton<ICreditsService, CreditsService>();
             services.AddSingleton<UserInputMenu>();

@@ -28,10 +28,10 @@ class RootMenu
     Persistence persistence,
     FileMenu fileMenu,
     GameOptions gameOptions,
-    ConfirmMenu confirmMenu,
-    ICoroutineRunner coroutineRunner,
     HelpMenu helpMenu,
-    ILanguageService languageService
+    ILanguageService languageService,
+    CharacterMenuPositionService characterMenuPositionService,
+    CameraMover cameraMover
 ) : IRootMenu
 {
     SharpButton skills = new SharpButton() { Text = languageService.Current.RootMenu.Skills };
@@ -112,6 +112,9 @@ class RootMenu
 
     public void Update(IExplorationMenu explorationMenu, GamepadId gamepad)
     {
+        characterMenuPositionService.GetNormalCameraPosition(out var camPos, out var camRot);
+        cameraMover.SetInterpolatedGoalPosition(camPos, camRot);
+
         var time = TimeSpan.FromMilliseconds(persistence.Current.Time.Total * Clock.MicroToMilliseconds);
         timePlayed.Text = $"{(time.Hours + time.Days * 24):00}:{time.Minutes:00}:{time.Seconds:00}";
 

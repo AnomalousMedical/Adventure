@@ -71,7 +71,7 @@ class MultiCameraMover<T>
         cameraMover.SetInterpolatedGoalPosition(camPos + rayAdjust, cameraAngle);
     }
 
-    internal void CenterCamera()
+    public void CenterCamera()
     {
         if (entries.Count == 0)
         {
@@ -88,6 +88,28 @@ class MultiCameraMover<T>
         var camPos = currentPosition + cameraOffset;
         var rayAdjust = FindCameraTerrainOffset(camPos, (currentPosition - camPos).normalized());
         cameraMover.SetPosition(camPos + rayAdjust, cameraAngle);
+    }
+
+    public void ComputeCameraPosition(out Vector3 pos, out Quaternion rot)
+    {
+        if (entries.Count == 0)
+        {
+            pos = Vector3.Zero;
+            rot = Quaternion.Identity;
+            return;
+        }
+
+        Vector3 currentPosition = new Vector3();
+        foreach (var entry in entries)
+        {
+            currentPosition += entry.Position;
+        }
+        currentPosition /= entries.Count;
+
+        var camPos = currentPosition + cameraOffset;
+        var rayAdjust = FindCameraTerrainOffset(camPos, (currentPosition - camPos).normalized());
+        pos = camPos + rayAdjust;
+        rot = cameraAngle;
     }
 
     class RayHit
