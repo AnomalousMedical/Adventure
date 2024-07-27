@@ -80,6 +80,7 @@ namespace Adventure.Battle
         IBattleTarget GetGuard(IBattleTarget attacker, IBattleTarget target);
         IBattleTarget GetTargetForStats(IBattleStats stats);
         void CancelTargeting();
+        BattlePlayer GetPlayerForTarget(IBattleStats stats);
     }
 
     class BattleManager : IDisposable, IBattleManager
@@ -1224,6 +1225,11 @@ namespace Adventure.Battle
         public void CancelTargeting()
         {
             cursor.Cancel();
+        }
+
+        public BattlePlayer GetPlayerForTarget(IBattleStats stats)
+        {
+            return players.FirstOrDefault(i => i.Stats == stats);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Adventure.Skills
             {
                 battleManager.AllowActivePlayerGui = false;
                 stealMenu.SetTreasure(treasures, description.BattleManager, description.ObjectResolver, description.Coroutine, description.Attacker);
-                var padId = battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
+                var padId = battleManager.GetPlayerForTarget(description.Attacker.Stats)?.GamepadId ?? battleManager.GetActivePlayer()?.GamepadId ?? GamepadId.Pad1;
                 explorationMenu.RequestSubMenu(stealMenu, padId);
                 battleManager.CancelTargeting();
             }
