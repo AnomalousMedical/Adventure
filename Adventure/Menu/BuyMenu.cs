@@ -191,7 +191,7 @@ namespace Adventure.Menu
 
             if (infos == null)
             {
-                infos = characterStatsTextService.GetFullStats(characterData).ToList();
+                infos = characterStatsTextService.GetVitalStats(persistence.Current.Party.Members).ToList();
             }
 
             var shopItems = worldDatabase.CreateShopItems(CurrentShopType, persistence.Current.PlotItems)
