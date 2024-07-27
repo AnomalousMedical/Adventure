@@ -1,4 +1,5 @@
 ﻿using Adventure.Assets.SoundEffects;
+using Adventure.Items;
 using Adventure.Services;
 using Engine;
 using Engine.Platform;
@@ -17,7 +18,10 @@ namespace Adventure.Menu
         IScaleHelper scaleHelper,
         IScreenPositioner screenPositioner,
         ILanguageService languageService,
-        ISoundEffectPlayer soundEffectPlayer
+        ISoundEffectPlayer soundEffectPlayer,
+        ICoroutineRunner coroutine,
+        ConfirmMenu confirmMenu,
+        IInventoryFunctions inventoryFunctions
     )
     {
         SharpText prompt = new SharpText() { Color = Color.UIWhite, Layer = BuyMenu.UseItemMenuLayer };
@@ -30,7 +34,7 @@ namespace Adventure.Menu
 
         public ShopEntry SelectedItem { get; set; }
 
-        public void Update(Persistence.CharacterData characterData, GamepadId gamepadId)
+        public void Update(Persistence.CharacterData characterData, GamepadId gamepadId, BuyMenu buyMenu)
         {
             if (SelectedItem == null) { return; }
 
@@ -68,6 +72,16 @@ namespace Adventure.Menu
                     if(SelectedItem.UniqueSalePlotItem != null)
                     {
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
+                    }
+                    if (item.Equipment != null)
+                    {
+                        coroutine.RunTask(async () =>
+                        {
+                            if(await confirmMenu.ShowAndWait($"Should {characterData.CharacterSheet.Name} equip the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", buyMenu, gamepadId))
+                            {
+                                inventoryFunctions.Use(item, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
+                            }
+                        });
                     }
                 }
                 else
@@ -263,7 +277,7 @@ namespace Adventure.Menu
                 sharpGui.Text(description);
             }
 
-            confirmBuyMenu.Update(characterData, gamepadId);
+            confirmBuyMenu.Update(characterData, gamepadId, this);
 
             if (allowChanges)
             {
