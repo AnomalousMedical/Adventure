@@ -283,7 +283,14 @@ class PickUpTreasureMenu
             }
             else
             {
-                if (sharpGui.Button(take, gamepadId, navUp: previous.Id, navDown: treasure.CanUseOnPickup ? use.Id : discard.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
+                var canDiscard = !treasure.IsPlotItem;
+
+                if (sharpGui.Button(take, gamepadId, 
+                    navUp: previous.Id, 
+                    navDown: treasure.CanUseOnPickup ? use.Id : canDiscard ? discard.Id : previous.Id, 
+                    navLeft: next.Id, 
+                    navRight: previous.Id, 
+                    style: currentCharacterStyle))
                 {
                     if (hasInventoryRoom)
                     {
@@ -306,7 +313,12 @@ class PickUpTreasureMenu
 
                 if (treasure.CanUseOnPickup)
                 {
-                    if (sharpGui.Button(use, gamepadId, navUp: take.Id, navDown: discard.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
+                    if (sharpGui.Button(use, gamepadId, 
+                        navUp: take.Id, 
+                        navDown: canDiscard ? discard.Id : previous.Id, 
+                        navLeft: next.Id, 
+                        navRight: previous.Id, 
+                        style: currentCharacterStyle))
                     {
                         infos = null;
                         characterChoices = persistence.Current.Party.Members.Select(i => new ButtonColumnItem<Action>(i.CharacterSheet.Name, () =>
@@ -320,20 +332,28 @@ class PickUpTreasureMenu
                     }
                 }
 
-                if (sharpGui.Button(discard, gamepadId, navUp: treasure.CanUseOnPickup ? use.Id : take.Id, navDown: previous.Id, navLeft: next.Id, navRight: previous.Id, style: currentCharacterStyle))
+                if (canDiscard)
                 {
-                    scopedCoroutine.RunTask(async () =>
+                    if (sharpGui.Button(discard, gamepadId, 
+                        navUp: treasure.CanUseOnPickup ? use.Id : take.Id, 
+                        navDown: previous.Id, 
+                        navLeft: next.Id, 
+                        navRight: previous.Id, 
+                        style: currentCharacterStyle))
                     {
-                        if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, gamepadId))
+                        scopedCoroutine.RunTask(async () =>
                         {
-                            NextTreasure();
-                            treasureGivenCallback?.Invoke(treasure);
-                            if (treasure.Item?.Unique == true)
+                            if(await confirmMenu.ShowAndWait($"Are you sure you want to discard the {languageService.Current.Items.GetText(currentTreasure.Peek().InfoId)}", parentSubMenu, gamepadId))
                             {
-                                persistence.Current.ItemVoid.Add(treasure.Item);
+                                NextTreasure();
+                                treasureGivenCallback?.Invoke(treasure);
+                                if (treasure.Item?.Unique == true)
+                                {
+                                    persistence.Current.ItemVoid.Add(treasure.Item);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
 
                 if (sharpGui.Button(previous, gamepadId, navUp: replacingItem ? replaceButtons.BottomButton : discard.Id, navDown: replacingItem ? replaceButtons.TopButton : take.Id, navLeft: replacingItem ? replaceButtons.TopButton : take.Id, navRight: next.Id, style: currentCharacterStyle) || sharpGui.IsStandardPreviousPressed(gamepadId))
