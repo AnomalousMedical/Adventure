@@ -38,6 +38,7 @@ namespace Adventure
         private readonly ChooseCharacterMenu chooseCharacterMenu;
         private readonly FadeScreenMenu fadeScreenMenu;
         private readonly IContextMenu contextMenu;
+        private readonly CharacterMenuPositionService characterMenuPositionService;
         private IGameState nextState;
         private bool showLogo = true;
 
@@ -70,7 +71,8 @@ namespace Adventure
             ChooseCharacterMenu chooseCharacterMenu,
             FontLoader fontLoader,
             FadeScreenMenu fadeScreenMenu,
-            IContextMenu contextMenu
+            IContextMenu contextMenu,
+            CharacterMenuPositionService characterMenuPositionService
         )
         {
             this.zoneManager = zoneManager;
@@ -91,6 +93,7 @@ namespace Adventure
             this.chooseCharacterMenu = chooseCharacterMenu;
             this.fadeScreenMenu = fadeScreenMenu;
             this.contextMenu = contextMenu;
+            this.characterMenuPositionService = characterMenuPositionService;
             this.loading.Font = fontLoader.TitleFont;
         }
 
@@ -147,6 +150,7 @@ namespace Adventure
                         {
                             if (persistence.Current.Player.InBattle)
                             {
+                                characterMenuPositionService.SetTrackerActive(typeof(ZoneScene));
                                 fadeScreenMenu.Show(1.0f, 0.0f, 0.6f, GamepadId.Pad1, rootMenu, firstFrameDrawnCb: _ => rtInstances = zoneInstances);
                                 var beforeMenuSave = persistence.Current;
                                 await rootMenu.WaitForClose();
