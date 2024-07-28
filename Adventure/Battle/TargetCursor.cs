@@ -310,7 +310,7 @@ namespace Adventure.Battle
         {
             SetPosition(enemyPos);
 
-            battleScreenLayout.LayoutBattleMenu(cancelButton, selectTargetButton, nextTargetButton, previousTargetButton, rowButton);
+            battleScreenLayout.LayoutBattleMenu(selectTargetButton, nextTargetButton, previousTargetButton, rowButton, cancelButton);
 
             if (activePlayer.Stats.CanSeeEnemyInfo)
             {
