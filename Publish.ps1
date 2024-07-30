@@ -14,5 +14,4 @@ Copy-Item -Path ../AdventureAssets/Fonts -Destination $outFolder/AdventureAssets
 Copy-Item -Path ../AdventureAssets/Graphics -Destination $outFolder/AdventureAssets -Exclude @(".git") -Recurse
 Copy-Item -Path ../AdventureAssets/Music -Destination $outFolder/AdventureAssets -Exclude @(".git") -Recurse
 Copy-Item -Path ../AdventureAssets/SoundEffects -Destination $outFolder/AdventureAssets -Exclude @(".git") -Recurse
-Compress-Archive -Path $outFolder\* -DestinationPath "$outFolder\..\AnomalousAdventure-$(get-date -f yyyy-MM-dd_HH_mm_ss).zip"
 "Project written to $outFolder"
