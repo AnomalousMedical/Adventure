@@ -68,20 +68,21 @@ namespace Adventure.Menu
                     if (item != null)
                     {
                         characterData.Inventory.Items.Insert(0, item);
+
+                        if (item.Equipment != null)
+                        {
+                            coroutine.RunTask(async () =>
+                            {
+                                if (await confirmMenu.ShowAndWait($"Should {characterData.CharacterSheet.Name} equip the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", buyMenu, gamepadId))
+                                {
+                                    inventoryFunctions.Use(item, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
+                                }
+                            });
+                        }
                     }
                     if(SelectedItem.UniqueSalePlotItem != null)
                     {
                         persistence.Current.PlotItems.Add(SelectedItem.UniqueSalePlotItem.Value);
-                    }
-                    if (item.Equipment != null)
-                    {
-                        coroutine.RunTask(async () =>
-                        {
-                            if(await confirmMenu.ShowAndWait($"Should {characterData.CharacterSheet.Name} equip the {languageService.Current.Items.GetText(SelectedItem.InfoId)}?", buyMenu, gamepadId))
-                            {
-                                inventoryFunctions.Use(item, characterData.Inventory, characterData.CharacterSheet, characterData.CharacterSheet);
-                            }
-                        });
                     }
                 }
                 else
