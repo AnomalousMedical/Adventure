@@ -214,7 +214,7 @@ class UseItemMenu
                                 if (i.HasRoom)
                                 {
                                     characterData.RemoveItem(localSelectedItem);
-                                    i.Inventory.Items.Add(localSelectedItem);
+                                    i.Inventory.Items.Insert(0, localSelectedItem);
 
                                     coroutine.RunTask(async () =>
                                     {
@@ -227,10 +227,10 @@ class UseItemMenu
                                     swapItemChoices = i.Inventory.Items.Select(swapTarget => new ButtonColumnItem<Action>(languageService.Current.Items.GetText(swapTarget.InfoId), () =>
                                     {
                                         characterData.RemoveItem(localSelectedItem);
-                                        i.Inventory.Items.Add(localSelectedItem);
+                                        i.Inventory.Items.Insert(0, localSelectedItem);
 
                                         i.RemoveItem(swapTarget);
-                                        characterData.Inventory.Items.Add(swapTarget);
+                                        characterData.Inventory.Items.Insert(0, swapTarget);
 
                                         coroutine.RunTask(async () =>
                                         {
