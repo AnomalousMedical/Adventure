@@ -646,7 +646,7 @@ namespace Adventure.WorldMap
                         var mapUnitZ = mapMesh.MapUnitZ * add.ZPlacementRange;
                         var halfUnitZ = mapUnitZ * 0.5f;
 
-                        var scale = new Vector3(0.35f, 0.35f, 1.0f) * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
+                        var scale = new Vector3(add.WorldScale, add.WorldScale, 1.0f) * (bgItemsRandom.NextSingle() * add.ScaleRange + add.ScaleMin);
                         var mapLoc = mapMesh.PointToVector(prop.x, prop.y);
                         var keyAsset = add.Asset;
                         var sprite = keyAsset.CreateSprite();

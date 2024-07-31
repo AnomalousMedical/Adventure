@@ -104,5 +104,5 @@ namespace Adventure
         public Zone.Alignment? OverrideAlignment { get; set; }
     }
 
-    record BiomeBackgroundItem(int Chance, ISpriteAsset Asset, float ScaleMin = 1.0f, float ScaleRange = 0.0f, float XPlacementRange = 0.5f, float ZPlacementRange = 0.9f);
+    record BiomeBackgroundItem(int Chance, ISpriteAsset Asset, float ScaleMin = 1.0f, float ScaleRange = 0.0f, float XPlacementRange = 0.5f, float ZPlacementRange = 0.9f, float WorldScale = 0.35f);
 }
