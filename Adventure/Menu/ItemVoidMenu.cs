@@ -168,6 +168,10 @@ class ItemVoidMenu
                                 (ITreasure treasure, Inventory inventory, CharacterSheet user, IInventoryFunctions inventoryFunctions, Persistence.GameState gameState) =>
                                 {
                                     currentEffect = treasure.Use(inventory, user, inventoryFunctions, gameState, characterMenuPositionService, objectResolver, coroutine, cameraMover, soundEffectPlayer);
+                                },
+                                activeCharacterChanged: cd =>
+                                {
+                                    MoveCamera(cd.CharacterSheet);
                                 });
                         }
                     }
@@ -212,5 +216,14 @@ class ItemVoidMenu
         menu.RequestSubMenu(Previous, gamepad);
         Previous = null;
         oldMenuClosed?.SetResult();
+    }
+
+    private void MoveCamera(CharacterSheet characterSheet)
+    {
+        if (characterMenuPositionService.TryGetEntry(characterSheet, out var characterMenuPosition))
+        {
+            cameraMover.SetInterpolatedGoalPosition(characterMenuPosition.CameraPosition, characterMenuPosition.CameraRotation);
+            characterMenuPosition.FaceCamera();
+        }
     }
 }
