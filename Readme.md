@@ -1,7 +1,7 @@
 # Anomalous Adventure
 This is a ray traced procedural JRPG style game. It shares a legacy and dependencies with Anomalous Medical, but is its own project with its own renderer baesd on Diligent Engine.
 
-Check it out on [Steam](https://store.steampowered.com/app/3082490/Anomalous_Adventure/).
+Check it out on [Steam](https://store.steampowered.com/app/3082490/Anomalous_Adventure/?utm_source=github&utm_campaign=readme).
 
 ## Assets
 You will also need the AdventureAssets repo to have the assets. Clone this to the same folder you clone this repository and the dependencies to. 
