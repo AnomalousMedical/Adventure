@@ -26,13 +26,10 @@ internal class GraphicsOptionsMenu
     private readonly SharpButton toggleFullscreen = new SharpButton();
     private readonly SharpButton toggleUpsampling = new SharpButton();
     private readonly SharpButton togglePresent = new SharpButton();
-    private readonly SharpButton toggleRenderApi = new SharpButton();
     private readonly SharpButton back = new SharpButton() { Text = "Back" };
 
     private const float FSRPercentConversion = 10f;
     private readonly SharpSliderHorizontal fsrPercentSlider = new SharpSliderHorizontal() { Max = (int)(0.9f * FSRPercentConversion) };
-
-    private SharpText restartRequired = new SharpText("Restart Required") { Color = Color.UIWhite };
 
     public IExplorationSubMenu PreviousMenu { get; set; }
 
@@ -40,7 +37,6 @@ internal class GraphicsOptionsMenu
     {
         var items = new List<ILayoutItem>() { toggleFullscreen, togglePresent, toggleUpsampling };
         var showFsrSlider = false;
-        var showRestartRequired = options.RenderApi != diligentEngineOptions.RenderApi;
 
         toggleFullscreen.Text = options.Fullscreen ? "Fullscreen" : "Windowed";
         switch (options.UpsamplingMethod)
@@ -57,22 +53,6 @@ internal class GraphicsOptionsMenu
         }
 
         togglePresent.Text = "Present " + options.PresentInterval;
-
-        switch (options.RenderApi)
-        {
-            case GraphicsEngine.RenderApi.D3D12:
-                toggleRenderApi.Text = "D3D12";
-                break;
-            case GraphicsEngine.RenderApi.Vulkan:
-                toggleRenderApi.Text = "Vulkan";
-                break;
-        }
-        items.Add(toggleRenderApi);
-
-        if (showRestartRequired)
-        {
-            items.Add(restartRequired);
-        }
 
         items.Add(back);
 
@@ -100,7 +80,7 @@ internal class GraphicsOptionsMenu
             options.PresentInterval = (options.PresentInterval + 1) % 5;
         }
 
-        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: togglePresent.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : toggleRenderApi.Id))
+        if (sharpGui.Button(toggleUpsampling, gamepadId, navUp: togglePresent.Id, navDown: showFsrSlider ? fsrPercentSlider.Id : back.Id))
         {
             switch (options.UpsamplingMethod)
             {
@@ -118,7 +98,7 @@ internal class GraphicsOptionsMenu
         if (showFsrSlider)
         {
             int fsrPercent = (int)((diligentEngineOptions.FSR1RenderPercentage - 0.1f) * FSRPercentConversion);
-            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent, navUp: toggleUpsampling.Id, navDown: toggleRenderApi.Id))
+            if (sharpGui.Slider(fsrPercentSlider, ref fsrPercent, navUp: toggleUpsampling.Id, navDown: back.Id))
             {
                 var fsrPercentFloat = (float)fsrPercent / FSRPercentConversion + 0.1f;
                 if (fsrPercentFloat != options.FSR1RenderPercentage)
@@ -130,25 +110,7 @@ internal class GraphicsOptionsMenu
             }
         }
 
-        if (sharpGui.Button(toggleRenderApi, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: back.Id))
-        {
-            switch (options.RenderApi)
-            {
-                case GraphicsEngine.RenderApi.D3D12:
-                    options.RenderApi = GraphicsEngine.RenderApi.Vulkan;
-                    break;
-                case GraphicsEngine.RenderApi.Vulkan:
-                    options.RenderApi = GraphicsEngine.RenderApi.D3D12;
-                    break;
-            }
-        }
-
-        if (showRestartRequired)
-        {
-            sharpGui.Text(restartRequired);
-        }
-
-        if (sharpGui.Button(back, gamepadId, navUp: toggleRenderApi.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
+        if (sharpGui.Button(back, gamepadId, navUp: showFsrSlider ? fsrPercentSlider.Id : toggleUpsampling.Id, navDown: toggleFullscreen.Id) || sharpGui.IsStandardBackPressed(gamepadId))
         {
             Close(menu, gamepadId);
         }
