@@ -13,8 +13,10 @@ namespace DiligentEngine.RT
     {
         uint Height { get; }
         ITexture RTTexture { get; }
-        ITexture FullBufferTexture { get; }
         uint Width { get; }
+        uint FullWidth { get; }
+        uint FullHeight { get; }
+
         void Blit(GraphicsEngine graphicsEngine);
         void CreateBuffers(GraphicsEngine graphicsEngine, ShaderLoader<RTShaders> shaderLoader);
         void WindowResize(GraphicsEngine graphicsEngine, uint width, uint height);
@@ -88,9 +90,9 @@ namespace DiligentEngine.RT
 
         public uint RTBufferHeight => blitterImpl.RTTexture.GetDesc_Height;
 
-        public uint FullBufferWidth => blitterImpl.FullBufferTexture.GetDesc_Width;
+        public uint FullBufferWidth => blitterImpl.FullWidth;
 
-        public uint FullBufferHeight => blitterImpl.FullBufferTexture.GetDesc_Height;
+        public uint FullBufferHeight => blitterImpl.FullHeight;
 
         public void WindowResize(UInt32 width, UInt32 height)
         {

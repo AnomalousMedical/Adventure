@@ -114,6 +114,10 @@ namespace DiligentEngine.RT
         public uint Width => colorRT.Obj.GetDesc_Width;
 
         public uint Height => colorRT.Obj.GetDesc_Height;
+        
+        public uint FullWidth => colorRT.Obj.GetDesc_Width;
+        
+        public uint FullHeight => colorRT.Obj.GetDesc_Height;
 
         public void WindowResize(GraphicsEngine graphicsEngine, UInt32 Width, UInt32 Height)
         {
