@@ -40,14 +40,21 @@ namespace Adventure.Services
         {
             var outFile = GetFile();
 
-            if (!File.Exists(outFile))
+            try
             {
-                options = new GameOptions();
+                if (!File.Exists(outFile))
+                {
+                    options = new GameOptions();
+                }
+                else
+                {
+                    using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    options = JsonSerializer.Deserialize<GameOptions>(stream, GameOptionsSourceGenerationContext.Default.GameOptions);
+                }
             }
-            else
+            catch (Exception)
             {
-                using var stream = File.Open(outFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                options = JsonSerializer.Deserialize<GameOptions>(stream, GameOptionsSourceGenerationContext.Default.GameOptions);
+                //Does nothing, fallthrough to default options below
             }
 
             if(options == null)
