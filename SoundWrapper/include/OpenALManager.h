@@ -70,6 +70,8 @@ public:
 
 	void destroyDevice();
 
+	void defaultDeviceChanged();
+
 private:
 	AudioCodec* getCodecForStream(Stream* stream);
 
@@ -79,6 +81,13 @@ private:
 	SourceManager* sourceManager;
 	Listener* listener;
 	std::list<CaptureDevice*> activeDevices;
+
+#ifdef ALC_SOFT_system_events
+	bool reopenDeviceNextUpdate;
+	LPALCREOPENDEVICESOFT _alcReopenDeviceSOFT;
+	LPALCEVENTCONTROLSOFT _alcEventControlSOFT;
+	LPALCEVENTISSUPPORTEDSOFT _alcEventIsSupportedSOFT;
+#endif
 };
 
 }

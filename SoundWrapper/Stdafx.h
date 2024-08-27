@@ -12,6 +12,7 @@
 
 #ifdef WINDOWS
 #define _AnomalousExport __declspec(dllexport)
+#include "alext.h"
 #endif
 
 #if defined(MAC_OSX) || defined(APPLE_IOS) || defined(ANDROID)

@@ -17,6 +17,9 @@ OpenALManager::OpenALManager(void)
 :ready(true),
 listener(new Listener()),
 sourceManager(NULL)
+#ifdef ALC_SOFT_system_events
+,reopenDeviceNextUpdate(false)
+#endif
 {
 	createDevice();
 }
@@ -105,12 +108,35 @@ Source* OpenALManager::getSource()
 
 void OpenALManager::update()
 {
+#ifdef ALC_SOFT_system_events
+	if (reopenDeviceNextUpdate)
+	{
+		reopenDeviceNextUpdate = false;
+		_alcReopenDeviceSOFT(device, NULL, NULL);
+	}
+#endif
+
 	sourceManager->_update();
 	for(std::list<CaptureDevice*>::iterator capDevice = activeDevices.begin(); capDevice != activeDevices.end(); ++capDevice)
 	{
 		(*capDevice)->update();
 	}
 }
+
+#ifdef ALC_SOFT_system_events
+#define ALEVENTS_COUNT 1
+ALCenum alEvents[ALEVENTS_COUNT] = { ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT };
+
+void deviceCallback(ALCenum eventType, ALCenum deviceType, ALCdevice* device, ALCsizei length, const ALCchar* message, void* userParam)
+{
+	switch (eventType)
+	{
+		case ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT:
+			((OpenALManager*)userParam)->defaultDeviceChanged();
+			break;
+	}
+}
+#endif
 
 void OpenALManager::createDevice()
 {
@@ -153,6 +179,24 @@ void OpenALManager::createDevice()
 		// Clear Error Code
 		alGetError();
 
+#ifdef ALC_SOFT_system_events
+		_alcEventIsSupportedSOFT = (LPALCEVENTISSUPPORTEDSOFT)alcGetProcAddress(NULL, "alcEventIsSupportedSOFT");
+		if (_alcEventIsSupportedSOFT != NULL)
+		{
+			LPALCEVENTCALLBACKSOFT _alcEventCallbackSOFT = (LPALCEVENTCALLBACKSOFT)alcGetProcAddress(NULL, "alcEventCallbackSOFT");
+			_alcEventControlSOFT = (LPALCEVENTCONTROLSOFT)alcGetProcAddress(NULL, "alcEventControlSOFT");
+			_alcReopenDeviceSOFT = (LPALCREOPENDEVICESOFT)alcGetProcAddress(NULL, "alcReopenDeviceSOFT");
+
+			bool isSupported = _alcEventIsSupportedSOFT(ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_PLAYBACK_DEVICE_SOFT) == ALC_EVENT_SUPPORTED_SOFT;
+			if (isSupported)
+			{
+				_alcEventCallbackSOFT(deviceCallback, this);
+
+				_alcEventControlSOFT(ALEVENTS_COUNT, alEvents, true);
+			}
+		}
+#endif
+
 		sourceManager = new SourceManager();
 	}
 }
@@ -162,6 +206,17 @@ void OpenALManager::destroyDevice()
 	if (sourceManager != NULL)
 	{
 		logger << "Destroying OpenAL Device" << info;
+
+#ifdef ALC_SOFT_system_events
+		if (_alcEventIsSupportedSOFT != NULL)
+		{
+			bool isSupported = _alcEventIsSupportedSOFT(ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_PLAYBACK_DEVICE_SOFT) == ALC_EVENT_SUPPORTED_SOFT;
+			if (isSupported)
+			{
+				_alcEventControlSOFT(ALEVENTS_COUNT, alEvents, false);
+			}
+		}
+#endif
 
 		delete sourceManager;
 		sourceManager = NULL;
@@ -175,8 +230,14 @@ void OpenALManager::destroyDevice()
 	}
 }
 
+void OpenALManager::defaultDeviceChanged()
+{
+#ifdef ALC_SOFT_system_events
+	reopenDeviceNextUpdate = true;
+#endif
 }
 
+}
 
 //CWrapper
 
